@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="ArrLocalTypeREALInst1AOI" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Thu Sep 03 19:12:01 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="ArrLocalTypeREALInst1AOI" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Thu Sep 03 19:12:01 2026" LastModifiedDate="Thu Sep 03 19:12:01 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="ArrLocalTypeREALInst1AOI" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Buffer" DataType="REAL" Dimensions="50" Radix="Float" ExternalAccess="None"></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"/>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="TestInstance" TagType="Base" DataType="ArrLocalTypeREALInst1AOI" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="ArrLocalTypeREALInst1AOI"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><ArrayMember Name="Buffer" DataType="REAL" Dimensions="50" Radix="Decimal"><Element Index="[0]" Value="0.0" /><Element Index="[1]" Value="0.0" /><Element Index="[2]" Value="0.0" /><Element Index="[3]" Value="0.0" /><Element Index="[4]" Value="0.0" /><Element Index="[5]" Value="0.0" /><Element Index="[6]" Value="0.0" /><Element Index="[7]" Value="0.0" /><Element Index="[8]" Value="0.0" /><Element Index="[9]" Value="0.0" /><Element Index="[10]" Value="0.0" /><Element Index="[11]" Value="0.0" /><Element Index="[12]" Value="0.0" /><Element Index="[13]" Value="0.0" /><Element Index="[14]" Value="0.0" /><Element Index="[15]" Value="0.0" /><Element Index="[16]" Value="0.0" /><Element Index="[17]" Value="0.0" /><Element Index="[18]" Value="0.0" /><Element Index="[19]" Value="0.0" /><Element Index="[20]" Value="0.0" /><Element Index="[21]" Value="0.0" /><Element Index="[22]" Value="0.0" /><Element Index="[23]" Value="0.0" /><Element Index="[24]" Value="0.0" /><Element Index="[25]" Value="0.0" /><Element Index="[26]" Value="0.0" /><Element Index="[27]" Value="0.0" /><Element Index="[28]" Value="0.0" /><Element Index="[29]" Value="0.0" /><Element Index="[30]" Value="0.0" /><Element Index="[31]" Value="0.0" /><Element Index="[32]" Value="0.0" /><Element Index="[33]" Value="0.0" /><Element Index="[34]" Value="0.0" /><Element Index="[35]" Value="0.0" /><Element Index="[36]" Value="0.0" /><Element Index="[37]" Value="0.0" /><Element Index="[38]" Value="0.0" /><Element Index="[39]" Value="0.0" /><Element Index="[40]" Value="0.0" /><Element Index="[41]" Value="0.0" /><Element Index="[42]" Value="0.0" /><Element Index="[43]" Value="0.0" /><Element Index="[44]" Value="0.0" /><Element Index="[45]" Value="0.0" /><Element Index="[46]" Value="0.0" /><Element Index="[47]" Value="0.0" /><Element Index="[48]" Value="0.0" /><Element Index="[49]" Value="0.0" /></ArrayMember></Structure></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

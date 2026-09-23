@@ -1,0 +1,225 @@
+"""L5X sample generator CLI.
+
+Builds L5X files for whatever needs testing: UDT size, comment length for
+bits or rungs, and so on.
+
+Every subcommand writes a full L5X to samples/generated/<category>/ and
+logs a manifest.csv row with predicted_bytes already filled in (from this
+project's own sizing engine) -- actual_bytes stays blank until the file is
+run through Studio 5000 and the real number captured.
+
+Examples:
+  python -m sample_gen.cli udt --name MotorStatus --member Running:BOOL \\
+      --member Speed:DINT --member Faulted:BOOL --out motorstatus_test
+
+  python -m sample_gen.cli tags --type DINT --dims 10000 --out dint_10k_array
+
+  python -m sample_gen.cli rungs --count 1000 --instr "XIC(In{i})OTE(Out{i});" \\
+      --decl-tag "In{i}:BOOL" --decl-tag "Out{i}:BOOL" \\
+      --comment-len 100 --out xic_ote_1000_comment100
+"""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from sample_gen.builders import MemberSpec, rungs_xml, tag_xml, udt_xml
+from sample_gen.manifest import append_manifest_row, write_sample
+from sample_gen.wrapper import build_l5x
+
+OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated"
+
+
+def _filler_comment(length: int, prefix: str = "") -> str | None:
+    if length <= 0:
+        return None
+    body = (prefix + "x" * length)[:length] if prefix else "x" * length
+    return body
+
+
+def _parse_member(spec: str) -> MemberSpec:
+    # NAME:TYPE or NAME:TYPE:DIM
+    parts = spec.split(":")
+    if len(parts) == 2:
+        name, dt = parts
+        return MemberSpec(name, dt)
+    if len(parts) == 3:
+        name, dt, dim = parts
+        return MemberSpec(name, dt, int(dim))
+    raise argparse.ArgumentTypeError(f"member spec must be NAME:TYPE or NAME:TYPE:DIM, got {spec!r}")
+
+
+def _cmd_udt(args: argparse.Namespace) -> int:
+    members = [_parse_member(m) for m in args.member]
+    if args.member_desc_len:
+        desc = _filler_comment(args.member_desc_len)
+        members = [MemberSpec(m.name, m.data_type, m.dimension, desc) for m in members]
+
+    type_desc = _filler_comment(args.type_desc_len) if args.type_desc_len else None
+    udt_frag = udt_xml(args.name, members, description=type_desc)
+
+    tag_desc = _filler_comment(args.tag_desc_len) if args.tag_desc_len else None
+    tag_dims = tuple(int(d) for d in args.tag_dims.split(",")) if args.tag_dims else ()
+    if args.instances == 0:
+        tag_frag = ""
+    elif args.instances == 1:
+        tag_frag = tag_xml("TestInstance", args.name, tag_dims, description=tag_desc, udt_members=members)
+    else:
+        tag_frag = "\n".join(
+            tag_xml(f"TestInstance{i}", args.name, tag_dims, description=tag_desc, udt_members=members)
+            for i in range(args.instances)
+        )
+    l5x = build_l5x(
+        target_name=args.name,
+        tags_xml=tag_frag,
+        extra_datatypes_xml=udt_frag,
+    )
+
+    out_path = OUT_ROOT / "udt" / f"{args.out}.L5X"
+    bytes_ = write_sample(l5x, out_path)
+    desc = f"UDT {args.name}: {', '.join(m.data_type for m in members)}, {args.instances} instance(s)"
+    append_manifest_row(args.out, desc, "udt", out_path, bytes_)
+    print(f"Wrote {out_path} (predicted {bytes_} bytes)")
+    return 0
+
+
+def _padded_tag_name(prefix: str, i: int, count: int, length: int | None) -> str:
+    """Tag name of exactly `length` chars where possible, isolating
+    tag-name-length as its own OQ-TAGOVERHEAD variable. The
+    numeric suffix (needed for uniqueness across `count` tags) always stays
+    intact at the end; filler is inserted in the middle to hit `length`.
+    Falls back to the un-padded prefix+suffix if that's already >= length."""
+    idx_width = len(str(count - 1)) if count > 1 else 0
+    suffix = f"_{i:0{idx_width}d}" if count > 1 else ""
+    base = f"{prefix}{suffix}"
+    if length is None or len(base) >= length:
+        return base
+    pad_needed = length - len(base)
+    filler = ("_LONGTAGNAME" * (pad_needed // 12 + 1))[:pad_needed]
+    # Real Rockwell tag-naming rule: double underscores
+    # are forbidden. The filler's own leading "_" can land as its very last
+    # character depending on pad_needed's remainder, which then abuts
+    # suffix's leading "_" -- swap that one character for a non-underscore
+    # filler char rather than dropping it, so the requested length is still
+    # hit exactly.
+    if filler.endswith("_"):
+        filler = filler[:-1] + "X"
+    return f"{prefix}{filler}{suffix}"
+
+
+def _cmd_tags(args: argparse.Namespace) -> int:
+    dims = tuple(int(d) for d in args.dims.split(",")) if args.dims else ()
+    desc = _filler_comment(args.desc_len) if args.desc_len else None
+    name_prefix = args.name_prefix or args.out
+
+    tags = []
+    for i in range(args.count):
+        name = _padded_tag_name(name_prefix, i, args.count, args.name_len)
+        tags.append(tag_xml(name, args.type, dims, description=desc))
+    tags_frag = "\n".join(tags)
+
+    l5x = build_l5x(target_name=args.out, tags_xml=tags_frag)
+    out_path = OUT_ROOT / "tags" / f"{args.out}.L5X"
+    bytes_ = write_sample(l5x, out_path)
+    dims_desc = f"[{args.dims}]" if dims else ""
+    append_manifest_row(args.out, f"{args.count}x {args.type}{dims_desc} tag(s)", "tag", out_path, bytes_)
+    print(f"Wrote {out_path} (predicted {bytes_} bytes)")
+    return 0
+
+
+def _cmd_rungs(args: argparse.Namespace) -> int:
+    comment_fn = (lambda i: _filler_comment(args.comment_len)) if args.comment_len else None
+    instr_fn = lambda i: args.instr.format(i=i)
+    rungs_frag = rungs_xml(args.count, instr_fn, comment_fn)
+
+    # the original xic_ote_1000_* samples referenced
+    # 2000 tags (In0..In999/Out0..Out999) inside --instr but this command
+    # always passed tags_xml="" -- nothing declared them, so Studio 5000
+    # rejected the file: the tags were never generated. --decl-tag
+    # closes that gap: each NAME_PATTERN gets the same {i} substitution as
+    # --instr, for every i in range(--count), deduped by name.
+    decl_tags: dict[str, str] = {}
+    for spec in args.decl_tag:
+        name_pattern, dtype = spec.rsplit(":", 1)
+        for i in range(args.count):
+            decl_tags[name_pattern.format(i=i)] = dtype
+    tags_frag = "\n".join(tag_xml(name, dtype) for name, dtype in decl_tags.items())
+
+    l5x = build_l5x(target_name=args.out, tags_xml=tags_frag, extra_rungs_xml=rungs_frag)
+    out_path = OUT_ROOT / "logic" / f"{args.out}.L5X"
+    bytes_ = write_sample(l5x, out_path)
+    append_manifest_row(
+        args.out, f"{args.count} rungs of {args.instr!r}, comment_len={args.comment_len}",
+        "logic_bit", out_path, bytes_,
+    )
+    print(f"Wrote {out_path} (predicted {bytes_} bytes -- note: this is tag/UDT space only, "
+          f"logic compiled size is NOT modeled yet, see PROJECT_PLAN.md Phase 4)")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="sample_gen")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    udt_parser = subparsers.add_parser("udt", help="Generate a UDT + one tag of that type")
+    udt_parser.add_argument("--name", required=True, help="UDT type name")
+    udt_parser.add_argument("--member", action="append", required=True,
+                             help="NAME:TYPE or NAME:TYPE:DIM, repeatable, in declared order")
+    udt_parser.add_argument("--member-desc-len", type=int, default=0,
+                             help="Give every member a filler Description of this length (0 = none)")
+    udt_parser.add_argument("--type-desc-len", type=int, default=0,
+                             help="Give the DataType itself a filler Description of this length "
+                                  "(0 = none) -- distinct from --member-desc-len, OQ-TAGOVERHEAD")
+    udt_parser.add_argument("--tag-desc-len", type=int, default=0,
+                             help="Give each tag instance a filler Description of this length "
+                                  "(0 = none) -- the same tag-level Description atomic tags get, "
+                                  "for a UDT-typed tag specifically, OQ-TAGOVERHEAD")
+    udt_parser.add_argument("--tag-dims", default="",
+                             help="Make TestInstance an array instead of scalar, e.g. '1000' -- for OQ-ARRAYPACK")
+    udt_parser.add_argument("--instances", type=int, default=1,
+                             help="How many separate scalar tag instances of this UDT to create "
+                                  "(0 = DataType definition only, no tags at all) -- for isolating "
+                                  "DataType-definition cost from per-instance cost, OQ-TAGOVERHEAD")
+    udt_parser.add_argument("--out", required=True, help="Output file basename")
+    udt_parser.set_defaults(func=_cmd_udt)
+
+    tags_parser = subparsers.add_parser("tags", help="Generate N tags of a given type/dimensions")
+    tags_parser.add_argument("--type", required=True, help="DataType (atomic, BOOL, or a UDT/AOI name)")
+    tags_parser.add_argument("--dims", default="", help="Comma-separated dimensions, e.g. '10000' or '4,4'")
+    tags_parser.add_argument("--count", type=int, default=1, help="How many tags to generate")
+    tags_parser.add_argument("--desc-len", type=int, default=0,
+                              help="Give every tag a filler Description of this length (0 = none)")
+    tags_parser.add_argument("--name-prefix", default="",
+                              help="Tag name prefix, independent of --out (defaults to --out) -- "
+                                   "e.g. keep --out descriptive for the filename while --name-prefix "
+                                   "stays short/long for an OQ-TAGOVERHEAD name-length test")
+    tags_parser.add_argument("--name-len", type=int, default=None,
+                              help="Pad every tag name to this many characters (filler in the middle, "
+                                   "unique numeric suffix preserved) -- OQ-TAGOVERHEAD name-length test")
+    tags_parser.add_argument("--out", required=True, help="Output file basename / tag name prefix")
+    tags_parser.set_defaults(func=_cmd_tags)
+
+    rungs_parser = subparsers.add_parser("rungs", help="Generate N rungs of a given instruction pattern")
+    rungs_parser.add_argument("--count", type=int, required=True)
+    rungs_parser.add_argument("--instr", required=True,
+                               help="Instruction text template, {i} substituted with rung index, "
+                                    "e.g. 'XIC(In{i})OTE(Out{i});'")
+    rungs_parser.add_argument("--comment-len", type=int, default=0,
+                               help="Give every rung a filler comment of this length (0 = none) -- OQ-COMMENTS")
+    rungs_parser.add_argument("--decl-tag", action="append", default=[],
+                               help="Auto-declare a tag referenced by --instr, as NAME_PATTERN:TYPE "
+                                    "(NAME_PATTERN gets the same {i} substitution as --instr, one tag "
+                                    "per rung index) -- repeatable, e.g. --decl-tag 'In{i}:BOOL' "
+                                    "--decl-tag 'Out{i}:BOOL' for --instr 'XIC(In{i})OTE(Out{i});'. "
+                                    "Any tag name embedded in --instr that isn't covered by a --decl-tag "
+                                    "is left undeclared and Studio 5000 will reject the file.")
+    rungs_parser.add_argument("--out", required=True, help="Output file basename")
+    rungs_parser.set_defaults(func=_cmd_rungs)
+
+    args = parser.parse_args(argv)
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="Dscale2AoiT060" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 22:31:27 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Dscale2AoiT060" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 22:31:27 2026" LastModifiedDate="Fri Sep 11 22:31:27 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="Aoi_D000" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="Inst000" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst001" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst002" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst003" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst004" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst005" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst006" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst007" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst008" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst009" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst010" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst011" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst012" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst013" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst014" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst015" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst016" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst017" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst018" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst019" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst020" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst021" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst022" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst023" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst024" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst025" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst026" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst027" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst028" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst029" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst030" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst031" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst032" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst033" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst034" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst035" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst036" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst037" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst038" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst039" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst040" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst041" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst042" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst043" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst044" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst045" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst046" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst047" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst048" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst049" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst050" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst051" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst052" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst053" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst054" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst055" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst056" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst057" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst058" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst059" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="OutBitTag" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst000,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst001,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst002,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst003,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst004,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst005,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst006,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst007,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst008,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst009,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst010,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst011,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst012,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst013,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst014,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst015,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst016,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst017,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst018,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst019,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst020,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst021,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst022,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst023,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst024,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst025,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst026,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst027,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst028,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst029,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst030,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst031,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst032,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst033,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst034,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst035,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst036,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst037,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst038,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst039,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="40" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst040,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="41" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst041,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="42" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst042,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="43" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst043,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="44" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst044,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="45" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst045,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="46" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst046,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="47" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst047,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="48" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst048,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="49" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst049,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="50" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst050,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="51" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst051,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="52" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst052,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="53" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst053,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="54" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst054,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="55" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst055,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="56" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst056,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="57" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst057,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="58" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst058,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="59" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst059,0,0,OutBitTag);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

@@ -1,0 +1,9 @@
+# Union merge on the sample bookkeeping: take BOTH sides' lines instead of
+# raising a conflict. The two files are now written by different producers
+# (manifest.csv by the generators, captures.csv by the capture tooling), so a
+# conflict should be rare -- this is the backstop for two appends racing at the
+# end of the same file. Any duplicate sample_id that results is collapsed by
+# load_manifest() in src/sample_gen/manifest_store.py, last row winning.
+samples/manifest.csv   merge=union
+samples/captures.csv   merge=union
+samples/convert_log.csv merge=union

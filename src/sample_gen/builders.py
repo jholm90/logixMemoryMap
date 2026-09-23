@@ -1,0 +1,1311 @@
+"""Composable L5X fragment builders for the sample generator.
+
+The generator builds L5X files for whatever needs testing: UDT size,
+comment length for bits or rungs, and so on.
+
+BOOL-run handling in udt_xml() matches the packing rule confirmed against
+real Logix Designer behavior (see docs/OPEN_QUESTIONS.md
+OQ-ALIGN, docs/MEMORY_MODEL.md UDT packing): consecutive BOOL members share
+one hidden backing SINT (wrapping to a new one every 8 bits), but a
+non-BOOL member breaks the run and the next BOOL(s) get a fresh backing
+SINT. Generating that exact shape means samples this tool produces are
+genuinely representative of what Logix Designer itself would export, not
+a simplified stand-in.
+"""
+
+from __future__ import annotations
+
+import re
+
+from dataclasses import dataclass
+
+BOOL_BITS_PER_BACKING_SINT = 8
+
+
+class InvalidLogixNameError(ValueError):
+    """A name Studio 5000 will reject on import as "Invalid name."."""
+
+
+def validate_logix_name(name: str, what: str) -> str:
+    """Raise unless `name` is a legal Logix identifier.
+
+    A HARD REQUIREMENT, on everything: tags, programs, routines, tasks,
+    modules, UDT members, AOI parameters, the controller itself. A name
+    may not end in an underscore, may not contain two underscores in a
+    row, and may not start with a digit. Real Studio 5000 rejects all
+    three with "Invalid name." and aborts the whole import, so one bad
+    name costs the entire file.
+
+    Checked here, at the point a name enters a file, rather than only in
+    sample_gen.lint -- the lint catch comes after a batch is written and
+    sometimes after it has been converted. Every instance so far came
+    from a helper composing a name out of parts (padding filler abutting
+    a numeric suffix; a fixed slice of a type name, `"AXIS_CIP_DRIVE"[5:9]`,
+    landing on the underscore), which is exactly the case a generator
+    author cannot see by reading their own call site.
+    """
+    if not name:
+        raise InvalidLogixNameError(f"{what}: name is empty")
+    if name.endswith("_"):
+        reason = "ends with an underscore"
+    elif "__" in name:
+        reason = "contains sequential underscores"
+    elif name[0].isdigit():
+        reason = "starts with a digit"
+    else:
+        return name
+    raise InvalidLogixNameError(
+        f"{what}: {name!r} is not a valid Logix identifier -- it {reason}. "
+        f"Real Studio 5000 rejects the whole import with \"Invalid name.\""
+)
+
+
+@dataclass(frozen=True)
+class MemberSpec:
+    name: str
+    data_type: str
+    dimension: int = 0
+    description: str | None = None
+    # Nested UDT support ("nested UDTs need to be
+    # tested"). When set, `data_type` names another UDT and this is that
+    # UDT's own member list -- both the definition side (_udt_members_xml,
+    # a plain type-name reference, no recursion needed) and the
+    # instance/Structure side (_udt_structure_body_xml, which does need to
+    # recurse) use this to render the nested type correctly. Works combined
+    # with `dimension` for "array of nested UDT" (a member that's an array
+    # of another UDT's instances -- OQ-TAGOVERHEAD "nested array udts").
+    nested_members: tuple["MemberSpec", ...] | None = None
+    # An AOI instance nested as a UDT member (real
+    # hand-built trial files after this was one of 5 real bugs behind a
+    # batch of Build failures): renders differently from an ordinary
+    # nested UDT member -- needs Radix="NullType" ExternalAccess=
+    # "Read/Write" on the <Member> declaration, which a plain nested UDT
+    # member does NOT carry (confirmed: axis_composite_udt_* already
+    # passed real Build without them). See _udt_members_xml.
+    is_aoi_member: bool = False
+    # AOI Parameter Required/Visible flags (real calling-
+    # instance semantics, not just cosmetic -- Required="true" means the
+    # calling rung MUST have a tag wired to that parameter; Required="false"
+    # + Visible="true" means the calling rung must have SOME value present
+    # (tag or literal) but it's optional whether to wire one at all (real
+    # corpus evidence, a real export's PTimer call omits 2 of
+    # its 4 non-hidden Input params entirely); Required="false" +
+    # Visible="false" means the parameter has nowhere to appear on the
+    # calling rung at all -- storage-only, tag-browser-visible only. Only
+    # meaningful for Input/Output params (_aoi_parameter_xml), ignored for
+    # InOut (whose Required/Visible are always "true"/"true", not author-
+    # chosen, per real corpus) and EnableIn/EnableOut (always "false"/
+    # "false"). Defaults match this generator's own prior behavior (safe
+    # hidden default) so existing callers are unaffected.
+    required: bool = False
+    visible: bool = False
+    # Verbatim <DefaultData> block for an AOI Parameter/LocalTag whose type
+    # is a PREDEFINED STRUCTURE (TIMER/COUNTER/STRING/MOTION_INSTRUCTION/...).
+    # these types appear all over real AOIs (557 TIMER, 66
+    # COUNTER, 58 STRING, 36 MOTION_INSTRUCTION member uses across the nine
+    # real programs) and had NEVER been generated once -- the ordinary
+    # atomic path emits a bare Radix + scalar DataValue, which is wrong for
+    # them, and the nested-UDT path emits an L5K value list that does not
+    # match the real positional encoding (a real TIMER LocalTag's L5K is
+    # `[0,1500,0]` -- three fields for five members, because EN/TT/DN alias
+    # into the leading status word). Rather than guess an encoding that
+    # would only fail later in Studio 5000, predefined_members.py supplies
+    # the exact real block captured from the corpus and it is emitted here
+    # verbatim. When set, no Radix attribute is written (matching every
+    # real predefined-struct Parameter/LocalTag on file).
+    raw_default_data: str | None = None
+
+    def __post_init__(self) -> None:
+        # Every member, parameter and local tag passes through here, so
+        # this one hook covers the whole family. Composed names are where
+        # the bad ones come from, and a composed name is invisible at the
+        # call site that made it.
+        validate_logix_name(self.name, f"MemberSpec({self.data_type})")
+
+
+_FLOAT_TYPES = {"REAL"}
+_ATOMIC_TYPES = {"BOOL", "SINT", "INT", "DINT", "LINT", "REAL"}
+
+
+def _default_value(data_type: str) -> str:
+    return "0.0" if data_type in _FLOAT_TYPES else "0"
+
+
+def _data_value_xml(data_type: str, radix: str = "Decimal") -> str:
+    return f'<DataValue DataType="{data_type}" Radix="{radix}" Value="{_default_value(data_type)}" />'
+
+
+def _array_body_xml(data_type: str, count: int, radix: str | None = "Decimal", element_fn=None) -> str:
+    """element_fn(i) -> inner XML for one <Element>, defaults to a plain Value attr
+    (atomic element type). Real shape confirmed against a real export
+    (export 04, Alarms_Edger array) -- including
+    that an array-of-UDT has no Radix attribute at all (radix=None), unlike
+    an array-of-atomic which does."""
+    if element_fn is None:
+        elements = "".join(f'<Element Index="[{i}]" Value="{_default_value(data_type)}" />' for i in range(count))
+    else:
+        elements = "".join(f'<Element Index="[{i}]">{element_fn(i)}</Element>' for i in range(count))
+    radix_attr = f' Radix="{radix}"' if radix else ""
+    return f'<Array DataType="{data_type}" Dimensions="{count}"{radix_attr}>{elements}</Array>'
+
+
+def _array2d_body_xml(data_type: str, rows: int, cols: int,
+                      radix: str | None = "Decimal") -> str:
+    """A two-dimensional array's decorated data.
+
+    Shape taken verbatim from a real export (export 13, tag
+    `Cell_Fault_TMR`, TIMER[5,32]) rather than extrapolated from the 1-D
+    writer, because the two attributes disagree in a way that is easy to get
+    wrong: the TAG's own Dimensions attribute is SPACE separated ("5 32")
+    while the ARRAY element's is COMMA separated ("5,32"), and each Element's
+    Index carries both subscripts as "[r,c]".
+    """
+    elements = "".join(
+        f'<Element Index="[{r},{c}]" Value="{_default_value(data_type)}" />'
+        for r in range(rows) for c in range(cols)
+)
+    radix_attr = f' Radix="{radix}"' if radix else ""
+    return (f'<Array DataType="{data_type}" Dimensions="{rows},{cols}"'
+            f'{radix_attr}>{elements}</Array>')
+
+
+def _string_structure_member_xml(name: str) -> str:
+    return (
+        f'<StructureMember Name="{name}" DataType="STRING">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII"></DataValueMember>'
+        f"</StructureMember>"
+)
+
+
+def _udt_structure_body_xml(members: list["MemberSpec"]) -> str:
+    """Tag-instance <Structure> body for a UDT -- confirmed against a real
+    export (Alarms_SE): members appear under their LOGICAL
+    name/type (e.g. a BOOL member as a plain DataValueMember), with no trace
+    of the hidden-SINT/BIT-alias representation that's purely a <DataType>
+    Members-list authoring detail. Much simpler than the definition side.
+
+    Nested-UDT members (m.nested_members set) recurse into their own
+    <Structure>, and combined with m.dimension produce an array of nested
+    Structures -- the same Array/Element/Structure shape already confirmed
+    for a top-level array-of-UDT tag (tag_xml), just one level deeper.
+    """
+    parts = []
+    for m in members:
+        if m.nested_members is not None:
+            inner = _udt_structure_body_xml(list(m.nested_members))
+            if m.dimension:
+                elements = "".join(
+                    f'<Element Index="[{i}]"><Structure DataType="{m.data_type}">{inner}</Structure></Element>'
+                    for i in range(m.dimension)
+)
+                parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
+                             f'Dimensions="{m.dimension}">{elements}</ArrayMember>')
+            else:
+                parts.append(f'<StructureMember Name="{m.name}" DataType="{m.data_type}">{inner}</StructureMember>')
+        elif m.data_type == "STRING":
+            parts.append(_string_structure_member_xml(m.name))
+        elif m.dimension:
+            parts.append(f'<ArrayMember Name="{m.name}" DataType="{m.data_type}" '
+                         f'Dimensions="{m.dimension}" Radix="Decimal">' +
+                         "".join(f'<Element Index="[{i}]" Value="{_default_value(m.data_type)}" />'
+                                 for i in range(m.dimension)) +
+                         "</ArrayMember>")
+        elif m.data_type in ("SINT", "INT", "DINT", "LINT", "REAL", "BOOL"):
+            parts.append(f'<DataValueMember Name="{m.name}" DataType="{m.data_type}" '
+                         f'Value="{_default_value(m.data_type)}" />')
+        else:
+            parts.append(f"<!-- unsupported member {m.name}:{m.data_type} -->")
+    return "".join(parts)
+
+
+def collect_nested_datatypes(name: str, members: list["MemberSpec"], family: str = "NoFamily") -> str:
+    """Every nested UDT referenced (transitively) by `members` needs its own
+    <DataType> definition alongside the top one -- returns all of them,
+    innermost-first, ready to concatenate into <DataTypes>.
+
+    fix (real Studio 5000 error after a generated AOI-
+    nested-in-UDT file failed import): "Unable to create AOI definition
+    'DriveAxisNestTest' because it collides with a UDT of the same name."
+    An AOI member sets nested_members too (so the *instance/Structure*
+    side, _udt_structure_body_xml, renders its storage correctly), but
+    that used to also make this function emit a redundant plain <DataType>
+    for it -- on top of its real <AddOnInstructionDefinition> (passed
+    separately via build_l5x's extra_aoi_xml). AOI and UDT names share one
+    namespace in Logix; two definitions with the same name is a hard
+    import error, not a warning. Skip recursion for AOI members -- their
+    type definition comes from extra_aoi_xml only, never from here.
+    """
+    parts = []
+    for m in members:
+        if m.nested_members is not None and not m.is_aoi_member:
+            parts.append(collect_nested_datatypes(m.data_type, list(m.nested_members), family))
+    parts.append(udt_xml(name, members, family))
+    return "\n".join(parts)
+
+
+def _string_tag_data_xml(max_len: int) -> str:
+    """Standalone STRING-typed (built-in or custom-length) tag body --
+    confirmed against real corpus (multiple files e.g.
+    a real export szInstruction): a top-level STRING tag
+    exports as a *pair* of <Data> elements (Format="L5K" and Format="String"),
+    NOT the <Data Format="Decorated"> every other tag type uses. A STRING
+    *member inside a UDT* is different again (Decorated StructureMember,
+    see _string_structure_member_xml) -- confirmed separately, real shape,
+    not the same rule applied twice by assumption."""
+    l5k_padding = "$00" * max_len
+    return (
+        f'<Data Format="L5K">\n<![CDATA[[0,\'{l5k_padding}\'\n\t\t]]]>\n</Data>\n'
+        f'        <Data Format="String" Length="0">\n<![CDATA[\'\']]>\n</Data>'
+)
+
+
+def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: str = "STRING") -> str:
+    """An ARRAY of STRING-typed elements (built-in, `data_type="STRING"`,
+    or a custom string type by name) -- a genuinely different real shape
+    from a scalar STRING tag, confirmed against two independent
+    real corpus examples: a real export's
+    CMU_PackNames tag (built-in, `DataType="STRING" Dimensions="5"`) and
+    a real export's PrintStrings tag (custom type,
+    `DataType="SortString" Dimensions="160"`) -- both follow the identical
+    shape, only the DataType name differs. Unlike a scalar STRING tag's
+    L5K+String Data pair (`_string_tag_data_xml`), a STRING ARRAY exports
+    as L5K+Decorated -- Decorated being an `<Array><Element><Structure
+    DataType=X><DataValueMember Name="LEN".../><DataValueMember Name=
+    "DATA".../></Structure></Element>...</Array>`, the same Decorated-
+    array convention every other array type in this project already uses,
+    NOT the scalar STRING's special pair. Real per-element data content
+    varies (this generator emits empty/zero-length strings, matching a
+    freshly-created array before any runtime value is written) --
+    OQ-STRINGARRAY, never previously tested."""
+    validate_logix_name(name, "string array tag")
+    l5k_padding = "$00" * max_len
+    l5k_elements = ",".join([f"[0,'{l5k_padding}'\n\t\t]"] * count)
+    decorated_elements = "".join(
+        f'<Element Index="[{i}]"><Structure DataType="{data_type}">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="DATA" DataType="{data_type}" Radix="ASCII"><![CDATA[]]></DataValueMember>'
+        f"</Structure></Element>"
+        for i in range(count)
+)
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}" Dimensions="{count}"'
+        f' Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K">\n<![CDATA[[{l5k_elements}]]]>\n</Data>\n'
+        f'        <Data Format="Decorated"><Array DataType="{data_type}" Dimensions="{count}">'
+        f"{decorated_elements}</Array></Data>\n"
+        f"      </Tag>"
+)
+
+
+# Types whose storage is a single value with a display radix. Anything else
+# is a structure and must carry <Structure>/<DataValueMember>, never a scalar
+# <DataValue> -- see the bug note in tag_xml.
+_ATOMIC_TYPES = frozenset({
+    "BOOL", "SINT", "INT", "DINT", "LINT", "REAL", "LREAL",
+    "USINT", "UINT", "UDINT", "ULINT", "BIT",
+})
+
+
+def tag_xml(
+    name: str, data_type: str, dimensions: tuple[int, ...] = (), radix: str | None = None,
+    description: str | None = None, udt_members: list["MemberSpec"] | None = None,
+    string_max_len: int | None = None, constant: bool = False,
+) -> str:
+    validate_logix_name(name, "tag")
+    # REAL BUG FOUND (real Studio 5000 warning on
+    # composite_realistic_07.L5X): "A warning occurred while setting
+    # 'Radix' property (Invalid display style.)" on a REAL-typed array tag
+    # (Arr2). This function defaulted radix="Decimal" for every atomic
+    # type including REAL -- wrong; real REAL tags use Radix="Float"
+    # (already confirmed and used correctly elsewhere in this project's
+    # own module-config XML, e.g. builders.py's axis Master/Slave
+    # DataValueMembers and gen_module_sweep.py's RTD/AI config blocks --
+    # this generic tag_xml() helper just never matched that for a
+    # top-level Tag). Non-fatal (a warning, not an import-blocking error;
+    # Radix is a display-format property, doesn't change a tag's real
+    # storage size), so it didn't invalidate any prior REAL-tag capture
+    # data, but every one of the many existing callers that build a REAL
+    # tag via the plain tag_xml(name, "REAL") call (no radix override) was
+    # silently hitting this same warning. Fixed by defaulting per-type
+    # instead of one universal literal -- explicit caller radix still wins.
+    # REAL BUG FOUND . This function decided "is this a structure?"
+    # purely from whether the CALLER passed udt_members -- it never looked at
+    # the type. Hand it a UDT or predefined-structure type name without
+    # members and it silently emitted BOTH of the things Studio 5000 rejects
+    # on a structure tag: a Radix attribute ("Invalid display style.") and a
+    # scalar <DataValue> instead of a <Structure> ("Format of data element is
+    # invalid for a structure. Use Structure."). That is the exact pair of
+    # errors the predefprobe_* FBD/SFC files failed conversion with, and the
+    # same defect then reappeared in the alarm-definition batch -- 94 tags
+    # across 22 files, all from this one silent fallback.
+    #
+    # The type now decides, not the caller. A non-atomic type with no member
+    # list gets no Radix and no <Data> block at all: Studio populates a tag's
+    # initial values on import, and omitting them is honest about not knowing
+    # the member layout, where guessing a scalar zero was actively wrong.
+    is_structure = data_type.split("[")[0] not in _ATOMIC_TYPES and string_max_len is None
+    if radix is None:
+        radix = "Float" if data_type == "REAL" else "Decimal"
+    dims_attr = f' Dimensions="{" ".join(str(d) for d in dimensions)}"' if dimensions else ""
+    desc_xml = f"\n        <Description><![CDATA[{description}]]></Description>" if description else ""
+    constant_attr = "true" if constant else "false"
+
+    # Real exports: a UDT-typed Tag element carries no Radix
+    # attribute at all -- only atomic-rooted tags (scalar or array) do.
+    radix_attr = "" if (is_structure or string_max_len is not None) else f' Radix="{radix}"'
+
+    # Structure type, members unknown: declare the tag and let Studio fill in
+    # the initial values rather than asserting a layout this project does not
+    # have (every predefined FBD/SFC probe is in exactly this position).
+    if is_structure and udt_members is None:
+        return (
+            f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
+            f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
+            f"      </Tag>"
+)
+
+    if string_max_len is not None:
+        return (
+            f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"'
+            f' Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
+            f'        {_string_tag_data_xml(string_max_len)}\n'
+            f"      </Tag>"
+)
+
+    if udt_members is not None:
+        structure_body = f'<Structure DataType="{data_type}">{_udt_structure_body_xml(udt_members)}</Structure>'
+        data_body = (
+            _array_body_xml(data_type, dimensions[0], radix=None, element_fn=lambda i: structure_body)
+            if dimensions else structure_body
+)
+    elif len(dimensions) == 2:
+        data_body = _array2d_body_xml(data_type, dimensions[0], dimensions[1], radix)
+    elif dimensions:
+        data_body = _array_body_xml(data_type, dimensions[0], radix)
+    else:
+        data_body = _data_value_xml(data_type, radix)
+
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}"{dims_attr}'
+        f'{radix_attr} Constant="{constant_attr}" ExternalAccess="Read/Write">{desc_xml}\n'
+        f'        <Data Format="Decorated">{data_body}</Data>\n'
+        f"      </Tag>"
+)
+
+
+# Backplane port types with no physical chassis behind them -- the bus is
+# exactly as long as what is plugged in. 1756 "ICP" is deliberately absent:
+# its slot count is fixed by the chassis catalog (4/10/13/17) and an
+# under-populated 1756 rack is normal, not a defect.
+DYNAMIC_BACKPLANE_PORT_TYPES = ("PointIO", "Flex", "5069")
+
+
+def chassis_bus_size(card_count: int) -> int:
+    """Smallest Bus Size that fits `card_count` cards on a dynamic backplane.
+
+    The bus coupler occupies one position and each card occupies one more, so
+    a coupler plus one card is Size=2. Use this instead of whatever Bus Size a
+    donor module block happened to carry: that number is the size of the rack
+    the module was copied OUT of, and has nothing to do with the rack being
+    built."""
+    if card_count < 0:
+        raise ValueError("card_count cannot be negative")
+    return 1 + card_count
+
+
+def renumber_rack_slots(modules_xml: str, start: int = 1) -> str:
+    """Renumber the slot addresses of the cards in a dynamic rack, in order.
+
+    A module block copied from a real export carries the slot address it had
+    in THAT application. An OB8E found at slot 8 in one plant is not an OB8E
+    that must live at slot 8 -- next application it may be slot 2. Slot
+    address is a property of the rack being built, not of the donor module,
+    so it is recomputed here.
+
+    Only the card-side port is touched: a card connects UPWARD to its coupler,
+    so its own Address lives on the port carrying Upstream="true". The
+    coupler's own downstream port (Upstream="false", Address="0") is left
+    alone -- that is the coupler's position, not a card slot."""
+    slot = start
+    out: list[str] = []
+    for line in modules_xml.split("\n"):
+        if 'Upstream="true"' in line and 'Address="' in line:
+            line = re.sub(r'Address="\d+"', f'Address="{slot}"', line, count=1)
+            slot += 1
+        out.append(line)
+    return "\n".join(out)
+
+
+def tags_xml(specs: list[tuple[str, str] | tuple[str, str, tuple[int, ...]]]) -> str:
+    tags = []
+    for spec in specs:
+        name, dt = spec[0], spec[1]
+        dims = spec[2] if len(spec) > 2 else ()
+        tags.append(tag_xml(name, dt, dims))
+    return "\n".join(tags)
+
+
+def _member_description_xml(description: str | None) -> str:
+    return f"<Description><![CDATA[{description}]]></Description>" if description else ""
+
+
+def _udt_members_xml(members: list[MemberSpec]) -> str:
+    parts: list[str] = []
+    hidden_index = 0
+    i = 0
+    while i < len(members):
+        m = members[i]
+        if m.data_type != "BOOL":
+            dim_attr = f' Dimension="{m.dimension}"' if m.dimension else ' Dimension="0"'
+            aoi_attrs = ' Radix="NullType" ExternalAccess="Read/Write"' if m.is_aoi_member else ""
+            desc = _member_description_xml(m.description)
+            parts.append(f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr}{aoi_attrs} Hidden="false">{desc}</Member>'
+                         if desc else f'      <Member Name="{m.name}" DataType="{m.data_type}"{dim_attr}{aoi_attrs} Hidden="false"/>')
+            i += 1
+            continue
+
+        # Consume a run of consecutive BOOL members, splitting every 8 bits.
+        run = []
+        while i < len(members) and members[i].data_type == "BOOL":
+            run.append(members[i])
+            i += 1
+        for chunk_start in range(0, len(run), BOOL_BITS_PER_BACKING_SINT):
+            chunk = run[chunk_start:chunk_start + BOOL_BITS_PER_BACKING_SINT]
+            hidden_name = f"ZZZZZZZZZZBoolMember{hidden_index:02d}"
+            hidden_index += 1
+            parts.append(f'      <Member Name="{hidden_name}" DataType="SINT" Dimension="0" Hidden="true"/>')
+            for bit_num, bool_member in enumerate(chunk):
+                desc = _member_description_xml(bool_member.description)
+                tag = (
+                    f'      <Member Name="{bool_member.name}" DataType="BIT" Dimension="0" '
+                    f'Hidden="false" Target="{hidden_name}" BitNumber="{bit_num}">{desc}</Member>'
+                    if desc else
+                    f'      <Member Name="{bool_member.name}" DataType="BIT" Dimension="0" '
+                    f'Hidden="false" Target="{hidden_name}" BitNumber="{bit_num}"/>'
+)
+                parts.append(tag)
+    return "\n".join(parts)
+
+
+def udt_xml(name: str, members: list[MemberSpec], family: str = "NoFamily",
+            description: str | None = None) -> str:
+    validate_logix_name(name, "UDT")
+    members_xml = _udt_members_xml(members)
+    # Real exports (a real export):
+    # a DataType-level Description sits right after the opening tag, before
+    # Members -- same CDATA shape as a Tag's Description.
+    desc_xml = f"<Description><![CDATA[{description}]]></Description>\n      " if description else ""
+    return (
+        f'    <DataType Name="{name}" Family="{family}" Class="User">\n'
+        f"      {desc_xml}<Members>\n{members_xml}\n      </Members>\n"
+        f"    </DataType>"
+)
+
+
+def custom_string_type_xml(name: str, max_len: int) -> str:
+    validate_logix_name(name, "string type")
+    # Real shape confirmed, a real export
+    # (DataType Name="Long_String", DATA Dimension="128").
+    return (
+        f'    <DataType Name="{name}" Family="StringFamily" Class="User">\n'
+        f"      <Members>\n"
+        f'        <Member Name="LEN" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false" ExternalAccess="Read/Write"/>\n'
+        f'        <Member Name="DATA" DataType="SINT" Dimension="{max_len}" Radix="ASCII" Hidden="false" ExternalAccess="Read/Write"/>\n'
+        f"      </Members>\n"
+        f"    </DataType>"
+)
+
+
+def _aoi_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for an atomic Parameter/LocalTag. Nested-UDT/nested-AOI
+    members need _aoi_nested_default_data_xml instead (Structure body, not
+    a scalar DataValue)."""
+    val = _default_value(m.data_type)
+    radix = "Float" if m.data_type in _FLOAT_TYPES else "Decimal"
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[{val}]]></DefaultData>'
+        f'<DefaultData Format="Decorated">{_data_value_xml(m.data_type, radix)}</DefaultData>'
+)
+
+
+def _aoi_array_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for a DIMENSIONED atomic Parameter/LocalTag (an array
+    Input/Output param, or a non-InOut array LocalTag) -- real bug found
+    (aoi_array_param_def_only.L5X fails to import with
+    XMLSrv_E_IMPORT_ABORTED_NO_CHANGES, even after the earlier Required/
+    Visible fix). Real corpus check (a real export,
+    TS_TrackSts AOI): every non-InOut Parameter that carries ExternalAccess
+    ALSO carries <DefaultData> (WindowStart/WindowEnd/ConsecTest/ER/EM/
+    StartBit/EndBit, all scalar) -- InOut params (BitArray, PkgSts) are the
+    only ones that go bare with no DefaultData at all. The generator's own
+    `default = "" if m.dimension else ...` rule conflated "is an array"
+    with "is InOut" the same way the Required/Visible bug did -- BitArray
+    happens to be both InOut AND dimensioned in every real example on
+    file, so the array case was never actually tested independent of
+    InOut. No real corpus example of an array Input/Output Parameter
+    exists to confirm the array DefaultData's own internal shape, so this
+    follows the same <Array>/<Element> convention this project's own
+    _array_body_xml already uses for an ordinary array Tag's Data body
+    (real shape, confirmed against export 04), and the same
+    bracketed-list L5K convention _aoi_nested_default_data_xml already
+    uses for a nested-UDT LocalTag's default -- both ASSUMED to generalize
+    here, not independently confirmed for this exact combination."""
+    val = _default_value(m.data_type)
+    radix = "Float" if m.data_type in _FLOAT_TYPES else "Decimal"
+    l5k_vals = ",".join([val] * m.dimension)
+    array_body = _array_body_xml(m.data_type, m.dimension, radix=radix)
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[[{l5k_vals}]]]></DefaultData>'
+        f'<DefaultData Format="Decorated">{array_body}</DefaultData>'
+)
+
+
+def _aoi_nested_default_data_xml(m: "MemberSpec") -> str:
+    """DefaultData for a LocalTag whose type is a nested UDT/AOI -- real
+    shape confirmed (the Aoi_Nested.L5X, LocalTag
+    "InReal_OutReal" of type InReal_OutReal): L5K is a positional value
+    list `[1,val,val,...]` (leading 1 = EnableIn's real captured value, not
+    modeled precisely here since it doesn't affect byte size -- 0 is fine),
+    Decorated wraps a <Structure> the same way _udt_structure_body_xml does."""
+    inner = _udt_structure_body_xml(list(m.nested_members))
+    l5k_vals = ",".join(_default_value(nm.data_type) for nm in m.nested_members)
+    return (
+        f'<DefaultData Format="L5K"><![CDATA[[0,{l5k_vals}]]]></DefaultData>'
+        f'<DefaultData Format="Decorated"><Structure DataType="{m.data_type}">{inner}</Structure></DefaultData>'
+)
+
+
+def _aoi_description_xml(m: "MemberSpec") -> str:
+    """<Description> on an AOI Parameter/LocalTag.: 803 of the
+    2,120 real AOI Parameters/LocalTags on file carry one and no generated
+    file had ever emitted a single one, so the model's implicit "member
+    descriptions are free" assumption was untested. Real shape: first
+    child, CDATA-wrapped, before any DefaultData."""
+    if not m.description:
+        return ""
+    return f"<Description><![CDATA[{m.description}]]></Description>"
+
+
+def _aoi_parameter_xml(m: "MemberSpec", usage: str) -> str:
+    # Real shape confirmed against the AOI templates
+    # (AOI_Definition.L5X, AOI_Definition2.L5X, Aoi_Nested*.L5X, and the
+    # InOut examples aoi_inOut_OneDint.L5X/aoi_inOut_OneString.L5X) --
+    # superseded an earlier guess built off one different real AOI that
+    # turned out wrong on several attributes: Required/Visible are
+    # author-chosen per parameter (both true and false appear across
+    # a real files), not derivable from Usage, so "false"/"false" is
+    # used here for Input/Output as a safe default matching most of the
+    # examples. ExternalAccess is "Read/Write" for Input, "Read Only" for
+    # Output/EnableIn/EnableOut -- confirmed across every one of the reference files,
+    # not "None" (the earlier guess).
+    if m.name in ("EnableIn", "EnableOut"):
+        radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+        return (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{radix_attr} Usage="{usage}" '
+            f'Required="false" Visible="false" ExternalAccess="Read Only"/>'
+)
+
+    if usage == "InOut":
+        # Real shape confirmed (aoi_inOut_OneDint.L5X,
+        # aoi_inOut_OneString.L5X): self-closed, no DefaultData, no
+        # ExternalAccess at all, Required="true" Visible="true"
+        # Constant="false" (not the false/false used for Input/Output).
+        # Radix appears for an atomic type (DINT) but not for STRING --
+        # matches the same "STRING never gets a bare Radix" rule seen
+        # elsewhere in this file. Confirmed separately: an InOut param
+        # carries no storage of its own -- the real instance Tag's
+        # Structure body only ever contains EnableIn/EnableOut, InOut is
+        # completely absent -- so aoi_xml() already excludes inout_params
+        # from the returned storage_members list, unchanged by this fix.
+        #
+        # fix (a real hand-built trial files, after 5
+        # AXIS_CIP_DRIVE-InOut files all failed Build): STRING wasn't the
+        # only non-atomic case -- AXIS_CIP_DRIVE is a predefined
+        # STRUCTURE type too, and a real, Studio-5000-confirmed
+        # parameter for it is bare: `Usage="InOut" Required="true"
+        # Visible="true"/>` -- no Radix, no Constant at all. The STRING
+        # special case generalizes to "no atomic type, no Radix/Constant,"
+        # not "no STRING specifically."
+        # real gap found writing a test for the array-Parameter
+        # Usage rule above: this branch never rendered a Dimensions
+        # attribute at all, even though the project's own real corpus
+        # evidence for an array InOut Parameter (LOG_HMIDisplay
+        # Dimensions="25", BitArray Dimensions="1024") clearly has one --
+        # no generated file had ever actually exercised inout_params=[...]
+        # with dimension set until now, so this was a silent, untested gap,
+        # not a deliberate omission.
+        is_atomic = m.data_type in _ATOMIC_TYPES
+        dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
+        radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"' if is_atomic else ""
+        constant_attr = ' Constant="false"' if is_atomic else ""
+        desc = _aoi_description_xml(m)
+        head = (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}"{dim_attr}{radix_attr} Usage="InOut" '
+            f'Required="true" Visible="true"{constant_attr}'
+)
+        # Real corpus (a real export MsgModuleReset,
+        # Export 04 MESSAGE_Fault): a described InOut Parameter is
+        # NOT self-closing -- it wraps a <Description> child.
+        return f"{head}>{desc}</Parameter>" if desc else f"{head}/>"
+
+    # Real bug fix: <Parameter>/<LocalTag> array size is a
+    # "Dimensions" (PLURAL) attribute in real Rockwell exports -- was
+    # "Dimension" (singular, correct only for a plain UDT <Member>, see
+    # datatypes.py), which self-consistently matched the SAME bug in
+    # parser/aoi.py's own reader. Confirmed against 271 real <Parameter>/
+    # <LocalTag Dimensions="N"> elements in the corpus, zero
+    # counter-examples.
+    #
+    # ROOT CAUSE FOUND ("the issue is BOOL/SINT/INT/DINT
+    # cannot be arrays for Inputs. Arrays require InOut"): the real
+    # `aoi_array_param_def_only.L5X` import failure that OQ-AOIARRAYDIMENSION
+    # spent two prior "fixes" chasing (Required/Visible, then DefaultData
+    # shape) was never a formatting bug at all -- an array-dimensioned
+    # atomic Input/Output Parameter is not a legal Logix construct in the
+    # first place; Studio 5000 only allows array Parameters when
+    # Usage="InOut" (matching this project's own already-confirmed real
+    # corpus evidence, LOG_HMIDisplay/BitArray -- both Dimensions AND
+    # InOut, never independently confirmed for Input/Output because no
+    # real Input/Output array Parameter can exist to confirm it against).
+    # A dimensioned atomic Input/Output Parameter can therefore never be
+    # generated correctly -- hard-fail here instead of emitting invalid XML
+    # that only fails later, in Studio.
+    if m.raw_default_data is not None and not m.dimension:
+        # Predefined structure type -- see MemberSpec.raw_default_data.
+        external_access = "Read Only" if usage == "Output" else "Read/Write"
+        required_attr = "true" if m.required else "false"
+        visible_attr = "true" if (m.required or m.visible) else "false"
+        return (
+            f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}" '
+            f'Required="{required_attr}" Visible="{visible_attr}" '
+            f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{m.raw_default_data}</Parameter>'
+)
+    if m.dimension and usage != "InOut":
+        raise ValueError(
+            f"AOI Parameter {m.name!r}: array-dimensioned (Dimensions={m.dimension}) "
+            f"atomic Parameters must be Usage=\"InOut\" -- Logix does not allow an array "
+            f"Input/Output Parameter (real bug found, the controller "
+            f"testing). Use inout_params=, not input_params=/output_params=, for this member."
+)
+    if m.data_type not in _ATOMIC_TYPES and usage != "InOut":
+        # Same class of rule as the array guard above, found the same way.
+        # An Input/Output Parameter is passed BY VALUE and Logix only
+        # allows an atomic there; anything structured -- a UDT, a nested
+        # AOI, a STRING, an AXIS_* -- has to be InOut, which passes a
+        # reference instead.
+        #
+        # This cost eight files: every daxis_* and mbshape_axis_k3 declared
+        # AXIS_CIP_DRIVE as Usage="Input" and failed conversion with a
+        # generic import-aborted message that named nothing. Raising here
+        # turns a silent bad export into a generator error at build time.
+        raise ValueError(
+            f"AOI Parameter {m.name!r}: {m.data_type!r} is a structure, and a structure "
+            f"Parameter must be Usage=\"InOut\" -- an Input/Output Parameter is passed by "
+            f"value and Logix allows only atomic types there. Use inout_params= for this "
+            f"member."
+)
+    radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+    external_access = "Read Only" if usage == "Output" else "Read/Write"
+    default = _aoi_default_data_xml(m)
+    required_attr = "true" if m.required else "false"
+    visible_attr = "true" if (m.required or m.visible) else "false"
+    return (
+        f'<Parameter Name="{m.name}" TagType="Base" DataType="{m.data_type}" Usage="{usage}"'
+        f'{radix_attr} Required="{required_attr}" Visible="{visible_attr}" '
+        f'ExternalAccess="{external_access}">{_aoi_description_xml(m)}{default}</Parameter>'
+)
+
+
+def _aoi_local_tag_xml(m: "MemberSpec") -> str:
+    # See the matching comment in _aoi_parameter_xml -- same real
+    # Dimension->Dimensions attribute-name fix, same reason.
+    dim_attr = f' Dimensions="{m.dimension}"' if m.dimension else ""
+    if m.raw_default_data is not None:
+        # Predefined structure type -- see MemberSpec.raw_default_data.
+        return (
+            f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} '
+            f'ExternalAccess="None">{_aoi_description_xml(m)}{m.raw_default_data}</LocalTag>'
+)
+    if m.nested_members is not None:
+        # Real shape confirmed: a nested-UDT/nested-AOI LocalTag has no
+        # Radix attribute at all (matches the same UDT-typed-tag rule).
+        default = "" if m.dimension else _aoi_nested_default_data_xml(m)
+        return f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr} ExternalAccess="None">{_aoi_description_xml(m)}{default}</LocalTag>'
+    radix_attr = f' Radix="{"Float" if m.data_type in _FLOAT_TYPES else "Decimal"}"'
+    default = "" if m.dimension else _aoi_default_data_xml(m)
+    return (
+        f'<LocalTag Name="{m.name}" DataType="{m.data_type}"{dim_attr}{radix_attr} '
+        f'ExternalAccess="None">{_aoi_description_xml(m)}{default}</LocalTag>'
+)
+
+
+# Static but well-formed, matches the shape of a real AOI exports
+# closely enough to import (these attributes don't affect byte size, only
+# well-formedness) -- doesn't need to be live/unique per generated file.
+_AOI_CREATED_DATE = "2026-08-20T12:00:00.000Z"
+
+
+def aoi_xml(
+    name: str,
+    input_params: list["MemberSpec"] | None = None,
+    output_params: list["MemberSpec"] | None = None,
+    inout_params: list["MemberSpec"] | None = None,
+    local_tags: list["MemberSpec"] | None = None,
+    logic_rungs_xml: str = "",
+    extra_routines_xml: str = "",
+    description: str | None = None,
+    revision_note: str | None = None,
+    enable_in_false_rungs_xml: str = "",
+    prescan_rungs_xml: str = "",
+) -> tuple[str, list["MemberSpec"]]:
+    """AddOnInstructionDefinition + the "storage member list" for generating
+    an instance tag of it. Real shape confirmed against the
+    own real AOI export templates (AOI_Definition.L5X, AOI_Definition2.L5X,
+    Aoi_Nested*.L5X) after an earlier version of this function (built off a
+    different real AOI) failed Studio 5000 import -- fixed several real
+    discrepancies: AddOnInstructionDefinition needs Vendor/CreatedDate/
+    CreatedBy/EditedDate/EditedBy attributes (the earlier version omitted
+    them entirely); Parameter ExternalAccess is Read/Write (Input) or
+    Read Only (Output), not "None"; a nested-UDT/AOI-typed LocalTag needs a
+    Structure-shaped DefaultData, not the atomic DataValue every Parameter/
+    LocalTag got before (this was silently wrong, not just cosmetically
+    off). AOI-instance tags render exactly like UDT instances (confirmed
+    against 4 real production files, see PROJECT_PLAN.md Phase
+    4c) -- InOut params carry no storage of their own (reference-only), so
+    the returned storage list is EnableIn/EnableOut + input/output params +
+    local tags, usable directly with tag_xml(udt_members=...) the same way
+    a UDT instance is.
+
+    logic_rungs_xml/extra_routines_xml. AOIs had been closed
+    out without any logic ever being put inside one -- a real, corpus-wide
+    gap: every AOI
+    test file this project has ever generated used the hardcoded
+    self-closing `<Routine Name="Logic" Type="RLL"/>` below, meaning $0
+    real internal-logic content was EVER exercised in any AOI calibration
+    file -- the existing aoi_definition formula (base + per_declared_item
+    * count + name-length term) is purely a Parameter/LocalTag
+    declaration-cost model, never tested against real Logic-routine
+    content. logic_rungs_xml (default "", preserves the exact prior
+    self-closing shape byte-for-byte) lets a caller supply real
+    `<Rung>...</Rung>` content for the Logic routine.
+
+    Every AOI has one internal subroutine and can have more (HomeToTorque
+    is the real example) -- confirmed
+    against a real confidential project (not committed, never named
+    beyond this generic description): 8 of 39 real AOI definitions there
+    have 2 internal RLL routines (Logic + a second, e.g. HomeToTorque's
+    "EnableInFalse"), not the 1-routine shape every AOI generator in this
+    project has ever produced. extra_routines_xml (default "") lets a
+    caller append complete additional `<Routine>...</Routine>` blocks
+    (build with rung_xml/a manual RLLContent wrapper) after Logic, inside
+    the same <Routines> container.
+    """
+    input_params = input_params or []
+    output_params = output_params or []
+    inout_params = inout_params or []
+    local_tags = local_tags or []
+
+    enable_in = MemberSpec("EnableIn", "BOOL")
+    enable_out = MemberSpec("EnableOut", "BOOL")
+
+    param_parts = [_aoi_parameter_xml(enable_in, "Input"), _aoi_parameter_xml(enable_out, "Output")]
+    param_parts += [_aoi_parameter_xml(m, "Input") for m in input_params]
+    param_parts += [_aoi_parameter_xml(m, "Output") for m in output_params]
+    param_parts += [_aoi_parameter_xml(m, "InOut") for m in inout_params]
+
+    local_parts = [_aoi_local_tag_xml(m) for m in local_tags]
+    locals_xml = ("<LocalTags>\n" + "\n".join(local_parts) + "\n      </LocalTags>") if local_parts else "<LocalTags/>"
+
+    # AOI-level <Description>/<RevisionNote> and the real EnableInFalse/
+    # Prescan routines. Real shape confirmed against the
+    # corpus: Description then RevisionNote, both CDATA-wrapped, sitting
+    # between the element's attributes and <Parameters>; the extra
+    # routines are emitted in the real alphabetical order EnableInFalse,
+    # Logic, Prescan and their presence flips the matching
+    # ExecuteEnableInFalse/ExecutePrescan attribute to "true" (real:
+    # PTimer, HomeToTorque, fbInput, fbOutput all carry
+    # ExecuteEnableInFalse="true" alongside an EnableInFalse routine;
+    # AOI_CIP_Motion_Fault_Alarm_Log_Reader adds ExecutePrescan="true" and
+    # a Prescan routine). 7 of the 81 real AOI definitions on file have
+    # more than one internal routine; no generated file ever had.
+    header_children = ""
+    if description:
+        header_children += f"<Description><![CDATA[{description}]]></Description>\n      "
+    if revision_note:
+        header_children += f"<RevisionNote><![CDATA[{revision_note}]]></RevisionNote>\n      "
+    execute_eif = "true" if enable_in_false_rungs_xml else "false"
+    execute_prescan = "true" if prescan_rungs_xml else "false"
+    eif_routine_xml = (
+        f'        <Routine Name="EnableInFalse" Type="RLL"><RLLContent>{enable_in_false_rungs_xml}</RLLContent></Routine>\n'
+        if enable_in_false_rungs_xml else ""
+)
+    prescan_routine_xml = (
+        f'        <Routine Name="Prescan" Type="RLL"><RLLContent>{prescan_rungs_xml}</RLLContent></Routine>\n'
+        if prescan_rungs_xml else ""
+)
+
+    logic_routine_xml = (
+        f'        <Routine Name="Logic" Type="RLL"><RLLContent>{logic_rungs_xml}</RLLContent></Routine>\n'
+        if logic_rungs_xml else
+        '        <Routine Name="Logic" Type="RLL"/>\n'
+)
+    extra_routines_block = f"{extra_routines_xml}\n" if extra_routines_xml else ""
+
+    definition = (
+        f'    <AddOnInstructionDefinition Name="{name}" Revision="1.0" Vendor="LogixMemoryMap" '
+        f'ExecutePrescan="{execute_prescan}" ExecutePostscan="false" ExecuteEnableInFalse="{execute_eif}" '
+        f'CreatedDate="{_AOI_CREATED_DATE}" CreatedBy="Generator" EditedDate="{_AOI_CREATED_DATE}" '
+        f'EditedBy="Generator" SoftwareRevision="v35.05">\n'
+        f'      {header_children}<Parameters>\n' + "\n".join(param_parts) + "\n      </Parameters>\n"
+        f'      {locals_xml}\n'
+        f'      <Routines>\n'
+        f'{eif_routine_xml}'
+        f'{logic_routine_xml}'
+        f'{prescan_routine_xml}'
+        f'{extra_routines_block}'
+        f'      </Routines>\n'
+        f"    </AddOnInstructionDefinition>"
+)
+    storage_members = [enable_in, enable_out, *input_params, *output_params, *local_tags]
+    return definition, storage_members
+
+
+def program_xml(name: str, tags_xml: str = "", rungs_xml_body: str = "") -> str:
+    """A second/extra <Program> block, for build_l5x(extra_programs_xml=...).
+    Same MainRoutine/RLL shape as the wrapper's own MainProgram. OQ-XPROGREF
+    --: add it to the next batch (cross-program tag
+    reference). Real Logix has no direct cross-program addressing syntax in
+    logic (confirmed: no such pattern found anywhere in the real corpus,
+    despite 47 real files including some with Public program tags) -- the
+    real mechanism described earlier is a Controller-scoped global
+    tag with a same-named Local alias in each program that needs it, which
+    is what this builder is for."""
+    validate_logix_name(name, "program")
+    validate_logix_name(name, "AOI")
+    rungs = rungs_xml_body if rungs_xml_body.strip() else (
+        '<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>'
+)
+    return (
+        f'<Program Name="{name}" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">\n'
+        f"<Tags>\n{tags_xml}\n</Tags>\n"
+        f"<Routines>\n<Routine Name=\"MainRoutine\" Type=\"RLL\">\n<RLLContent>\n{rungs}\n</RLLContent>\n</Routine>\n</Routines>\n"
+        f"</Program>"
+)
+
+
+def rung_xml(number: int, instructions: str, comment: str | None = None) -> str:
+    # Real exports always wrap rung Text in CDATA (caught while
+    # building the instruction sweep -- this was missing here, harmless so
+    # far only because no rung text generated to date needed a literal '<',
+    # but CMP's real syntax does e.g. CMP(A>B), and a future '<' would have
+    # produced invalid XML without this).
+    comment_xml = f"<Comment><![CDATA[{comment}]]></Comment>\n                " if comment else ""
+    return (
+        f'              <Rung Number="{number}" Type="N">\n'
+        f"                {comment_xml}<Text><![CDATA[{instructions}]]></Text>\n"
+        f"              </Rung>"
+)
+
+
+def rungs_xml(count: int, instructions_fn, comment_fn=None) -> str:
+    """instructions_fn(i) -> instruction text for rung i; comment_fn(i) -> comment
+    text or None. Both take the rung index so callers can vary per rung if needed."""
+    rungs = []
+    for i in range(count):
+        comment = comment_fn(i) if comment_fn else None
+        rungs.append(rung_xml(i, instructions_fn(i), comment))
+    return "\n".join(rungs)
+
+
+def timer_tag_xml(name: str, preset: int = 1000) -> str:
+    """Real shape confirmed (a real export,
+    IncisorOtfdBeltJogDwell): a TIMER tag, like STRING, uses the dual
+    Format="L5K"/Format="Decorated" pair at the top level -- NOT the single
+    Format="Decorated" every UDT/atomic tag gets. 5 real members (PRE/ACC
+    DINT, EN/TT/DN BOOL) match this project's already-confirmed 12-byte
+    TIMER constant (docs/MEMORY_MODEL.md)."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[0,{preset},0]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="TIMER">'
+        f'<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="{preset}" />'
+        f'<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="EN" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="TT" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>\n'
+        f"      </Tag>"
+)
+
+
+def counter_tag_xml(name: str, preset: int = 100) -> str:
+    """Real shape confirmed (a real export,
+    LL_BlowoffCTR_PkgIFLL): same dual-format shape as TIMER, 7 real members
+    (PRE/ACC DINT, CU/CD/DN/OV/UN BOOL)."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[0,{preset},0]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="COUNTER">'
+        f'<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="{preset}" />'
+        f'<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" />'
+        f'<DataValueMember Name="CU" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="CD" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="OV" DataType="BOOL" Value="0" />'
+        f'<DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>\n'
+        f"      </Tag>"
+)
+
+
+def control_tag_xml(name: str, length: int = 10, position: int = 9) -> str:
+    """CONTROL tag -- real shape confirmed
+    (a real export, srtControl): same
+    dual-format shape as TIMER/COUNTER, 10 real members (LEN/POS DINT,
+    EN/EU/DN/EM/ER/UL/IN/FD BOOL) -- matches the already-confirmed 12-byte
+    CONTROL predefined-structure constant. Needed for the file/array
+    instructions (FFL/FFU/BSL/BSR/SRT/AVE/FAL/FSC) that all take a CONTROL
+    tag as one of their operands, per real corpus examples."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="CONTROL" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[-1610612736,{length},{position}]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="CONTROL">'
+        f'<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="{length}"/>'
+        f'<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="{position}"/>'
+        f'<DataValueMember Name="EN" DataType="BOOL" Value="1"/>'
+        f'<DataValueMember Name="EU" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="1"/>'
+        f'<DataValueMember Name="EM" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="ER" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="UL" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="IN" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="FD" DataType="BOOL" Value="0"/>'
+        f'</Structure></Data>\n'
+        f"      </Tag>"
+)
+
+
+def message_tag_xml(name: str, local_element: str, destination_tag: str) -> str:
+    """MESSAGE tag -- real shape confirmed
+    (a real export,
+    MESSAGE_Alarms): a single self-closed <MessageParameters> element, no
+    Structure/DataValueMember body at all (much simpler than TIMER/COUNTER/
+    CONTROL) -- a "CIP Generic" get-attribute-list message, real attribute
+    set copied verbatim except LocalElement/DestinationTag, which point at
+    plain tags this generator declares itself rather than the real file's
+    own array tags. MESSAGE has no predefined_structures entry in
+    memory_model.yaml (completely unmodeled byte size) -- callers must use
+    write_sample_unmodeled, not write_sample, for any file containing this."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="MESSAGE" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="Message">\n'
+        f'          <MessageParameters MessageType="CIP Generic" RequestedLength="4" ConnectedFlag="2" '
+        f'ConnectionPath="THIS" CommTypeCode="0" ServiceCode="16#0003" ObjectType="16#00b1" '
+        f'TargetObject="2" AttributeNumber="16#0000" LocalIndex="0" LocalElement="{local_element}" '
+        f'DestinationTag="{destination_tag}" LargePacketUsage="false"/>\n'
+        f'        </Data>\n'
+        f"      </Tag>"
+)
+
+
+# Real CAM element rows -- distinct from CAM_PROFILE (see
+# _CAM_PROFILE_L5K_ROWS above). Confirmed
+# (a real export, NewCI2Cam): a
+# CAM array tag's Decorated shape is fully visible (no hidden fields the
+# way CAM_PROFILE has) -- just Master(REAL)/Slave(REAL)/SegmentType(DINT)
+# per element, matching every L5K row exactly. Genuinely unmodeled in
+# memory_model.yaml still (no real Capacity data captured yet) -- see
+# docs/OPEN_QUESTIONS.md for the new open question this creates.
+def cam_tag_xml(name: str, count: int) -> str:
+    l5k_rows = ["[0.0,0.0,1]"] + ["[200.0,100.0,0]"] * (count - 1) if count else []
+    l5k_body = "[" + ",".join(l5k_rows) + "]"
+    elements = []
+    for i in range(count):
+        master, slave, seg = ("0.0", "0.0", "1") if i == 0 else ("200.0", "100.0", "0")
+        elements.append(
+            f'<Element Index="[{i}]"><Structure DataType="CAM">'
+            f'<DataValueMember Name="Master" DataType="REAL" Radix="Float" Value="{master}"/>'
+            f'<DataValueMember Name="Slave" DataType="REAL" Radix="Float" Value="{slave}"/>'
+            f'<DataValueMember Name="SegmentType" DataType="DINT" Radix="Decimal" Value="{seg}"/>'
+            f"</Structure></Element>"
+)
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="CAM" Dimensions="{count}" '
+        f'Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[{l5k_body}]]></Data>\n'
+        f'        <Data Format="Decorated"><Array DataType="CAM" Dimensions="{count}">'
+        + "".join(elements) +
+        f"</Array></Data>\n"
+        f"      </Tag>"
+)
+
+
+def program_tag_xml(name: str, data_type: str, usage: str | None = None) -> str:
+    """Program-scoped (Program/Tags, not Controller/Tags) atomic tag. Real
+    shape confirmed (a real export,
+    PC366_BitPos/DLugNum): a Program-scoped tag -- Local (no Usage attribute)
+    or Public (Usage="Public") alike -- uses the dual Format="L5K"/
+    Format="Decorated" pair, unlike a Controller-scoped atomic tag which
+    gets Decorated only (see tag_xml). The dual format is a program-scope
+    convention, not something specific to Usage="Public" -- confirmed by
+    checking a same-file Local-scope tag (DLugNum, no Usage attribute) shows
+    the identical dual-Data shape. OQ-TAGSCOPE."""
+    validate_logix_name(name, "program tag")
+    usage_attr = f' Usage="{usage}"' if usage else ""
+    val = _default_value(data_type)
+    radix = "Float" if data_type in _FLOAT_TYPES else "Decimal"
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="{data_type}" Radix="{radix}"{usage_attr} '
+        f'Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[{val}]]></Data>\n'
+        f'        <Data Format="Decorated">{_data_value_xml(data_type, radix)}</Data>\n'
+        f"      </Tag>"
+)
+
+
+def alias_tag_xml(name: str, alias_for: str, radix: str = "Decimal") -> str:
+    """Alias tag -- real shape confirmed (multiple real corpus
+    files, e.g. a real export): self-
+    closed, no Data element at all, just AliasFor pointing at the real
+    target tag's path. OQ-ALIASSIZE."""
+    validate_logix_name(name, "alias tag")
+    return f'      <Tag Name="{name}" TagType="Alias" Radix="{radix}" AliasFor="{alias_for}" ExternalAccess="Read/Write"/>'
+
+
+def motion_instruction_tag_xml(name: str) -> str:
+    """MOTION_INSTRUCTION tag -- real shape confirmed
+    (a real export, AxisMotionControlMAG,
+    a real MAG/MAH-style motion instruction backing tag). Same dual
+    Format="L5K"/Format="Decorated" convention as TIMER/COUNTER. Unlike
+    those, this one's 16 named Decorated members (FLAGS DINT, 10 status
+    BOOLs, ERR INT, STATUS/STATE/EXERR SINT, SEGMENT DINT) are NOT
+    necessarily independent storage -- the BOOLs almost certainly alias
+    into bits of FLAGS the same way TIMER's EN/TT/DN do, per real Rockwell
+    convention. Treat MOTION_INSTRUCTION as an opaque predefined-structure
+    constant (like AXIS_CIP_DRIVE/TIMER/COUNTER) once real Capacity data
+    comes in -- don't naively sum member byte sizes. OQ-PREDEFINED."""
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="MOTION_INSTRUCTION" Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[[0,0,0,0,0,0,0,0,0]]]></Data>\n'
+        f'        <Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">'
+        f'<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="EN" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="DN" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="ER" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="PC" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="IP" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="AC" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="TrackingMaster" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="CalculatedDataAvailable" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'</Structure></Data>\n'
+        f"      </Tag>"
+)
+
+
+# Real CAM_PROFILE element rows, captured verbatim from
+# a real export (HoldCamProfile, a real
+# 20-element array). Deliberately NOT synthesized: the visible Decorated
+# shape exposes only one named member (Status, DINT) per element, but the
+# real L5K row for each element carries 14 numeric fields -- confirming
+# the "voodoo... hides stuff not visible in the tag browser".
+# There's no way to reconstruct the meaning of the other 13 fields from the
+# L5X alone, so rather than invent plausible-looking values (risking a
+# subtly-invalid encoding that fails import), every generated CAM_PROFILE
+# element reuses one of these 20 real rows cyclically. CAM_PROFILE's real
+# per-element byte cost can only come from empirical Capacity measurement,
+# never from counting visible structure members. OQ-PREDEFINED.
+_CAM_PROFILE_L5K_ROWS = [
+    "[2,0,0,0,0,1,0,0,1072693248,0,-1080956027,515396076,1059086925,-755914243]",
+    "[2,1078198272,0,1077149696,0,1,0,0,1070176665,-1717986918,-1083933983,1202590845,1055091462,-418679770]",
+    "[2,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0]",
+    "[0,1079574528,0,1077477376,0,1,0,0,0,0,0,0,0,0]",
+]
+_CAM_PROFILE_STATUS_VALUES = ["2", "2", "2", "0"]
+
+
+def cam_profile_tag_xml(name: str, count: int) -> str:
+    """Array-of-CAM_PROFILE tag, `count` elements, built from real captured
+    rows cycled to fill any size -- see _CAM_PROFILE_L5K_ROWS docstring."""
+    l5k_rows = [_CAM_PROFILE_L5K_ROWS[i % len(_CAM_PROFILE_L5K_ROWS)] for i in range(count)]
+    l5k_body = "[" + ",".join(l5k_rows) + "]"
+    elements = []
+    for i in range(count):
+        status = _CAM_PROFILE_STATUS_VALUES[i % len(_CAM_PROFILE_STATUS_VALUES)]
+        elements.append(
+            f'<Element Index="[{i}]"><Structure DataType="CAM_PROFILE">'
+            f'<DataValueMember Name="Status" DataType="DINT" Radix="Decimal" Value="{status}"/>'
+            f"</Structure></Element>"
+)
+    return (
+        f'      <Tag Name="{name}" TagType="Base" DataType="CAM_PROFILE" Dimensions="{count}" '
+        f'Constant="false" ExternalAccess="Read/Write">\n'
+        f'        <Data Format="L5K"><![CDATA[{l5k_body}]]></Data>\n'
+        f'        <Data Format="Decorated"><Array DataType="CAM_PROFILE" Dimensions="{count}">'
+        + "".join(elements) +
+        f"</Array></Data>\n"
+        f"      </Tag>"
+)
+
+
+# ---------------------------------------------------------------------------
+# I/O Module builders (OQ series pending, docs/IO_MODULES.md). Three real,
+# structurally distinct patterns confirmed against the corpus --
+# module sizing is NOT one-size-fits-all, exactly the caution ("same
+# catalog Phoenix rack with 2 input cards or 30... be careful looking at the
+# data sizes in the l5x module properties"):
+#
+#   1. Catalog-fixed backplane module (e.g. 1756-IB16): its own
+#      <Communications><Connections><Connection><InputTag> with a real
+#      AOP-defined Structure (AB:1756_DI:I:0 etc) -- size is fully
+#      determined by CatalogNumber, same every time.
+#   2. Point I/O rack member behind a 1734-AENT/AENTR adapter: NO
+#      independent connection at all -- <RackConnection><InAliasTag/></
+#      RackConnection>, rolled into the adapter's own combined rack-image
+#      connection instead. Sizing has to walk adapter+members together,
+#      not module-by-module.
+#   3. Generic/no-EDS Ethernet module (CatalogNumber="ETHERNET-MODULE" --
+#      real corpus examples include Balluff/IFM IO-Link masters and
+#      Phoenix bus couplers, confirmed): size is NOT
+#      catalog-derived at all, it's the explicit PrimCxnInputSize/
+#      PrimCxnOutputSize attributes on <Communications>, chosen per-
+#      instance when the module was added in Studio 5000 -- the same
+#      catalog number can and does appear with wildly different sizes.
+#      Confirmed the Structure DataType name literally encodes the byte
+#      count (AB:ETHERNET_MODULE_SINT_{n}Bytes:{I,O}:0).
+# ---------------------------------------------------------------------------
+
+
+def module_1756_digital_input_xml(name: str, slot: int = 1, parent_port_id: int = 1) -> str:
+    """Real shape confirmed (samples/local/L5X_Samples/
+    a real export, DC_Input): 1756-IB16, catalog-fixed AOP
+    structure, ConfigSize=24 (10 named filter/COS members), Input
+    Connection with a Fault+Data DINT pair (8 bytes). Pattern 1 above."""
+    return (
+        f'<Module Name="{name}" CatalogNumber="1756-IB16" Vendor="1" ProductType="7" ProductCode="11" '
+        f'Major="2" Minor="5" ParentModule="Local" ParentModPortId="{parent_port_id}" Inhibited="false" MajorFault="false">\n'
+        f'<EKey State="CompatibleModule"/>\n'
+        f'<Ports><Port Id="1" Address="{slot}" Type="ICP" Upstream="true"/></Ports>\n'
+        f'<Communications CommMethod="536870913">\n'
+        f'<ConfigTag ConfigSize="24" ExternalAccess="Read/Write">\n'
+        f'<Data Format="L5K"><![CDATA[[28,16,1,0,0,0,1,1,1,1,0,0,0,0,65535,65535]]]></Data>\n'
+        f'<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0">'
+        f'<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/>'
+        f'<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>'
+        f'<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="1"/>'
+        f'<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/>'
+        f'<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="1"/>'
+        f'<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/>'
+        f'<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>'
+        f'<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>'
+        f'</Structure></Data>\n'
+        f'</ConfigTag>\n'
+        f'<Connections><Connection Name="StandardInput" RPI="10000" Type="Input" EventID="0" '
+        f'ProgrammaticallySendEventTrigger="false">\n'
+        f'<InputTag ExternalAccess="Read/Write"><Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0">'
+        f'<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>'
+        f'<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>'
+        f'</Structure></Data></InputTag>\n'
+        f'</Connection></Connections>\n'
+        f'</Communications>\n'
+        f"</Module>"
+)
+
+
+def module_generic_ethernet_xml(name: str, ip_address: str, input_bytes: int, output_bytes: int) -> str:
+    """Real shape confirmed (samples/local/L5X_Samples/
+    a real export, IFM_LugLoader1 -- a Balluff/IFM IO-Link
+    master added as a generic module, no vendor-specific EDS). Pattern 3
+    above: CatalogNumber="ETHERNET-MODULE" is shared by every such device
+    regardless of what it physically is -- real per-instance size comes
+    ONLY from PrimCxnInputSize/PrimCxnOutputSize, and the Structure
+    DataType name literally encodes the configured byte count
+    (AB:ETHERNET_MODULE_SINT_{n}Bytes:{I,O}:0). Exactly the flagged case:
+    same catalog, real size varies per instance -- this builder
+    exists specifically to generate several same-catalog files at
+    different input_bytes/output_bytes and prove the sizing engine can't
+    use a catalog lookup table for this class of module."""
+    def _sint_array(n: int) -> str:
+        return "".join(f'<Element Index="[{i}]" Value="0"/>' for i in range(n))
+
+    return (
+        f'<Module Name="{name}" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" '
+        f'Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">\n'
+        f'<EKey State="Disabled"/>\n'
+        f'<Ports><Port Id="2" Address="{ip_address}" Type="Ethernet" Upstream="true"/></Ports>\n'
+        f'<Communications CommMethod="536870916" PrimCxnInputSize="{input_bytes}" PrimCxnOutputSize="{output_bytes}">\n'
+        f'<ConfigTag ConfigSize="0" ExternalAccess="Read/Write">\n'
+        f'<Data Format="L5K"><![CDATA[[4,1,[0,0]]]]></Data>\n'
+        f'<Data Format="Decorated"><Structure DataType="AB:ETHERNET_MODULE:C:0">'
+        f'<ArrayMember Name="Data" DataType="SINT" Dimensions="0" Radix="Hex"></ArrayMember>'
+        f'</Structure></Data>\n'
+        f'</ConfigTag>\n'
+        f'<Connections><Connection Name="Standard" RPI="20000" Type="Input" EventID="0" '
+        f'ProgrammaticallySendEventTrigger="false" Unicast="true">\n'
+        f'<InputTag ExternalAccess="Read/Write"><Data Format="Decorated">'
+        f'<Structure DataType="AB:ETHERNET_MODULE_SINT_{input_bytes}Bytes:I:0">'
+        f'<ArrayMember Name="Data" DataType="SINT" Dimensions="{input_bytes}" Radix="Decimal">'
+        f'{_sint_array(input_bytes)}</ArrayMember></Structure></Data></InputTag>\n'
+        f'<Data Format="L5K"><![CDATA[[[0,{output_bytes},0,0,0,0,0,0]]]]></Data>\n'
+        f'<Data Format="Decorated"><Structure DataType="AB:ETHERNET_MODULE_SINT_{output_bytes}Bytes:O:0">'
+        f'<ArrayMember Name="Data" DataType="SINT" Dimensions="{output_bytes}" Radix="Decimal">'
+        f'{_sint_array(output_bytes)}</ArrayMember></Structure></Data>\n'
+        f'</Connection></Connections>\n'
+        f'</Communications>\n'
+        f"</Module>"
+)
+
+
+
+def task_xml(task_name: str, program_name: str, task_type: str = "CONTINUOUS",
+             priority: int = 10, watchdog: int = 500,
+             event_trigger: str | None = None, event_tag: str | None = None) -> str:
+    validate_logix_name(task_name, "task")
+    validate_logix_name(program_name, "program")
+    """A second/extra <Task> block (with its own <ScheduledPrograms>), for
+    build_l5x(extra_tasks_xml=...). Real shape matches the wrapper's own
+    MainTask element exactly, just parametrized. Only CONTINUOUS Type is
+    used by callers today -- real Logix only allows ONE Continuous task per
+    controller, so a second Task under test must be Type="Periodic" (with a
+    Rate attribute) to actually import; callers pass task_type explicitly
+    for that reason rather than defaulting silently.
+
+    Type="EVENT" (event_trigger set) mirrors the real corpus shape found in
+    a real export/a real export: a Rate attribute
+    (same as Periodic), DisableUpdateOutputs="true" (real EVENT tasks always
+    carry this, unlike Periodic/Continuous's "false"), and a child
+    <EventInfo EventTrigger="..."/> element -- either "EVENT Instruction
+    Only" (no EventTag) or "Axis Watch" (EventTag pointing at a real
+    AXIS_CIP_DRIVE/AXIS_VIRTUAL tag, confirmed real in the export 21 corpus)."""
+    # Case-normalised BEFORE the membership test.: a caller passed
+    # task_type="Periodic" and this test, being case-sensitive, matched neither
+    # branch -- so the Task went out with no Rate at all AND a mixed-case Type.
+    # Studio rejected all five identnamelen_task_* files with "Required property
+    # 'Rate' was missing". Real exports are always upper-case.
+    task_type = (task_type or "").upper()
+    if task_type not in ("CONTINUOUS", "PERIODIC", "EVENT"):
+        raise ValueError(
+            f"task_type {task_type!r} is not one of CONTINUOUS/PERIODIC/EVENT"
+)
+    rate_attr = ' Rate="10"' if task_type in ("PERIODIC", "EVENT") else ""
+    disable_outputs = "true" if task_type == "EVENT" else "false"
+    event_tag_attr = f' EventTag="{event_tag}"' if event_tag else ""
+    event_info_xml = (
+        f'<EventInfo EventTrigger="{event_trigger}"{event_tag_attr} EnableTimeout="false"/>\n'
+        if event_trigger else ""
+)
+    return (
+        f'<Task Name="{task_name}" Type="{task_type}"{rate_attr} Priority="{priority}" '
+        f'Watchdog="{watchdog}" DisableUpdateOutputs="{disable_outputs}" InhibitTask="false">\n'
+        f'{event_info_xml}'
+        f'<ScheduledPrograms>\n<ScheduledProgram Name="{program_name}"/>\n</ScheduledPrograms>\n'
+        f"</Task>"
+)

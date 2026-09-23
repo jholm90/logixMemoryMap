@@ -1,0 +1,927 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="EtherNetIP_Demo" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:24:35 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="EtherNetIP_Demo" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:24:17 2018" LastModifiedDate="Fri Jan 19 07:24:18 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="ENet_Scanner" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="5" Type="ICP" Upstream="true"/>
+<Port Id="2" Address="10.91.97.73" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+<ExtendedProperties><public><ConfigID>4325481</ConfigID><Vendor>Allen-Bradley</Vendor><CatNum>1756-ENBT</CatNum></public></ExtendedProperties>
+</Module>
+<Module Name="PF40_Demo" CatalogNumber="ETHERNET-MODULE" Vendor="1" ProductType="0" ProductCode="18" Major="1" Minor="1" ParentModule="ENet_Scanner" ParentModPortId="2" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="2" Address="10.91.97.74" Type="Ethernet" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870915" PrimCxnInputSize="8" PrimCxnOutputSize="4">
+<ConfigTag ConfigSize="0">
+<Data>04 00 00 00 06 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:ETHERNET_MODULE:C:0">
+<ArrayMember Name="Data" DataType="SINT" Dimensions="400" Radix="Hex">
+<Element Index="[0]" Value="16#00"/>
+<Element Index="[1]" Value="16#00"/>
+<Element Index="[2]" Value="16#00"/>
+<Element Index="[3]" Value="16#00"/>
+<Element Index="[4]" Value="16#00"/>
+<Element Index="[5]" Value="16#00"/>
+<Element Index="[6]" Value="16#00"/>
+<Element Index="[7]" Value="16#00"/>
+<Element Index="[8]" Value="16#00"/>
+<Element Index="[9]" Value="16#00"/>
+<Element Index="[10]" Value="16#00"/>
+<Element Index="[11]" Value="16#00"/>
+<Element Index="[12]" Value="16#00"/>
+<Element Index="[13]" Value="16#00"/>
+<Element Index="[14]" Value="16#00"/>
+<Element Index="[15]" Value="16#00"/>
+<Element Index="[16]" Value="16#00"/>
+<Element Index="[17]" Value="16#00"/>
+<Element Index="[18]" Value="16#00"/>
+<Element Index="[19]" Value="16#00"/>
+<Element Index="[20]" Value="16#00"/>
+<Element Index="[21]" Value="16#00"/>
+<Element Index="[22]" Value="16#00"/>
+<Element Index="[23]" Value="16#00"/>
+<Element Index="[24]" Value="16#00"/>
+<Element Index="[25]" Value="16#00"/>
+<Element Index="[26]" Value="16#00"/>
+<Element Index="[27]" Value="16#00"/>
+<Element Index="[28]" Value="16#00"/>
+<Element Index="[29]" Value="16#00"/>
+<Element Index="[30]" Value="16#00"/>
+<Element Index="[31]" Value="16#00"/>
+<Element Index="[32]" Value="16#00"/>
+<Element Index="[33]" Value="16#00"/>
+<Element Index="[34]" Value="16#00"/>
+<Element Index="[35]" Value="16#00"/>
+<Element Index="[36]" Value="16#00"/>
+<Element Index="[37]" Value="16#00"/>
+<Element Index="[38]" Value="16#00"/>
+<Element Index="[39]" Value="16#00"/>
+<Element Index="[40]" Value="16#00"/>
+<Element Index="[41]" Value="16#00"/>
+<Element Index="[42]" Value="16#00"/>
+<Element Index="[43]" Value="16#00"/>
+<Element Index="[44]" Value="16#00"/>
+<Element Index="[45]" Value="16#00"/>
+<Element Index="[46]" Value="16#00"/>
+<Element Index="[47]" Value="16#00"/>
+<Element Index="[48]" Value="16#00"/>
+<Element Index="[49]" Value="16#00"/>
+<Element Index="[50]" Value="16#00"/>
+<Element Index="[51]" Value="16#00"/>
+<Element Index="[52]" Value="16#00"/>
+<Element Index="[53]" Value="16#00"/>
+<Element Index="[54]" Value="16#00"/>
+<Element Index="[55]" Value="16#00"/>
+<Element Index="[56]" Value="16#00"/>
+<Element Index="[57]" Value="16#00"/>
+<Element Index="[58]" Value="16#00"/>
+<Element Index="[59]" Value="16#00"/>
+<Element Index="[60]" Value="16#00"/>
+<Element Index="[61]" Value="16#00"/>
+<Element Index="[62]" Value="16#00"/>
+<Element Index="[63]" Value="16#00"/>
+<Element Index="[64]" Value="16#00"/>
+<Element Index="[65]" Value="16#00"/>
+<Element Index="[66]" Value="16#00"/>
+<Element Index="[67]" Value="16#00"/>
+<Element Index="[68]" Value="16#00"/>
+<Element Index="[69]" Value="16#00"/>
+<Element Index="[70]" Value="16#00"/>
+<Element Index="[71]" Value="16#00"/>
+<Element Index="[72]" Value="16#00"/>
+<Element Index="[73]" Value="16#00"/>
+<Element Index="[74]" Value="16#00"/>
+<Element Index="[75]" Value="16#00"/>
+<Element Index="[76]" Value="16#00"/>
+<Element Index="[77]" Value="16#00"/>
+<Element Index="[78]" Value="16#00"/>
+<Element Index="[79]" Value="16#00"/>
+<Element Index="[80]" Value="16#00"/>
+<Element Index="[81]" Value="16#00"/>
+<Element Index="[82]" Value="16#00"/>
+<Element Index="[83]" Value="16#00"/>
+<Element Index="[84]" Value="16#00"/>
+<Element Index="[85]" Value="16#00"/>
+<Element Index="[86]" Value="16#00"/>
+<Element Index="[87]" Value="16#00"/>
+<Element Index="[88]" Value="16#00"/>
+<Element Index="[89]" Value="16#00"/>
+<Element Index="[90]" Value="16#00"/>
+<Element Index="[91]" Value="16#00"/>
+<Element Index="[92]" Value="16#00"/>
+<Element Index="[93]" Value="16#00"/>
+<Element Index="[94]" Value="16#00"/>
+<Element Index="[95]" Value="16#00"/>
+<Element Index="[96]" Value="16#00"/>
+<Element Index="[97]" Value="16#00"/>
+<Element Index="[98]" Value="16#00"/>
+<Element Index="[99]" Value="16#00"/>
+<Element Index="[100]" Value="16#00"/>
+<Element Index="[101]" Value="16#00"/>
+<Element Index="[102]" Value="16#00"/>
+<Element Index="[103]" Value="16#00"/>
+<Element Index="[104]" Value="16#00"/>
+<Element Index="[105]" Value="16#00"/>
+<Element Index="[106]" Value="16#00"/>
+<Element Index="[107]" Value="16#00"/>
+<Element Index="[108]" Value="16#00"/>
+<Element Index="[109]" Value="16#00"/>
+<Element Index="[110]" Value="16#00"/>
+<Element Index="[111]" Value="16#00"/>
+<Element Index="[112]" Value="16#00"/>
+<Element Index="[113]" Value="16#00"/>
+<Element Index="[114]" Value="16#00"/>
+<Element Index="[115]" Value="16#00"/>
+<Element Index="[116]" Value="16#00"/>
+<Element Index="[117]" Value="16#00"/>
+<Element Index="[118]" Value="16#00"/>
+<Element Index="[119]" Value="16#00"/>
+<Element Index="[120]" Value="16#00"/>
+<Element Index="[121]" Value="16#00"/>
+<Element Index="[122]" Value="16#00"/>
+<Element Index="[123]" Value="16#00"/>
+<Element Index="[124]" Value="16#00"/>
+<Element Index="[125]" Value="16#00"/>
+<Element Index="[126]" Value="16#00"/>
+<Element Index="[127]" Value="16#00"/>
+<Element Index="[128]" Value="16#00"/>
+<Element Index="[129]" Value="16#00"/>
+<Element Index="[130]" Value="16#00"/>
+<Element Index="[131]" Value="16#00"/>
+<Element Index="[132]" Value="16#00"/>
+<Element Index="[133]" Value="16#00"/>
+<Element Index="[134]" Value="16#00"/>
+<Element Index="[135]" Value="16#00"/>
+<Element Index="[136]" Value="16#00"/>
+<Element Index="[137]" Value="16#00"/>
+<Element Index="[138]" Value="16#00"/>
+<Element Index="[139]" Value="16#00"/>
+<Element Index="[140]" Value="16#00"/>
+<Element Index="[141]" Value="16#00"/>
+<Element Index="[142]" Value="16#00"/>
+<Element Index="[143]" Value="16#00"/>
+<Element Index="[144]" Value="16#00"/>
+<Element Index="[145]" Value="16#00"/>
+<Element Index="[146]" Value="16#00"/>
+<Element Index="[147]" Value="16#00"/>
+<Element Index="[148]" Value="16#00"/>
+<Element Index="[149]" Value="16#00"/>
+<Element Index="[150]" Value="16#00"/>
+<Element Index="[151]" Value="16#00"/>
+<Element Index="[152]" Value="16#00"/>
+<Element Index="[153]" Value="16#00"/>
+<Element Index="[154]" Value="16#00"/>
+<Element Index="[155]" Value="16#00"/>
+<Element Index="[156]" Value="16#00"/>
+<Element Index="[157]" Value="16#00"/>
+<Element Index="[158]" Value="16#00"/>
+<Element Index="[159]" Value="16#00"/>
+<Element Index="[160]" Value="16#00"/>
+<Element Index="[161]" Value="16#00"/>
+<Element Index="[162]" Value="16#00"/>
+<Element Index="[163]" Value="16#00"/>
+<Element Index="[164]" Value="16#00"/>
+<Element Index="[165]" Value="16#00"/>
+<Element Index="[166]" Value="16#00"/>
+<Element Index="[167]" Value="16#00"/>
+<Element Index="[168]" Value="16#00"/>
+<Element Index="[169]" Value="16#00"/>
+<Element Index="[170]" Value="16#00"/>
+<Element Index="[171]" Value="16#00"/>
+<Element Index="[172]" Value="16#00"/>
+<Element Index="[173]" Value="16#00"/>
+<Element Index="[174]" Value="16#00"/>
+<Element Index="[175]" Value="16#00"/>
+<Element Index="[176]" Value="16#00"/>
+<Element Index="[177]" Value="16#00"/>
+<Element Index="[178]" Value="16#00"/>
+<Element Index="[179]" Value="16#00"/>
+<Element Index="[180]" Value="16#00"/>
+<Element Index="[181]" Value="16#00"/>
+<Element Index="[182]" Value="16#00"/>
+<Element Index="[183]" Value="16#00"/>
+<Element Index="[184]" Value="16#00"/>
+<Element Index="[185]" Value="16#00"/>
+<Element Index="[186]" Value="16#00"/>
+<Element Index="[187]" Value="16#00"/>
+<Element Index="[188]" Value="16#00"/>
+<Element Index="[189]" Value="16#00"/>
+<Element Index="[190]" Value="16#00"/>
+<Element Index="[191]" Value="16#00"/>
+<Element Index="[192]" Value="16#00"/>
+<Element Index="[193]" Value="16#00"/>
+<Element Index="[194]" Value="16#00"/>
+<Element Index="[195]" Value="16#00"/>
+<Element Index="[196]" Value="16#00"/>
+<Element Index="[197]" Value="16#00"/>
+<Element Index="[198]" Value="16#00"/>
+<Element Index="[199]" Value="16#00"/>
+<Element Index="[200]" Value="16#00"/>
+<Element Index="[201]" Value="16#00"/>
+<Element Index="[202]" Value="16#00"/>
+<Element Index="[203]" Value="16#00"/>
+<Element Index="[204]" Value="16#00"/>
+<Element Index="[205]" Value="16#00"/>
+<Element Index="[206]" Value="16#00"/>
+<Element Index="[207]" Value="16#00"/>
+<Element Index="[208]" Value="16#00"/>
+<Element Index="[209]" Value="16#00"/>
+<Element Index="[210]" Value="16#00"/>
+<Element Index="[211]" Value="16#00"/>
+<Element Index="[212]" Value="16#00"/>
+<Element Index="[213]" Value="16#00"/>
+<Element Index="[214]" Value="16#00"/>
+<Element Index="[215]" Value="16#00"/>
+<Element Index="[216]" Value="16#00"/>
+<Element Index="[217]" Value="16#00"/>
+<Element Index="[218]" Value="16#00"/>
+<Element Index="[219]" Value="16#00"/>
+<Element Index="[220]" Value="16#00"/>
+<Element Index="[221]" Value="16#00"/>
+<Element Index="[222]" Value="16#00"/>
+<Element Index="[223]" Value="16#00"/>
+<Element Index="[224]" Value="16#00"/>
+<Element Index="[225]" Value="16#00"/>
+<Element Index="[226]" Value="16#00"/>
+<Element Index="[227]" Value="16#00"/>
+<Element Index="[228]" Value="16#00"/>
+<Element Index="[229]" Value="16#00"/>
+<Element Index="[230]" Value="16#00"/>
+<Element Index="[231]" Value="16#00"/>
+<Element Index="[232]" Value="16#00"/>
+<Element Index="[233]" Value="16#00"/>
+<Element Index="[234]" Value="16#00"/>
+<Element Index="[235]" Value="16#00"/>
+<Element Index="[236]" Value="16#00"/>
+<Element Index="[237]" Value="16#00"/>
+<Element Index="[238]" Value="16#00"/>
+<Element Index="[239]" Value="16#00"/>
+<Element Index="[240]" Value="16#00"/>
+<Element Index="[241]" Value="16#00"/>
+<Element Index="[242]" Value="16#00"/>
+<Element Index="[243]" Value="16#00"/>
+<Element Index="[244]" Value="16#00"/>
+<Element Index="[245]" Value="16#00"/>
+<Element Index="[246]" Value="16#00"/>
+<Element Index="[247]" Value="16#00"/>
+<Element Index="[248]" Value="16#00"/>
+<Element Index="[249]" Value="16#00"/>
+<Element Index="[250]" Value="16#00"/>
+<Element Index="[251]" Value="16#00"/>
+<Element Index="[252]" Value="16#00"/>
+<Element Index="[253]" Value="16#00"/>
+<Element Index="[254]" Value="16#00"/>
+<Element Index="[255]" Value="16#00"/>
+<Element Index="[256]" Value="16#00"/>
+<Element Index="[257]" Value="16#00"/>
+<Element Index="[258]" Value="16#00"/>
+<Element Index="[259]" Value="16#00"/>
+<Element Index="[260]" Value="16#00"/>
+<Element Index="[261]" Value="16#00"/>
+<Element Index="[262]" Value="16#00"/>
+<Element Index="[263]" Value="16#00"/>
+<Element Index="[264]" Value="16#00"/>
+<Element Index="[265]" Value="16#00"/>
+<Element Index="[266]" Value="16#00"/>
+<Element Index="[267]" Value="16#00"/>
+<Element Index="[268]" Value="16#00"/>
+<Element Index="[269]" Value="16#00"/>
+<Element Index="[270]" Value="16#00"/>
+<Element Index="[271]" Value="16#00"/>
+<Element Index="[272]" Value="16#00"/>
+<Element Index="[273]" Value="16#00"/>
+<Element Index="[274]" Value="16#00"/>
+<Element Index="[275]" Value="16#00"/>
+<Element Index="[276]" Value="16#00"/>
+<Element Index="[277]" Value="16#00"/>
+<Element Index="[278]" Value="16#00"/>
+<Element Index="[279]" Value="16#00"/>
+<Element Index="[280]" Value="16#00"/>
+<Element Index="[281]" Value="16#00"/>
+<Element Index="[282]" Value="16#00"/>
+<Element Index="[283]" Value="16#00"/>
+<Element Index="[284]" Value="16#00"/>
+<Element Index="[285]" Value="16#00"/>
+<Element Index="[286]" Value="16#00"/>
+<Element Index="[287]" Value="16#00"/>
+<Element Index="[288]" Value="16#00"/>
+<Element Index="[289]" Value="16#00"/>
+<Element Index="[290]" Value="16#00"/>
+<Element Index="[291]" Value="16#00"/>
+<Element Index="[292]" Value="16#00"/>
+<Element Index="[293]" Value="16#00"/>
+<Element Index="[294]" Value="16#00"/>
+<Element Index="[295]" Value="16#00"/>
+<Element Index="[296]" Value="16#00"/>
+<Element Index="[297]" Value="16#00"/>
+<Element Index="[298]" Value="16#00"/>
+<Element Index="[299]" Value="16#00"/>
+<Element Index="[300]" Value="16#00"/>
+<Element Index="[301]" Value="16#00"/>
+<Element Index="[302]" Value="16#00"/>
+<Element Index="[303]" Value="16#00"/>
+<Element Index="[304]" Value="16#00"/>
+<Element Index="[305]" Value="16#00"/>
+<Element Index="[306]" Value="16#00"/>
+<Element Index="[307]" Value="16#00"/>
+<Element Index="[308]" Value="16#00"/>
+<Element Index="[309]" Value="16#00"/>
+<Element Index="[310]" Value="16#00"/>
+<Element Index="[311]" Value="16#00"/>
+<Element Index="[312]" Value="16#00"/>
+<Element Index="[313]" Value="16#00"/>
+<Element Index="[314]" Value="16#00"/>
+<Element Index="[315]" Value="16#00"/>
+<Element Index="[316]" Value="16#00"/>
+<Element Index="[317]" Value="16#00"/>
+<Element Index="[318]" Value="16#00"/>
+<Element Index="[319]" Value="16#00"/>
+<Element Index="[320]" Value="16#00"/>
+<Element Index="[321]" Value="16#00"/>
+<Element Index="[322]" Value="16#00"/>
+<Element Index="[323]" Value="16#00"/>
+<Element Index="[324]" Value="16#00"/>
+<Element Index="[325]" Value="16#00"/>
+<Element Index="[326]" Value="16#00"/>
+<Element Index="[327]" Value="16#00"/>
+<Element Index="[328]" Value="16#00"/>
+<Element Index="[329]" Value="16#00"/>
+<Element Index="[330]" Value="16#00"/>
+<Element Index="[331]" Value="16#00"/>
+<Element Index="[332]" Value="16#00"/>
+<Element Index="[333]" Value="16#00"/>
+<Element Index="[334]" Value="16#00"/>
+<Element Index="[335]" Value="16#00"/>
+<Element Index="[336]" Value="16#00"/>
+<Element Index="[337]" Value="16#00"/>
+<Element Index="[338]" Value="16#00"/>
+<Element Index="[339]" Value="16#00"/>
+<Element Index="[340]" Value="16#00"/>
+<Element Index="[341]" Value="16#00"/>
+<Element Index="[342]" Value="16#00"/>
+<Element Index="[343]" Value="16#00"/>
+<Element Index="[344]" Value="16#00"/>
+<Element Index="[345]" Value="16#00"/>
+<Element Index="[346]" Value="16#00"/>
+<Element Index="[347]" Value="16#00"/>
+<Element Index="[348]" Value="16#00"/>
+<Element Index="[349]" Value="16#00"/>
+<Element Index="[350]" Value="16#00"/>
+<Element Index="[351]" Value="16#00"/>
+<Element Index="[352]" Value="16#00"/>
+<Element Index="[353]" Value="16#00"/>
+<Element Index="[354]" Value="16#00"/>
+<Element Index="[355]" Value="16#00"/>
+<Element Index="[356]" Value="16#00"/>
+<Element Index="[357]" Value="16#00"/>
+<Element Index="[358]" Value="16#00"/>
+<Element Index="[359]" Value="16#00"/>
+<Element Index="[360]" Value="16#00"/>
+<Element Index="[361]" Value="16#00"/>
+<Element Index="[362]" Value="16#00"/>
+<Element Index="[363]" Value="16#00"/>
+<Element Index="[364]" Value="16#00"/>
+<Element Index="[365]" Value="16#00"/>
+<Element Index="[366]" Value="16#00"/>
+<Element Index="[367]" Value="16#00"/>
+<Element Index="[368]" Value="16#00"/>
+<Element Index="[369]" Value="16#00"/>
+<Element Index="[370]" Value="16#00"/>
+<Element Index="[371]" Value="16#00"/>
+<Element Index="[372]" Value="16#00"/>
+<Element Index="[373]" Value="16#00"/>
+<Element Index="[374]" Value="16#00"/>
+<Element Index="[375]" Value="16#00"/>
+<Element Index="[376]" Value="16#00"/>
+<Element Index="[377]" Value="16#00"/>
+<Element Index="[378]" Value="16#00"/>
+<Element Index="[379]" Value="16#00"/>
+<Element Index="[380]" Value="16#00"/>
+<Element Index="[381]" Value="16#00"/>
+<Element Index="[382]" Value="16#00"/>
+<Element Index="[383]" Value="16#00"/>
+<Element Index="[384]" Value="16#00"/>
+<Element Index="[385]" Value="16#00"/>
+<Element Index="[386]" Value="16#00"/>
+<Element Index="[387]" Value="16#00"/>
+<Element Index="[388]" Value="16#00"/>
+<Element Index="[389]" Value="16#00"/>
+<Element Index="[390]" Value="16#00"/>
+<Element Index="[391]" Value="16#00"/>
+<Element Index="[392]" Value="16#00"/>
+<Element Index="[393]" Value="16#00"/>
+<Element Index="[394]" Value="16#00"/>
+<Element Index="[395]" Value="16#00"/>
+<Element Index="[396]" Value="16#00"/>
+<Element Index="[397]" Value="16#00"/>
+<Element Index="[398]" Value="16#00"/>
+<Element Index="[399]" Value="16#00"/>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="10000" Type="Output" InputCxnPoint="1" OutputCxnPoint="2" OutputSize="4" InputSize="8" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<Comments>
+<Comment Operand=".DATA[0]">
+<![CDATA[ENBT Overhead]]>
+</Comment>
+<Comment Operand=".DATA[1]">
+<![CDATA[ENBT Overhead]]>
+</Comment>
+<Comment Operand=".DATA[2]">
+<![CDATA[PF40 Logic Status]]>
+</Comment>
+<Comment Operand=".DATA[2].0">
+<![CDATA[PF40 Demo
+Logic Status
+READY]]>
+</Comment>
+<Comment Operand=".DATA[2].1">
+<![CDATA[PF40 Demo
+Logic Status
+ACTIVE]]>
+</Comment>
+<Comment Operand=".DATA[2].2">
+<![CDATA[PF40 Demo
+Logic Status
+ACTUAL DIRECTION]]>
+</Comment>
+<Comment Operand=".DATA[2].3">
+<![CDATA[Logic Status
+ACTUAL DIRECTION]]>
+</Comment>
+<Comment Operand=".DATA[2].4">
+<![CDATA[Logic Status
+ACCEL]]>
+</Comment>
+<Comment Operand=".DATA[2].5">
+<![CDATA[Logic Status
+DECEL]]>
+</Comment>
+<Comment Operand=".DATA[2].6">
+<![CDATA[Logic Status
+ALARM]]>
+</Comment>
+<Comment Operand=".DATA[2].7">
+<![CDATA[PF40 Demo
+Logic Status
+FAULT]]>
+</Comment>
+<Comment Operand=".DATA[2].8">
+<![CDATA[PF40 Demo
+Logic Status
+AT SPEED]]>
+</Comment>
+<Comment Operand=".DATA[2].9">
+<![CDATA[Logic Status
+MAIN FREQ]]>
+</Comment>
+<Comment Operand=".DATA[2].10">
+<![CDATA[Logic Status
+OPER. COMMAND]]>
+</Comment>
+<Comment Operand=".DATA[2].11">
+<![CDATA[Logic Status
+PARAMETERS]]>
+</Comment>
+<Comment Operand=".DATA[2].12">
+<![CDATA[Logic Status
+DIGITAL IN 1]]>
+</Comment>
+<Comment Operand=".DATA[2].13">
+<![CDATA[Logic Status
+DIGITAL IN 2]]>
+</Comment>
+<Comment Operand=".DATA[3]">
+<![CDATA[PF40 Feedback]]>
+</Comment>
+</Comments>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:ETHERNET_MODULE_INT_8Bytes:I:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="1549"/>
+<Element Index="[3]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Comments>
+<Comment Operand=".DATA[0]">
+<![CDATA[PF40 Logic Command]]>
+</Comment>
+<Comment Operand=".DATA[0].0">
+<![CDATA[PF40 Demo
+Logic Command
+STOP]]>
+</Comment>
+<Comment Operand=".DATA[0].1">
+<![CDATA[PF40 Demo
+Logic Command
+START]]>
+</Comment>
+<Comment Operand=".DATA[0].2">
+<![CDATA[Logic Command
+JOG]]>
+</Comment>
+<Comment Operand=".DATA[0].3">
+<![CDATA[PF40 Demo
+Logic Command
+CLEAR FAULTS]]>
+</Comment>
+<Comment Operand=".DATA[0].4">
+<![CDATA[PF40 Demo
+Logic Command
+FORWARD]]>
+</Comment>
+<Comment Operand=".DATA[0].5">
+<![CDATA[PF40 Demo
+Logic Command
+REVERSE]]>
+</Comment>
+<Comment Operand=".DATA[0].7">
+<![CDATA[Logic Command
+MOP INCREMENT]]>
+</Comment>
+<Comment Operand=".DATA[0].8">
+<![CDATA[Logic Command
+ACCEL RATE 1]]>
+</Comment>
+<Comment Operand=".DATA[0].9">
+<![CDATA[Logic Command
+ACCEL RATE 2]]>
+</Comment>
+<Comment Operand=".DATA[0].10">
+<![CDATA[Logic Command
+DECEL RATE 1]]>
+</Comment>
+<Comment Operand=".DATA[0].11">
+<![CDATA[Logic Command
+DECEL RATE 2]]>
+</Comment>
+<Comment Operand=".DATA[0].12">
+<![CDATA[Logic Command
+REF SEL 1]]>
+</Comment>
+<Comment Operand=".DATA[0].13">
+<![CDATA[Logic Command
+REF SEL 2]]>
+</Comment>
+<Comment Operand=".DATA[0].14">
+<![CDATA[Logic Command
+REF SEL 3]]>
+</Comment>
+<Comment Operand=".DATA[0].15">
+<![CDATA[Logic Command
+MOP DECREMENT]]>
+</Comment>
+<Comment Operand=".DATA[1]">
+<![CDATA[PF40 Demo
+Reference]]>
+</Comment>
+</Comments>
+<Data>10 00 F4 01</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:ETHERNET_MODULE_INT_4Bytes:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="16"/>
+<Element Index="[1]" Value="500"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="ParameterReadMessage" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="PF40_Demo" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#000f" TargetObject="39" AttributeNumber="16#0001" LocalIndex="0" DestinationTag="ParameterReadValue"
+/>
+</Data>
+</Tag>
+<Tag Name="ParameterReadValue" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>64 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="100"/>
+</Data>
+</Tag>
+<Tag Name="ParameterWriteMessage" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="2" ConnectedFlag="2" ConnectionPath="PF40_Demo" CommTypeCode="0" ServiceCode="16#0010" ObjectType="16#000f" TargetObject="39" AttributeNumber="16#0001" LocalIndex="0" LocalElement="ParameterWriteValue"
+/>
+</Data>
+</Tag>
+<Tag Name="ParameterWriteValue" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>64 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="100"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="ClearFault_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Drive_Active" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+ACTIVE]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Drive_At_Speed" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+AT SPEED]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Drive_Fault" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+FAULT]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Drive_Forward" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+FORWARD]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Drive_Ready" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+READY]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Drive_Reverse" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+REVERSE]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Feedback" TagType="Base" DataType="INT" Radix="Decimal">
+<Description>
+<![CDATA[PF40
+Feedback]]>
+</Description>
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Forward_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="PerformParameterRead" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PerformParameterWrite" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Reference" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>F4 01</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="500"/>
+</Data>
+</Tag>
+<Tag Name="Start_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Stop_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[
+ ControlLogix to PowerFlex 40 on EtherNet/IP Demo
+
+The ControlLogix system consists of a 1756-ENBT in slot 5 communicating over Ethernet with a PowerFlex 40 drive / 22-COMM-E EtherNet/IP adapter.
+
+The I/O image is as follows:
+
+               INPUT (4 INT words)                                      OUTPUT (2 INT words)
+PF40-Demo:I.Data[0] = ENBT Overhead      PF40-Demo:O.Data[0] = PF40 Logic Command
+PF40-Demo:I.Data[1] = ENBT Overhead      PF40-Demo:O.Data[1] = PF40 Reference
+PF40-Demo:I.Data[2] = PF40 Logic Status
+PF40-Demo:I.Data[3] = PF40 Feedback
+
+Logic Status information rungs are provided for display purposes only.  The PF40_Demo:I.Data[2].x bits could be used directly elsewhere in the ladder program.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(PF40_Demo:I.Data[2].0)OTE(Drive_Ready);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(PF40_Demo:I.Data[2].1)OTE(Drive_Active);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(PF40_Demo:I.Data[2].2)OTE(Drive_Forward);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIO(PF40_Demo:I.Data[2].2)OTE(Drive_Reverse);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(PF40_Demo:I.Data[2].7)OTE(Drive_Fault);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(PF40_Demo:I.Data[2].8)OTE(Drive_At_Speed);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[This rung displays the Feedback word from the PowerFlex 40.  Note that it is set in Hz and not in engineering units like PowerFlex 7-Class drives.  For example,  equates to 30.0 Hz (the decimal point is always implied).]]>
+</Comment>
+<Text>
+<![CDATA[MOV(PF40_Demo:I.Data[3],Feedback);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[Logic Command bit control rungs are provided for display purposes only.  The PF40_Demo:O.Data[0].x bits could be used directly elsewhere in the ladder program.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Stop_Command)OTE(PF40_Demo:O.Data[0].0);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[XIC(Start_Command)OTE(PF40_Demo:O.Data[0].1);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Text>
+<![CDATA[XIC(ClearFault_Command)OTE(PF40_Demo:O.Data[0].3);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Text>
+<![CDATA[XIC(Forward_Command)OTE(PF40_Demo:O.Data[0].4);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[XIO(Forward_Command)OTE(PF40_Demo:O.Data[0].5);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Comment>
+<![CDATA[This rung provides the Reference word to the PowerFlex 40.  Note that it is set in Hz and not in engineering units like PowerFlex 7-Class drives.  For example,  equates to 30.0 Hz (the decimal point is always implied).]]>
+</Comment>
+<Text>
+<![CDATA[MOV(Reference,PF40_Demo:O.Data[1]);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Comment>
+<![CDATA[Explicit Messaging Examples
+
+Reading a single parameter (Get Attribute Single command)]]>
+</Comment>
+<Text>
+<![CDATA[XIC(PerformParameterRead)MSG(ParameterReadMessage);]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Comment>
+<![CDATA[Writing a single parameter (Set Attribute Single command)]]>
+</Comment>
+<Text>
+<![CDATA[XIC(PerformParameterWrite)MSG(ParameterWriteMessage);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

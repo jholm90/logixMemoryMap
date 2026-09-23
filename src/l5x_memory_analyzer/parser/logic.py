@@ -1,0 +1,1026 @@
+"""Parses RLL rung text out of Controller/Programs/Program/Routines.
+
+RLL only. Structured Text is 22% of real routines in the corpus and uses a
+different syntax entirely; it is parsed and sized by `sizing/structured_text.py`,
+not guessed at here. Any routine whose Type is not RLL is skipped, and
+`sizing/coverage.py` reports what was skipped so a total cannot silently omit it.
+"""
+
+from __future__ import annotations
+
+import re
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass, field
+
+# An instruction call is an all-caps mnemonic immediately followed by "(" --
+# e.g. "XIC(A)OTE(B);" or "CPT(Dest,(A+B)*C);".
+#
+# this comment used to claim it "also matches AOI/UDT instance
+# calls". It does not, and that sentence hid a large real gap. An AOI is called
+# with exactly the same syntax as a built-in, but real AOI names are mixed-case
+# (`fbDebounce`, `AnalogSensor`, `HomeToTorque`) and [A-Z][A-Z0-9_]* cannot match
+# them. 288 of the 331 AOI definitions in the real corpus are mixed-case, so 87%
+# of real AOI definitions -- and 3,918 real call sites -- were invisible to the
+# instruction counter and cost nothing.
+#
+# AOI call sites are now counted separately by _aoi_call_count() against the
+# file's own declared AOI names, which is case-correct by construction. An
+# ALL-CAPS AOI name still matches this regex too, but that is harmless: `weights`
+# has no entry for an AOI name, so it contributes zero here and is not
+# double-charged.
+_INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
+
+# JSR's own target-routine name (first argument) -- see JSR_TARGET_ROUTINES
+# below for why this needs its own extraction, not just an instruction count.
+_JSR_TARGET = re.compile(r"\bJSR\(\s*([A-Za-z_][A-Za-z0-9_]*)")
+
+# JSR's own 2nd argument is the real declared param count -- confirmed
+# real shape (samples/local/ corpus, e.g. "JSR(_525_OutputMapping_TS,1,
+# IncisorTop_AxisOutput,EM203_IncisorTop:O)"): target routine name, then a
+# literal integer Studio 5000 itself writes as the number of params
+# following, then the params themselves. OQ-JSRPARAMCOST's per-call cost
+# depends on this count, wired.
+_JSR_CALL_START = re.compile(r"\bJSR\(")
+
+# CPT's own expression argument needs real parsing, not a flat per-call
+# weight (OQ-CMPCPTLAYOUT, wired) -- real capture data shows
+# CPT's cost is expression-complexity-dependent (operator count/type), not
+# a constant. "**" must be tried before the single "*"/"/" alternatives or
+# it would match as two separate "*" tokens. MOD is a word operator in real
+# Logix syntax ("L0 MOD L1"), not a symbol, hence \b...\b. Unary +/- (e.g.
+# leading "-L0") is NOT distinguished from a binary operator -- no real
+# corpus example of unary sign inside a CPT expression has turned up, and
+# guessing its cost would violate this project's "never guess Rockwell
+# syntax" rule; flagged as a known limitation, not silently handled.
+_CPT_OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b")
+
+
+def _extract_cpt_expr(text: str, start: int) -> str | None:
+    """text[start] is the character right after a matched 'CPT('. Returns
+    the expression argument (CPT's 2nd argument, after the first top-level
+    comma) by scanning for the call's real balanced-paren close -- a naive
+    "up to the next ')'" regex would stop early on a nested-parens
+    expression like 'CPT(Dest,(A+B)*(C-D))'. Returns None if the text runs
+    out before the parens balance (malformed/truncated, don't guess)."""
+    depth = 1
+    first_comma = None
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return text[first_comma + 1:i] if first_comma is not None else None
+        elif c == "," and depth == 1 and first_comma is None:
+            first_comma = i
+        i += 1
+    return None
+
+
+_CPT_CALL_START = re.compile(r"\bCPT\(")
+
+# Identifier (tag reference, with or without a subscript) and numeric-literal
+# tokens inside a CPT expression -- needed to tell a REAL-destination CPT's
+# already-float operands from the ones Logix has to convert. See
+# _cpt_call_detail and memory_model.yaml cpt_real_dest.
+_CPT_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_.]*(?:\[[^\]]*\])?")
+_CPT_NUMBER = re.compile(r"(?<![A-Za-z_0-9.\[])\d+\.\d+|(?<![A-Za-z_0-9.\[])\d+(?![.\d])")
+
+
+@dataclass(frozen=True)
+class CptCall:
+    """One real CPT(...) call site.
+
+    `operators` is the ordered list of top-level operator tokens in the
+    call's expression -- e.g. 'CPT(Dest,L0+L1*L2)' -> ['+', '*']. Nesting/
+    parenthesization doesn't change which operators are present (confirmed
+    real: 'CPT(Dest,L0+L1-L2*L3)' and 'CPT(Dest,(L0+L1)*(L2-L3))'
+    cost identically), so grouping is deliberately ignored.
+
+    The rest describes the call's DESTINATION and OPERAND COMPOSITION, added
+    for OQ-CMPCPTLAYOUT's REAL-destination thread: a CPT writing
+    to a REAL destination is evaluated in float, which costs materially
+    differently from the integer path this model was originally fitted on
+    (real, exact, 29/29 captured rows -- see memory_model.yaml
+    cpt_real_dest). sizing/logic.py resolves `dest` against the file's real
+    tag types; the parser deliberately doesn't (same split of
+    responsibility as typed_calls)."""
+
+    operators: list[str]
+    dest: str
+    operand_names: tuple[str, ...]
+    int_literals: int
+    float_literals: int
+
+
+def _cpt_call_detail(text: str, start: int) -> CptCall | None:
+    """Builds one CptCall from the text right after a matched 'CPT('.
+    Returns None for a malformed/truncated call (don't guess), same
+    convention as _extract_cpt_expr."""
+    depth = 1
+    first_comma = None
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                if first_comma is None:
+                    return None
+                dest = text[start:first_comma].strip()
+                expr = text[first_comma + 1:i]
+                numbers = _CPT_NUMBER.findall(expr)
+                return CptCall(
+                    operators=_CPT_OPERATOR_TOKEN.findall(expr),
+                    # Subscript stripped: an array element's type is its
+                    # array's type, and that's how tag_types is keyed.
+                    dest=dest.split("[")[0],
+                    # MOD is a word OPERATOR, not a tag -- excluded here so
+                    # it can never be miscounted as an integer operand.
+                    operand_names=tuple(
+                        idn.split("[")[0]
+                        for idn in _CPT_IDENT.findall(expr)
+                        if idn != "MOD"
+                    ),
+                    int_literals=sum(1 for x in numbers if "." not in x),
+                    float_literals=sum(1 for x in numbers if "." in x),
+                )
+        elif c == "," and depth == 1 and first_comma is None:
+            first_comma = i
+        i += 1
+    return None
+
+
+def _cpt_calls(rung_texts: list[str]) -> list[CptCall]:
+    """One entry per real CPT(...) call found across every rung."""
+    calls: list[CptCall] = []
+    for text in rung_texts:
+        for m in _CPT_CALL_START.finditer(text):
+            call = _cpt_call_detail(text, m.end())
+            if call is not None:
+                calls.append(call)
+    return calls
+
+
+# Instructions whose real cost varies by OPERAND data type (OQ-OPERANDTYPE,
+# wired) -- confirmed real via the typesweep_* corpus (69 real
+# captures, error_count=0, DINT/LINT/SINT/INT/REAL/STRING operands at
+# matched shape). Every instruction here already has a DINT-rate weight in
+# `weights` for the base case; sizing/logic.py adds a per-type surcharge on
+# top when it can resolve the operand's real type, instead of applying the
+# flat DINT-rate weight unconditionally the way it used to.
+_TYPE_SENSITIVE_INSTRUCTIONS = frozenset({
+    "ADD", "SUB", "MUL", "DIV", "MOD", "EQU", "GEQ", "GRT", "LEQ", "LES", "NEQ", "MOV", "LIM",
+})
+
+
+def _extract_call_args(text: str, start: int) -> list[str] | None:
+    """text[start] is the character right after a matched 'MNEMONIC('.
+    Returns EVERY top-level comma-separated argument (unlike
+    _extract_cpt_expr, which only wants the 2nd), via the same real
+    balanced-paren scan -- an operand can itself contain parens in
+    principle (not seen in this project's real corpus for these
+    instructions, but handled correctly regardless). Returns None if the
+    parens never balance (malformed/truncated, don't guess)."""
+    depth = 1
+    args: list[str] = []
+    arg_start = start
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                args.append(text[arg_start:i])
+                return args
+        elif c == "," and depth == 1:
+            args.append(text[arg_start:i])
+            arg_start = i + 1
+        i += 1
+    return None
+
+
+_TYPED_CALL_START = re.compile(
+    r"\b(" + "|".join(sorted(_TYPE_SENSITIVE_INSTRUCTIONS)) + r")\("
+)
+
+
+# Which argument of a call is its DESTINATION, 0-based; -1 means the last one.
+# Only instructions that WRITE one appear here -- a comparison like EQU or LES
+# has no destination and must not be given a notional one, which is exactly the
+# distinction the AOI-internal surcharge below turns on (real: EQU costs nothing
+# extra inside an AOI, MOV/ADD/CLR cost 4 each).
+# Where the destination is NOT the last operand it is given explicitly. Five
+# entries used to say -1 and were wrong for that reason: COP/CPS/FLL take
+# (Source, Dest, Length) and BSL/BSR take (Array, Control, Source, Length), so
+# -1 inspected the LENGTH operand rather than the destination. It charged the
+# right total anyway, because a literal length does not resolve to BOOL and the
+# unresolved default is a word -- right answer, wrong operand, which would have
+# broken silently the first time a length was a tag. Corrected.
+_DESTINATION_ARG = {
+    "MOV": -1, "ADD": -1, "SUB": -1, "MUL": -1, "DIV": -1, "MOD": -1,
+    "CLR": 0, "CPT": 0, "COP": 1, "CPS": 1, "FLL": 1, "BTD": 2,
+    "BSL": 0, "BSR": 0, "CONCAT": -1,
+    "SWPB": -1, "SQR": -1, "NEG": -1, "ABS": -1, "TOD": -1, "FRD": -1,
+    "DEG": -1, "RAD": -1, "SIN": -1, "COS": -1, "TAN": -1, "LN": -1,
+    "LOG": -1, "XPY": -1, "TRN": -1, "AND": -1, "OR": -1, "XOR": -1,
+    "NOT": -1, "STOD": -1, "STOR": -1, "DTOS": -1,
+    "RTOS": -1, "INSERT": -1, "DELETE": -1, "MID": -1, "UPPER": -1,
+    "LOWER": -1,
+    # Word-destination writers found missing by inventorying the
+    # real corpus's AOI-internal logic against this table. Same basis as the
+    # 39 other unmeasured entries -- documented operand order, not a capture --
+    # and 453 real instructions between them. GSV is the whole of that: it
+    # reads a controller attribute INTO a tag. SSV is deliberately absent, it
+    # writes the attribute and only reads the tag.
+    "GSV": -1, "MVM": -1, "SCP": -1, "SIZE": -1, "AVE": 1,
+}
+# Every mnemonic that WRITES something, for the series-output discount
+# (OQ-SERIESOUTPUT). _DESTINATION_ARG above is the word-destination set and
+# deliberately excludes the bit outputs, which do write and do count here.
+#
+# Measured directly: srout_mixed_k04 is OTE + MOV + ADD + CLR and reads exactly
+# the same -36/rung as srout_ote_k04's four OTEs, so the discount is per WRITING
+# instruction and not per type. OTE/OTL/OTU are added on that evidence; the
+# word-destination mnemonics come along because MOV/ADD/CLR are three of the
+# four measured members of that set. Nothing else has been measured, so a rung
+# whose extra outputs are timers or counters is not discounted -- see
+# OQ-SERIESOUTPUT for the files that would settle those.
+_OUTPUT_MNEMONICS = frozenset(_DESTINATION_ARG) | {"OTE", "OTL", "OTU"}
+
+
+def series_output_extra_count(rung_texts: list[str]) -> int:
+    """Sum over rungs of (writing instructions in the rung - 1), floored at 0.
+
+    A rung with one output contributes nothing; k outputs contribute k-1. Branch
+    structure is irrelevant -- srout_branch_k04 puts its four OTEs in parallel
+    legs and reads the same -36/rung as the series form -- so bracket content is
+    counted exactly like inline content and no bracket parsing is needed.
+    """
+    total = 0
+    for text in rung_texts:
+        outputs = sum(
+            1 for match in _ANY_CALL_START.finditer(text)
+            if match.group(1) in _OUTPUT_MNEMONICS
+        )
+        if outputs > 1:
+            total += outputs - 1
+    return total
+
+
+_ANY_CALL_START = re.compile(r"\b([A-Z][A-Z0-9_]{1,9})\(")
+
+
+def sbr_ret_operand_count(rung_texts: list[str]) -> int:
+    """How many operands this routine's SBR and RET calls carry in total.
+
+    A parameterless `SBR();`/`RET();` pair costs nothing -- 12 `subrtn_*` files
+    measure exactly 0 at 1/5/25/100 rungs. One that carries operands does cost,
+    and the cost is per TARGET rather than per operand (OQ-VERIFINSTR), so the
+    caller only needs to know whether this is nonzero.
+    """
+    total = 0
+    for text in rung_texts:
+        for match in re.finditer(r"\b(SBR|RET)\(", text):
+            args = _extract_call_args(text, match.end())
+            if args:
+                total += sum(1 for a in args if a.strip())
+    return total
+
+
+def word_destination_count(rung_texts: list[str], types: dict[str, str]) -> int:
+    """How many instructions in these rungs write a destination that is NOT a
+    BOOL, resolved against `types` (name -> declared data type).
+
+    This resolves types in the parser, against the convention that
+    typed_calls/cpt_calls leave resolution to sizing/logic.py, and the reason
+    is that the only caller is parse_aoi_internal_logic: an AOI's parameters
+    and local tags are declared INSIDE the same element as its rungs, so there
+    is no file-level tag table to defer to. A name that cannot be resolved at
+    all is treated as a word, because a destination is never a literal and an
+    unresolved one in this corpus is overwhelmingly a word rather than a BOOL.
+    """
+    total = 0
+    for text in rung_texts:
+        for match in _ANY_CALL_START.finditer(text):
+            position = _DESTINATION_ARG.get(match.group(1))
+            if position is None:
+                continue
+            args = _extract_call_args(text, match.end())
+            if not args:
+                continue
+            if position == -1:
+                position = len(args) - 1
+            if position >= len(args):
+                continue
+            # An array subscript or a structure member both resolve to the
+            # base tag's declared type, which is how `types` is keyed.
+            dest = args[position].strip().split("[")[0].split(".")[0]
+            if types.get(dest, "DINT") != "BOOL":
+                total += 1
+    return total
+
+
+
+
+def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]]]:
+    """One entry per real call to a type-sensitive instruction, each the
+    (mnemonic, [operand_token, ...]) pair -- e.g. 'ADD(TD0,TD1,TD2)' ->
+    ('ADD', ['TD0', 'TD1', 'TD2']). Operand tokens are returned as raw
+    text (whitespace-stripped) -- resolving a token to an actual data type
+    needs the tag table, which this structural parser deliberately doesn't
+    have access to; that resolution happens at the sizing layer (see
+    sizing/logic.py), same split of responsibility as _cpt_calls above."""
+    calls: list[tuple[str, list[str]]] = []
+    for text in rung_texts:
+        for m in _TYPED_CALL_START.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None:
+                continue
+            calls.append((m.group(1), [a.strip() for a in args]))
+    return calls
+
+
+def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
+    """One entry per real JSR(...) call, (target_routine_name,
+    input_param_count, output_param_count) -- input_param_count read
+    directly off the call's own 2nd argument (see _JSR_CALL_START above),
+    the authoritative source rather than counting the trailing argument
+    tokens ourselves. Skips a call whose 2nd argument isn't a plain
+    integer literal (malformed/unexpected, don't guess) -- no real corpus
+    example has ever shown anything else there.
+
+    output_param_count (OQ-JSRPARAMCOST, wired) is every
+    remaining tag argument after the declared input count -- real syntax
+    confirmed against the corpus (see gen_jsr_sbr_ret.py's module
+    docstring): `JSR(name, N_in, in_1..in_N, out_1..out_M)`, so
+    len(args) - 2 (target + count) - N_in gives M. Real capture data
+    (jsr_mixedio_5in_2out, jsr_multiret_n04) showed this project's
+    original OQ-JSRPARAMCOST fit (input args only, from group_param_count's
+    always-empty RET()) completely missed this cost -- ~40,000/1,000 calls
+    unmodeled for 2 return args."""
+    calls: list[tuple[str, int, int]] = []
+    for text in rung_texts:
+        for m in _JSR_CALL_START.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None or len(args) < 2:
+                continue
+            target = args[0].strip()
+            count_text = args[1].strip()
+            if not count_text.isdigit():
+                continue
+            n_in = int(count_text)
+            m_out = max(0, len(args) - 2 - n_in)
+            calls.append((target, n_in, m_out))
+    return calls
+
+
+_RET_CALL = re.compile(r"\bRET\(([^()]*)\)")
+
+
+def ret_operand_counts(rung_texts: list[str]) -> tuple[int, ...]:
+    """Operands of each RET that returns values, in rung order."""
+    counts = []
+    for text in rung_texts:
+        for m in _RET_CALL.finditer(text):
+            args = [a for a in m.group(1).split(",") if a.strip()]
+            if args:
+                counts.append(len(args))
+    return tuple(counts)
+
+
+def jsr_call_args(rung_texts: list[str]) -> list[tuple[str, tuple[str, ...]]]:
+    """(target, parameter arguments) for every JSR call -- the same calls
+    _jsr_calls counts, with the arguments after the target and count."""
+    calls: list[tuple[str, tuple[str, ...]]] = []
+    for text in rung_texts:
+        for m in _JSR_CALL_START.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None or len(args) < 2 or not args[1].strip().isdigit():
+                continue
+            calls.append((args[0].strip(), tuple(a.strip() for a in args[2:])))
+    return calls
+
+
+# Indirect (tag-driven) array addressing (OQ-INDIRECT, wired).
+# Real data (indirect_tag_index_n*/indirect_tag_offset_index_n*, 4 count
+# points each 10/50/100/1000, ALL exact once the tiny universal +4 flat
+# baseline noise is set aside): a DIRECT/literal index ("Arr[5]") costs
+# nothing extra over the carrier instruction's own base weight; a
+# TAG-DRIVEN index ("Arr[Idx]") costs +84/occurrence; a tag-driven index
+# WITH an arithmetic literal offset ("Arr[Idx+1]") costs +108/occurrence.
+# Scans the WHOLE rung text, not scoped to a specific mnemonic -- the real
+# mechanism this is charging for (computing an indirect address) is
+# presumably a property of the ARRAY OPERAND itself, not of which
+# instruction happens to read/write it, but only MOV-carried indexing was
+# ever actually captured -- generalizing to other instructions' indexed
+# operands (including inside a CPT expression) is an assumption, not
+# independently confirmed. A bracket expression this can't classify (more
+# than one tag, a nested index, a non-arithmetic expression) is left
+# unresolved -- 0 cost, not a guess.
+_ARRAY_INDEX = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\[([^\[\]]+)\]")
+_PURE_LITERAL_INDEX = re.compile(r"^\d+$")
+# The index tag may be spelled as a member path (`Arr[Stn.Idx]`,
+# `Arr[Stn.Idx+1]`) -- 2,700 of them in the real set. It is the same
+# tag-driven index; a member path costs what a plain tag costs
+# (OQ-OPERANDSHAPE), so it is priced the same.
+_TAG_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$")
+_TAG_OFFSET_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*\s*[+\-]\s*\d+$")
+
+
+def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:
+    """One entry per real array-index bracket expression found, classified
+    as 'tag' or 'tag_offset' -- direct/literal indices and anything this
+    can't confidently classify are simply not included (0 cost)."""
+    kinds: list[str] = []
+    for text in rung_texts:
+        for m in _ARRAY_INDEX.finditer(text):
+            content = m.group(1).strip()
+            if _PURE_LITERAL_INDEX.match(content):
+                continue
+            if _TAG_INDEX.match(content):
+                kinds.append("tag")
+            elif _TAG_OFFSET_INDEX.match(content):
+                kinds.append("tag_offset")
+            # else: unresolved shape, deliberately not guessed at
+    return kinds
+
+
+# CMP's own surcharges (wired, real data confirms the existing
+# flat CMP:76 weight is exact for a SINGLE simple condition -- the
+# "inconsistency" flagged in an earlier pass was a manual-arithmetic
+# error, not a real bug, corrected here). A COMPOUND condition (2+ clauses
+# joined by && or ||) costs a real, clean +64/rung on top of the base 76,
+# confirmed exact at both n=100 and n=1000 (zero residual, no large-file
+# anomaly at either point, unlike several CPT cases). A condition compared
+# against a FLOAT literal costs +72/rung -- only one count point (n=1000),
+# FITTED not KNOWN. An int literal costs nothing extra (matches CPT's own
+# int-literal finding). Both surcharges are only ever confirmed
+# INDEPENDENTLY (never a compound expression that ALSO has a float
+# literal) -- applied additively if both are present, an assumption, not
+# a confirmed combination.
+@dataclass(frozen=True)
+class CmpCall:
+    """One real CMP(...) call site. `operators` holds the arithmetic operator
+    tokens found inside the comparison -- see _cmp_calls."""
+    is_compound: bool
+    has_float_literal: bool
+    operators: list[str] = field(default_factory=list)
+
+
+_CMP_CALL_START = re.compile(r"\bCMP\(")
+_CMP_COMPOUND_OPERATOR = re.compile(r"&&|\|\|")
+_CMP_FLOAT_LITERAL = re.compile(r"\d+\.\d+")
+
+
+def _extract_single_arg(text: str, start: int) -> str | None:
+    """text[start] is the character right after a matched 'MNEMONIC(' for
+    a single-argument call like CMP(...). Balanced-paren scan to the real
+    close, same method as _extract_cpt_expr/_extract_call_args above, just
+    returning the whole (single) argument rather than splitting on commas."""
+    depth = 1
+    i = start
+    while i < len(text):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start:i]
+        i += 1
+    return None
+
+
+def _cmp_calls(rung_texts: list[str]) -> list[CmpCall]:
+    """One entry per real CMP(...) call.
+
+    `operators` is the ARITHMETIC operator tokens inside the comparison,
+    tokenized with exactly the same regex CPT uses. A CMP's comparison
+    operator itself (>, <, >=, ...) and its boolean connectives (&&, ||) are
+    not arithmetic and are not collected here -- the connectives are already
+    priced by `compound_cost`.
+
+    Collecting them at all is OQ-CMPCPTLAYOUT: a CMP whose
+    operands are themselves expressions was priced as though they were bare
+    tags, so `CMP(L0+L1>L2)` was under-charged by the whole cost of the `+`.
+    CPT had an expression model from the start and CMP never did, which is
+    why every arithmetic CMP shape in the corpus sat at a real negative
+    residual while every bare-tag and bare-literal shape was exact.
+    """
+    calls: list[CmpCall] = []
+    for text in rung_texts:
+        for m in _CMP_CALL_START.finditer(text):
+            expr = _extract_single_arg(text, m.end())
+            if expr is None:
+                continue
+            calls.append(CmpCall(
+                is_compound=bool(_CMP_COMPOUND_OPERATOR.search(expr)),
+                has_float_literal=bool(_CMP_FLOAT_LITERAL.search(expr)),
+                operators=_CPT_OPERATOR_TOKEN.findall(expr),
+            ))
+    return calls
+
+
+@dataclass(frozen=True)
+class RoutineLogic:
+    program_name: str
+    routine_name: str
+    rung_count: int
+    # mnemonic -> number of times it appears across every rung in this
+    # routine (a rung with "XIC(A)XIC(B)OTE(C);" counts XIC twice, OTE once).
+    instruction_counts: dict[str, int] = field(default_factory=dict)
+    # Call sites for the file's own AOIs -- invisible to instruction_counts
+    # because real AOI names are mixed-case. See _aoi_call_sites.
+    aoi_call_count: int = 0
+    # Parameters passed across those call sites, instance tag excluded. The
+    # call-site cost is a base plus a per-parameter rate, so the count matters.
+    aoi_call_param_count: int = 0
+    # Of those, the arguments bound to an INPUT parameter that are anything
+    # but the literal 0 or 1 -- a tag, an expression or a larger literal. Each
+    # costs aoi_call_site.input_ref_extra_bytes on top of the per-parameter
+    # rate. See aoi_call_sites.
+    aoi_call_input_ref_count: int = 0
+    # True if some OTHER routine in the same program JSRs to this one.
+    # confirmed the target's own fixed shell cost (fixed_base_
+    # per_routine) is already absorbed into the caller's jsr_fixed_base_
+    # per_routine, so sizing/report.py never charges it again for a JSR
+    # target -- that part still holds. The target's own CONTENT cost is a
+    # separate matter: that finding only ever tested a trivial
+    # 1-NOP-rung stub target, and real data at real scale
+    # jsr_target_content_scale_{010,050,100,150}, see OPEN_QUESTIONS.md
+    # OQ-JSRPARAMCOST) disproved the "content is free too" part of the old
+    # claim -- report.py now weighs a JSR target's own instructions with
+    # the normal per-instruction model (charge_shell=False, so only its
+    # fixed shell stays excluded).
+    # Sum over this routine's rungs of (writing instructions - 1), floored at
+    # 0 -- the series-output discount's multiplier. See
+    # series_output_extra_count and memory_model.yaml series_output.
+    series_output_extras: int = 0
+    # Total operands across this routine's SBR and RET calls. Zero for a
+    # parameterless SBR()/RET() pair, which costs nothing; nonzero marks a
+    # JSR target that pays jsr_target_declaration.sbr_ret_operand_bytes.
+    sbr_ret_operands: int = 0
+    is_jsr_target: bool = False
+    # OQ-SAFETYSCOPE-SIZING ("they are safety tasks and
+    # safety programs therefore they need separate sizing calculations").
+    # True when this routine's owning <Program> carries Class="Safety" --
+    # real, unambiguous marker (confirmed on samples/generated/fw_catalog_
+    # matrix/fwmatrix_v31_1756_l81es.L5X's real SafetyProgram), not the
+    # Type="PERIODIC" schedule-type attribute (shared with ordinary
+    # periodic programs/tasks). sizing/report.py's Task/Program/Routine
+    # shell decomposition excludes Safety routines from the ordinary
+    # n_plain_routines count and charges a separate, smaller, real
+    # safety_task_program_shell constant instead.
+    is_safety_program: bool = False
+    # One entry per real CPT(...) call in this routine -- see CptCall and
+    # _cpt_calls above. sizing/logic.py costs these individually instead of
+    # via the flat instruction_counts["CPT"] path (real data: CPT's cost is
+    # expression-complexity-dependent, OQ-CMPCPTLAYOUT).
+    cpt_calls: list[CptCall] = field(default_factory=list)
+    # One entry per real call to a type-sensitive instruction (see
+    # _TYPE_SENSITIVE_INSTRUCTIONS), each (mnemonic, [operand_tokens]) --
+    # sizing/logic.py resolves each operand's real type against the tag
+    # table and applies a per-type surcharge on top of the base DINT-rate
+    # weight (OQ-OPERANDTYPE). Every call here ALSO still counts once in
+    # instruction_counts above (needed for is_jsr_target etc elsewhere) --
+    # sizing/logic.py applies the base weight from `weights` as before and
+    # ADDS the surcharge separately, it does not re-derive the base cost
+    # from this list.
+    typed_calls: list[tuple[str, list[str]]] = field(default_factory=list)
+    # One entry per real indirect (tag-driven) array-index bracket found in
+    # this routine, each 'tag' or 'tag_offset' -- see _indirect_index_kinds
+    # above (OQ-INDIRECT). Direct/literal indices cost nothing extra and
+    # are not represented here at all.
+    indirect_index_kinds: list[str] = field(default_factory=list)
+    # One entry per real CMP(...) call, (is_compound, has_float_literal) --
+    # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired).
+    cmp_calls: list[CmpCall] = field(default_factory=list)
+    # Every routine name THIS routine JSRs to (Phase 5 call-
+    # tree UI) -- distinct from is_jsr_target above, which only says
+    # whether some OTHER routine calls this one, not who calls whom. Byte
+    # totals already correctly avoid double-counting via is_jsr_target
+    # (confirmed); this field exists purely so the UI can show
+    # the real call structure, not to change any sizing.
+    jsr_target_names: frozenset[str] = field(default_factory=frozenset)
+    # One entry per real JSR(...) call THIS routine makes, (target_name,
+    # input_param_count, output_param_count) -- see _jsr_calls above
+    # (OQ-JSRPARAMCOST, wired, output params added).
+    # sizing/logic.py charges the confirmed per-call B(n_in) cost plus the
+    # per-output-param cost for each entry here; report.py separately
+    # charges A(n_in) once per distinct target routine (a one-time cost of
+    # the callee's own Parameters-block declaration, not the caller's) --
+    # A(n) is NOT yet adjusted for output param count, see
+    # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
+    jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
+    # The parameter ARGUMENTS of each of those calls (inputs then outputs),
+    # target and count excluded, so the sizer can tell an atomic argument from
+    # a structure or STRING one. See memory_model.yaml jsr_param_cost.
+    jsr_call_args: list[tuple[str, tuple[str, ...]]] = field(default_factory=list)
+    # Operand count of every RET in this routine that returns values (a bare
+    # RET() is left out). See memory_model.yaml jsr_param_cost, RET operands.
+    ret_operand_counts: tuple[int, ...] = ()
+    # Total real BST/NXB/BND-family branch-bracket instructions across this
+    # routine's rungs (OQ-BRANCHDEPTH, wired) -- see
+    # _branch_bracket_instruction_count above. A single-level branch with L
+    # legs compiles to L+1 of these; nested/staggered branches recurse.
+    # sizing/logic.py charges this count x the confirmed flat per-
+    # instruction rate (memory_model.yaml branch_bracket_cost_per_
+    # instruction), additive on top of every leg's own instruction weight
+    # (already counted normally via instruction_counts above).
+    branch_bracket_instruction_count: int = 0
+    # AOI-INTERNAL ONLY: how many of this routine's instructions write a
+    # non-BOOL destination. Left at 0 for ordinary Program routines, where the
+    # per-instruction weights are already exact (instr_* is within the universal
+    # +8 band at every count from 10 to 5,000 for MOV/CLR/ADD/EQU/XIC/OTE
+    # alike). Inside an AOI the same instructions cost 4 more each -- see
+    # memory_model.yaml aoi_internal_per_word_destination.
+    word_destination_count: int = 0
+
+    @property
+    def path(self) -> str:
+        return f"program:{self.program_name}/{self.routine_name}"
+
+
+def _parse_branch_group(text: str, start: int) -> tuple[int, int]:
+    """text[start] == '[', a real branch-open (see _branch_bracket_
+    instruction_count below for how that's distinguished from an array-
+    index '['). Returns (total real BST/NXB/BND-family instruction count
+    for this group INCLUDING every nested branch inside it, index right
+    after this group's matching ']'). A group with L top-level legs
+    (comma-separated at paren-depth 0, not counting legs inside a nested
+    branch) compiles to 1 BST + (L-1) NXB + 1 BND = L+1 real instructions
+    -- confirmed exact against 16/16 real capture points (OQ-BRANCHDEPTH,
+    see memory_model.yaml branch_bracket_cost_per_instruction)."""
+    i = start + 1
+    n = len(text)
+    paren_depth = 0
+    legs = 1
+    nested_total = 0
+    while i < n:
+        c = text[i]
+        if c == "(":
+            paren_depth += 1
+            i += 1
+        elif c == ")":
+            paren_depth -= 1
+            i += 1
+        elif c == "[" and paren_depth == 0 and not (text[i - 1].isalnum() or text[i - 1] == "_"):
+            sub_total, next_i = _parse_branch_group(text, i)
+            nested_total += sub_total
+            i = next_i
+        elif c == "]" and paren_depth == 0:
+            return legs + 1 + nested_total, i + 1
+        elif c == "," and paren_depth == 0:
+            legs += 1
+            i += 1
+        else:
+            i += 1
+    # Unterminated group (malformed text) -- return what's been scanned
+    # rather than crash; report.py's own lint layer catches real structural
+    # errors upstream of sizing.
+    return legs + 1 + nested_total, i
+
+
+def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
+    """Total real BST/NXB/BND-family branch-bracket instructions across
+    every rung -- a '[' is a real branch-open only when NOT immediately
+    preceded by an identifier character (that shape is an array index,
+    e.g. "Tag[5]", handled entirely separately by _ARRAY_INDEX/
+    _indirect_index_kinds above, not a branch)."""
+    total = 0
+    for text in rung_texts:
+        i = 0
+        n = len(text)
+        while i < n:
+            if text[i] == "[" and not (i > 0 and (text[i - 1].isalnum() or text[i - 1] == "_")):
+                group_total, next_i = _parse_branch_group(text, i)
+                total += group_total
+                i = next_i
+            else:
+                i += 1
+    return total
+
+
+_CHEAP_LITERAL = re.compile(r"^\s*[+-]?[01](\.0*)?\s*$")
+
+
+def aoi_input_positions(root: ET.Element) -> dict[str, tuple[bool, ...]]:
+    """AOI name -> for each call-site argument slot, whether it binds an Input
+    parameter. Slots are the Required parameters in declaration order,
+    EnableIn/EnableOut excluded -- the same mapping a call site uses."""
+    positions: dict[str, tuple[bool, ...]] = {}
+    for definition in root.iter("AddOnInstructionDefinition"):
+        name = definition.get("Name")
+        if not name:
+            continue
+        positions[name] = tuple(
+            p.get("Usage") == "Input"
+            for p in definition.iter("Parameter")
+            if p.get("Required") == "true" and p.get("Name") not in ("EnableIn", "EnableOut")
+        )
+    return positions
+
+
+def aoi_call_sites(
+    rung_texts: list[str], aoi_names: frozenset[str],
+    input_positions: dict[str, tuple[bool, ...]] | None = None,
+) -> tuple[int, int, int]:
+    """(call sites, parameters passed, input arguments that are references).
+
+    The first argument of an AOI call is its instance tag, not a parameter, so
+    the parameter count for one call is `len(args) - 1`. The call site costs a
+    base plus a per-parameter rate -- see memory_model.yaml aoi_call_site.
+
+    The third count is the arguments bound to an INPUT parameter that are not
+    the literal 0 or 1. litop_bool_*_n01000_r2 hold one 3-input AOI called
+    1,000 times and vary only what is passed: a tag, the literal 0 or 1, or the
+    literal 12345. A tag and 12345 each cost 12 bytes more than 0/1, on BOOL
+    and DINT parameters alike. Every calibration family before them passed
+    0 to its inputs, so the per-parameter rate was fitted on the cheap case,
+    while real programs pass tags to 90% of their AOI inputs.
+
+    Counted against the DECLARED names rather than by a casing pattern (see
+    _INSTRUCTION_CALL) and word-bounded, so an AOI named `Scale` does not also
+    match `ScaleFactor(`.
+    """
+    if not aoi_names:
+        return 0, 0, 0
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+    calls = params = input_refs = 0
+    for text in rung_texts:
+        for match in pattern.finditer(text):
+            calls += 1
+            args = _split_call_args(text, match.end() - 1)[1:]
+            params += len(args)
+            if input_positions is None:
+                continue
+            slots = input_positions.get(match.group(1), ())
+            for is_input, arg in zip(slots, args):
+                if is_input and not _CHEAP_LITERAL.match(arg):
+                    input_refs += 1
+    return calls, params, input_refs
+
+
+def _split_call_args(text: str, open_paren: int) -> list[str]:
+    """The comma-separated arguments of the call whose `(` is at open_paren.
+
+    Bracket-depth aware, so a nested expression or an array subscript in one
+    argument does not split it -- `Aoi(Inst,Src[i],Dst)` is three arguments.
+    An unbalanced rung (truncated export) yields what was parsed rather than
+    raising: an under-count of parameters is a small sizing error, an exception
+    loses the whole file.
+    """
+    depth = 0
+    args: list[str] = []
+    current = ""
+    for ch in text[open_paren:]:
+        if ch in "([{":
+            depth += 1
+            if depth == 1:
+                continue
+        elif ch in ")]}":
+            depth -= 1
+            if depth == 0:
+                break
+        if ch == "," and depth == 1:
+            args.append(current)
+            current = ""
+        else:
+            current += ch
+    if current.strip():
+        args.append(current)
+    return args
+
+
+def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for text in rung_texts:
+        for mnemonic in _INSTRUCTION_CALL.findall(text):
+            counts[mnemonic] = counts.get(mnemonic, 0) + 1
+    return counts
+
+
+def routine_language(routine_el: ET.Element) -> str:
+    """The routine's language, inferred from its content child when the
+    Type attribute is absent.
+
+    A whole-project export always states Type="RLL"/"ST"/... but a RUNG
+    export does not: its containing routine is a context stub carrying only
+    Use and Name (real shape, Rung11_from_Main.L5X:
+    `<Routine Use="Context" Name="Main"><RLLContent>...`). Requiring the
+    Type attribute meant every rung export parsed to ZERO routines and the
+    exported rung -- the entire point of the file -- was never sized at all.
+    The content child is unambiguous: RLLContent only ever appears in an RLL
+    routine, STContent in an ST one, and so on.
+    """
+    declared = routine_el.get("Type")
+    if declared:
+        return declared
+    for child_tag, language in (
+        ("RLLContent", "RLL"), ("STContent", "ST"),
+        ("FBDContent", "FBD"), ("SFCContent", "SFC"),
+    ):
+        if routine_el.find(child_tag) is not None:
+            return language
+    return "?"
+
+
+def count_instructions_in_text(rung_texts: list[str]) -> dict[str, int]:
+    """Public wrapper over the same mnemonic scanner the sizer itself uses --
+    so sizing/coverage.py counts instructions exactly the way size_routine()
+    does, rather than re-implementing the regex and drifting from it."""
+    return _count_instructions(rung_texts)
+
+
+def _jsr_targets(rung_texts: list[str]) -> set[str]:
+    targets: set[str] = set()
+    for text in rung_texts:
+        targets.update(_JSR_TARGET.findall(text))
+    return targets
+
+
+def jsr_calls_in_text(rung_texts: list[str]) -> list[tuple[str, int, int]]:
+    """Public wrapper over the same JSR call scanner the sizer uses, so the
+    confidence path reads parameter counts off the authoritative parse rather
+    than re-implementing the regex and drifting from it."""
+    return _jsr_calls(rung_texts)
+
+
+def parse_rll_routines(
+    root: ET.Element, aoi_names: frozenset[str] | None = None
+) -> list[RoutineLogic]:
+    """`aoi_names` defaults to the file's own declared AOI names, so every
+    existing caller gets AOI call counting without changing its call."""
+    if aoi_names is None:
+        aoi_names = frozenset(
+            name for el in root.iter("AddOnInstructionDefinition")
+            if (name := el.get("Name"))
+        )
+    input_positions = aoi_input_positions(root)
+    routines: list[RoutineLogic] = []
+    programs_el = root.find("Controller/Programs")
+    if programs_el is None:
+        return routines
+
+    for program_el in programs_el.findall("Program"):
+        program_name = program_el.get("Name")
+        is_safety_program = program_el.get("Class") == "Safety"
+        routines_el = program_el.find("Routines")
+        if routines_el is None:
+            continue
+
+        # Two passes: first collect every RLL routine's rung text (need the
+        # whole program's JSR targets before deciding is_jsr_target for any
+        # one routine), then build the RoutineLogic list.
+        per_routine_rung_texts: dict[str, list[str]] = {}
+        for routine_el in routines_el.findall("Routine"):
+            if routine_language(routine_el) != "RLL":
+                continue
+            routine_name = routine_el.get("Name")
+            rll_content = routine_el.find("RLLContent")
+            rung_texts = []
+            # OQ-EMPTYROUTINE: a self-closing <Routine Type="RLL"/>
+            # (no RLLContent child at all) is a real, common shape -- 15+ real
+            # corpus files have one -- and was being silently dropped here
+            # entirely, so it never got a RoutineLogic entry and never
+            # contributed to n_plain_routines in report.py's Task/Program/
+            # Routine shell decomposition. That's wrong: real data (emptyroutine_
+            # n01/n02/n03, captured) shows a self-closing routine
+            # still pays the same real per-extra-routine shell cost as an
+            # ordinary one (272-ish/routine, matching the already-wired
+            # task_program_overhead.routine_extra exactly, within the usual
+            # small-N noise) -- it just has zero content cost, which falls out
+            # naturally once it's counted as a routine with 0 rungs instead of
+            # not counted at all. Emitting it here (rung_texts=[]) rather than
+            # skipping lets the existing shell-decomposition math handle it
+            # for free, no new constant needed.
+            if rll_content is not None:
+                for rung_el in rll_content.findall("Rung"):
+                    text_el = rung_el.find("Text")
+                    if text_el is not None and text_el.text:
+                        rung_texts.append(text_el.text)
+            per_routine_rung_texts[routine_name] = rung_texts
+
+        program_jsr_targets: set[str] = set()
+        for rung_texts in per_routine_rung_texts.values():
+            program_jsr_targets |= _jsr_targets(rung_texts)
+
+        for routine_name, rung_texts in per_routine_rung_texts.items():
+            aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
+                rung_texts, aoi_names, input_positions)
+            routines.append(RoutineLogic(
+                program_name=program_name,
+                routine_name=routine_name,
+                rung_count=len(rung_texts),
+                instruction_counts=_count_instructions(rung_texts),
+                aoi_call_count=aoi_calls,
+                aoi_call_param_count=aoi_call_params,
+                aoi_call_input_ref_count=aoi_input_refs,
+                is_jsr_target=routine_name in program_jsr_targets,
+                is_safety_program=is_safety_program,
+                cpt_calls=_cpt_calls(rung_texts),
+                typed_calls=_typed_instruction_calls(rung_texts),
+                indirect_index_kinds=_indirect_index_kinds(rung_texts),
+                cmp_calls=_cmp_calls(rung_texts),
+                jsr_target_names=frozenset(_jsr_targets(rung_texts)),
+                jsr_calls=_jsr_calls(rung_texts),
+                jsr_call_args=jsr_call_args(rung_texts),
+                ret_operand_counts=ret_operand_counts(rung_texts),
+                branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+                series_output_extras=series_output_extra_count(rung_texts),
+                sbr_ret_operands=sbr_ret_operand_count(rung_texts),
+            ))
+
+    return routines
+
+
+def parse_aoi_internal_logic(
+    root: ET.Element, aoi_names: frozenset[str] | None = None
+) -> dict[str, RoutineLogic]:
+    """AOI definition name -> ONE aggregate RoutineLogic combining the rung
+    text of every internal RLL routine that AOI declares (its Logic routine
+    plus any additional ones, e.g. a real AOI like HomeToTorque has both
+    Logic and EnableInFalse).
+
+    Real data (aoi_multiroutine_control vs aoi_multiroutine_real,
+    see OPEN_QUESTIONS.md OQ-AOIINTERNALLOGIC) confirms splitting the SAME
+    content across 2 internal routines instead of 1 costs identically to
+    keeping it in one -- so this deliberately aggregates all of an AOI's
+    internal routines into a single pseudo-routine rather than tracking them
+    separately; the per-routine-count dimension doesn't matter, only total
+    content does. sizing/udt.py weighs this the same way as ordinary routine
+    logic via compute_routine_logic_bytes(charge_shell=False) -- an AOI's
+    internal routine doesn't pay its own fixed_base_per_routine; that's a
+    separate, already-confirmed cost the aoi_definition formula's base
+    already covers.
+
+    Not JSR-aware (is_jsr_target/jsr_calls/jsr_target_names left at their
+    defaults) -- an AOI calling JSR internally, or being itself invoked
+    in a way that interacts with the JSR-target machinery, is untested
+    territory, not something this function guesses at."""
+    declared_aoi_names = aoi_names if aoi_names is not None else frozenset(
+        name for el in root.iter("AddOnInstructionDefinition") if (name := el.get("Name"))
+    )
+    input_positions = aoi_input_positions(root)
+    result: dict[str, RoutineLogic] = {}
+    aois_el = root.find("Controller/AddOnInstructionDefinitions")
+    if aois_el is None:
+        return result
+
+    for aoi_el in aois_el.findall("AddOnInstructionDefinition"):
+        name = aoi_el.get("Name")
+        routines_el = aoi_el.find("Routines")
+        if routines_el is None:
+            continue
+        rung_texts: list[str] = []
+        for routine_el in routines_el.findall("Routine"):
+            if routine_language(routine_el) != "RLL":
+                continue
+            rll_content = routine_el.find("RLLContent")
+            if rll_content is None:
+                continue
+            for rung_el in rll_content.findall("Rung"):
+                text_el = rung_el.find("Text")
+                if text_el is not None and text_el.text:
+                    rung_texts.append(text_el.text)
+        if not rung_texts:
+            continue
+        aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
+            rung_texts, declared_aoi_names, input_positions)
+        # The AOI's own parameters and local tags ARE its tag table -- nothing
+        # outside the definition is addressable from its rungs.
+        internal_types = {
+            el.get("Name", ""): el.get("DataType", "")
+            for el in aoi_el.iter("Parameter")
+        }
+        internal_types.update({
+            el.get("Name", ""): el.get("DataType", "")
+            for el in aoi_el.iter("LocalTag")
+        })
+        result[name] = RoutineLogic(
+            program_name="",
+            routine_name=name,
+            rung_count=len(rung_texts),
+            instruction_counts=_count_instructions(rung_texts),
+            # An AOI can call another AOI from inside its own logic, and that
+            # call costs the same as one in a Program rung.
+            aoi_call_count=aoi_calls,
+            aoi_call_param_count=aoi_call_params,
+            aoi_call_input_ref_count=aoi_input_refs,
+            cpt_calls=_cpt_calls(rung_texts),
+            typed_calls=_typed_instruction_calls(rung_texts),
+            indirect_index_kinds=_indirect_index_kinds(rung_texts),
+            cmp_calls=_cmp_calls(rung_texts),
+            branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+            word_destination_count=word_destination_count(rung_texts, internal_types),
+            series_output_extras=series_output_extra_count(rung_texts),
+        )
+    return result

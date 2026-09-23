@@ -1,0 +1,596 @@
+import xml.etree.ElementTree as ET
+
+from l5x_memory_analyzer.sizing.constants import load_memory_model
+from l5x_memory_analyzer.sizing.report import ESTIMATED, build_report
+
+MODEL = load_memory_model()
+
+_XML = """
+<RSLogix5000Content SchemaRevision="1.0">
+  <Controller Name="Test">
+    <DataTypes/>
+    <AddOnInstructionDefinitions>
+      <AddOnInstructionDefinition Name="fbDebounce" Class="None">
+        <Parameters>
+          <Parameter Name="EnableIn" DataType="BOOL" Usage="Input" Dimension="0"/>
+          <Parameter Name="RawTag" DataType="DINT" Usage="InOut" Dimension="0"/>
+        </Parameters>
+        <LocalTags>
+          <LocalTag Name="DebTmr" DataType="TIMER"/>
+        </LocalTags>
+      </AddOnInstructionDefinition>
+    </AddOnInstructionDefinitions>
+    <Tags>
+      <Tag Name="RealDint" TagType="Base" DataType="DINT"/>
+      <Tag Name="AliasedIO" TagType="Alias" AliasFor="Local:2:I.Ch0Data"/>
+      <Tag Name="RunTmr" TagType="Base" DataType="TIMER"/>
+      <Tag Name="DebSensor1" TagType="Base" DataType="fbDebounce"/>
+    </Tags>
+    <Programs/>
+  </Controller>
+</RSLogix5000Content>
+"""
+
+
+def test_alias_tags_size_not_error():
+    root = ET.fromstring(_XML)
+    entries, errors = build_report(root, MODEL)
+
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+
+    # Alias tags carry their own overhead shape (RESOLVED_QUESTIONS.md
+    # OQ-ALIASSIZE): 56 + 8*(len(name)//8), no separate data-space term.
+    alias = by_path["controller/AliasedIO"]
+    assert alias.bytes == 56 + 8  # "AliasedIO", 9 chars -> floor(9/8)=1
+    assert alias.data_type == "ALIAS"
+    assert alias.basis == "KNOWN"
+
+    # Every real tag's own raw data size now also carries tag_overhead
+    # (RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD): 84 + 8*(len(name)//8).
+    timer = by_path["controller/RunTmr"]
+    assert timer.bytes == 12 + 84  # TIMER(12) + tag_overhead("RunTmr", 6 chars)
+    assert timer.basis == "KNOWN"
+
+    # total_bytes / pct_of_total shouldn't be thrown off by the alias entry
+    real_dint = by_path["controller/RealDint"]
+    assert real_dint.bytes == 4 + 92  # DINT(4) + tag_overhead("RealDint", 8 chars)
+
+    aoi_instance = by_path["controller/DebSensor1"]
+    # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
+    # -8: an AOI INSTANCE is over-charged by the flat
+    # tag_overhead (memory_model.yaml definition_scale_correction, exact over a
+    # sweep of 1..60 instances).
+    assert aoi_instance.bytes == 16 + 92 - 8
+    # Every component is KNOWN: UDT alignment and standalone BOOL sizing were
+    # both closed by real capture, the BOOL tier corrected.
+    assert aoi_instance.basis == "KNOWN"
+
+    # AOI *definition* cost -- a separate line item from the instance above,
+    # one per declared AOI regardless of instance count. Itemised form since
+    # (memory_model.yaml aoi_definition, 124 def-only files):
+    # fbDebounce's only counted declared member is DebTmr (EnableIn excluded
+    # by name, RawTag excluded already at parse time since it is InOut), so
+    #
+    #   base 1163
+    #   + per_member_descriptor_bytes 12
+    #   + DebTmr's own data bytes, TIMER = 12
+    #   + bool_word_cost(0 declared BOOLs) = 24, the word EnableIn/EnableOut
+    #     alone still occupy
+    #   + member name pool: "DebTmr" is 6 chars + 1 = 7, rounded up to 8
+    #   + name_length_bytes("fbDebounce"): 10 chars -> bucket max(0,(10-8)//4)
+    #     = 0 -> 8*0 + (-8) = -8
+    #   = 1211, then aligned: the definition occupies whole 8-byte units
+    #     around the project-wide 1-byte offset, 8*ceil((1211+1)/8) - 1 = 1215
+    #     (aoi_definition.total_alignment_bytes, OQ-AOIDEFSHAPE)
+    #   - 7, the per-definition scale correction
+    #     (definition_scale_correction.aoi_definition_extra, corrected -3 -> -7
+    # once defscale_aoidefs_n001..n060 measured the definition
+    #     term on its own rather than jointly with the per-instance one)
+    aoi_def = by_path["udt_definitions/fbDebounce"]
+    raw = 1163 + 12 + 12 + 24 + 8 - 8
+    assert aoi_def.bytes == 8 * -(-(raw + 1) // 8) - 1 - 7
+    assert aoi_def.basis == "KNOWN"
+
+    # total now also includes the project_baseline entry
+    # (empty_project_baseline) -- present on every real report, not just
+    # this fixture's 3 sized tags.
+    baseline = by_path["project_baseline"]
+    assert baseline.bytes == MODEL.empty_project_baseline_bytes
+    grand_total = (
+        real_dint.bytes + timer.bytes + aoi_instance.bytes + alias.bytes + aoi_def.bytes + baseline.bytes
+    )
+    assert real_dint.pct_of_total == (real_dint.bytes / grand_total) * 100
+
+
+def test_udt_definition_cost_appears_once_per_type_used_by_multiple_instances():
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="Point3D" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="X" DataType="DINT" Dimension="0"/>
+              <Member Name="Y" DataType="DINT" Dimension="0"/>
+              <Member Name="Z" DataType="DINT" Dimension="0"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags>
+          <Tag Name="PointA" TagType="Base" DataType="Point3D"/>
+          <Tag Name="PointB" TagType="Base" DataType="Point3D"/>
+        </Tags>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+
+    definition_entries = [e for e in entries if e.category == "udt_definition"]
+    assert len(definition_entries) == 1  # once per distinct type, not once per instance
+    definition = definition_entries[0]
+    assert definition.data_type == "Point3D"
+    # base(160) + per_member(16)*3 + name_per_8_chars(8)*ceil(7/8)=1
+    # +8: the declared members' NAME POOL -- X, Y, Z are
+    # 3*(1+1) = 6 characters rounded up to the 8-byte boundary.
+    # The `definition_scale_correction.udt_definition_extra` term that used to
+    # add another 16 here was ZEROED: it was a compensation constant
+    # standing in for bytes the name pool above now models properly, and having
+    # both was a double charge. dscale2_udt reads -16 x n_udt flat in tag count
+    # over a 500x span with it in, and 14 of 18 rows byte-exact with it out.
+    assert definition.bytes == 160 + 16 * 3 + 8 * 1 + 8
+
+    by_path = {e.path: e for e in entries}
+    point_a = by_path["controller/PointA"]
+    # 3*DINT(4) = 12 tight-packed, then padded to the standalone UDT tag slot's
+    # 8-byte boundary -> 16 (memory_model.yaml standalone_udt_tag_slot),
+    # + tag_overhead("PointA", 6 chars) = 84, -4 for the
+    # per-UDT-tag-instance extra. The padding and the extra were derived
+    # together -- neither family that measured them can separate the two.
+    assert point_a.bytes == 16 + 84 - 4
+
+
+def test_udt_definition_counted_even_when_only_used_as_a_nested_member():
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="Inner" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="V" DataType="DINT" Dimension="0"/>
+            </Members>
+          </DataType>
+          <DataType Name="Outer" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="Nested" DataType="Inner" Dimension="0"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags>
+          <Tag Name="OuterTag" TagType="Base" DataType="Outer"/>
+        </Tags>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+
+    definition_names = {e.data_type for e in entries if e.category == "udt_definition"}
+    # Inner is never a top-level tag's own DataType, only reachable via
+    # Outer's member -- still needs its own definition cost counted.
+    assert definition_names == {"Inner", "Outer"}
+
+
+def test_udt_definition_cost_counts_bool_members_correctly():
+    # Regression test for the fix: declared_member_count must
+    # exclude only the HIDDEN backing SINT, not the visible BIT-alias
+    # members it backs -- an all-BOOL UDT was computing 0 declared members
+    # (its only non-bit-alias member IS the hidden one), undercounting.
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes>
+          <DataType Name="SweepTypeBOOL" Family="NoFamily" Class="User">
+            <Members>
+              <Member Name="ZZZZZZZZZZBoolMember00" DataType="SINT" Dimension="0" Hidden="true"/>
+              <Member Name="M0" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="0"/>
+              <Member Name="M1" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="1"/>
+              <Member Name="M2" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="2"/>
+              <Member Name="M3" DataType="BIT" Dimension="0" Hidden="false" Target="ZZZZZZZZZZBoolMember00" BitNumber="3"/>
+            </Members>
+          </DataType>
+        </DataTypes>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    root = ET.fromstring(xml)
+    from l5x_memory_analyzer.sizing.udt import compute_udt_definition_cost
+    from l5x_memory_analyzer.parser.datatypes import parse_data_types
+    data_types = parse_data_types(root)
+    bytes_, confidence = compute_udt_definition_cost("SweepTypeBOOL", data_types, MODEL)
+    # base(160) + per_member(16)*4 + name_per_8_chars(8)*ceil(13/8)=2
+    # + bool_run_bonus(32), and the declared members' own NAME
+    # POOL: the four declared members are M0..M3, so 4*(2+1) = 12 characters
+    # rounded up to the 8-byte pool boundary = 16 (memory_model.yaml
+    # udt_definition, measured on udtmn_bool_len* at eight name lengths). The
+    # hidden backing SINT's own long name is deliberately excluded, the same
+    # convention declared_member_count uses.
+    assert bytes_ == 160 + 16 * 4 + 8 * 2 + 32 + 16
+    assert bytes_ == 288
+
+
+def _blank_root(software_revision: str, processor_type: str) -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}">
+      <Controller Name="Test" ProcessorType="{processor_type}">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_firmware_baseline_delta_applies_for_confirmed_major_version():
+    # OQ-BASELINE-PROCFW, wired: v31 real capture shows a real
+    # +11,240 over the v34/v35 baseline (see memory_model.yaml
+    # firmware_baseline_delta) -- confirmed against 1756-L81E.
+    root = _blank_root("31.02", "1756-L81E")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    fw_entry = by_path["firmware_baseline_delta"]
+    assert fw_entry.bytes == 11240
+    assert fw_entry.data_type == "FW_V31_BASELINE"
+    assert "safety_capable_baseline_delta" not in by_path
+
+
+def test_firmware_baseline_delta_absent_for_confirmed_v34_v35():
+    # v34/v35 is the already-confirmed reference baseline itself -- no
+    # correction, no extra entry emitted at all.
+    for rev in ("34.01", "35.05"):
+        root = _blank_root(rev, "1756-L81E")
+        entries, _ = build_report(root, MODEL)
+        assert "firmware_baseline_delta" not in {e.path for e in entries}
+
+
+def test_firmware_baseline_delta_absent_for_unconfirmed_major_version():
+    # v38's only real capture is WINDOW-TITLE-MISMATCH-contaminated (see
+    # OPEN_QUESTIONS.md OQ-BASELINE-PROCFW) -- not trusted, stays
+    # unadjusted until a real capture lands.
+    root = _blank_root("38.02", "1756-L81E")
+    entries, _ = build_report(root, MODEL)
+    assert "firmware_baseline_delta" not in {e.path for e in entries}
+
+
+def test_safety_capable_baseline_delta_applies_to_5069_safety_suffix():
+    root = _blank_root("35.05", "5069-L330ERMS2")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    safety_entry = by_path["safety_capable_baseline_delta"]
+    assert safety_entry.bytes == 296
+    assert "firmware_baseline_delta" not in by_path
+
+
+def test_safety_capable_baseline_delta_absent_for_non_safety_5069():
+    root = _blank_root("35.05", "5069-L330ER")
+    entries, _ = build_report(root, MODEL)
+    assert "safety_capable_baseline_delta" not in {e.path for e in entries}
+
+
+def test_firmware_and_safety_baseline_deltas_stack_additively():
+    # v31 + safety-suffix catalog: both real, independent effects (see
+    # OPEN_QUESTIONS.md OQ-BASELINE-PROCFW -- the +296 safety gap
+    # reproduces identically at v31/v32/v33, confirming no interaction
+    # term is needed).
+    root = _blank_root("31.02", "5069-L330ERMS2")
+    entries, _ = build_report(root, MODEL)
+    by_path = {e.path: e for e in entries}
+    assert by_path["firmware_baseline_delta"].bytes == 11240
+    assert by_path["safety_capable_baseline_delta"].bytes == 296
+
+
+def test_catalog_baseline_delta_applies_to_confirmed_1769_processor_type():
+    # OQ-BASELINE-PROCFW, 1769-series thread, wired: real
+    # capture shows 1769-L24ER-QBFC1B costs +80,832 over the flat baseline.
+    root = _blank_root("35.05", "1769-L24ER-QBFC1B")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    catalog_entry = by_path["catalog_baseline_delta"]
+    assert catalog_entry.bytes == 80832
+    assert catalog_entry.data_type == "CATALOG_BASELINE"
+
+
+def test_catalog_baseline_delta_is_exact_string_match_not_prefix():
+    # A single suffix character changes the real value by over 13,000
+    # bytes (1769-L24ER-QB1B=67,160 vs -QBFC1B=80,832) -- an unconfirmed
+    # 1769 catalog must NOT silently inherit a sibling's real value.
+    root = _blank_root("35.05", "1769-L24ER-NOTREAL")
+    entries, _ = build_report(root, MODEL)
+    assert "catalog_baseline_delta" not in {e.path for e in entries}
+
+
+def _root_with_module(catalog_number: str) -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestMod" CatalogNumber="{catalog_number}">
+            <Ports><Port Id="1" Address="1" Type="ICP" Upstream="true"/></Ports>
+            <Communications>
+              <Connections>
+                <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
+                  <InputTag ExternalAccess="Read/Write">
+                    <Data Format="Decorated">
+                      <Structure DataType="AB:5000_DI16:I:0">
+                        <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
+                      </Structure>
+                    </Data>
+                  </InputTag>
+                </Connection>
+              </Connections>
+            </Communications>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_module_overhead_uses_real_per_catalog_value_when_known():
+    # OQ-MODULEIO, wired: 1756-IB16 has a real n=1 capture point
+    # (memory_model.yaml module_overhead_by_catalog) -- 1684, not the flat
+    # cross-catalog FITTED default (1672). (1756-DNB was removed from this
+    # table OQ-LEGACYNETOVERHEAD -- see
+    # test_legacy_network_module_excluded_from_sizing below.)
+    root = _root_with_module("1756-IB16")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    module_entry = next(e for e in entries if e.category == "module_io")
+    # KNOWN: the asmclose_1756_ib16_1conn_n01/02/04 sweep
+    # measured this catalog directly at three module counts, which promoted it
+    # off the ASSUMED guess it used to carry.
+    assert module_entry.basis == "KNOWN"
+    assert module_entry.bytes == 4 + 1684  # module_defined_bytes(4) + real 1756-IB16 overhead
+
+
+def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
+    root = _root_with_module("9999-NOT-A-REAL-CATALOG")
+    entries, errors = build_report(root, MODEL)
+    assert errors == []
+    module_entry = next(e for e in entries if e.category == "module_io")
+    assert module_entry.basis == MODEL.module_overhead_confidence
+    assert module_entry.bytes == 4 + MODEL.module_overhead_bytes
+
+
+def _root_with_legacy_network_module(port_type: str, catalog: str = "9999-NO-REAL-DATA/Z") -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestBridge" CatalogNumber="{catalog}">
+            <Ports>
+              <Port Id="1" Address="3" Type="ICP" Upstream="true"/>
+              <Port Id="2" Address="1" Type="{port_type}" Upstream="false"/>
+            </Ports>
+            <Communications>
+              <Connections>
+                <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
+                  <InputTag ExternalAccess="Read/Write">
+                    <Data Format="Decorated">
+                      <Structure DataType="AB:5000_DI16:I:0">
+                        <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
+                      </Structure>
+                    </Data>
+                  </InputTag>
+                </Connection>
+              </Connections>
+            </Communications>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_legacy_network_module_excluded_from_sizing():
+    # OQ-LEGACYNETOVERHEAD, CLOSED as a deliberate scope exclusion: ControlNet
+    # and every other legacy network is out of scope. A
+    # ControlNet/DeviceNet/DH+/DH-485/RIO
+    # bridge module gets no module_overhead charged, same treatment as a
+    # rack-aliased or processor-embedded module, flagged via SizeError
+    # instead -- UNLESS its specific catalog has real per-catalog data
+    # (see test_legacy_network_module_WITH_real_catalog_data_gets_charged
+    # below). Uses a catalog with no real entry to keep
+    # testing the general "no real data -> unmodeled" rule in isolation.
+    #
+    # "Excluded from sizing" means its OVERHEAD is not charged -- not that the
+    # module is free. Changed: the module's own declared data
+    # (module_defined_bytes, which the L5X states as plainly for this shape as
+    # for any other) IS charged, because the file is the final decision on
+    # sizing and a stated size is not something to guess about. Only the
+    # overhead stays unmodelled, and the SizeError remains the record of that.
+    #
+    # The entry was always emitted regardless, so the module stays visible in
+    # the UI tree -- dropping it entirely made whole racks disappear from the
+    # I/O view rather than merely go unpriced.
+    for port_type in ("ControlNet", "DeviceNet", "DH+", "DH-485", "RIO"):
+        root = _root_with_legacy_network_module(port_type)
+        entries, errors = build_report(root, MODEL)
+        module_entries = [e for e in entries if e.category == "module_io"]
+        # 4 = this fixture's own module_defined_bytes, with no overhead on top.
+        assert all(e.bytes == 4 for e in module_entries), port_type
+        assert all(e.basis == "UNKNOWN" for e in module_entries), port_type
+        assert any("legacy-network" in e.message for e in errors), port_type
+
+
+def test_legacy_network_module_with_real_catalog_data_gets_charged():
+    # A measured catalog needs no modelling: real per-catalog data
+    # now exists for several legacy-network and rack-aliased catalogs (see
+    # memory_model.yaml module_overhead_by_catalog's comment).
+    # 1756-CNB/D (a real ControlNet bridge) has a confirmed real entry
+    # (448 bytes) and should get module_io charged normally despite being
+    # a legacy-network bridge, not fall through to the unmodeled path.
+    root = _root_with_legacy_network_module("ControlNet", catalog="1756-CNB/D")
+    entries, errors = build_report(root, MODEL)
+    assert any(e.category == "module_io" and e.data_type == "1756-CNB/D" for e in entries)
+    assert not any("legacy-network" in e.message for e in errors)
+
+
+def _root_with_zero_connection_module(catalog: str = "ETHERNET-BRIDGE") -> ET.Element:
+    xml = f"""
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test">
+        <DataTypes/>
+        <AddOnInstructionDefinitions/>
+        <Tags/>
+        <Programs/>
+        <Modules>
+          <Module Name="Local" CatalogNumber="1756-L81E">
+            <Ports><Port Id="1" Address="0" Type="ICP" Upstream="false"/></Ports>
+          </Module>
+          <Module Name="TestBareBridge" CatalogNumber="{catalog}">
+            <Ports>
+              <Port Id="1" Type="CIPBus" Upstream="false"><Bus Size="100"/></Port>
+              <Port Id="2" Address="192.168.1.1" Type="Ethernet" Upstream="true"/>
+            </Ports>
+          </Module>
+        </Modules>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    return ET.fromstring(xml)
+
+
+def test_zero_connection_module_is_charged_and_still_flagged():
+    """A bridge/gateway module with no Connections is now CHARGED, not skipped.
+
+    it was made visible (previously silently `continue`d past with
+    no SizeEntry and no SizeError). it is also priced, because the
+    captured corpus showed this was the single largest structural error in
+    it: files where every module is priced have a median residual of 4 bytes
+    (n=1,663), files with at least one of these a median of +2,750 (n=81).
+
+    A FLAT rate, not per-catalog -- the per-catalog fit made held-out RMS
+    131% worse on 20 random splits, while the flat rate improved it 20%. So
+    the SizeError stays, downgraded to a coverage note, because the number is
+    right on average and can be wrong for any one catalog.
+
+    "Local" (the processor's own self-entry, also 0/0) must still be excluded
+    by name, not by the 0/0 heuristic.
+    """
+    root = _root_with_zero_connection_module()
+    entries, errors = build_report(root, MODEL)
+    charged = [e for e in entries if e.category == "module_io"]
+    assert len(charged) == 1
+    assert charged[0].bytes == MODEL.zero_connection_module_bytes
+    assert any("no connections/stated size" in e.message for e in errors)
+    assert any(e.path.startswith("coverage/module_zero_connection/") for e in errors)
+    assert not any("TestLocal" in e.message for e in errors)
+    assert not any(e.path == "modules/Local" for e in errors)
+
+
+def test_confidence_audit_finds_no_stale_assumed_tiers():
+    """Guard for the finding: 174 of 185 ASSUMED predefined
+    structures already had error-free, exactly-0.0000% capture data on
+    disk. The numbers were right; the tiers had never been updated when
+    the questions closed. Because weakest() propagates a tier upward, that
+    marked 11.53% of all real-file bytes as assumed against a true 4.33%.
+
+    A confidence tier is a claim about evidence, so it gets checked rather
+    than remembered."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parent.parent / "scripts" / "audit_confidence.py"
+    result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout
+
+
+def test_aoi_internal_ladder_is_its_own_estimated_routine_entry():
+    """An AOI's internal RLL is compiled logic: a routine_logic entry, tier
+    ESTIMATED, under the AOI's own path. It used to be folded into the
+    definition entry, which is tier EXACT -- so compiled ladder was displayed
+    without the estimated flag, drew as an unexplained "Unitemized definition
+    cost", and could not carry its rungs' measured confidence."""
+    xml = """
+    <RSLogix5000Content SchemaRevision="1.0">
+      <Controller Name="Test" ProcessorType="1756-L81E">
+        <DataTypes/>
+        <AddOnInstructionDefinitions>
+          <AddOnInstructionDefinition Name="Blinker">
+            <Parameters>
+              <Parameter Name="EnableIn" DataType="BOOL" Usage="Input"/>
+              <Parameter Name="EnableOut" DataType="BOOL" Usage="Output"/>
+              <Parameter Name="Out" DataType="BOOL" Usage="Output"/>
+            </Parameters>
+            <LocalTags><LocalTag Name="Count" DataType="DINT"/></LocalTags>
+            <Routines>
+              <Routine Name="Logic" Type="RLL"><RLLContent>
+                <Rung Number="0" Type="N"><Text><![CDATA[XIC(Out)ADD(Count,1,Count);]]></Text></Rung>
+                <Rung Number="1" Type="N"><Text><![CDATA[XIO(Out)OTE(Out);]]></Text></Rung>
+              </RLLContent></Routine>
+            </Routines>
+          </AddOnInstructionDefinition>
+        </AddOnInstructionDefinitions>
+        <Tags/>
+        <Programs/>
+      </Controller>
+    </RSLogix5000Content>
+    """
+    entries, errors = build_report(ET.fromstring(xml), MODEL)
+    assert errors == []
+    by_path = {e.path: e for e in entries}
+    ladder = by_path["aoi_definitions/Blinker/Logic"]
+    assert ladder.category == "routine_logic"
+    assert ladder.tier == ESTIMATED
+    assert ladder.bytes > 0
+    definition = by_path["udt_definitions/Blinker"]
+    # The definition is the declaration alone: base, members, words, pool,
+    # name term, aligned, less the per-definition correction. No ladder in it.
+    from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
+    from l5x_memory_analyzer.sizing.udt import compute_aoi_definition_cost
+    types = parse_aoi_definitions(ET.fromstring(xml))
+    declared = compute_aoi_definition_cost("Blinker", types, MODEL)[0]
+    assert definition.bytes == declared + MODEL.aoi_definition_extra
+    assert definition.basis == "KNOWN"
+
+
+def test_a_context_aois_internal_routines_are_context_too():
+    """On a partial export an AOI dragged along as context brings its own
+    routines with it; counting them as the exported thing inflated the
+    target figure. Applies to the ladder entry and to AOI-internal ST."""
+    from l5x_memory_analyzer.parser.export_scope import ContextNames, classify_path
+    ctx = ContextNames(aois=frozenset({"Blinker"}))
+    assert classify_path("aoi_definitions/Blinker/Logic", ctx) == "context"
+    assert classify_path("aoi_definitions/Other/Logic", ctx) == "target"

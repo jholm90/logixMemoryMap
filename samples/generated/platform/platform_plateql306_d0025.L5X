@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="PlatEqL306D0025" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 21:48:41 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="PlatEqL306D0025" ProcessorType="5069-L306ER" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 21:48:41 2026" LastModifiedDate="Fri Sep 11 21:48:41 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" EtherNetIPMode="A1/A2: Dual-IP" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+    <DataType Name="PlatEqUdt" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="Mbr00" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr01" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr02" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr03" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr04" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr05" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr06" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr07" DataType="DINT" Dimension="0" Hidden="false"/>
+      </Members>
+    </DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="5069-L306ER" Vendor="1" ProductType="14" ProductCode="196" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="5069" Upstream="false">
+<Bus Size="9"/>
+</Port>
+<Port Id="3" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+<Port Id="4" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="PeUdt0000" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0001" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0002" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0003" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0004" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0005" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0006" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0007" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0008" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0009" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0010" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0011" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0012" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0013" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0014" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0015" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0016" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0017" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0018" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0019" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0020" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0021" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0022" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0023" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeUdt0024" TagType="Base" DataType="PlatEqUdt" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="PlatEqUdt"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="PeDint0000" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0001" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0002" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0003" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0004" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0005" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0006" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0007" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0008" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0009" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0010" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0011" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0012" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0013" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0014" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0015" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0016" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0017" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0018" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0019" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0020" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0021" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0022" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0023" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeDint0024" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeBit0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="PeBit1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(0,PeDint0000)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(1,PeDint0001)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(2,PeDint0002)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(3,PeDint0003)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(4,PeDint0004)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(5,PeDint0005)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(6,PeDint0006)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(7,PeDint0007)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(8,PeDint0008)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(9,PeDint0009)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(10,PeDint0010)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(11,PeDint0011)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(12,PeDint0012)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(13,PeDint0013)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(14,PeDint0014)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(15,PeDint0015)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(16,PeDint0016)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(17,PeDint0017)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(18,PeDint0018)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(19,PeDint0019)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(20,PeDint0020)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(21,PeDint0021)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(22,PeDint0022)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(23,PeDint0023)OTE(PeBit1);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[XIC(PeBit0)MOV(24,PeDint0024)OTE(PeBit1);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

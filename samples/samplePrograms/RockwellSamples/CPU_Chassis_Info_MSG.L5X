@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="CPU_Chassis_Info_MSG" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:20:23 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="CPU_Chassis_Info_MSG" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:20:12 2018" LastModifiedDate="Fri Jan 19 07:20:12 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="BackplaneObjectType" Family="NoFamily" Class="User">
+<Members>
+<Member Name="RX_BAD_M_CRC_CTR" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Count of number of multicast CRC errors since the last power on, module reset, or object reset service.]]>
+</Description>
+</Member>
+<Member Name="MULTICAST_CRC_ERROR_THRESHOLD" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Threshold value for entering fault state due to multicast CRC errors]]>
+</Description>
+</Member>
+<Member Name="RX_BAD_CRC_CTR" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[ Count of number of directed CRC errors since the last power on, module reset, or object reset service.]]>
+</Description>
+</Member>
+<Member Name="RX_BUS_TIMOUT_CTR" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Count of number of receiver but timeouts since the last power on, module reset, or object reset service.]]>
+</Description>
+</Member>
+<Member Name="TX_BAD_CRC_CTR" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[ Count of number of transmit CRC errors since the last power on, module reset, or object reset service.]]>
+</Description>
+</Member>
+<Member Name="TX_BUS_TIMEOUT_CTR" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[ Count of number of transmit bus timeouts since the last power on, module reset, or object reset service.]]>
+</Description>
+</Member>
+<Member Name="TX_RETRY_LIMIT" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Number of times to retry a frame if any transmit error occurs]]>
+</Description>
+</Member>
+<Member Name="BP_STATUS" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Current Status of the backplane object]]>
+</Description>
+</Member>
+<Member Name="MOD_ADDR" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[The module's rack and slot address]]>
+</Description>
+</Member>
+<Member Name="MAJOR_REV" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Major revision field for the primary rack object (major.minor)]]>
+</Description>
+</Member>
+<Member Name="MINOR_REV" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Minor revision filed for the primary rack objecy (major.minor)]]>
+</Description>
+</Member>
+<Member Name="SERIAL_NO" DataType="DINT" Dimension="0" Radix="Hex" Hidden="false">
+<Description>
+<![CDATA[Serial Number for the primary rack]]>
+</Description>
+</Member>
+<Member Name="SIZE" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Sive of primary rack (number of slots)]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="FaultRecordType" Family="NoFamily" Class="User">
+<Members>
+<Member Name="TimeLow" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TimeHigh" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Type" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Code" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Info" DataType="DINT" Dimension="8" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Backplane_Info" TagType="Base" DataType="BackplaneObjectType">
+<Data>00 08 00 00 00 00 2D 00 02 00 01 01 F1 0C 13 00 
+07 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="BackplaneObjectType">
+<DataValueMember Name="RX_BAD_M_CRC_CTR" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MULTICAST_CRC_ERROR_THRESHOLD" DataType="SINT" Radix="Decimal" Value="8"/>
+<DataValueMember Name="RX_BAD_CRC_CTR" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RX_BUS_TIMOUT_CTR" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TX_BAD_CRC_CTR" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TX_BUS_TIMEOUT_CTR" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TX_RETRY_LIMIT" DataType="SINT" Radix="Decimal" Value="45"/>
+<DataValueMember Name="BP_STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MOD_ADDR" DataType="INT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="MAJOR_REV" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MINOR_REV" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SERIAL_NO" DataType="DINT" Radix="Hex" Value="16#0013_0cf1"/>
+<DataValueMember Name="SIZE" DataType="INT" Radix="Decimal" Value="7"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="FaultRecord" TagType="Base" DataType="FaultRecordType">
+<Data>B6 34 B3 BA EE EB 02 00 04 00 01 00 01 00 00 00 
+4E 5E 00 00 70 2C 00 00 54 EA 83 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="FaultRecordType">
+<DataValueMember Name="TimeLow" DataType="DINT" Radix="Decimal" Value="-1162660682"/>
+<DataValueMember Name="TimeHigh" DataType="DINT" Radix="Decimal" Value="191470"/>
+<DataValueMember Name="Type" DataType="INT" Radix="Decimal" Value="4"/>
+<DataValueMember Name="Code" DataType="INT" Radix="Decimal" Value="1"/>
+<ArrayMember Name="Info" DataType="DINT" Dimensions="8" Radix="Decimal">
+<Element Index="[0]" Value="1"/>
+<Element Index="[1]" Value="24142"/>
+<Element Index="[2]" Value="11376"/>
+<Element Index="[3]" Value="8645204"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Read_Backplane_Info" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 2" CommTypeCode="0" ServiceCode="16#0001" ObjectType="16#0066" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0" DestinationTag="Backplane_Info"
+/>
+</Data>
+</Tag>
+<Tag Name="Saved_Backplane_Serial_No" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>B6 FA 03 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="260790"/>
+</Data>
+</Tag>
+<Tag Name="Saved_Backplane_Size" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>07 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="7"/>
+</Data>
+</Tag>
+<Tag Name="Saved_Backplane_Slot" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>03 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" FaultRoutineName="Fault_Routine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="Fault_Routine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[This rung grabs the fault record for the program and stores it in a tag created with a user defined structure.]]>
+</Comment>
+<Text>
+<![CDATA[GSV(PROGRAM,THIS,MAJORFAULTRECORD,FaultRecord.TimeLow);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[This program shows how to read from the CPU Chassis Information.
+
+This rung executes once when the processor changes from program to run mode to determine if the program is loaded into a specific processor.
+
+The S:FS bit is set for one scan each time the program transitions from program to run mode.
+The MSG instruction performs a CIP Generic read operation to the controllers backplane object.  The attributes for this operation are:
+	Service Code = 1 (Get Attributes All)
+	Class Name = 66 (Backplane Object)
+	Instance Name = 1 (Primary Instance)
+	Attribute Name = left blank
+	Source = left blank
+	Number of elements = 0
+	Destination = Tag to store 18 bytes of information
+	Path = 1,x  (Where x is the slot number for the controller in the chassis)
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(S:FS)MSG(Read_Backplane_Info);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung validates the information that is received from the backplane object on the controller.
+
+If the backplane serial number, backplane size, or processor slot do not match the appropriate settings, the JSR to the fault routine initiates a shutdown of the processor with fault type 04 and code 01, both of which are unknown to the software.
+
+Remove the AFI instruction to execute the rungs logic on this rung.
+ ]]>
+</Comment>
+<Text>
+<![CDATA[AFI()XIC(Read_Backplane_Info.DN)[NEQ(Backplane_Info.SERIAL_NO,Saved_Backplane_Serial_No) ,NEQ(Backplane_Info.MOD_ADDR,Saved_Backplane_Slot) ,NEQ(Backplane_Info.SIZE,Saved_Backplane_Size) ]JSR(Fault_Routine,1,1);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

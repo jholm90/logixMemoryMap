@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AoiInst20" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 20:00:35 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AoiInst20" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 20:00:35 2026" LastModifiedDate="Fri Sep 04 20:00:35 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="Aoi_D000" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D001" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D002" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D003" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D004" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D005" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D006" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D007" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D008" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D009" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D010" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D011" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D012" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D013" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D014" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D015" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D016" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D017" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D018" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+    <AddOnInstructionDefinition Name="Aoi_D019" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="InB" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutBit" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Work1" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+<LocalTag Name="Work2" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutBit);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="Inst_Aoi_D000" TagType="Base" DataType="Aoi_D000" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D000"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D001" TagType="Base" DataType="Aoi_D001" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D001"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D002" TagType="Base" DataType="Aoi_D002" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D002"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D003" TagType="Base" DataType="Aoi_D003" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D003"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D004" TagType="Base" DataType="Aoi_D004" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D004"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D005" TagType="Base" DataType="Aoi_D005" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D005"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D006" TagType="Base" DataType="Aoi_D006" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D006"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D007" TagType="Base" DataType="Aoi_D007" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D007"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D008" TagType="Base" DataType="Aoi_D008" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D008"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D009" TagType="Base" DataType="Aoi_D009" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D009"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D010" TagType="Base" DataType="Aoi_D010" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D010"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D011" TagType="Base" DataType="Aoi_D011" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D011"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D012" TagType="Base" DataType="Aoi_D012" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D012"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D013" TagType="Base" DataType="Aoi_D013" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D013"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D014" TagType="Base" DataType="Aoi_D014" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D014"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D015" TagType="Base" DataType="Aoi_D015" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D015"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D016" TagType="Base" DataType="Aoi_D016" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D016"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D017" TagType="Base" DataType="Aoi_D017" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D017"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D018" TagType="Base" DataType="Aoi_D018" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D018"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Inst_Aoi_D019" TagType="Base" DataType="Aoi_D019" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="Aoi_D019"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="InB" DataType="DINT" Value="0" /><DataValueMember Name="OutBit" DataType="BOOL" Value="0" /><DataValueMember Name="Work1" DataType="DINT" Value="0" /><DataValueMember Name="Work2" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="OutBitTag" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[Aoi_D000(Inst_Aoi_D000,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[Aoi_D001(Inst_Aoi_D001,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[Aoi_D002(Inst_Aoi_D002,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[Aoi_D003(Inst_Aoi_D003,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[Aoi_D004(Inst_Aoi_D004,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[Aoi_D005(Inst_Aoi_D005,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[Aoi_D006(Inst_Aoi_D006,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[Aoi_D007(Inst_Aoi_D007,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[Aoi_D008(Inst_Aoi_D008,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[Aoi_D009(Inst_Aoi_D009,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[Aoi_D010(Inst_Aoi_D010,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[Aoi_D011(Inst_Aoi_D011,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[Aoi_D012(Inst_Aoi_D012,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[Aoi_D013(Inst_Aoi_D013,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[Aoi_D014(Inst_Aoi_D014,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[Aoi_D015(Inst_Aoi_D015,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[Aoi_D016(Inst_Aoi_D016,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[Aoi_D017(Inst_Aoi_D017,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[Aoi_D018(Inst_Aoi_D018,0,0,OutBitTag);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[Aoi_D019(Inst_Aoi_D019,0,0,OutBitTag);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

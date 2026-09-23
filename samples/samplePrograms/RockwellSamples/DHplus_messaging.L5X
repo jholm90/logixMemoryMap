@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="DHplus_messaging" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:22:50 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="DHplus_messaging" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:22:40 2018" LastModifiedDate="Fri Jan 19 07:22:40 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalDHRIO" CatalogNumber="1756-DHRIO/C" Vendor="1" ProductType="12" ProductCode="18" Major="5" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="6" Type="ICP" Upstream="true"/>
+<Port Id="2" Type="DHPlus" Upstream="false"/>
+<Port Id="3" Type="DHPlus" Upstream="false"/>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="L55_to_L55" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Data Table Write" RemoteElement="destination_buffer" RequestedLength="1" ConnectedFlag="1" ConnectionPath="LocalDHRIO, 2, 3, 1, 0" CommTypeCode="0" LocalIndex="0" LocalElement="source_data" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="L55_to_PLC5" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="PLC5 Typed Read" RemoteElement="S:23" RequestedLength="1" ConnectionPath="LocalDHRIO" CommTypeCode="1" Channel="&apos;A&apos;" DHPlusSourceLink="99" DHPlusDestinationLink="10" DHPlusDestinationNode="8#000_004" LocalIndex="0" LocalElement="PLC5_sec_clock"
+ CacheConnections="FALSE"/>
+</Data>
+</Tag>
+<Tag Name="PLC5_sec_clock" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>2E 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="46"/>
+</Data>
+</Tag>
+<Tag Name="source_data" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>A4 4B 4C 10</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="273435556"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously reads location S:23 from a PLC5 controller on DH+.
+
+SYSTEM CONFIGURATION - Local ControlLogix chassis consists of a 1756-L55 in slot 0 and a 1756-DHRIO in slot 6.  Channel A (node 2) of the DHRIO module is connected to a DH+ network.  A PLC5 (node 4) is also on the network.
+
+ROUTING TABLE - A routing table is necessary in this example because the 1756-DHRIO module will be used in the Message Communication path to the PLC5.  To set up the routing table, the RSLinx software is needed. Set up the necessary link numbers for the backplane of the ControlLogix chassis as well as Channel A of the DHRIO module. For this example:  configure the chassis backplane to be  and Channel A to be .
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration Tab' in the Message setup screen, the 'Message Type' is ,  the 'Source Element' is  of the PLC5 controller, the 'Number of Elements' is , and the 'Destination Tag' is a tag called .  The 'Destination Tag' is a Controller scoped tag of data type integer (same as S:23).  
+
+Under the 'Communication Tab' in the Message setup screen, the communication 'Path' to the PLC5 is specified.  First, the location of the 1756-DHRIO module is specified by the way of the path  which stands for connection to the back plane (the number 1) and the connection to slot 6 where the DHRIO module is.  Select  as the 'Communication Method' and use the link numbers configured in the DHRIO module routing table to make the connection to the PLC5.    This is simular to remote messaging in the PLC5 where a local link, a remote link, and a destination address are specified.  For this example, 'Channel' is , 'Source Link' is the backplane (link ),  'Destination Link' is the DH+ network on Channel A (link ),  and 'Destination Node' is the PLC5 (node ).
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L55_to_PLC5.EN)MSG(L55_to_PLC5);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously writes a 1-DINT-message from the local 1756-L55 controller to a remote 1756-L55 controller over DH+.
+
+SYSTEM CONFIGURATION - Local ControlLogix chassis consists of a 1756-L55 in slot 0 and a 1756-DHRIO in slot 6.  Channel A of the DHRIO module is connected to a DH+ network. The remote ControlLogix chassis consists of a 1756-L55 controller in slot 0 and a 1756-DHRIO in slot 6.  Channel A of the DHRIO is also connected to the same DH+ network as the local chassis.  Channel A of the local DHRIO module is configured to be node address 2 and Channel A of the remote DHRIO is configured to be node address 3.
+
+ROUTING TABLE - In this example, the CIP messaging method will be used.  The CIP messaging method makes use of a Communication 'Path', therefore, NO DHRIO routing table is necessary.  On a DH+ network, this method can only be used when both of the controllers are ControlLogix controllers.
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration' Tab in the message setup screen, the 'Message Type' is , the 'Source Tag' is a tag called , the 'Number Of Elements' is , the 'Destination Element' is a tag located in the remote controller called .  You will have to create the tag  in the remote controller as a DINT data type.  Both tags,  and  are Controller scoped and of data type DINT.
+
+Under the 'Communication Tab' in the Message setup screen, the 'Path' to the remote controller is specified.  The following describes the path (1, 6, 2, 3, 1, 0) used in this example:   indicates a connection to the backplane from the controller,  indicates a connection to the local DHRIO module in slot 6,  indicates a connection to port 2 (Channel A) of the DHRIO module (get on the DH+ network),  indicates a connection to the remote DHRIO module at node address 3,  indicates a connection to the backplane of the remote chassis, and finally,  indicates a connection to the remote controller in slot 0.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L55_to_L55.EN)MSG(L55_to_L55);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

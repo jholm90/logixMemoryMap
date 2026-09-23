@@ -1,0 +1,451 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="ST_GearChange" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:48:38 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="ST_GearChange" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:48:26 2018" LastModifiedDate="Fri Jan 19 07:48:26 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="AutomaticReset" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="axis0" TagType="Base" DataType="AXIS_SERVO">
+<Data Format="Axis">
+<AxisParameters MotionGroup="gear_change" MotionModule="&lt;NA&gt;" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Revs" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward"
+ HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="0.0" HomeReturnSpeed="0.0" MaximumSpeed="25.0" MaximumAcceleration="3512.3972" MaximumDeceleration="3863.6365" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1"
+ MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" ExternalDriveType="Torque" FaultConfigurationBits="8" LDTType="PWM" LDTRecirculations="1" LDTCalibrationConstant="9.0" LDTCalibrationConstantUnits="us/in" LDTScaling="1.0" LDTScalingUnits="Position Units/m"
+ LDTLength="36.0" LDTLengthUnits="in" SSICodeType="Binary" SSIDataLength="13" SSIClockFrequency="208" AbsoluteFeedbackEnable="1" AbsoluteFeedbackOffset="0.0" ServoFeedbackType="AQB - A Quadrature B" ServoPolarityBits="0" VelocityFeedforwardGain="0.0" AccelerationFeedforwardGain="0.0"
+ PositionProportionalGain="101.72524" PositionIntegralGain="2.5870066" VelocityProportionalGain="260.41666" VelocityIntegralGain="0.0" VelocityScaling="0.0" TorqueScaling="0.023047619" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" PositionDifferentialGain="0.0" DirectionalScalingRatio="1.0" MaximumPositiveTravel="0.0"
+ MaximumNegativeTravel="0.0" PositionErrorTolerance="0.49152008" PositionLockTolerance="0.0" OutputLimit="10.0" DirectDriveRampRate="0.0" OutputOffset="0.0" VelocityOffset="0.0" TorqueOffset="0.0" FrictionCompensation="0.0" FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0"
+ BacklashReversalOffset="0.0" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" DriveFaultAction="Disable Drive" TestIncrement="1.0" TuningTravelLimit="25.0" TuningSpeed="25.0" TuningTorque="100.0" DampingFactor="0.8"
+ DriveModelTimeConstant="0.0015" PositionServoBandwidth="16.198286" VelocityServoBandwidth="41.467617" TuningConfigurationBits="16#0000_0002" MaximumAccelerationJerk="493477.38" MaximumDecelerationJerk="597107.5" DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="axis0_axis1_MAG" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="axis0_MSF" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="axis0_MSO" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="axis1" TagType="Base" DataType="AXIS_SERVO">
+<Data Format="Axis">
+<AxisParameters MotionGroup="gear_change" MotionModule="&lt;NA&gt;" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Revs" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward"
+ HomeSequence="Immediate" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="0.0" HomeReturnSpeed="0.0" MaximumSpeed="25.0" MaximumAcceleration="3359.6843" MaximumDeceleration="3863.6365" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1"
+ MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" ExternalDriveType="Torque" FaultConfigurationBits="12" LDTType="PWM" LDTRecirculations="1" LDTCalibrationConstant="9.0" LDTCalibrationConstantUnits="us/in" LDTScaling="1.0" LDTScalingUnits="Position Units/m"
+ LDTLength="36.0" LDTLengthUnits="in" SSICodeType="Binary" SSIDataLength="13" SSIClockFrequency="208" AbsoluteFeedbackEnable="1" AbsoluteFeedbackOffset="0.0" ServoFeedbackType="AQB - A Quadrature B" ServoPolarityBits="0" VelocityFeedforwardGain="0.0" AccelerationFeedforwardGain="0.0"
+ PositionProportionalGain="101.72524" PositionIntegralGain="2.5870066" VelocityProportionalGain="260.41666" VelocityIntegralGain="0.0" VelocityScaling="0.0" TorqueScaling="0.023534881" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" PositionDifferentialGain="0.0" DirectionalScalingRatio="1.0" MaximumPositiveTravel="0.0"
+ MaximumNegativeTravel="0.0" PositionErrorTolerance="0.49152008" PositionLockTolerance="0.0" OutputLimit="10.0" DirectDriveRampRate="0.0" OutputOffset="0.0" VelocityOffset="0.0" TorqueOffset="0.0" FrictionCompensation="0.0" FrictionCompensationWindow="0.0" BacklashStabilizationWindow="0"
+ BacklashReversalOffset="0.0" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" DriveFaultAction="Disable Drive" TestIncrement="1.0" TuningTravelLimit="25.0" TuningSpeed="25.0" TuningTorque="100.0" DampingFactor="0.8"
+ DriveModelTimeConstant="0.0015" PositionServoBandwidth="16.198286" VelocityServoBandwidth="41.467617" TuningConfigurationBits="16#0000_0002" MaximumAccelerationJerk="451499.16" MaximumDecelerationJerk="597107.5" DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="axis1_MAJ" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="axis1_MSF" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="axis1_MSO" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="gear_change" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="4000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Disabled"/>
+</Data>
+</Tag>
+<Tag Name="gear_ratio" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="input_0" TagType="Alias" Radix="Decimal" AliasFor="Local:0:I.Data.0"/>
+<Tag Name="input_1" TagType="Alias" Radix="Decimal" AliasFor="Local:0:I.Data.1"/>
+<Tag Name="input_2" TagType="Alias" Radix="Decimal" AliasFor="Local:0:I.Data.2"/>
+<Tag Name="Move_Speed" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="output" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="State" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="timer" TagType="Base" DataType="TIMER">
+<Data>E5 B3 0F A0 D0 07 00 00 6F 51 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="2000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="20847"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="ST_Gear_Change" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="LadderFile" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIO(timer.DN)TON(timer,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(timer.DN)OTE(output);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[RET();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="ST_Gear_Change" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[]]>
+</Line>
+<Line Number="1">
+<![CDATA[(* All information provided "AS IS" - No Warranty or implied merchantability. ]]>
+</Line>
+<Line Number="2">
+<![CDATA[Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes *)]]>
+</Line>
+<Line Number="3">
+<![CDATA[]]>
+</Line>
+<Line Number="4">
+<![CDATA[]]>
+</Line>
+<Line Number="5">
+<![CDATA[]]>
+</Line>
+<Line Number="6">
+<![CDATA[	(*** This program demonstrates how ST Language programs work.]]>
+</Line>
+<Line Number="7">
+<![CDATA[	]]>
+</Line>
+<Line Number="8">
+<![CDATA[	Turning the servos on, monitoring Inputs 1 & 2and changing the gear ratio up or]]>
+</Line>
+<Line Number="9">
+<![CDATA[	down based on the input status.  If input 0 is enabled the program jumps to a ]]>
+</Line>
+<Line Number="10">
+<![CDATA[	subroutine waits 2 secs then restarts at ServosOn.***)]]>
+</Line>
+<Line Number="11">
+<![CDATA[]]>
+</Line>
+<Line Number="12">
+<![CDATA[	(*** Note the use of the tag State.  This is necessary in ST Language to control the program]]>
+</Line>
+<Line Number="13">
+<![CDATA[	execution sequence. In SFC language the program executes one step at a time and waits for the]]>
+</Line>
+<Line Number="14">
+<![CDATA[	transition to be complete before moving on to the next step. St Language executes like ladder.]]>
+</Line>
+<Line Number="15">
+<![CDATA[	The programmer must control the program execution. ***) ]]>
+</Line>
+<Line Number="16">
+<![CDATA[]]>
+</Line>
+<Line Number="17">
+<![CDATA[If State = 0 then]]>
+</Line>
+<Line Number="18">
+<![CDATA[	MSO (axis0, axis0_MSO);			(* Turn servos on and set tags to initial values *)]]>
+</Line>
+<Line Number="19">
+<![CDATA[	MSO (axis1, axis1_MSO);]]>
+</Line>
+<Line Number="20">
+<![CDATA[	gear_ratio [:=] 0;]]>
+</Line>
+<Line Number="21">
+<![CDATA[	State [:=] 1;]]>
+</Line>
+<Line Number="22">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="23">
+<![CDATA[]]>
+</Line>
+<Line Number="24">
+<![CDATA[If axis0.ServoActionStatus & axis1.ServoActionStatus & State = 1 then]]>
+</Line>
+<Line Number="25">
+<![CDATA[	State := 2;]]>
+</Line>
+<Line Number="26">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="27">
+<![CDATA[]]>
+</Line>
+<Line Number="28">
+<![CDATA[		If State = 2 & input_1 then				(*** This IF statement monitors inputs 1, 2 & 0]]>
+</Line>
+<Line Number="29">
+<![CDATA[												Depending on which one is enabled the program will either]]>
+</Line>
+<Line Number="30">
+<![CDATA[			gear_ratio := gear_ratio + .5;		increase or decrease the gear ratio. If input 0 is pressed the ]]>
+</Line>
+<Line Number="31">
+<![CDATA[			State := 3;							program jumps to a subroutine called LadderFile. ***)]]>
+</Line>
+<Line Number="32">
+<![CDATA[			elsif State = 2 & input_2 then]]>
+</Line>
+<Line Number="33">
+<![CDATA[				gear_ratio := gear_ratio - .5;]]>
+</Line>
+<Line Number="34">
+<![CDATA[				State := 3;]]>
+</Line>
+<Line Number="35">
+<![CDATA[			elsif State = 2 & input_0 then]]>
+</Line>
+<Line Number="36">
+<![CDATA[				State := 5;]]>
+</Line>
+<Line Number="37">
+<![CDATA[		end_if;]]>
+</Line>
+<Line Number="38">
+<![CDATA[]]>
+</Line>
+<Line Number="39">
+<![CDATA[If State = 3  then]]>
+</Line>
+<Line Number="40">
+<![CDATA[	MAG (axis0, axis1, axis0_axis1_MAG, 1, gear_ratio, 1, 1, Actual, Real, Disabled, 10, 1);]]>
+</Line>
+<Line Number="41">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="42">
+<![CDATA[]]>
+</Line>
+<Line Number="43">
+<![CDATA[]]>
+</Line>
+<Line Number="44">
+<![CDATA[If State = 3 then]]>
+</Line>
+<Line Number="45">
+<![CDATA[	maj(axis1, axis1_MAJ, 0, Move_Speed, Unitspersec, 50, %ofMaximum, 50, %ofMaximum, 1,100.0,100.0,%ofTime, 0, 0,0,None);]]>
+</Line>
+<Line Number="46">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="47">
+<![CDATA[]]>
+</Line>
+<Line Number="48">
+<![CDATA[]]>
+</Line>
+<Line Number="49">
+<![CDATA[]]>
+</Line>
+<Line Number="50">
+<![CDATA[If State = 3 & Local:0:I.Data = 0 then]]>
+</Line>
+<Line Number="51">
+<![CDATA[	State := 1;]]>
+</Line>
+<Line Number="52">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="53">
+<![CDATA[]]>
+</Line>
+<Line Number="54">
+<![CDATA[If State = 5 & Local:0:I.Data = 0 then		(*** This action turns on the servos and jumps to the ]]>
+</Line>
+<Line Number="55">
+<![CDATA[	MSF (axis0, axis0_MSF);					LadderFile subroutine ***)]]>
+</Line>
+<Line Number="56">
+<![CDATA[	MSF (axis1, axis1_MSF);]]>
+</Line>
+<Line Number="57">
+<![CDATA[	JSR(LadderFile, 0);]]>
+</Line>
+<Line Number="58">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="59">
+<![CDATA[]]>
+</Line>
+<Line Number="60">
+<![CDATA[If State = 5 & timer.DN & Local:0:I.Data = 0 then	(*** Wait for the subroutine timer to be done then]]>
+</Line>
+<Line Number="61">
+<![CDATA[	State := 0;										loop back to the beginning of the program ***)]]>
+</Line>
+<Line Number="62">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="63">
+<![CDATA[]]>
+</Line>
+<Line Number="64">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="1"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

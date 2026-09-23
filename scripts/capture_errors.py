@@ -1,0 +1,352 @@
+"""Every capture that errored, routed to the open question it was built for.
+
+Step 3 of CLAUDE.md's capture sequence. Exists because a 31-row family with a
++10.5% systematic error sat unexamined: every one of its files carried
+`error_count = n+1`, nothing recorded whether the rows were trustworthy, and
+nowhere was that fact written down against the question the files were built to
+answer.
+
+Two failure classes, both otherwise silent:
+
+  BUILD ERRORS    the L5X imported and the project built, but Studio reported
+                  errors. `actual_bytes` still gets filled in, so the row
+                  looks like data. It may be fine (a benign warning counted as
+                  an error) or it may mean part of the file never made it into
+                  the controller, which silently inflates the model's apparent
+                  over-prediction. Either way the row is SUSPECT, not bad, and
+                  suspect rows must be labelled, not skipped.
+
+  CONVERSION FAILURES   a committed generated file with no `ok` on record in
+                  convert_log.csv. Step 2 reports these; this step also
+                  routes each one to its owning question.
+
+The routing is by the `OQ-` identifier in the sample's own manifest
+description, which is why every generator must name its question there. A row
+whose owning question cannot be determined is reported as UNROUTED and is a
+generator bug to fix at the source, not something to resolve by hand here.
+
+THE GATE: for each question that owns errored rows, this script requires a
+line in that question's OPEN_QUESTIONS.md entry of the form
+
+    **CAPTURE ERRORS: <n> row(s)** ...
+
+with <n> matching the current count. Exit code 1 if any question is missing
+its line, has a stale count, or if any row is UNROUTED. That is what stops an
+error being forgotten: the number cannot drift without failing this check.
+
+Run: python scripts/capture_errors.py [--list]
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import csv
+import hashlib
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+# The manifest is split in two so that the generators and the capture
+# tooling never write the same file: samples/manifest.csv holds the spec,
+# samples/captures.csv the results. load_manifest() joins them back into
+# the row shape this script already expects.
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from sample_gen.manifest_store import load_manifest  # noqa: E402
+
+MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
+RESOLVED_QUESTIONS = REPO_ROOT / "docs" / "RESOLVED_QUESTIONS.md"
+OWNERS = REPO_ROOT / "samples" / "oq_owners.csv"
+CONVERT_LOG = REPO_ROOT / "samples" / "convert_log.csv"
+OPEN_QUESTIONS = REPO_ROOT / "docs" / "OPEN_QUESTIONS.md"
+
+_OQ_RE = re.compile(r"OQ-[A-Z0-9][A-Z0-9-]*")
+_GATE_RE = re.compile(r"\*\*CAPTURE ERRORS: (\d+) row\(s\)\*\*")
+
+
+def _declared_owners() -> list[tuple[str, str]]:
+    """Explicit sample-prefix -> question map, longest prefix first.
+
+    A new generator names its question in the sample description and needs no
+    entry here. This file exists for two cases the description cannot cover:
+    a family whose question has since closed and whose errors belong to the
+    successor, and a legacy family whose generator no longer exists to be
+    edited. An explicit entry WINS over the description, because an incidental
+    mention in prose is weaker evidence of ownership than a deliberate line.
+
+    A prefix of the form `oq:OQ-OLD` reads as "any row whose description names
+    OQ-OLD", which is how a closed question hands its errored rows to its
+    successor without needing to know which sample families mention it.
+    """
+    if not OWNERS.exists():
+        return []
+    with open(OWNERS, newline="", encoding="utf-8-sig") as f:
+        pairs = [(r["sample_id_prefix"], r["owning_oq"]) for r in csv.DictReader(f)]
+    return sorted(pairs, key=lambda p: -len(p[0]))
+
+
+_OWNERS_CACHE = _declared_owners()
+
+
+_ALIASES = {p[3:]: oq for p, oq in _OWNERS_CACHE if p.startswith("oq:")}
+_PREFIXES = [(p, oq) for p, oq in _OWNERS_CACHE if not p.startswith("oq:")]
+
+
+def _owning_questions(row: dict) -> list[str]:
+    sample_id = row.get("sample_id", "")
+    for prefix, oq in _PREFIXES:
+        if sample_id.startswith(prefix):
+            return [oq]
+    text = f"{row.get('description', '')} {row.get('notes', '')}"
+    named = sorted(set(_OQ_RE.findall(text)))
+    return sorted({_ALIASES.get(oq, oq) for oq in named})
+
+
+def _errored_rows(rows: list[dict]) -> list[dict]:
+    out = []
+    for r in rows:
+        count = (r.get("error_count") or "").strip()
+        if count and count != "0":
+            out.append(r)
+    return out
+
+
+def _conversion_failures(rows: list[dict]) -> list[dict]:
+    """Committed generated files that were ATTEMPTED and did not reach `ok`.
+
+    Last row per filename wins -- a later success supersedes an earlier
+    failure. A file with no convert_log row at all is NOT a failure: it has
+    simply never been submitted, which is the normal state of a batch built
+    yet. Conflating the two made every freshly generated file read as broken,
+    which is exactly the kind of noise that trains people to ignore a report.
+    """
+    if not CONVERT_LOG.exists():
+        return []
+    status: dict[str, str] = {}
+    with open(CONVERT_LOG, newline="", encoding="utf-8-sig") as f:
+        for entry in csv.DictReader(f):
+            # convert_log.csv is written on Windows, so its paths use
+            # backslashes -- Path() on Linux treats those as ordinary
+            # characters and Path(...).name returns the whole string, which
+            # silently matched nothing and reported every committed file as
+            # unconverted. Normalise the separator before splitting.
+            name = (entry.get("l5x_path") or "").strip().replace("\\", "/")
+            if name:
+                status[Path(name).name] = (entry.get("status") or "").strip().lower()
+    out = []
+    for r in rows:
+        path = (r.get("l5x_path") or "").replace("\\", "/")
+        if "samples/generated/" not in path:
+            continue
+        recorded = status.get(Path(path).name)
+        if recorded is not None and recorded != "ok":
+            out.append(r)
+    return out
+
+
+# A question's own HEADING, not any bold mention of it. A loose pattern once
+# matched a bold cross-reference inside another entry and truncated the span
+# before its CAPTURE ERRORS line, which surfaced the moment 35 questions moved
+# into one file at once.
+#
+# Every heading style the two documents use, which is one pattern rather than
+# one per file -- a document reorganised into "## 6. OQ-X" headings was
+# reported as having no entry at all, because the open-file pattern accepted
+# only the numbered-list form. The doc structure should not be dictated by
+# which of several equivalent forms a regex happens to know:
+#
+#     ## OQ-X -- ...          a question closed on its own
+#     ## 6. OQ-X -- ...       a numbered section heading
+#     6. **OQ-X** -- ...      a numbered list entry
+#     ## **OQ-X** -- ...      either, with the id emphasised
+#
+# A heading or list marker is REQUIRED. Allowing a bare "**OQ-X**" at line
+# start makes the pattern match a bold cross-reference again and truncates the
+# span before its CAPTURE ERRORS line -- which is exactly how this broke when
+# the requirement was relaxed.
+_HEADING_RE = r"^(?:#+ *(?:\d+[a-z]?\. *)?|\d+[a-z]?\. *)\*{0,2}(OQ-[A-Z0-9][A-Z0-9-]*)"
+
+
+def _entry_spans(text: str, heading: str) -> dict[str, str]:
+    """Each question's own section of a questions document, keyed by its id."""
+    spans: dict[str, str] = {}
+    starts = list(re.finditer(heading, text, re.M))
+    for i, m in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(text)
+        spans.setdefault(m.group(1), text[m.start():end])
+    return spans
+
+
+def _all_entry_spans() -> tuple[dict[str, str], dict[str, str]]:
+    """Open entries and closed entries, separately.
+
+    A CLOSED question can still own errored rows -- the rows outlive the
+    question -- and those have to be written down where the question now
+    lives, so RESOLVED_QUESTIONS.md is searched too rather than treating a
+    closed question's errors as unrecordable.
+    """
+    open_spans = _entry_spans(
+        OPEN_QUESTIONS.read_text(encoding="utf-8"), _HEADING_RE)
+    closed_spans: dict[str, str] = {}
+    if RESOLVED_QUESTIONS.exists():
+        closed_text = RESOLVED_QUESTIONS.read_text(encoding="utf-8")
+        # A HEADING, not any bold mention. The loose pattern matched a bold
+        # cross-reference inside another entry and truncated the span before
+        # its CAPTURE ERRORS line -- which surfaced the moment 35 questions
+        # were moved into this file at once. Both heading styles are in use:
+        # "## OQ-X — ..." for one closed on its own, and "12. **OQ-X**" for
+        # an entry moved over wholesale with its numbering intact.
+        closed_spans = _entry_spans(closed_text, _HEADING_RE)
+    return open_spans, closed_spans
+
+
+_TIMESTAMP_ATTRS = re.compile(
+    r'(ExportDate|ProjectCreationDate|LastModifiedDate)="[^"]*"')
+
+
+def _content_hash(text: str) -> str:
+    """Hash of an L5X ignoring its export timestamps.
+
+    Regenerating a sample rewrites ExportDate/ProjectCreationDate/
+    LastModifiedDate even when nothing else moved, so a plain
+    "file changed since capture" check reports every regenerated file as
+    stale. That false positive is not harmless: it was used once to argue a
+    DTR capture was stale when the rung text had in fact changed, and the
+    same check the other way round would hide a real change behind a
+    timestamp. Compare content, never mtime.
+    """
+    return hashlib.sha256(
+        _TIMESTAMP_ATTRS.sub(r'\1=""', text).encode("utf-8", errors="replace")).hexdigest()
+
+
+def _staleness(rows: list[dict]) -> tuple[list[str], list[str]]:
+    """(captures whose file has since changed, captures whose file is gone).
+
+    A capture describes the file as it was on the day it ran. If the
+    generator has been fixed since, that row is measuring a file that no
+    longer exists and its numbers are not evidence about anything -- and the
+    error it recorded may already be fixed. Found: of 144 errored
+    rows, 14 were in exactly that state, including every cptwide LINT row
+    (undeclared operand tags, fixed) and every unweighted_dtr row
+    (missing terminating NOP, added).
+    """
+    stale: list[str] = []
+    missing: list[str] = []
+    for r in rows:
+        captured = (r.get("date_tested") or "")[:10]
+        path = r.get("l5x_path") or ""
+        if not captured or not path:
+            continue
+        full = REPO_ROOT / path
+        if not full.exists():
+            missing.append(r["sample_id"])
+            continue
+        log = subprocess.run(["git", "log", "--format=%H %cs", "--", path],
+                             capture_output=True, text=True, cwd=REPO_ROOT).stdout
+        at_capture = None
+        for line in log.splitlines():
+            if not line.strip():
+                continue
+            commit, committed = line.split()
+            if committed <= captured:
+                at_capture = commit
+                break
+        if at_capture is None:
+            continue
+        then = subprocess.run(["git", "show", f"{at_capture}:{path}"],
+                              capture_output=True, text=True, cwd=REPO_ROOT).stdout
+        if not then:
+            continue
+        if _content_hash(then) != _content_hash(full.read_text(encoding="utf-8", errors="replace")):
+            stale.append(r["sample_id"])
+    return stale, missing
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--list", action="store_true",
+                    help="print every offending sample_id, not just the counts")
+    args = ap.parse_args(argv)
+
+    rows = load_manifest()
+
+    errored = _errored_rows(rows)
+    unconverted = _conversion_failures(rows)
+
+    by_oq: dict[str, list[tuple[str, str]]] = collections.defaultdict(list)
+    unrouted: list[tuple[str, str]] = []
+    for kind, group in (("build", errored), ("convert", unconverted)):
+        for r in group:
+            owners = _owning_questions(r)
+            if owners:
+                for oq in owners:
+                    by_oq[oq].append((r["sample_id"], kind))
+            else:
+                unrouted.append((r["sample_id"], kind))
+
+    no_text = [r["sample_id"] for r in errored if not (r.get("error_log") or "").strip()]
+    stale, missing = _staleness(errored)
+
+    print(f"{len(errored)} row(s) captured WITH build errors")
+    print(f"{len(unconverted)} committed generated file(s) with no 'ok' in convert_log.csv")
+    print(f"{len(no_text)} errored row(s) carry NO error text and cannot be diagnosed "
+          f"without recapture")
+    print(f"{len(stale)} errored row(s) are STALE -- the file's content changed after the "
+          f"capture, so the fix has already landed and they only need RECAPTURE")
+    print(f"{len(missing)} errored row(s) point at a file that no longer exists\n")
+    if stale:
+        print("  stale (recapture): " + ", ".join(sorted(stale)) + "\n")
+    if missing:
+        print("  file gone: " + ", ".join(sorted(missing)) + "\n")
+
+    open_spans, closed_spans = _all_entry_spans()
+    failures: list[str] = []
+
+    print(f"{'open question':26s}{'rows':>6}  gate")
+    for oq, items in sorted(by_oq.items(), key=lambda kv: -len(kv[1])):
+        n = len(items)
+        entry = open_spans.get(oq) or closed_spans.get(oq)
+        where = "open" if oq in open_spans else "closed" if oq in closed_spans else "?"
+        if entry is None:
+            state = "NO ENTRY in either questions document"
+            failures.append(
+                f"{oq}: {n} errored row(s) and no entry anywhere to flag them against")
+        else:
+            m = _GATE_RE.search(entry)
+            if m is None:
+                state = f"MISSING the CAPTURE ERRORS line ({where} entry)"
+                failures.append(
+                    f'{oq}: add  **CAPTURE ERRORS: {n} row(s)**  to its entry')
+            elif int(m.group(1)) != n:
+                state = f"STALE count (entry says {m.group(1)}, actual {n})"
+                failures.append(f"{oq}: CAPTURE ERRORS says {m.group(1)}, actual is {n}")
+            else:
+                state = f"ok ({where})"
+        print(f"{oq:26s}{n:>6}  {state}")
+        if args.list:
+            for sample_id, kind in sorted(items):
+                print(f"      {kind:8s} {sample_id}")
+
+    if unrouted:
+        print(f"\n{len(unrouted)} UNROUTED row(s) -- no OQ- identifier in the manifest "
+              f"description, so the error has nowhere to be flagged. Fix the generator's "
+              f"description at the source:")
+        for sample_id, kind in sorted(unrouted):
+            print(f"      {kind:8s} {sample_id}")
+        failures.append(f"{len(unrouted)} errored row(s) name no owning question")
+
+    if failures:
+        print("\nFAILED -- an error with nowhere to be recorded is an error that gets "
+              "forgotten:")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+
+    print("\nEvery errored capture is flagged against the question that asked for it.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

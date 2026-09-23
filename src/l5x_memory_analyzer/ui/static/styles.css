@@ -1,0 +1,725 @@
+:root {
+  --bg: #f5f6f8;
+  --panel-bg: #ffffff;
+  --text: #1c2230;
+  --text-dim: #5b6472;
+  --border: #d7dce2;
+  --accent: #2f6fed;
+  --danger: #d64545;
+  --group-fill: #33465e;
+  --group-text: #ffffff;
+
+  --basis-known: #3d9a5a;
+  --basis-assumed: #d9a531;
+  --basis-fitted: #e07b2c;
+  --basis-unknown: #c0392b;
+
+  /* CLAUDE.md ground-truth constraint: compiled logic size is a fitted
+     heuristic, never derived from L5X directly like tag/UDT/AOI data
+     space -- every logic-derived number must be visually flagged as
+     "estimated". Deliberately a DIFFERENT visual channel (dashed stroke +
+     its own badge color) from the basis-chip colors above -- tier
+     (exact/estimated) and basis (KNOWN/ASSUMED/FITTED/UNKNOWN) are two
+     separate confidence concepts and must never be blurred together. */
+  --tier-estimated: #9b59b6;
+
+  /* Confidence bands. One definition, used by the bar fills below AND by the
+     treemap when ?ConfidenceMode=true recolours it by band, so a tile and the
+     bar describing it can never be two different greens. */
+  --band-EXACT: #4a9d5f;
+  --band-MEASURED: #5aa86b;
+  --band-CLOSE: #86b04a;
+  --band-APPROX: #c9a227;
+  --band-UNVERIFIED: #b3552f;
+  --band-UNPRICED: #8d3a3a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171c;
+    --panel-bg: #1c2028;
+    --text: #e8eaee;
+    --text-dim: #9aa3b0;
+    --border: #333a45;
+    --group-fill: #465873;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+#app-title { font-weight: 700; font-size: 1.05rem; }
+#file-info { color: var(--text-dim); font-size: 0.85rem; }
+
+.toolbar-btn {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toolbar-btn:hover { filter: brightness(1.1); }
+
+#export-buttons { display: flex; gap: 0.4rem; }
+#export-buttons.hidden { display: none; }
+
+#export-warning {
+  padding: 0.5rem 1rem;
+  background: #4a3a12;
+  color: #f5d98c;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+}
+#export-warning.hidden { display: none; }
+
+#safety-warning {
+  padding: 0.5rem 1rem;
+  background: #4a1414;
+  color: #f5a3a3;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+}
+#safety-warning.hidden { display: none; }
+
+#empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 60vh;
+  color: var(--text-dim);
+}
+#empty-state.hidden { display: none; }
+
+#budget-bar-wrap { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 200px; }
+#budget-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+#budget-bar-fill { height: 100%; background: var(--accent); }
+#budget-bar-fill.over { background: var(--danger); }
+#budget-label { font-size: 0.8rem; color: var(--text-dim); white-space: nowrap; }
+
+#tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem 0;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+
+.tabs-spacer { flex: 1; }
+
+/* The type/list toggle is always visible but starts hidden --
+   this checkbox and the split-toggle button below sit in the tab bar
+   permanently, unlike the 3 mutually-exclusive tab-btns to their left. */
+.tab-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 0 0.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.split-toggle-btn {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 0.2rem 0.25rem;
+  padding: 0.3rem 0.6rem;
+}
+.split-toggle-btn.active { color: var(--accent); border-color: var(--accent); }
+
+/* Docked List/Type-Summary pane, toggled via .split-toggle-btn -- hidden
+   (width 0) until #panel-treemap gets .split-mode, at which point it and
+   #treemap-main share the panel 50/50. Its own body scrolls independently
+   ("type/list need to be scrollable if theres lots of elements"). */
+#details-dock {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  overflow: hidden;
+}
+#panel-treemap { overflow: hidden; }
+#panel-treemap.split-mode #treemap-main { flex: 1 1 50%; }
+#panel-treemap.split-mode #details-dock { display: flex; flex: 1 1 50%; }
+
+#dock-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.dock-tab-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  border-bottom: 2px solid transparent;
+}
+.dock-tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+
+.dock-body { flex: 1; min-height: 0; overflow: auto; padding: 0.5rem; }
+.dock-panel { display: none; }
+.dock-panel.active { display: block; }
+#list-table-dock { font-size: 0.78rem; }
+
+#breadcrumb {
+  padding: 0.4rem 0;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+#breadcrumb span { cursor: pointer; }
+#breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
+#breadcrumb .sep { margin: 0 0.35rem; }
+
+#sibling-popup {
+  position: fixed;
+  z-index: 20;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  padding: 0.3rem 0;
+  min-width: 220px;
+  max-width: 340px;
+  font-size: 0.8rem;
+}
+.sibling-popup-header {
+  padding: 0.25rem 0.7rem 0.4rem;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.2rem;
+}
+.sibling-item {
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sibling-item:hover { background: var(--accent); color: #fff; }
+.sibling-bytes { color: var(--text-dim); flex-shrink: 0; }
+.sibling-item:hover .sibling-bytes { color: #fff; opacity: 0.85; }
+
+main { flex: 1; min-height: 0; padding: 0.75rem 1rem; }
+/* A panel scrolls its OWN content. With height:100% and no overflow the
+   scroll area was whatever was left after the toolbar, budget bar and nav
+   row, so a long list ran past the bottom and its scrollbar stopped short
+   of the real end of the content. min-height:0 is required for that to
+   work inside the flex column -- without it the panel refuses to shrink
+   below its content and clips instead of scrolling. */
+.panel { display: none; height: 100%; min-height: 0; overflow: auto; }
+.panel.active { display: block; }
+
+/* The treemap panel splits in half on demand (the
+   "⊞ Details" toggle) to dock a mini List/Type-Summary pane alongside the
+   SVG -- #treemap-main holds the SVG+tooltip exactly as before, #details-
+   dock is the new always-present-but-collapsed sibling. */
+/* .panel.active normally means display:block (see the generic rule
+   above) -- #panel-treemap needs flex instead so #treemap-main and
+   #details-dock can sit side by side. Scoped to the ID+.active combo
+   (not the bare #panel-treemap ID) so it doesn't out-specificity the
+   plain ".panel { display: none }" hidden-tab rule when this tab isn't
+   the active one. */
+#panel-treemap.active { display: flex; gap: 0.6rem; }
+#panel-treemap { height: 100%; }
+#treemap-main { position: relative; flex: 1 1 100%; min-width: 0; height: 100%; }
+#treemap-svg { width: 100%; height: 100%; display: block; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; }
+
+.tm-rect { stroke: var(--panel-bg); stroke-width: 1.5; cursor: pointer; }
+.tm-label {
+  font-size: 11px;
+  fill: #ffffff;
+  paint-order: stroke;
+  stroke: #00000099;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.tm-label-sub { font-size: 9.5px; opacity: 0.85; }
+
+/* Depth-2 nested tiles ("some obvious difference
+   between parent/children") -- dashed stroke + reduced opacity + smaller
+   label, on top of (never instead of) the ordinary .tm-rect/.tm-label
+   styling above, so a grandchild tile is never mistaken for a same-level
+   sibling. Declared after .tm-rect/.tm-label so it wins at equal
+   specificity. */
+.tm-rect-nested { stroke-dasharray: 2,2; opacity: 0.78; }
+.tm-label-nested { font-size: 8.5px; opacity: 0.9; }
+
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #10131a;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  z-index: 10;
+  max-width: 280px;
+}
+#tooltip.hidden { display: none; }
+
+/* % of the current treemap root this tile represents -- a half-full bar
+   means this element is half its parent's usage.
+   Fixed dark colors, same reasoning as .text-dim-on-dark: #tooltip has a
+   permanently dark background regardless of page theme. */
+.tooltip-bar-wrap { background: #333a45; border-radius: 3px; height: 7px; overflow: hidden; margin-top: 0.35rem; }
+.tooltip-bar { height: 100%; background: var(--accent); }
+.tooltip-bar-label { font-size: 0.7rem; color: #9aa3b0; margin-top: 0.15rem; }
+
+#list-table, #list-table-dock { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--panel-bg); }
+#list-table th, #list-table td, #list-table-dock th, #list-table-dock td { text-align: left; padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--border); }
+#list-table th, #list-table-dock th { cursor: pointer; color: var(--text-dim); position: sticky; top: 0; background: var(--panel-bg); }
+#list-table th:hover, #list-table-dock th:hover { color: var(--accent); }
+/* The header ("BYTES"/"%") is left-aligned via the general
+   rule above -- data cells used to override to right-align, which is what
+   flagged; left-aligned now, tabular-nums kept so digits still line up
+   in a column even without right alignment. */
+#list-table td.num, #list-table-dock td.num { font-variant-numeric: tabular-nums; }
+
+/* The list is browsable into each element by name or type: a row for a
+   drillable node behaves like a treemap
+   tile click. */
+#list-table tbody tr.row-drillable, #list-table-dock tbody tr.row-drillable { cursor: pointer; }
+#list-table tbody tr.row-drillable:hover, #list-table-dock tbody tr.row-drillable:hover { background: var(--border); }
+
+.basis-chip {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: #fff;
+}
+.basis-KNOWN { background: var(--basis-known); }
+.basis-ASSUMED { background: var(--basis-assumed); }
+.basis-FITTED { background: var(--basis-fitted); }
+.basis-UNKNOWN { background: var(--basis-unknown); }
+
+/* Theme-aware dim text, for use on the normal page background (list
+   table, etc). NOT for inside #tooltip -- that has a fixed dark
+   background regardless of page theme, see .text-dim-on-dark below. */
+.text-dim { color: var(--text-dim); font-size: 0.72rem; }
+
+/* Same purpose as .text-dim but tuned for #tooltip's fixed dark
+   background (#10131a/#fff, doesn't follow the page theme) -- the
+   theme-variable --text-dim would be too low-contrast there in light
+   mode. */
+.text-dim-on-dark { color: #9aa3b0; font-size: 0.72rem; }
+
+.tier-chip {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: #fff;
+  background: var(--tier-estimated);
+  margin-right: 0.35rem;
+}
+
+#type-summary, #type-summary-dock { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
+.type-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.85rem; }
+.type-row .type-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+/* The type summary has to stay readable for very long tag and UDT names.
+   It was a fixed 140px width (long
+   names just overflowed/wrapped the row). Now a bounded, ellipsis-
+   truncated flex item; the full name is always available via the title
+   attribute (native browser tooltip) on hover. */
+.type-row .type-name {
+  flex: 0 1 220px;
+  min-width: 60px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.type-row .type-bar-wrap { flex: 1 1 auto; min-width: 40px; background: var(--border); border-radius: 3px; height: 14px; overflow: hidden; }
+.type-row .type-bar { height: 100%; background: var(--accent); }
+.type-row .type-bytes { flex: 0 0 auto; min-width: 120px; text-align: right; color: var(--text-dim); }
+
+#errors-footer {
+  padding: 0.5rem 1rem;
+  background: #3a1414;
+  color: #f5c6c6;
+  font-size: 0.8rem;
+}
+#errors-footer.hidden { display: none; }
+
+/* ---- navigation row: Back button beside the breadcrumb ---- */
+/* The nav row sits OUTSIDE <main>, so it never picked up main's 1rem side
+   gutter: the Back arrow ran into the window edge and the level stats ran
+   off the other one. Matching main's padding puts the arrow's left edge in
+   line with the treemap's left edge, and keeps the stats inside the same
+   bounds as the bar they describe. #breadcrumb drops its own horizontal
+   padding so the trail is not indented twice. */
+#nav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+#nav-row #breadcrumb { flex: 1 1 auto; min-width: 0; }
+/* Back reads as part of the breadcrumb trail, not a toolbar control --
+   it navigates the same path the crumbs do, so it matches the crumbs'
+   plain-link styling ("All" and the rest) rather than carrying a button
+   shell that made it look like a separate piece of chrome. */
+#back-btn {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 0.35rem;
+  /* Matched to #breadcrumb exactly, not to whatever #nav-row inherits.
+     "font: inherit" took the body size and colour, which is why Back
+     still stood out beside the trail it belongs to. */
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: inherit;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+#back-btn:hover:not([disabled]) {
+  color: var(--accent);
+  text-decoration: underline;
+}
+#back-btn[disabled] { opacity: .4; cursor: default; text-decoration: none; }
+
+/* ---- list filter (name / type, wildcards) ---- */
+.filter-wrap { position: relative; display: inline-flex; align-items: center; }
+.funnel-btn {
+  background: none; border: none; color: inherit; cursor: pointer;
+  padding: 0 4px; opacity: 0.55; line-height: 0; vertical-align: middle;
+}
+.funnel-icon { display: block; }
+.funnel-btn:hover { opacity: 1; }
+.funnel-btn.active { opacity: 1; color: var(--accent, #4a90d9); }
+.filter-popup {
+  position: absolute; top: 100%; left: 0; z-index: 30; margin-top: 4px;
+  background: var(--panel, #222); border: 1px solid var(--border, #444);
+  border-radius: 4px; padding: 8px; min-width: 230px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.4);
+}
+.filter-popup input[type="text"] {
+  width: 100%; box-sizing: border-box; font: inherit;
+  background: var(--bg, #1a1a1a); color: inherit;
+  border: 1px solid var(--border, #444); border-radius: 3px; padding: 3px 5px;
+}
+.filter-popup .filter-hint { font-size: 0.8em; opacity: 0.65; margin-top: 5px; }
+.filter-popup .filter-actions { margin-top: 7px; text-align: right; }
+
+/* ---- definition / instance selector on a type node ---- */
+.defmode-toggle { display: inline-flex; align-items: center; gap: 8px; margin-left: 0.6rem; font-size: 0.9em; }
+.defmode-legend { opacity: 0.75; }
+.defmode-opt { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.defmode-opt input { margin: 0; }
+
+/* ---- cross-reference tab ---- */
+#xref-detail { padding: 10px 14px; overflow: auto; }
+#xref-detail table { width: 100%; border-collapse: collapse; }
+#xref-detail th, #xref-detail td { text-align: left; padding: 3px 8px; border-bottom: 1px solid var(--border, #333); }
+#xref-detail .xref-path { cursor: pointer; color: var(--accent, #4a90d9); }
+#xref-detail .xref-path:hover { text-decoration: underline; }
+.xref-progress {
+  height: 4px; background: var(--border, #333); border-radius: 2px; overflow: hidden; margin: 10px 0;
+}
+.xref-progress > div {
+  height: 100%; width: 35%; background: var(--accent, #4a90d9);
+  animation: xref-slide 1.1s ease-in-out infinite;
+}
+@keyframes xref-slide { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
+
+/* ---- AOI / UDT definition link ---- */
+.def-link {
+  display: inline-block; margin-left: 0.6rem; font-size: 0.85em;
+  color: var(--accent, #4a90d9); cursor: pointer; text-decoration: underline;
+}
+
+/* ---- depth stepper (replaces the 2-levels checkbox) ---- */
+.depth-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.depth-stepper .step-btn {
+  width: 22px; height: 22px; line-height: 1; padding: 0;
+  border: 1px solid var(--border, #444); background: transparent;
+  color: inherit; cursor: pointer; border-radius: 3px;
+}
+.depth-stepper .step-btn:hover { background: rgba(255,255,255,.12); }
+.depth-stepper input[type="number"] {
+  width: 42px; text-align: center; background: transparent;
+  color: inherit; border: 1px solid var(--border, #444); border-radius: 3px;
+  padding: 2px 0;
+}
+
+/* ---- errors: tab chip, fixed banner, detail tab ---- */
+#errors-tab-btn.has-errors { color: #ffb4a8; font-weight: 600; }
+#errors-banner {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: block; width: 100%; text-align: left;
+  padding: 8px 14px; border: 0; border-top: 2px solid #a33;
+  background: #3a1d1d; color: #ffd9d2; cursor: pointer;
+  font: inherit;
+}
+#errors-banner:hover { background: #4a2424; }
+#errors-banner.hidden { display: none; }
+.errors-empty { opacity: .7; padding: 12px; }
+.error-group { margin: 0 0 18px; }
+.error-group h3 {
+  margin: 0 0 6px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: .04em; opacity: .85;
+}
+.error-count {
+  display: inline-block; margin-left: 6px; padding: 0 6px;
+  border-radius: 8px; background: #a33; color: #fff; font-size: 11px;
+}
+.error-table { width: 100%; border-collapse: collapse; }
+.error-table td { padding: 3px 8px; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,.07); }
+.error-path { white-space: nowrap; opacity: .8; font-family: ui-monospace, monospace; font-size: 12px; }
+.error-msg { font-size: 12px; }
+
+/* ---- confidence as a measured percentage, not a single badge ---- */
+.conf-bar {
+  display: flex; height: 6px; width: 100%; margin-top: 5px;
+  border-radius: 3px; overflow: hidden; background: rgba(255,255,255,.08);
+}
+.conf-bar-sm { width: 68px; height: 5px; margin: 0; }
+.conf-seg { display: block; height: 100%; }
+
+/* The bar is filled to the confidence percent and coloured by the band that
+   percent lands in, so the bar and the chip beside it cannot disagree -- they
+   are the same number rendered twice. The old four-segment provenance mix is
+   gone: it answered a different question (where did the number come from) in
+   the same place as this one (how well is it known), and the two read as a
+   contradiction whenever a fully measured node showed a 0% KNOWN share. */
+.band-fill-EXACT      { background: var(--band-EXACT); }
+.band-fill-MEASURED   { background: var(--band-MEASURED); }
+.band-fill-CLOSE      { background: var(--band-CLOSE); }
+.band-fill-APPROX     { background: var(--band-APPROX); }
+.band-fill-UNVERIFIED { background: var(--band-UNVERIFIED); }
+.band-fill-UNPRICED   { background: var(--band-UNPRICED); }
+
+/* Per-element confidence is an analysis view, off unless the URL carries
+   ?ConfidenceMode=true. The "estimated" outline on compiled-logic tiles is a
+   different thing -- the ground-truth flag -- and is never hidden. */
+body:not(.confidence-mode) .conf-only { display: none; }
+
+/* File-level confidence, at the top of the Errors tab. Always shown: it is the
+   one number that answers "how much of this total is known". */
+.file-confidence {
+  margin: 0 0 18px; padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel-bg);
+}
+.file-confidence h3 { margin: 0 0 6px; font-size: 14px; }
+.file-confidence .fc-headline { font-size: 22px; font-weight: 600; }
+.file-confidence .fc-sub { font-size: 12px; opacity: .8; margin-left: 6px; }
+.file-confidence .fc-mix {
+  display: flex; height: 10px; width: 100%; margin: 8px 0 6px;
+  border-radius: 3px; overflow: hidden; background: rgba(127,127,127,.15);
+}
+.file-confidence .fc-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+.file-confidence .fc-swatch {
+  display: inline-block; width: 9px; height: 9px; border-radius: 2px;
+  margin-right: 5px; vertical-align: -1px;
+}
+.file-confidence .fc-note { font-size: 11px; opacity: .7; margin-top: 8px; }
+.conf-label { font-size: 11px; opacity: .8; margin-top: 2px; }
+.conf-cell { display: flex; align-items: center; gap: 6px; }
+.conf-pct { font-size: 11px; opacity: .85; min-width: 30px; }
+
+/* ---- resizable list columns ---- */
+#list-table th, #list-table-dock th { position: relative; }
+.col-grip {
+  position: absolute; top: 0; right: 0; width: 6px; height: 100%;
+  cursor: col-resize; user-select: none;
+}
+.col-grip:hover { background: rgba(255,255,255,.25); }
+
+/* ---- second tooltip bar: share of the whole controller ---- */
+.tooltip-bar-controller { background: #6aa9d8; }
+
+/* Ladder source for a single rung, shown in its tooltip. */
+.rung-text {
+  max-width: 460px; margin: 4px 0; padding: 4px 6px;
+  background: rgba(0,0,0,.35); border-radius: 3px;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 140px; overflow: hidden;
+}
+
+/* Sorted-column indicator. The caret says which way; the weight and rule
+   say which column, so the signal survives at a glance without having to
+   find a small glyph. */
+#list-table th.sorted,
+#list-table-dock th.sorted {
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--accent, #4a90d9);
+}
+.sort-caret { font-size: 0.75em; opacity: 0.85; }
+
+/* Second denominator in the type summary -- dimmer, because % of the
+   level you are looking at is the primary reading. */
+.type-pct-controller { opacity: 0.65; }
+
+
+/* ---- shared progress modal (file load, bulk expand) ---- */
+#progress-modal {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+#progress-modal.hidden { display: none; }
+#progress-box {
+  min-width: 340px; max-width: 70vw; padding: 18px 20px;
+  background: var(--panel-bg, #222); border: 1px solid var(--border, #444);
+  border-radius: 8px; box-shadow: 0 8px 28px rgba(0, 0, 0, .5);
+}
+#progress-title { font-size: 0.95rem; margin-bottom: 10px; }
+#progress-detail { font-size: 0.8rem; opacity: .7; margin-top: 8px; min-height: 1em; }
+.progress-track {
+  height: 8px; background: var(--border, #333);
+  border-radius: 4px; overflow: hidden;
+}
+#progress-fill {
+  height: 100%; width: 0%; background: var(--accent, #4a90d9);
+  transition: width .12s linear;
+}
+/* Indeterminate: the server is working and there is no percentage to
+   report, so the bar sweeps instead of sitting at a fake number. */
+#progress-fill.indeterminate {
+  width: 35%; transition: none;
+  animation: xref-slide 1.1s ease-in-out infinite;
+}
+
+
+/* ---- always-visible level readout, far right of the nav row ---- */
+#level-stats {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-left: 1rem;
+  padding-right: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+#level-stats .stat-label { opacity: 0.7; margin-right: 0.3rem; }
+#level-stats .stat-value { color: var(--text, inherit); font-variant-numeric: tabular-nums; }
+#level-stats .stat-value.stat-size { font-weight: 600; }
+
+/* ---- list: % of Parent / % of Controller as bars ----
+   Same geometry as .conf-cell / .conf-bar-sm beside them, so the three
+   proportion columns share one visual grammar instead of one being a bar
+   and the others bare numerals. */
+.pct-cell { display: flex; align-items: center; gap: 0.4rem; }
+.pct-bar {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--bar-track, rgba(127, 127, 127, 0.25));
+  overflow: hidden;
+}
+.pct-fill { display: block; height: 100%; }
+.pct-fill.pct-parent { background: var(--accent, #4a9eff); }
+/* Deliberately a different hue from % of parent: the two numbers answer
+   different questions and a reader must not blend them. */
+.pct-fill.pct-controller { background: var(--accent-2, #9b7fe0); }
+.pct-num { font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+
+/* ---- free controller space ("Show Empty Space") ----
+   Deliberately unlike every other tile: this is the one block that is not
+   memory the project uses, and it must never be mistaken for a category
+   that could be optimised away. Hatched and desaturated rather than a
+   flat colour from the category palette. */
+.tile-empty-space rect,
+rect.tile-empty-space {
+  fill: var(--bar-track, rgba(127, 127, 127, 0.22));
+  stroke: var(--border, #333);
+  stroke-dasharray: 4 3;
+}
+.pct-fill.pct-empty { background: var(--text-dim, #888); }
+
+/* ---- confidence bands (measured accuracy, not provenance) ----
+   The colour is the claim: green means an error bound earned on captures,
+   amber means a weight nothing has tested on its own, red means bytes that
+   are not in the total at all. */
+.band-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.band-EXACT      { background: #1e5f3a; color: #d8f5e4; }
+.band-MEASURED   { background: #24694a; color: #d8f5e4; }
+.band-CLOSE      { background: #3d6b2a; color: #e6f5d8; }
+.band-APPROX     { background: #7a6420; color: #f7ecc8; }
+.band-UNVERIFIED { background: #7a4520; color: #f7ddc8; }
+.band-UNPRICED   { background: #7a2424; color: #f7d0d0; }
+
+/* A type row navigates, so it has to look like it does. */
+.type-row-click { cursor: pointer; border-radius: 3px; }
+.type-row-click:hover { background: rgba(255,255,255,.07); }
+.type-row-click:hover .type-name { color: var(--accent); }
+
+/* Source-protected content turns the total into a minimum; the banner says so
+   in the error colour rather than the ordinary notice style. */
+#errors-banner.errors-banner-protected {
+  background: var(--error-bg, #7a1f1f);
+  color: var(--error-fg, #fff);
+  font-weight: 600;
+}

@@ -1,0 +1,491 @@
+<#
+.SYNOPSIS
+  Fully unattended. File|Open inside an already-
+  running Logix Designer takes under 5s; closing and reopening Designer for
+  each file takes about 65s. Across 500+ files that difference is the whole
+  ballgame. PowerShell no longer launches a
+  new process per file (Start-Process, ~65s close/reopen cycle) -- it hands
+  AHK the next ACD path to open via -OpenRequestPath, and AHK drives Studio
+  5000's own File > Open (Ctrl+O) to switch files inside the SAME already-
+  running instance. No Read-Host prompts anywhere in the loop anymore --
+  this can run overnight against the full 500+ file corpus unattended.
+
+  Two small handoff files carry the conversation, in opposite directions:
+    -OpenRequestPath   PowerShell -> AHK.  This script writes the next ACD
+                       path here; AHK waits for it, opens the file, deletes
+                       the request (consumed) once read.
+    -HandoffPath        AHK -> PowerShell. AHK overwrites this with
+                       error_count,warning_count,message_value,ocd_value,
+                       window_title once its build/verify/Capacity-read
+                       cycle finishes for whatever file it just opened;
+                       this script polls for it (see -TimeoutSeconds),
+                       reads, deletes it (consumed), and logs. window_title
+                       is cross-checked against the requested filename --
+                       a mismatch is logged loudly and flagged in the
+                       row's own notes rather than trusted quietly. A
+                       literal "0" ocd_value is treated the same way
+                       -- a real Capacity reading is never
+                       actually 0, so a 0 read is a bad-read symptom, not
+                       real data; flagged ZERO CAPACITY and auto-retried
+                       next run, never silently counted.
+
+  Per file:
+    1. Write the ACD path to -OpenRequestPath.
+    2. Poll for -HandoffPath to appear (up to -TimeoutSeconds -- build time
+       scales with file size, so this is generous by default). Timeout logs
+       a warning and asks once whether to retry/skip/stop rather than
+       hanging forever or silently giving up.
+    3. Read + delete -HandoffPath, log ocd_value as actual_bytes plus the
+       new error_count/warning_count/message_value columns, matched by
+       l5x_path against the row the sample generator already wrote (so
+       predicted_bytes stays put).
+
+  Never reuses a stale handoff: both files are cleared before being
+  requested/waited on, so a leftover result from a previous run or a
+  skipped file can't silently get attributed to the wrong row (see the
+  whole session today re: don't trust data that hasn't been validated).
+
+  Resumable: Ctrl+C at any point loses nothing -- already-logged l5x_path
+  rows are skipped on the next run, and nothing is written until a row is
+  actually complete.
+
+.PREREQS
+  Run batch_l5x_to_acd.ps1 first; this script consumes its convert_log.csv.
+  Your AHK script must be running, with a loop that: waits for
+  -OpenRequestPath to appear, reads+deletes it, opens that path via Ctrl+O
+  in the existing Logix Designer window, does its build/verify/Capacity
+  read, then writes -HandoffPath (header + one data row:
+  error_count,warning_count,message_value,ocd_value,window_title) before
+  looping back to wait for the next request.
+
+  ManifestPath/HandoffPath/OpenRequestPath all default to locations relative
+  to this script's own folder (scripts\ahk_runtime\ for the two handoff
+  files -- gitignored, never committed), so the common case needs none of
+  them typed out. logix_build_capture.ahk's HANDOFF_PATH/OPEN_REQUEST_PATH
+  constants must point at the exact same two paths -- update them once and
+  you're done, no more copy-pasting a path into two places every run.
+
+.NOTES
+  Controller model and firmware are NOT parameters. They are read from each
+  L5X's own Controller/@ProcessorType and RSLogix5000Content/@SoftwareRevision.
+
+  They used to be mandatory switches, and that was a mistake that quietly
+  corrupted the dataset for weeks: the values typed on the command line were
+  stamped onto every manifest row regardless of what the file actually
+  declared. 1,926 of 1,959 captured rows ended up carrying a processor that
+  contradicted their own XML -- a whole corpus labelled "5069-L306ER" when
+  2,149 of the files were really 1756-L81E. Every per-platform comparison
+  built on that column was therefore meaningless until it was rebuilt from
+  the files. The L5X is authoritative and free to read; a
+  human typing it in can only ever be a second, worse source of truth.
+
+.EXAMPLE
+  # Smoke test on the first 10 files before committing to a full run:
+  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv -Limit 10
+
+  # Full run, same command without -Limit:
+  ./batch_memory_capture.ps1 -ConvertLog C:\l5x_scratch\acd\convert_log.csv
+#>
+param(
+    [Parameter(Mandatory = $true)][string]$ConvertLog,
+    [string]$ManifestPath = (Join-Path $PSScriptRoot "..\samples\manifest.csv"),
+    [string]$CapturesPath = (Join-Path $PSScriptRoot "..\samples\captures.csv"),
+    [string]$HandoffPath = (Join-Path $PSScriptRoot "ahk_runtime\ahk_handoff.csv"),
+    [string]$OpenRequestPath = (Join-Path $PSScriptRoot "ahk_runtime\open_request.txt"),
+    [int]$TimeoutSeconds = 1200,
+    [int]$Limit
+)
+
+New-Item -ItemType Directory -Force -Path (Split-Path $HandoffPath -Parent) | Out-Null
+New-Item -ItemType Directory -Force -Path (Split-Path $OpenRequestPath -Parent) | Out-Null
+
+# AHK occasionally lags up and needs restarting -- a
+# fresh AHK instance has no memory of which file it was mid-open on.
+# REAL BUG FOUND same day ("pressing the spacebar does not pass
+# the same thing to AHK as the push thing that happens when the file
+# changes"): AHK's own loop (logix_build_capture.ahk) deletes
+# OPEN_REQUEST_PATH the INSTANT it detects the file exists -- right at
+# the top of the loop, before any of the slow Send/WinWait UI automation
+# that's presumably where a lag/crash actually happens. So by the time
+# AHK reloads, the trigger file is already gone; a restarted AHK's `while
+# !FileExist(OPEN_REQUEST_PATH)` loop has nothing to find. The original
+# version of this function only ever did `Set-Clipboard` -- it never
+# rewrote OPEN_REQUEST_PATH, so it fixed the clipboard but never resent
+# the actual "go" signal AHK's loop is blocked on. Fixed: SPACE now
+# reissues BOTH exactly like the real per-file trigger a few lines below
+# does (Set-Clipboard + Out-File to $OpenRequestPath), so a restarted AHK
+# picks the file straight back up. Checked every 200ms so it feels
+# immediate; a no-op (does not skip/retry/affect $elapsed) if never
+# pressed. Wrapped in try/catch since [Console]::KeyAvailable throws when
+# input is redirected (e.g. running under CI/non-interactive) -- silently
+# unavailable there rather than breaking the run.
+#
+# CAUTION: only press SPACE when AHK is actually confirmed stuck/reloaded
+# (its own Loop Status GUI back at "IDLE" or a fresh "Waiting for next
+# file..." with no UI activity happening) -- if the OLD AHK instance is
+# still alive and just running slow (not actually reloaded), resending
+# the trigger risks it processing the same file twice: it would finish
+# its current cycle, loop back to the top, immediately see the
+# space-recreated request file still sitting there, and reprocess the
+# same ACD a second time -- and that second handoff could arrive after
+# this script has already moved on to polling for the NEXT row, getting
+# misattributed to the wrong sample. Safe specifically because a genuine
+# AHK reload wipes its whole running state -- there's no in-flight work
+# left for the resent trigger to collide with.
+function Test-SpaceBarPressed {
+    try {
+        if ([Console]::KeyAvailable) {
+            $key = [Console]::ReadKey($true)
+            return $key.Key -eq [ConsoleKey]::Spacebar
+        }
+    } catch {
+        # Console input not available -- treat as "never pressed".
+    }
+    return $false
+}
+
+function Wait-WithSpaceBarClipboardRefresh([int]$Seconds, [string]$AcdPath, [string]$Label, [string]$OpenRequestPath) {
+    $checkIntervalMs = 50   #
+    $ticks = [math]::Ceiling(($Seconds * 1000) / $checkIntervalMs)
+    for ($i = 0; $i -lt $ticks; $i++) {
+        if (Test-SpaceBarPressed) {
+            Set-Clipboard -Value $AcdPath
+            $AcdPath | Out-File -FilePath $OpenRequestPath -Encoding utf8 -NoNewline
+            Write-Host "  [space] Re-sent ${Label}'s ACD path to clipboard AND re-created the open request (AHK restart-safe)."
+        }
+        Start-Sleep -Milliseconds $checkIntervalMs
+    }
+}
+
+function Get-SampleIdAndDescription($l5xPath) {
+    $base = [System.IO.Path]::GetFileNameWithoutExtension($l5xPath)
+    if ($base -match '^(sample_\d+)_(.+)$') {
+        return @{ Id = $Matches[1]; Desc = ($Matches[2] -replace '_', ' ') }
+    }
+    return @{ Id = $base; Desc = "" }
+}
+
+function Get-Category($l5xPath) {
+    (Get-Item $l5xPath).Directory.Name
+}
+
+function Get-RelPath($fullPath) {
+    # convert_log.csv stores absolute Windows paths; manifest.csv stores
+    # repo-relative posix paths (e.g. "samples/generated/udt/x.L5X") -- key
+    # off the "samples" segment onward so the two can be matched regardless
+    # of where the repo lives on disk.
+    $parts = $fullPath -replace '\\', '/' -split '/'
+    $idx = [array]::IndexOf($parts, "samples")
+    if ($idx -lt 0) { return $fullPath -replace '\\', '/' }
+    ($parts[$idx..($parts.Length - 1)]) -join '/'
+}
+
+# THIS SCRIPT NO LONGER WRITES manifest.csv.
+#
+# It used to Export-Csv the whole ~3,600-row manifest on every run, while the
+# generators rewrote the same file from the other machine. Two whole-file
+# rewrites of one file from two places is a guaranteed conflict on every pull,
+# and it cost more time than the measurements did. The columns split cleanly by
+# who writes them, so they now live in two files and neither writer touches the
+# other's:
+#
+#   samples/manifest.csv   the SPEC  -- generators only
+#   samples/captures.csv   the RESULT -- this script only
+#
+# delta/delta_pct are gone rather than moved: a stored delta goes stale the
+# moment any sizing constant changes, every reader recomputes it live, and it
+# was a derived value sitting in the one file two writers fought over.
+$CaptureColumns = "sample_id,actual_bytes,controller_model,firmware_rev,date_tested," +
+    "notes,error_count,warning_count,message_value,window_title,error_log"
+
+if (-not (Test-Path $CapturesPath)) {
+    $CaptureColumns | Out-File -FilePath $CapturesPath -Encoding utf8
+}
+# The spec side is still READ, to resolve sample_id and category for each file.
+$manifest = @(Import-Csv $ManifestPath)
+$captures = @(Import-Csv $CapturesPath)
+$alreadyLogged = @{}
+# "any test that fails for window title mismatch should
+# be rerun... make sure you can rerun those tests next time without me
+# prompting you." A row flagged WINDOW TITLE MISMATCH or
+# ZERO CAPACITY in notes still has actual_bytes populated (with data that
+# may belong to a different file, or may just be a bad "0" read -- see
+# the checks below), so without this exclusion it would silently count as
+# "already logged" forever. Excluding it here means it's treated as
+# never-captured and gets picked back up automatically the very next time
+# this script runs against the same $ConvertLog -- no ACD rebuild needed,
+# since convert_log.csv already has status=ok for it (only the capture
+# READ was suspect, not the conversion).
+# actual_bytes and notes are CAPTURE columns, so these scans read captures.csv.
+# It is keyed on sample_id and carries no l5x_path, so each hit is resolved
+# back to a path through the spec side.
+$pathById = @{}
+$manifest | ForEach-Object { $pathById[$_.sample_id] = $_.l5x_path }
+$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC') } |
+    ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true } }
+$mismatchFlagged = @{}
+$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC' } |
+    ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
+
+$rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
+$remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
+if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
+$retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
+Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch/zero-capacity retries)."
+
+# list every file before starting, not just the count --
+# a batch review before committing to a long capture run, same reasoning as
+# batch_l5x_to_acd.ps1's equivalent listing.
+if ($remaining.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Files to capture this pass ($($remaining.Count)):"
+    $n = 0
+    foreach ($row in $remaining) {
+        $n++
+        $retryTag = if ($mismatchFlagged.ContainsKey((Get-RelPath $row.l5x_path))) { " [RETRY]" } else { "" }
+        Write-Host ("  [{0}/{1}] {2}{3}" -f $n, $remaining.Count, (Get-RelPath $row.l5x_path), $retryTag)
+    }
+    Write-Host ""
+}
+
+Write-Host "Ctrl+C at any time -- already-logged rows are skipped on the next run."
+Write-Host "Make sure your AHK script is already running and waiting before this starts."
+Write-Host "SPACE at any time while waiting re-sends the current file's ACD path to AHK (clipboard + open request) -- only press after confirming AHK actually reloaded/is stuck, not just running slow."
+
+# Stale files from a previous run (or a skipped file) shouldn't get
+# attributed to the first file of this run -- start clean.
+if (Test-Path $HandoffPath) { Remove-Item $HandoffPath -Force }
+if (Test-Path $OpenRequestPath) { Remove-Item $OpenRequestPath -Force }
+
+$total = $remaining.Count
+$idx = 0
+$stopRequested = $false
+$fileTimes = @()
+$batchSw = [System.Diagnostics.Stopwatch]::StartNew()
+foreach ($row in $remaining) {
+    if ($stopRequested) { break }
+    $idx++
+    $relPath = Get-RelPath $row.l5x_path
+    $meta = Get-SampleIdAndDescription $row.l5x_path
+    $category = Get-Category $row.l5x_path
+    $existing = $captures | Where-Object { $_.sample_id -eq $meta.Id } | Select-Object -First 1
+    $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
+
+    Write-Host ""
+    Write-Host "=== [$idx/$total] $($meta.Id) : $($meta.Desc) [$category] ==="
+    Write-Host "Requesting AHK open: $($row.acd_path)"
+    Set-Clipboard -Value $row.acd_path  # AHK pastes this into the Open dialog (^v) instead of typing it
+    $row.acd_path | Out-File -FilePath $OpenRequestPath -Encoding utf8 -NoNewline  # existence = "go" signal; content is a fallback if you'd rather FileRead than paste
+
+    $blocksUsed = $null
+    $errorCount = ""
+    $warningCount = ""
+    $messageValue = ""
+
+    $elapsed = 0
+    $pollInterval = 2
+    while ($elapsed -lt $TimeoutSeconds) {
+        if (Test-Path $HandoffPath) { break }
+        Wait-WithSpaceBarClipboardRefresh -Seconds $pollInterval -AcdPath $row.acd_path -Label $meta.Id -OpenRequestPath $OpenRequestPath
+        $elapsed += $pollInterval
+    }
+
+    if (-not (Test-Path $HandoffPath)) {
+        Write-Warning "Timed out after ${TimeoutSeconds}s waiting on AHK for $($meta.Id) -- check Studio 5000/AHK manually."
+        $resp = Read-Host "'r' to retry waiting on this same file, 's' to skip it, anything else/Enter to stop"
+        if ($resp -eq 'r') {
+            # Leave the open request in place and just go around again with a fresh wait.
+            $elapsed = 0
+            while ($elapsed -lt $TimeoutSeconds) {
+                if (Test-Path $HandoffPath) { break }
+                Wait-WithSpaceBarClipboardRefresh -Seconds $pollInterval -AcdPath $row.acd_path -Label $meta.Id -OpenRequestPath $OpenRequestPath
+                $elapsed += $pollInterval
+            }
+        }
+        if (-not (Test-Path $HandoffPath)) {
+            if ($resp -ne 's') { $stopRequested = $true }
+            if (Test-Path $OpenRequestPath) { Remove-Item $OpenRequestPath -Force }
+            continue
+        }
+    }
+
+    Start-Sleep -Milliseconds 300  # let AHK's write fully flush before reading
+    $handoff = Import-Csv $HandoffPath
+    if (-not $handoff -or $handoff.Count -eq 0 -or [string]::IsNullOrWhiteSpace($handoff[0].ocd_value)) {
+        Write-Warning "Handoff for $($meta.Id) was empty/incomplete -- skipping this file, check AHK."
+        Remove-Item $HandoffPath -Force -ErrorAction SilentlyContinue
+        continue
+    }
+
+    $result = $handoff[0]
+    $blocksUsed = $result.ocd_value
+    $errorCount = $result.error_count
+    $warningCount = $result.warning_count
+    $messageValue = $result.message_value
+    $windowTitle = $result.window_title
+    # Text99 is Studio's build/verify error-log pane. AHK truncates it to its
+    # own MAX_ERROR_LOG_CHARS (from the START -- the first error is the
+    # root cause) and validates the "Complete -" summary marker was present
+    # before truncating, so a partial read announces itself here rather than
+    # arriving as plausible-looking text.
+    $errorLog = if ($result.PSObject.Properties.Name -contains 'error_log') { $result.error_log } else { "" }
+    Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
+
+    # Independent cross-check ("window title is valid
+    # there with the filename.acd present inside") -- the title AHK
+    # captured at read-time should contain the file PowerShell requested.
+    # Real title format confirmed doesn't include the .ACD
+    # extension ("Logix Designer - array_dint_00001 [1756-L81E 35.11]*"),
+    # so match on the base name only -- checking for the extension too
+    # was producing false-positive mismatches. A real mismatch means the
+    # automation may have read stale data (confirmed real case, same day:
+    # a request for array_dint_00005 came back with array_dint_00002 still
+    # in the title -- the file switch silently didn't happen) -- still
+    # logged rather than silently dropped, but flagged loudly and in the
+    # row's own notes so it's never trusted quietly.
+    $expectedFileName = [System.IO.Path]::GetFileNameWithoutExtension($row.acd_path)
+    $notes = ""
+    if ($windowTitle -notmatch [regex]::Escape($expectedFileName)) {
+        Write-Warning "Window title mismatch for $($meta.Id): expected '$expectedFileName' in `"$windowTitle`" -- may have captured the wrong file's data."
+        $notes = "WINDOW TITLE MISMATCH: expected '$expectedFileName', got `"$windowTitle`""
+    }
+    # "if memory size is 0 it needs to be flagged and
+    # not counted." A real controller's Capacity-tab reading is never
+    # actually 0 (every project carries the empty_project_baseline floor
+    # at minimum) -- a "0" read is a bad-read symptom (wrong dialog/field
+    # focused, a timing glitch), not a real data point, but it would
+    # otherwise pass the blank-check above and silently log as valid.
+    # Same treatment as WINDOW TITLE MISMATCH: flagged loudly, and
+    # excluded from "already logged" below so it's automatically retried
+    # next run, no manual re-flagging needed.
+    if ($blocksUsed -eq "0") {
+        Write-Warning "Capacity read as 0 for $($meta.Id) -- almost certainly a bad read, not a real value. Flagging, not counting."
+        $notes = if ($notes) { "$notes; ZERO CAPACITY: read as 0, not a real value, not counted" } else { "ZERO CAPACITY: read as 0, not a real value, not counted" }
+    }
+    # "flag the file if Error or Warning is not a number
+    # then i want to flag it just like the window title to be able to be run
+    # again." The AHK side returns "" (never "0") when its button scan can't
+    # read the counters cleanly -- no build ran, the popup was missed, or the
+    # controls moved. A blank or non-numeric error_count means the BUILD
+    # STATUS IS UNKNOWN for this row, and an unknown build status is exactly
+    # what has already forced 30 capture rows to be voided: a project that
+    # built with errors, logged as if it were clean, silently poisons every
+    # fit it enters. Flagged in notes like WINDOW TITLE MISMATCH and
+    # ZERO CAPACITY, which means the row is excluded from "already logged"
+    # and retried automatically on the next run -- no manual re-flagging.
+    $countersBad = @()
+    foreach ($pair in @(@("Error", $errorCount), @("Warning", $warningCount))) {
+        if ($pair[1] -notmatch '^\d+$') {
+            $countersBad += "$($pair[0])='$($pair[1])'"
+        }
+    }
+    if ($countersBad.Count -gt 0) {
+        Write-Warning "Non-numeric build counter(s) for $($meta.Id): $($countersBad -join ', ') -- build status unknown, flagging for retry."
+        $flag = "COUNTER NOT NUMERIC: " + ($countersBad -join ', ') + " -- build status unknown, not counted"
+        $notes = if ($notes) { "$notes; $flag" } else { $flag }
+    }
+
+    $date = Get-Date -Format "yyyy-MM-dd"
+    $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }
+    $delta = ""
+    $deltaPct = ""
+    if ($predicted -ne "") {
+        $delta = [int]$blocksUsed - [int]$predicted
+        if ([int]$predicted -ne 0) { $deltaPct = [math]::Round(100.0 * $delta / [int]$predicted, 2) }
+    }
+
+    # controller_model / firmware_rev come from the L5X ITSELF, not from the
+    # -ControllerModel/-FirmwareRev switches. Fixed : those switches
+    # default to "5069-L306ER"/"35.11" and were being stamped onto every row
+    # regardless of what the file actually declared, so 1,926 of 1,959
+    # captured rows carried a processor that contradicted their own XML
+    # (2,149 files really declare 1756-L81E). That is operator metadata
+    # masquerading as measurement, and it silently poisons any per-platform
+    # analysis -- which is exactly what it did until the mismatch was
+    # spotted. The switches were REMOVED outright ("the
+    # ps1 script asking for firmware and processor is garbage and should
+    # never have been there it should be determined bu the l5x file
+    # anyways") -- not demoted to a fallback, because a fallback is exactly
+    # how the wrong values got into 1,926 rows in the first place. A file
+    # we cannot parse records UNKNOWN and carries a PROCTYPE-UNREAD note.
+    $declaredProc = "UNKNOWN"
+    $declaredFw   = "UNKNOWN"
+    try {
+        [xml]$l5xHead = Get-Content -LiteralPath $l5xPath -TotalCount 40 -ErrorAction Stop
+        if ($l5xHead.RSLogix5000Content.SoftwareRevision) {
+            $declaredFw = $l5xHead.RSLogix5000Content.SoftwareRevision
+        }
+        if ($l5xHead.RSLogix5000Content.Controller.ProcessorType) {
+            $declaredProc = $l5xHead.RSLogix5000Content.Controller.ProcessorType
+        }
+    } catch {
+        # Truncated read or malformed head. Record UNKNOWN and flag the row
+        # rather than inventing a value -- there is no operator-supplied
+        # fallback any more, deliberately: a guessed processor is worse than
+        # an admitted gap, because it looks like data.
+        $notes = ($notes + " PROCTYPE-UNREAD").Trim()
+    }
+
+    # a non-zero error count, or an error-log read that failed its
+    # own validation, gets a RED line. Everything above this point flags into
+    # the notes column, which is only seen later -- this is the signal for the
+    # operator watching the run, so a bad build is noticed while the batch is
+    # still going rather than during reconciliation afterwards.
+    $buildUnclean = ($errorCount -ne "0" -and $errorCount -ne "")
+    $logSuspect   = ($errorLog -like "(*")
+    if ($buildUnclean -or $logSuspect) {
+        $why = if ($buildUnclean) { "BUILD REPORTED $errorCount ERROR(S)" } else { "ERROR-LOG READ SUSPECT" }
+        Write-Host ("  !! {0} : {1}" -f $why, $meta.Id) -ForegroundColor Red
+        if ($errorLog) { Write-Host ("     {0}" -f $errorLog) -ForegroundColor Red }
+    }
+
+    if ($existing) {
+        $existing.actual_bytes = $blocksUsed
+        $existing.delta = $delta
+        $existing.delta_pct = $deltaPct
+        $existing.controller_model = $declaredProc
+        $existing.firmware_rev = $declaredFw
+        $existing.date_tested = $date
+        $existing.notes = $notes
+        $existing.error_count = $errorCount
+        $existing.warning_count = $warningCount
+        $existing.message_value = $messageValue
+        $existing.window_title = $windowTitle
+        if ($existing.PSObject.Properties.Name -contains 'error_log') {
+            $existing.error_log = $errorLog
+        } else {
+            $existing | Add-Member -NotePropertyName error_log -NotePropertyValue $errorLog
+        }
+    } else {
+        $captures += [pscustomobject]@{
+            sample_id = $meta.Id; actual_bytes = $blocksUsed
+            controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
+            error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
+            window_title = $windowTitle; error_log = $errorLog
+        }
+    }
+    $captures | Export-Csv -Path $CapturesPath -NoTypeInformation -Encoding utf8
+    $fileSw.Stop()
+    $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
+    $fileTimes += $fileSeconds
+    Write-Host "Logged: ${fileSeconds}s Actual_Bytes=$blocksUsed errors=$errorCount Warnings=$warningCount Message=$messageValue Title=$windowTitle"
+}
+
+$batchSw.Stop()
+Write-Host ""
+if ($fileTimes.Count -gt 0) {
+    $avgSeconds = [math]::Round((($fileTimes | Measure-Object -Average).Average), 1)
+    $totalMinutes = [math]::Round($batchSw.Elapsed.TotalMinutes, 1)
+    Write-Host "Batch: $($fileTimes.Count) file(s) logged, ${totalMinutes}min total, avg ${avgSeconds}s/file."
+}
+Write-Host "Done for now."
+
+# Auto-push (so i dont have to ask).
+. (Join-Path $PSScriptRoot "_autopush.ps1")
+$repoRoot = Split-Path $PSScriptRoot -Parent
+
+# the push must cover ALL files in the project directory --
+# same widening as batch_l5x_to_acd.ps1's equivalent
+# change. See Push-AllChanges in _autopush.ps1 for what this does and
+# does not protect against.
+Push-AllChanges -RepoRoot $repoRoot -CommitMessage "Log real memory capture + build/verify results"

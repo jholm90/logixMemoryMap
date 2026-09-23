@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Diagnostic_Outputs" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:42:53 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Diagnostic_Outputs" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:42:44 2018" LastModifiedDate="Fri Jan 19 07:42:44 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="Pulse_Test" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Test_Interval" DataType="TIMER" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[Defines when Pulse Test is performed]]>
+</Description>
+</Member>
+<Member Name="Msg_Count" DataType="COUNTER" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[Counts # of completed PulseTests to a module]]>
+</Description>
+</Member>
+<Member Name="Output_Select" DataType="DINT" Dimension="0" Radix="Binary" Hidden="false">
+<Description>
+<![CDATA[Copied to MSG Source array to select an output]]>
+</Description>
+</Member>
+<Member Name="Test_Parameters" DataType="SINT" Dimension="10" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[MSG Source array storing Pulse Test Parameters]]>
+</Description>
+</Member>
+<Member Name="Test_Results" DataType="INT" Dimension="0" Radix="Binary" Hidden="false">
+<Description>
+<![CDATA[Stores Pulse Test results (1=Fail / 0=Pass)]]>
+</Description>
+</Member>
+<Member Name="ZZZZZZZZZZPulse_Test5" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="true"/>
+<Member Name="Perform_Test" DataType="BIT" Dimension="0" Radix="Decimal" Hidden="false" Target="ZZZZZZZZZZPulse_Test5" BitNumber="0">
+<Description>
+<![CDATA[Enables Pulse Test rungs]]>
+</Description>
+</Member>
+<Member Name="Base_of_2" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Constant of 2]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Diag_Out" CatalogNumber="1756-OB16D" Vendor="1" ProductType="7" ProductCode="4" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="4" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 13 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+FF FF 00 00 FF FF 00 00 FF FF 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:C:0">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgMode" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ProgValue" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="NoLoadEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="OutputVerifyEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Diagnostic" RPI="5000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO_DC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+<DataValueMember Name="FuseBlown" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="NoLoad" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="OutputVerifyFault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>FF FF 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DO:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="MSG_CTL" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="10" ConnectedFlag="2" ConnectionPath="Diag_Out" CommTypeCode="0" ServiceCode="16#004c" ObjectType="16#001e" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0" LocalElement="Slot4.Test_Parameters"
+/>
+</Data>
+</Tag>
+<Tag Name="Slot4" TagType="Base" DataType="Pulse_Test">
+<Data>00 00 00 00 80 EE 36 00 00 00 00 00 00 00 00 00 
+10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+14 00 00 00 14 00 00 00 00 00 00 02</Data>
+<Data Format="Decorated"><Structure DataType="Pulse_Test">
+<StructureMember Name="Test_Interval" DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="3600000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</StructureMember>
+<StructureMember Name="Msg_Count" DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="16"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</StructureMember>
+<DataValueMember Name="Output_Select" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="Test_Parameters" DataType="SINT" Dimensions="10" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="20"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="20"/>
+<Element Index="[9]" Value="0"/>
+</ArrayMember>
+<DataValueMember Name="Test_Results" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Perform_Test" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Base_of_2" DataType="SINT" Radix="Decimal" Value="2"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="Ladder_Pulse_Test" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="Ladder_Pulse_Test" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[INTRODUCTION
+Almost all of the field-side diagnostic functions performed by the ControlLogix Diagnostic Output modules (Cat #s 1756-OB16D and -OA8D) are performed automatically without user intervention or any special user programming.  An exception to this automatic fault-reporting behavior is the Pulse Test. The Pulse Test is a service performed by the module that must be invoked by the user. The normal means of doing this is by right-clicking on the configured output module using Logix5000 software, choosing the Properties option, then selecting the Pulse Test Tab on the displayed Dialog window. By pressing the Test button for each of the output points, you are instructing the module to perform a Pulse Test service, with the results immediately displayed as Passed or  Failed on the screen (there are no Pulse Test bits to examine in the Input Tag area).
+
+While this method works fine, many users want to have the Pulse Test performed automatically on a periodic basis and have access to Pass/Fail bits in order to annunciate the results. Fortunately, automatic invoking of the Pulse Test from ladder logic can be accomplished using the Message Instruction. By sending down the appropriate Pulse Test parameters, then examining the bits in the MSG instruction’s associated Extended Error Code Flag (Msg_Tag.EXERR), the results of the test for individual outputs can be examined in ladder. This simple program will accomplish that task.
+
+PROGRAM OPERATION
+The program uses a free-running timer to initiate a Pulse Test to a user-defined number of outputs on a particular Diagnostic Output module. Always starting at Output 0, the program will perform individual Pulse Tests consecutively to Output X where X is the preset of a counter used in the program. At a user-defined interval (defined by adjusting the preset of the timer), the program will: 
+** energize a bit which selects a single output on the module to test **
+** copy that output selection to the MSG instruction Source array **
+** enable the MSG instruction to send the output select bit as well as other test parameters to the module **
+** store the Pass / Fail  results for each output test (Pass = 0 / Fail = 1) in the MyTag.Test_Results tag **
+** repeat the process until the Counter, containing the number of outputs to test, reaches its preset **
+The program contains only four rungs, and these four rungs should be repeated in your user program for EACH of the Diagnostic Modules that you wish to perform a Pulse Test on. When you paste these rungs into your routines, you'll have to assign unique tags to the instructions. A User Defined data type (UDT) called Pulse_Test is included to assist you. By creating a unique tag of type Pulse_Test for each module, you'll automatically create all of the tags necessary when renaming the tags from the Pasted program rungs. In this sample program, the tag Slot4 is of type Pulse_Test. 
+
+HOW TO USE THIS PROGRAM
+In order to use this program in your ladder routines, follow the steps outlined below:
+** Copy then Paste all 5 rungs of the program FOR EACH DIAGNOSTIC MODULE you wish to perform a Pulse Test on **
+** Replicate the Pulse_Test UDT in your controller (create a new UDT and copy the elements from this Pulse_Test UDT to the new one)  **
+** Create a tag of type Pulse_Test for each Diagnostic Module & assign unique tagnames to all instructions (Hint-use Search/Replace) **
+** Create a new MSG Control Tag for each MSG instruction and change the MSG_CTL operands in rungs 3 & 4 to reflect the new tags **
+** Configure the MSG instruction as described in the next section **
+
+CONFIGURING THE MSG INSTRUCTION
+After you've assigned new MSG instructionControl Tags, press the ellipsis (...) to continue the configuration of the instruction. On the Configuration Tab, you must define the Message instruction as a CIP Generic type by using the drop-down selections, then make the following entries in the corresponding boxes (these codes simply set up the MSG instruction to perform a Pulse Test):
+Service Code: 4c		Object Type: 1e		Object ID: 1
+The Object Attribute and Destination fields can be left blank.
+
+The last thing to do on this Configuration Tab is to define the Source tag for the MSG instruction and the Number of Elements that will be sent to the module. Use the drop-down box next to the Source field and select the tag  * MyTag.Test_Parameters *, (where MyTag is one of the tags you created of type Pulse_Test). Then type in 10 in the Number of Elements field.
+
+Now switch to the Communication Tab of the MSG instruction. This Tab defines where in the control system the MSG instruction will send the data in its source array. To do this, press the Browse button and select the appropriate Diagnostic Output module from the I/O Configuration tree (your modules must be configured). The name that was given to the selected module during the configuration process is now displayed in the Path field.
+
+DEFINING CONSTANTS IN THE TAG MONITOR
+Assuming that you've created a tag (e.g. MyTag) of type Pulse_Test for each module that you'll be testing, you also have to set some of the tag values to constants prior to running the program. Here's a list of the constants to set:
+
+MyTag.Test_Interval.PRE 
+This preset of the timer defines how often to run the Pulse Test to the module. Set to any legal value.
+MyTag.Msg_Count.PRE 
+This preset of a counter defines how many outputs, starting from output 0, will be tested. For example, if you'll be running the Pulse Test on outputs 0 thru 3, set this value to 4. This value must be 16 or less for an -OB16D and be 8 or less for an -OA8D
+MyTag.Base_of_2
+Set this value to 2 (two).
+MyTag.Test_Parameters [0] thru [9]
+The last constants to set are those in the MSG instruction Source array, which has been defined as a 10 Element SINT array called Test_Parameters. The values stored here instruct the Diagnostic module how to perform the Pulse Test, and on which output to perform it on. Use the values as instructed below.
+
+Elements [0] and [1] - Output Enable Bits - Set these bytes initially to zero; they are controlled by the program thereafter.
+Elements [2] and [3] - Not Used
+Element [4] - Maximum Pulse Width - Set to a value of 20 (Decimal display style), which actually defines a 2 mS maximum pulse width 
+Element [5] - Not Used
+Element [6] - Zero Cross Delay (-OA8D Only) - Set to a value of 40 (Decimal display style), which actually defines a 4 millisecond delay 
+ (NOTE- if using the DC Diagnostic Output module 1756-OB16D, this byte should be zero).
+Element [7] - Not Used
+Element [8] - Output Verify Delay - Set to a value of 20 (Decimal display style) which actually represents a 2 mS delay.
+Element [9] - Not Used
+
+
+
+
+When this free-running timer rolls over, the Perform_Test bit will be latched, enabling the Pulse Test rungs below. This bit is unlatched in rung 4 when all Pulse Tests to the module have been completed.
+The Preset of this timer should be set for the time interval you wish to perform the Pulse Tests (every hour in this example)
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(Slot4.Test_Interval.DN)[TON(Slot4.Test_Interval,?,?) ,XIC(Slot4.Test_Interval.DN) OTL(Slot4.Perform_Test) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung sets a bit which determines what output the Pulse Test will be performed on. It does so by raising a constant of 2 to the power of the ACC value of a counter which keeps track of successful completions of the MSG instruction. As the counter ACC increments, the next bit in the Output_Select tag is set and the previous bit reset, ensuring that only one output will be tested at a time, beginning at Output 0. 
+
+These bits are then copied to the MSG instruction Source array.
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Slot4.Perform_Test)XPY(Slot4.Base_of_2,Slot4.Msg_Count.ACC,Slot4.Output_Select)COP(Slot4.Output_Select,Slot4.Test_Parameters[0],4);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[This rung sends the Pulse Test parameters contained in the Test_Parameters Source array to the Diagnostic Output module.
+By pre-conditioning the rung with an examine-off of the  MSG instruction Enable bit, after completion of a successful execution (i.e. the Done bit set), another MSG instruction, containing a new Output Select bit will be sent until the counter in rung 4 reaches its preset.
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Slot4.Perform_Test)XIO(MSG_CTL.EN)MSG(MSG_CTL);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Upon successful completion of the MSG instruction, this rung stores the results of an individual output's Pulse Test in the Test_Results location and increments the counter. 
+Note that an indirect bit reference is used to set the bits for each Pulse Test which is performed based on the counter ACC value 
+(i.e. results for Output 0 are placed in bit 0, Output 1 results in bit 1 and so on).
+
+Interpret the results as 1 = Pulse Test Failed / 0 = Pulse Test Passed
+
+The counter preset value should be set for the number of outputs which will have a Pulse Test performed on them.
+(e.g. if the Test will be performed on outputs 0 thru 5, set the Preset to 6)
+
+
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Slot4.Perform_Test)XIC(MSG_CTL.DN)[XIC(MSG_CTL.EXERR.[Slot4.Msg_Count.ACC]) OTL(Slot4.Test_Results.[Slot4.Msg_Count.ACC]) ,XIO(MSG_CTL.EXERR.[Slot4.Msg_Count.ACC]) OTU(Slot4.Test_Results.[Slot4.Msg_Count.ACC]) ,CTU(Slot4.Msg_Count,?,?) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Wehn all Pulse Tests have been performed, reset the counter and unlatch the Perform Test bit.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Slot4.Msg_Count.DN)RES(Slot4.Msg_Count)OTU(Slot4.Perform_Test);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

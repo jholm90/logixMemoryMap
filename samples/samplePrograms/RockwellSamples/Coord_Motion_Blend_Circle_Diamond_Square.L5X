@@ -1,0 +1,2313 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Coord_Motion_Blend_Circle_Diamond_Square" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:19:22 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Coord_Motion_Blend_Circle_Diamond_Square" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:19:02 2018" LastModifiedDate="Fri Jan 19 07:19:03 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[Example for Coordinated Motion Circle-Diamond-Square, using MCLM, MCCM.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="0"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="MOTION_PATH_udt" Family="NoFamily" Class="User">
+<Members>
+<Member Name="InstructionType" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="MoveType" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="CircleType" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Direction" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Position" DataType="REAL" Dimension="3" Radix="Float" Hidden="false"/>
+<Member Name="ViaCenterRadius" DataType="REAL" Dimension="3" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="CommandExecuting" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CS_XY" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="HyTechMotion" SystemType="Cartesian" Dimension="2" Axes="XAxisV YAxisV" MaximumPendingMoves="1" CoordinationMode="Primary Primary" CoordinationUnits="Coordination Units" ConversionRatioNumerator="1.0 1.0" ConversionRatioDenominator="1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="3.0"
+ MaximumAcceleration="20.0" MaximumDeceleration="20.0" ActualPositionTolerance="0.005" CommandPositionTolerance="0.005" TransformDimension="0" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0" ZeroAngleOffset3="0.0" BaseOffset1="0.0"
+ BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="133.33333" MaximumDecelerationJerk="133.33333"/>
+</Data>
+</Tag>
+<Tag Name="CycleStart" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CycleStop" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="End_Of_File" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Execute_Command" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExecutionComplete" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExecutionError" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExecutionStatus" TagType="Base" DataType="DINT" Dimensions="4" Radix="Decimal">
+<Data>00 00 00 00 28 00 00 00 28 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="4" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="40"/>
+<Element Index="[2]" Value="40"/>
+<Element Index="[3]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Func_CDS_Selected" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="HyTechMotion" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="6000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="Program_Selection" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="RUNPROG_CDS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Scale1Selected" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Scale2Selected" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Scale3Selected" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Scale4Selected" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="StartIndex" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="TermTypeSelect" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="user_CyStart_PB" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="user_input" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="XAxisV" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="HyTechMotion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="3.0" MaximumAcceleration="20.0" MaximumDeceleration="20.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="133.33333" MaximumDecelerationJerk="133.33333"
+ DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+<Tag Name="YAxisV" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="HyTechMotion" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="3.0" MaximumAcceleration="20.0" MaximumDeceleration="20.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="133.33333" MaximumDecelerationJerk="133.33333"
+ DynamicsConfigurationBits="7"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="Example_XY_Coordinate_Motion" TestEdits="false" MainRoutineName="Run_Example_CirDSq" Disabled="false">
+<Tags>
+<Tag Name="CircleDiamondSquareCommandTolerance" TagType="Base" DataType="REAL" Radix="Float">
+<Data>0A D7 23 3C</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.01"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareComplete" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareDrawSpeed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 40 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="3.0"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquarePath" TagType="Base" DataType="MOTION_PATH_udt" Dimensions="17">
+<Description>
+<![CDATA[CirDimSquare Data]]>
+</Description>
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[Pt. 0= (0.0,0.5) Incrimental
+(x, y)        
+per Start at Absolute (0,0)]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[Shapes= Incremental moves]]>
+</Comment>
+<Comment Operand="[2]">
+<![CDATA[Pts. 2->5 = Diamond
+[Incrimental moves]]]>
+</Comment>
+<Comment Operand="[6]">
+<![CDATA[Pt. 6= (0,0) Absolute]]>
+</Comment>
+<Comment Operand="[7]">
+<![CDATA[Pts. 7->10=Square
+[Incrimental moves]]]>
+</Comment>
+<Comment Operand="[11]">
+<![CDATA[Pt. 11= (0,0) Absolute]]>
+</Comment>
+<Comment Operand="[13]">
+<![CDATA[Pt 13= CW full Circle]]>
+</Comment>
+<Comment Operand="[14]">
+<![CDATA[Pt 14= CCW full Circle]]>
+</Comment>
+<Comment Operand="[15]">
+<![CDATA[Pt. 15= (0,0.25) Absolute]]>
+</Comment>
+<Comment Operand="[16]">
+<![CDATA[Pt. 16= (0,0) Absolute]]>
+</Comment>
+</Comments>
+<Data>00 01 00 00 00 00 00 00 00 00 00 3F 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 
+00 00 00 00 00 00 00 3F 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 80 3F 
+00 00 80 3F 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 80 3F 00 00 80 BF 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 80 BF 00 00 80 BF 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 
+00 00 80 BF 00 00 80 3F 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 00 40 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 00 00 00 00 00 40 00 00 00 00 
+CD CC 0C 3F 5C 8F C2 BE 00 00 00 00 00 01 00 00 
+00 00 00 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 
+00 00 00 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 80 3F 00 00 00 00 00 00 00 00 
+CD CC 4C 3F CD CC 4C BD 00 00 00 00 01 01 02 03 
+00 00 00 00 00 00 00 40 00 00 00 00 00 00 80 3F 
+00 00 00 00 00 00 00 00 01 01 02 02 00 00 00 00 
+00 00 00 40 00 00 00 00 00 00 80 3F 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 3E 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_PATH_udt" Dimensions="17">
+<Element Index="[0]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.5"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.5"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="1.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="-1.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-1.0"/>
+<Element Index="[1]" Value="-1.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-1.0"/>
+<Element Index="[1]" Value="1.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="2.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="2.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.55"/>
+<Element Index="[1]" Value="-0.38"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-2.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="-2.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.8"/>
+<Element Index="[1]" Value="-0.05"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="3"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="2.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="2"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="2.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.25"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareScale1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.0"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareScale2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="2.0"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareScale3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 40 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="3.0"/>
+</Data>
+</Tag>
+<Tag Name="CircleDiamondSquareScale4" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="4.0"/>
+</Data>
+</Tag>
+<Tag Name="Circular" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="DestPath" TagType="Base" DataType="MOTION_PATH_udt" Dimensions="30">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 
+00 00 00 00 00 00 80 40 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 80 40 
+00 00 80 40 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 80 40 00 00 80 C0 
+00 00 00 00 AE 47 61 40 7B 14 2E 3F 00 00 00 00 
+00 01 00 00 00 00 80 C0 00 00 80 C0 00 00 00 00 
+29 5C 0F BF A4 70 8D C0 00 00 00 00 00 01 00 00 
+00 00 80 C0 00 00 80 40 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 00 41 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 00 00 00 00 00 41 00 00 00 00 
+CD CC 0C 40 5C 8F C2 BF 00 00 00 00 00 01 00 00 
+00 00 00 C1 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 
+00 00 00 C1 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 80 40 00 00 00 00 00 00 00 00 
+CD CC 4C 40 CD CC 4C BE 00 00 00 00 01 01 02 03 
+00 00 00 00 00 00 00 41 00 00 00 00 00 00 80 40 
+00 00 00 00 00 00 00 00 01 01 02 02 00 00 00 00 
+00 00 00 41 00 00 00 00 00 00 80 40 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 80 3F 0A D7 03 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 D7 A3 70 3F 
+0A D7 03 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 85 EB 91 3F 33 33 13 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 0A D7 A3 3F 33 33 13 40 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+85 EB 91 3F 33 33 13 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 66 66 A6 3F 
+71 3D 0A 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 3F 0A D7 03 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 3D 0A 97 3F D7 A3 10 40 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+66 66 A6 3F 71 3D 0A 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 66 66 A6 3F 
+C3 F5 08 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 3F 5C 8F 02 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 80 3F CD CC CC 3F 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+E1 7A 94 3F 52 B8 DE 3F 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_PATH_udt" Dimensions="30">
+<Element Index="[0]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="-4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="3.52"/>
+<Element Index="[1]" Value="0.68"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-4.0"/>
+<Element Index="[1]" Value="-4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-0.56"/>
+<Element Index="[1]" Value="-4.42"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-4.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="8.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="2.2"/>
+<Element Index="[1]" Value="-1.52"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-8.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="-8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="3.2"/>
+<Element Index="[1]" Value="-0.2"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="3"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="2"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.94"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.14"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[20]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.28"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[21]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.14"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[22]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.16"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[23]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[24]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.18"/>
+<Element Index="[1]" Value="2.26"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[25]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.16"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[26]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.14"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[27]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.04"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[28]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="1.6"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[29]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.16"/>
+<Element Index="[1]" Value="1.74"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="DrawPath" TagType="Base" DataType="MOTION_PATH_udt" Dimensions="30">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 
+00 00 00 00 00 00 80 40 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 80 40 
+00 00 80 40 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 80 40 00 00 80 C0 
+00 00 00 00 AE 47 61 40 7B 14 2E 3F 00 00 00 00 
+00 01 00 00 00 00 80 C0 00 00 80 C0 00 00 00 00 
+29 5C 0F BF A4 70 8D C0 00 00 00 00 00 01 00 00 
+00 00 80 C0 00 00 80 40 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 01 00 00 00 00 00 41 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 00 00 00 00 00 41 00 00 00 00 
+CD CC 0C 40 5C 8F C2 BF 00 00 00 00 00 01 00 00 
+00 00 00 C1 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 
+00 00 00 C1 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 01 00 00 00 00 80 40 00 00 00 00 00 00 00 00 
+CD CC 4C 40 CD CC 4C BE 00 00 00 00 01 01 02 03 
+00 00 00 00 00 00 00 41 00 00 00 00 00 00 80 40 
+00 00 00 00 00 00 00 00 01 01 02 02 00 00 00 00 
+00 00 00 41 00 00 00 00 00 00 80 40 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 80 3F 0A D7 03 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 D7 A3 70 3F 
+0A D7 03 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 85 EB 91 3F 33 33 13 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 0A D7 A3 3F 33 33 13 40 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+85 EB 91 3F 33 33 13 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 66 66 A6 3F 
+71 3D 0A 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 3F 0A D7 03 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 3D 0A 97 3F D7 A3 10 40 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+66 66 A6 3F 71 3D 0A 40 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 66 66 A6 3F 
+C3 F5 08 40 00 00 20 C0 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 3F 5C 8F 02 40 
+00 00 20 C0 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 80 3F CD CC CC 3F 00 00 20 C0 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+E1 7A 94 3F 52 B8 DE 3F 00 00 20 C0 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_PATH_udt" Dimensions="30">
+<Element Index="[0]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="-4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="3.52"/>
+<Element Index="[1]" Value="0.68"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-4.0"/>
+<Element Index="[1]" Value="-4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-0.56"/>
+<Element Index="[1]" Value="-4.42"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-4.0"/>
+<Element Index="[1]" Value="4.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="8.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="2.2"/>
+<Element Index="[1]" Value="-1.52"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="-8.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="-8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="3.2"/>
+<Element Index="[1]" Value="-0.2"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="3"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="2"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="8.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="4.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.94"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.14"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[20]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.28"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[21]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.14"/>
+<Element Index="[1]" Value="2.3"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[22]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.16"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[23]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.06"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[24]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.18"/>
+<Element Index="[1]" Value="2.26"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[25]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.16"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[26]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.3"/>
+<Element Index="[1]" Value="2.14"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[27]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="2.04"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[28]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.0"/>
+<Element Index="[1]" Value="1.6"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+<Element Index="[29]">
+<Structure DataType="MOTION_PATH_udt">
+<DataValueMember Name="InstructionType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="MoveType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CircleType" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="SINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Position" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="1.16"/>
+<Element Index="[1]" Value="1.74"/>
+<Element Index="[2]" Value="-2.5"/>
+</ArrayMember>
+<ArrayMember Name="ViaCenterRadius" DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="FAL51" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 11 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="FAL52" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 11 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="FAL53" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 11 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="FAL54" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 11 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="FirstScan" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Linear" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MAH_X" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MAH_Y" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MCCM_PATH2D_DRAW1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MCCM_PATH2D_DRAW2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MCLM_PATH2D_DRAW1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MCLM_PATH2D_DRAW2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PathAccelTrapezoidal" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 A0 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="20.0"/>
+</Data>
+</Tag>
+<Tag Name="PathComplete" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PathCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>11 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="17"/>
+</Data>
+</Tag>
+<Tag Name="PathDecelTrapezoidal" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 A0 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="20.0"/>
+</Data>
+</Tag>
+<Tag Name="PathError" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PathIndex" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PathSpeed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 40 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="3.0"/>
+</Data>
+</Tag>
+<Tag Name="Scale" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="4.0"/>
+</Data>
+</Tag>
+<Tag Name="TermType" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="DrawAlongPath2D" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[call Subroutine: DrawAlongPath2D
+  which Handles Itterating thru the User-Defined-Structure(UDS) Path_Segment of Target Positions & MCLM/MCCM data[index]
+     Determine: if a Linear or Circular UDS Path_Segment, then Process & Execute the proper MCLM or MCCM.]]>
+</Comment>
+<Text>
+<![CDATA[SBR(PathCount,DrawPath)XIC(FirstScan)MOV(StartIndex,PathIndex)OTU(PathComplete);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[NOTE: this Itterative [index] example allows for Blending between Successive Target Positions
+                         see OnLine Help of the MCLM instruction for more details on Blending.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(MCCM_PATH2D_DRAW1.ER) ,XIC(MCCM_PATH2D_DRAW2.ER) ,XIC(MCLM_PATH2D_DRAW1.ER) ,XIC(MCLM_PATH2D_DRAW2.ER) ]OTE(PathError);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[These Rungs illustrate the use of the Coordiante Motion Queue[depth=1] 
+                                 to provide Blending between successive Coordinate Motion MCLM and/or MCCM Commands.
+See:: OnLine Help of the MCLM & MCCM instructions for more details on::
+              Blending, Queue, Termination types, and Instruction status conditions 
+]]>
+</Comment>
+<Text>
+<![CDATA[LES(PathIndex,PathCount)EQU(DrawPath[PathIndex].InstructionType,Circular)XIO(MCCM_PATH2D_DRAW1.EN)XIO(MCCM_PATH2D_DRAW1.IP)XIO(PathError)XIO(CS_XY.MovePendingQueueFullStatus)MCCM(CS_XY,MCCM_PATH2D_DRAW1,DrawPath[PathIndex].MoveType,DrawPath[PathIndex].Position[0],DrawPath[PathIndex].CircleType,DrawPath[PathIndex].ViaCenterRadius[0],DrawPath[PathIndex].Direction,PathSpeed,Units per sec,PathAccelTrapezoidal,Units per sec2,PathDecelTrapezoidal,Units per sec2,Trapezoidal,100.0,100.0,% of Time,TermType,Disabled,Current,0,0,None,0,0)ADD(PathIndex,1,PathIndex);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[LES(PathIndex,PathCount)EQU(DrawPath[PathIndex].InstructionType,Circular)XIO(MCCM_PATH2D_DRAW2.EN)XIO(MCCM_PATH2D_DRAW2.IP)XIO(PathError)XIO(CS_XY.MovePendingQueueFullStatus)MCCM(CS_XY,MCCM_PATH2D_DRAW2,DrawPath[PathIndex].MoveType,DrawPath[PathIndex].Position[0],DrawPath[PathIndex].CircleType,DrawPath[PathIndex].ViaCenterRadius[0],DrawPath[PathIndex].Direction,PathSpeed,Units per sec,PathAccelTrapezoidal,Units per sec2,PathDecelTrapezoidal,Units per sec2,Trapezoidal,100.0,100.0,% of Time,TermType,Disabled,Current,0,0,None,0,0)ADD(PathIndex,1,PathIndex);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[LES(PathIndex,PathCount)EQU(DrawPath[PathIndex].InstructionType,Linear)XIO(MCLM_PATH2D_DRAW1.EN)XIO(MCLM_PATH2D_DRAW1.IP)XIO(PathError)XIO(CS_XY.MovePendingQueueFullStatus)MCLM(CS_XY,MCLM_PATH2D_DRAW1,DrawPath[PathIndex].MoveType,DrawPath[PathIndex].Position[0],PathSpeed,Units per sec,PathAccelTrapezoidal,Units per sec2,PathDecelTrapezoidal,Units per sec2,Trapezoidal,100.0,100.0,% of Time,TermType,Disabled,Current,0,0,None,0,0)ADD(PathIndex,1,PathIndex);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[LES(PathIndex,PathCount)EQU(DrawPath[PathIndex].InstructionType,Linear)XIO(MCLM_PATH2D_DRAW2.EN)XIO(MCLM_PATH2D_DRAW2.IP)XIO(PathError)XIO(CS_XY.MovePendingQueueFullStatus)MCLM(CS_XY,MCLM_PATH2D_DRAW2,DrawPath[PathIndex].MoveType,DrawPath[PathIndex].Position[0],PathSpeed,Units per sec,PathAccelTrapezoidal,Units per sec2,PathDecelTrapezoidal,Units per sec2,Trapezoidal,100.0,100.0,% of Time,TermType,Disabled,Current,0,0,None,0,0)ADD(PathIndex,1,PathIndex);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(FirstScan)OTU(FirstScan);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[[EQU(PathIndex,PathCount) XIO(CS_XY.MoveStatus) ,XIC(PathError) ]OTL(PathComplete)OTL(FirstScan);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[RET(PathComplete);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MotionCircleDiamondSquare" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[call Subroutine: MotionCircleDiamondSquare
+  which Handles Loading the Target Positions [defined in CircleDiamondSquarePath, array of 17 DataPoints]
+via the CPS instruction, Loads the data into a working buffer DestPath[0 thru 17] 
+      also via the FAL instruction, Scale(*1 thru *4) the Target & Center_Point Positions if so desired
+This sample uses a Tag to select TermType=No_Settle(1) 
+                                         user can change this view the affects of other Termination types on resultant Path]]>
+</Comment>
+<Text>
+<![CDATA[SBR()OTL(Execute_Command);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(CommandExecuting.0)[XIC(CircleDiamondSquareComplete) ,XIC(CycleStop) OTL(CircleDiamondSquareComplete) ,[XIC(MCCM_PATH2D_DRAW1.ER) MOV(MCCM_PATH2D_DRAW1.ERR,ExecutionStatus[0]) ,XIC(MCCM_PATH2D_DRAW2.ER) MOV(MCCM_PATH2D_DRAW2.ERR,ExecutionStatus[0]) ,XIC(MCLM_PATH2D_DRAW1.ER) MOV(MCLM_PATH2D_DRAW1.ERR,ExecutionStatus[0]) ,XIC(MCLM_PATH2D_DRAW2.ER) MOV(MCLM_PATH2D_DRAW2.ERR,ExecutionStatus[0]) ] OTL(ExecutionError.0) OTL(CircleDiamondSquareComplete) ]OTL(ExecutionComplete.0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[via the CPS instruction, Loads the data into a working buffer DestPath[0 thru 17] ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Program_Selection.0)XIO(CommandExecuting.0)CPS(CircleDiamondSquarePath[0],DestPath[0],17)OTL(FirstScan)OTU(CircleDiamondSquareComplete)OTL(CommandExecuting.0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[via the FAL instruction, Scale(*1 thru *4) the Target & Center_Point Positions if so desired
+this sample has chosen a Scaling multiplier of *4   at first scan S:FS.
+NOTE: Important to consider Absolute vs Incrimental target postion data & circular center point data when Scaling ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(CommandExecuting.0)[XIC(Scale1Selected) MOV(CircleDiamondSquareScale1,Scale) ,XIC(Scale2Selected) MOV(CircleDiamondSquareScale2,Scale) ,XIC(Scale3Selected) MOV(CircleDiamondSquareScale3,Scale) ,XIC(Scale4Selected) MOV(CircleDiamondSquareScale4,Scale) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(CommandExecuting.0)XIO(CircleDiamondSquareComplete)FAL(FAL51,?,?,ALL,DestPath[FAL51.POS].Position[0],CircleDiamondSquarePath[FAL51.POS].Position[0]*Scale)FAL(FAL52,?,?,ALL,DestPath[FAL52.POS].Position[1],CircleDiamondSquarePath[FAL52.POS].Position[1]*Scale)FAL(FAL53,?,?,ALL,DestPath[FAL53.POS].ViaCenterRadius[0],CircleDiamondSquarePath[FAL53.POS].ViaCenterRadius[0]*Scale)FAL(FAL54,?,?,ALL,DestPath[FAL54.POS].ViaCenterRadius[1],CircleDiamondSquarePath[FAL54.POS].ViaCenterRadius[1]*Scale);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[This sample uses a Tag to select TermType=No_Settle(1) 
+                                         user can change this view the affects of other Termination types on resultant Path.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(CommandExecuting.0)XIO(CircleDiamondSquareComplete)MOV(TermTypeSelect,TermType)MOV(CircleDiamondSquareDrawSpeed,PathSpeed)SSV(COORDINATESYSTEM,CS_XY,CommandPositionTolerance,CircleDiamondSquareCommandTolerance);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(CommandExecuting.0)XIC(FAL51.DN)XIC(FAL52.DN)XIC(FAL53.DN)XIC(FAL54.DN)XIO(CircleDiamondSquareComplete)JSR(DrawAlongPath2D,2,17,DestPath,CircleDiamondSquareComplete);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[EQU(ExecutionComplete,Program_Selection)CLR(CommandExecuting)CLR(Program_Selection)CLR(ExecutionComplete)OTU(RUNPROG_CDS)OTU(Execute_Command);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Run_Example_CirDSq" Type="RLL">
+<Description>
+<![CDATA[Coordinated_Motion Example to Plot Circle_Diamond_Square in XY.
+Use Data driven End_Point data array to define target postions.]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Example of Coordinated Motion feature, 2-axis Cartesian coordiate system X & Y.
+Using MCLM(Linear) and MCCM(Circular) Motion Instructions,
+               to Itterate thru Data_driven Target Positions to Plot: Circle, Diamond, Square [CDSq] profiles.
+
+NOTE: this Itterative [index] example allows for Blending between Successive Target Positions
+                                                      see OnLine Help of the MCLM instruction for more details on Blending & Termination Type.                                        
+
+Use:  Trend-> Plot_XvsY to see Graphic plot of the resultant X & Y CDSq. path
+                                               Place the Controller in RUN Mode and the sample program will Automatically Cycle                       ]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(S:FS) ,XIC(user_CyStart_PB) ]MAH(XAxisV,MAH_X)MAH(YAxisV,MAH_Y);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(MAH_X.DN)XIC(MAH_Y.DN)OTL(CycleStart)OTL(Scale4Selected);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Target Positions in Tag = CircleDiamondSquarePath[17], using a UserDefinedStructure[UDS]                                       
+                                                                            the UDS named Motion_Path emulates the Operands in the MCLM and MCCM instructions
+
+call Subroutine: MotionCircleDiamondSquare ->  Scale & Load the Target Positions[17] into DataPath[index]
+                                   then Subroutine:                DrawAlongPath2D -> Itterate thru  MCLM or MCCM per the defined UDS Target Positions[index]               
+]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(RUNPROG_CDS) ,XIC(CycleStart) MOV(1,Program_Selection) OTL(RUNPROG_CDS) ]JSR(MotionCircleDiamondSquare,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="true" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="Example_XY_Coordinate_Motion"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="2"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends>
+<Trend Name="Plot_XY" SamplePeriod="10" NumberOfCaptures="1" CaptureSizeType="Time Period" CaptureSize="120000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 229 171 207 9 232 9 209 17 168 176 8 0 9 230 211 15
+ 0 0 0 0 0 0 0 0 0 0 0 0 112 80 53 194 110 55 195 1 3 0 0 0 0 3 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 199 2 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 2 0 3 0 135 62 0 0 200 51 0 0 0 0 0 0 10 0 0 0 7 80 108 111 116 95 88 89 0 0 0 0
+ 1 0 0 0 0 0 0 0 200 0 0 0 255 157 1 0 255 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 96 234 0 0
+ 0 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 107 2 0 0 2 0 255 255 1 0 13 0 67 86 105 101 119 76 105 110 101 73 110 102
+ 111 2 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 1 32 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 23 67 83 95 88
+ 89 46 65 99 116 117 97 108 80 111 115 105 116 105 111 110 91 48 93 32 1 0 0 0 0 0 1 128 2 0 0 0 1 0 0 0 0 0 0 0
+ 0 0 200 66 1 32 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 23 67 83 95 88 89 46 65 99 116 117 97 108 80 111 115 105 116
+ 105 111 110 91 49 93 32 1 0 0 0 0 0 5 0 0 0 2 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0
+ 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 2 0 0
+ 0 255 0 0 255 0 0 0 0 0 0 0 0 0 0 4 0 0 0 4 0 0 0 0 0 0 0 0 0 128 191 0 0 32 65 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 2 0 1 0 0 0 1 0 0 0 2 0 0 0 0 0 0 0 0 0 2
+ 0 0 0 0 0 1 0 0 0 2 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 128 128 0 128 128 128 0 255
+ 239 255 254 255 191 255 255 233 115 243 62 1 0 0 0 227 0 0 0 37 116 243 62 1 0 0 0 227 0 0 0 0 1 0 0 0 1 0 0 0
+ 2 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 60 0 0 0 245 255 255 255 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 32 1 0 0 0
+ 0 0 3 0 0 0 0 0 0 0 0 0 0 0 32 1 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 0 0 0 0 3 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 100 45 3 0
+</Template>
+<Pens>
+<Pen Name="CS_XY.ActualPosition[0]" Color="16#00ff_0000" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+<Pen Name="CS_XY.ActualPosition[1]" Color="16#0000_ff00" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+</Pens>
+</Trend>
+</Trends>
+</Controller>
+</RSLogix5000Content>

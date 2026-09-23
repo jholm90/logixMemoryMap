@@ -1,0 +1,845 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Example_for_1769_ASCII_Module" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:25:14 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Example_for_1769_ASCII_Module" ProcessorType="1769-L35E" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:25:02 2018" LastModifiedDate="Fri Jan 19 07:25:03 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="InitialStep"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[Sample logic using the 1769-ASCII module with CompactLogix. Connect cable from computer to channel zero of ASCII module.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="0"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Controller" CatalogNumber="1769-L35E" Vendor="1" ProductType="14" ProductCode="65" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="CompactLogixL35Controller" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalENB" CatalogNumber="1769-L35E Ethernet Port" Vendor="1" ProductType="12" ProductCode="120" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="CompactLogixL35Ethernet" Upstream="true"/>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local" CatalogNumber="CompactBus" Vendor="1" ProductType="12" ProductCode="71" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="Compact" Upstream="false">
+<Bus Size="31"/>
+</Port>
+<Port Id="2" Address="3" Type="CompactVirtualAdapter" Upstream="true"/>
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false"/>
+</Connections>
+</Communications>
+<ExtendedProperties><public><ConfigID>900</ConfigID></public></ExtendedProperties>
+</Module>
+<Module Name="ASCII_1" CatalogNumber="1769-MODULE" Vendor="1" ProductType="0" ProductCode="17" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="1" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870915" PrimCxnInputSize="120" PrimCxnOutputSize="116">
+<ConfigTag ConfigSize="66">
+<Data>46 00 00 00 66 00 00 00 01 00 00 00 00 00 03 00 
+00 00 50 00 00 00 00 00 01 00 0D 00 00 00 00 00 
+01 00 00 00 50 00 00 00 00 00 00 00 03 00 00 00 
+50 00 00 00 00 00 01 00 0D 00 00 00 00 00 01 00 
+00 00 50 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE:C:0">
+<DataValueMember Name="Reserved" DataType="DINT" Radix="Decimal" Value="1"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="198" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0003"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0050"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0001"/>
+<Element Index="[7]" Value="16#000d"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0001"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0050"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0003"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0050"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0001"/>
+<Element Index="[22]" Value="16#000d"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0001"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0050"/>
+<Element Index="[28]" Value="16#0000"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+<Element Index="[100]" Value="16#0000"/>
+<Element Index="[101]" Value="16#0000"/>
+<Element Index="[102]" Value="16#0000"/>
+<Element Index="[103]" Value="16#0000"/>
+<Element Index="[104]" Value="16#0000"/>
+<Element Index="[105]" Value="16#0000"/>
+<Element Index="[106]" Value="16#0000"/>
+<Element Index="[107]" Value="16#0000"/>
+<Element Index="[108]" Value="16#0000"/>
+<Element Index="[109]" Value="16#0000"/>
+<Element Index="[110]" Value="16#0000"/>
+<Element Index="[111]" Value="16#0000"/>
+<Element Index="[112]" Value="16#0000"/>
+<Element Index="[113]" Value="16#0000"/>
+<Element Index="[114]" Value="16#0000"/>
+<Element Index="[115]" Value="16#0000"/>
+<Element Index="[116]" Value="16#0000"/>
+<Element Index="[117]" Value="16#0000"/>
+<Element Index="[118]" Value="16#0000"/>
+<Element Index="[119]" Value="16#0000"/>
+<Element Index="[120]" Value="16#0000"/>
+<Element Index="[121]" Value="16#0000"/>
+<Element Index="[122]" Value="16#0000"/>
+<Element Index="[123]" Value="16#0000"/>
+<Element Index="[124]" Value="16#0000"/>
+<Element Index="[125]" Value="16#0000"/>
+<Element Index="[126]" Value="16#0000"/>
+<Element Index="[127]" Value="16#0000"/>
+<Element Index="[128]" Value="16#0000"/>
+<Element Index="[129]" Value="16#0000"/>
+<Element Index="[130]" Value="16#0000"/>
+<Element Index="[131]" Value="16#0000"/>
+<Element Index="[132]" Value="16#0000"/>
+<Element Index="[133]" Value="16#0000"/>
+<Element Index="[134]" Value="16#0000"/>
+<Element Index="[135]" Value="16#0000"/>
+<Element Index="[136]" Value="16#0000"/>
+<Element Index="[137]" Value="16#0000"/>
+<Element Index="[138]" Value="16#0000"/>
+<Element Index="[139]" Value="16#0000"/>
+<Element Index="[140]" Value="16#0000"/>
+<Element Index="[141]" Value="16#0000"/>
+<Element Index="[142]" Value="16#0000"/>
+<Element Index="[143]" Value="16#0000"/>
+<Element Index="[144]" Value="16#0000"/>
+<Element Index="[145]" Value="16#0000"/>
+<Element Index="[146]" Value="16#0000"/>
+<Element Index="[147]" Value="16#0000"/>
+<Element Index="[148]" Value="16#0000"/>
+<Element Index="[149]" Value="16#0000"/>
+<Element Index="[150]" Value="16#0000"/>
+<Element Index="[151]" Value="16#0000"/>
+<Element Index="[152]" Value="16#0000"/>
+<Element Index="[153]" Value="16#0000"/>
+<Element Index="[154]" Value="16#0000"/>
+<Element Index="[155]" Value="16#0000"/>
+<Element Index="[156]" Value="16#0000"/>
+<Element Index="[157]" Value="16#0000"/>
+<Element Index="[158]" Value="16#0000"/>
+<Element Index="[159]" Value="16#0000"/>
+<Element Index="[160]" Value="16#0000"/>
+<Element Index="[161]" Value="16#0000"/>
+<Element Index="[162]" Value="16#0000"/>
+<Element Index="[163]" Value="16#0000"/>
+<Element Index="[164]" Value="16#0000"/>
+<Element Index="[165]" Value="16#0000"/>
+<Element Index="[166]" Value="16#0000"/>
+<Element Index="[167]" Value="16#0000"/>
+<Element Index="[168]" Value="16#0000"/>
+<Element Index="[169]" Value="16#0000"/>
+<Element Index="[170]" Value="16#0000"/>
+<Element Index="[171]" Value="16#0000"/>
+<Element Index="[172]" Value="16#0000"/>
+<Element Index="[173]" Value="16#0000"/>
+<Element Index="[174]" Value="16#0000"/>
+<Element Index="[175]" Value="16#0000"/>
+<Element Index="[176]" Value="16#0000"/>
+<Element Index="[177]" Value="16#0000"/>
+<Element Index="[178]" Value="16#0000"/>
+<Element Index="[179]" Value="16#0000"/>
+<Element Index="[180]" Value="16#0000"/>
+<Element Index="[181]" Value="16#0000"/>
+<Element Index="[182]" Value="16#0000"/>
+<Element Index="[183]" Value="16#0000"/>
+<Element Index="[184]" Value="16#0000"/>
+<Element Index="[185]" Value="16#0000"/>
+<Element Index="[186]" Value="16#0000"/>
+<Element Index="[187]" Value="16#0000"/>
+<Element Index="[188]" Value="16#0000"/>
+<Element Index="[189]" Value="16#0000"/>
+<Element Index="[190]" Value="16#0000"/>
+<Element Index="[191]" Value="16#0000"/>
+<Element Index="[192]" Value="16#0000"/>
+<Element Index="[193]" Value="16#0000"/>
+<Element Index="[194]" Value="16#0000"/>
+<Element Index="[195]" Value="16#0000"/>
+<Element Index="[196]" Value="16#0000"/>
+<Element Index="[197]" Value="16#0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+<Comments>
+<Comment Operand=".DATA[0]">
+<![CDATA[Data Buffer Mode; 0=Alt; 1=Simul]]>
+</Comment>
+<Comment Operand=".DATA[1]">
+<![CDATA[Framing; 3=8N1]]>
+</Comment>
+<Comment Operand=".DATA[2]">
+<![CDATA[Speed: 0=9600; 5=38400]]>
+</Comment>
+<Comment Operand=".DATA[3]">
+<![CDATA[Max Rx Char]]>
+</Comment>
+<Comment Operand=".DATA[4]">
+<![CDATA[Rx Start mode: 0=No Delim]]>
+</Comment>
+<Comment Operand=".DATA[5]">
+<![CDATA[Rx Start Delim]]>
+</Comment>
+<Comment Operand=".DATA[6]">
+<![CDATA[Rx End mode:1=Exclude Delim]]>
+</Comment>
+<Comment Operand=".DATA[7]">
+<![CDATA[Rx End Delim]]>
+</Comment>
+<Comment Operand=".DATA[8]">
+<![CDATA[Pad Char]]>
+</Comment>
+<Comment Operand=".DATA[9]">
+<![CDATA[Rx Swap Mode:0=Don't]]>
+</Comment>
+<Comment Operand=".DATA[10]">
+<![CDATA[Master Handshake Mode: 1= Produce immediate]]>
+</Comment>
+<Comment Operand=".DATA[11]">
+<![CDATA[Message Timeout]]>
+</Comment>
+<Comment Operand=".DATA[12]">
+<![CDATA[Max Tx Char]]>
+</Comment>
+<Comment Operand=".DATA[13]">
+<![CDATA[Tx End mode]]>
+</Comment>
+<Comment Operand=".DATA[14]">
+<![CDATA[Tx End Delim]]>
+</Comment>
+<Comment Operand=".DATA[15]">
+<![CDATA[Tx Swap Mode]]>
+</Comment>
+<Comment Operand=".DATA[16]">
+<![CDATA[Framing; 3=8N1  CHANNEL ONE]]>
+</Comment>
+<Comment Operand=".DATA[17]">
+<![CDATA[Speed: 0=9600; 1=1200; 2=2400; 3=4800; 4=19.2K]]>
+</Comment>
+<Comment Operand=".DATA[18]">
+<![CDATA[Max Rx Char]]>
+</Comment>
+<Comment Operand=".DATA[19]">
+<![CDATA[Rx Start mode: 0=No Delim]]>
+</Comment>
+<Comment Operand=".DATA[20]">
+<![CDATA[Rx Start Delim]]>
+</Comment>
+<Comment Operand=".DATA[21]">
+<![CDATA[Rx End mode:1=Exclude Delim]]>
+</Comment>
+<Comment Operand=".DATA[22]">
+<![CDATA[Rx End Delim]]>
+</Comment>
+<Comment Operand=".DATA[23]">
+<![CDATA[Pad Char]]>
+</Comment>
+<Comment Operand=".DATA[24]">
+<![CDATA[Rx Swap Mode:0=Don't]]>
+</Comment>
+<Comment Operand=".DATA[25]">
+<![CDATA[Master Handshake Mode: 1= Produce immediate]]>
+</Comment>
+<Comment Operand=".DATA[26]">
+<![CDATA[Message Timeout]]>
+</Comment>
+<Comment Operand=".DATA[27]">
+<![CDATA[Max Tx Char]]>
+</Comment>
+<Comment Operand=".DATA[28]">
+<![CDATA[Tx End mode]]>
+</Comment>
+<Comment Operand=".DATA[29]">
+<![CDATA[Tx End Delim]]>
+</Comment>
+<Comment Operand=".DATA[30]">
+<![CDATA[Tx Swap Mode]]>
+</Comment>
+</Comments>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="4000" Type="Output" InputCxnPoint="101" OutputCxnPoint="100" OutputSize="116" InputSize="120" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<Comments>
+<Comment Operand=".DATA[0]">
+<![CDATA[Tx ID 0/Rx Id 0]]>
+</Comment>
+<Comment Operand=".DATA[1]">
+<![CDATA[Flags 0]]>
+</Comment>
+<Comment Operand=".DATA[2]">
+<![CDATA[Tx Id 1/Rx ID 1]]>
+</Comment>
+<Comment Operand=".DATA[3]">
+<![CDATA[Flags 1]]>
+</Comment>
+<Comment Operand=".DATA[4]">
+<![CDATA[CNI]]>
+</Comment>
+<Comment Operand=".DATA[5]">
+<![CDATA[CN0]]>
+</Comment>
+<Comment Operand=".DATA[7]">
+<![CDATA[Length]]>
+</Comment>
+<Comment Operand=".DATA[8]">
+<![CDATA[Start of ASCII data]]>
+</Comment>
+</Comments>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_120Bytes:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="58" Radix="Decimal">
+<Element Index="[0]" Value="434"/>
+<Element Index="[1]" Value="256"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="99"/>
+<Element Index="[7]" Value="1"/>
+<Element Index="[8]" Value="55"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+<Element Index="[50]" Value="0"/>
+<Element Index="[51]" Value="0"/>
+<Element Index="[52]" Value="0"/>
+<Element Index="[53]" Value="0"/>
+<Element Index="[54]" Value="0"/>
+<Element Index="[55]" Value="0"/>
+<Element Index="[56]" Value="0"/>
+<Element Index="[57]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Comments>
+<Comment Operand=".DATA[0]">
+<![CDATA[Tx ID 0]]>
+</Comment>
+<Comment Operand=".DATA[1]">
+<![CDATA[Rx ID 0]]>
+</Comment>
+<Comment Operand=".DATA[2]">
+<![CDATA[Tx ID 1]]>
+</Comment>
+<Comment Operand=".DATA[3]">
+<![CDATA[Rx ID 1]]>
+</Comment>
+<Comment Operand=".DATA[4]">
+<![CDATA[CNI]]>
+</Comment>
+<Comment Operand=".DATA[5]">
+<![CDATA[CNO]]>
+</Comment>
+<Comment Operand=".DATA[6]">
+<![CDATA[Reserved]]>
+</Comment>
+<Comment Operand=".DATA[7]">
+<![CDATA[Length]]>
+</Comment>
+<Comment Operand=".DATA[8]">
+<![CDATA[Start of ASCII data]]>
+</Comment>
+<Comment Operand=".DATA[36]">
+<![CDATA[Tx Seq]]>
+</Comment>
+<Comment Operand=".DATA[37]">
+<![CDATA[Rx Seq]]>
+</Comment>
+<Comment Operand=".DATA[38]">
+<![CDATA[Reserved]]>
+</Comment>
+<Comment Operand=".DATA[39]">
+<![CDATA[Char Len]]>
+</Comment>
+<Comment Operand=".DATA[40]">
+<![CDATA[Data]]>
+</Comment>
+</Comments>
+<Data>01 00 00 00 00 00 00 00 00 00 00 00 00 00 03 00 
+37 0D 0A 35 0A 69 0A 20 62 65 74 74 65 72 0D 0A 
+0D 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_116Bytes:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="58" Radix="Decimal">
+<Element Index="[0]" Value="1"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="3"/>
+<Element Index="[8]" Value="3383"/>
+<Element Index="[9]" Value="13578"/>
+<Element Index="[10]" Value="26890"/>
+<Element Index="[11]" Value="8202"/>
+<Element Index="[12]" Value="25954"/>
+<Element Index="[13]" Value="29812"/>
+<Element Index="[14]" Value="29285"/>
+<Element Index="[15]" Value="2573"/>
+<Element Index="[16]" Value="2573"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+<Element Index="[50]" Value="0"/>
+<Element Index="[51]" Value="0"/>
+<Element Index="[52]" Value="0"/>
+<Element Index="[53]" Value="0"/>
+<Element Index="[54]" Value="0"/>
+<Element Index="[55]" Value="0"/>
+<Element Index="[56]" Value="0"/>
+<Element Index="[57]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="InData" TagType="Base" DataType="STRING">
+<Description>
+<![CDATA[Received ASCII data]]>
+</Description>
+<Data>01 00 00 00 37 30 30 35 34 69 73 20 62 65 74 74 
+65 72 73 3F 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['7']]>
+</Data>
+</Tag>
+<Tag Name="NewInput" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Flag to indicate  received from ASCII Module]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="OutData" TagType="Base" DataType="STRING">
+<Description>
+<![CDATA[Data to be sent out by the  ASCII Module]]>
+</Description>
+<Data>03 00 00 00 37 0D 0A 35 34 69 73 20 62 65 74 74 
+65 72 73 3F 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="3">
+<![CDATA['7$r$l']]>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="CrLf" TagType="Base" DataType="STRING">
+<Data>02 00 00 00 0D 0A 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="2">
+<![CDATA['$r$l']]>
+</Data>
+</Tag>
+<Tag Name="LenIn" TagType="Alias" Radix="Decimal" AliasFor="Local:1:I.Data[7]"/>
+<Tag Name="LenOut" TagType="Alias" Radix="Decimal" AliasFor="Local:1:O.Data[7]"/>
+<Tag Name="NewRx" TagType="Base" DataType="INT" Radix="Decimal">
+<Description>
+<![CDATA[Rx ID for  scan]]>
+</Description>
+<Data>B2 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="178"/>
+</Data>
+</Tag>
+<Tag Name="NumInts" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Number of INTs to use in  ASCII Module's output tag]]>
+</Description>
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="OldRx" TagType="Base" DataType="INT" Radix="Decimal">
+<Description>
+<![CDATA[Last data we processed]]>
+</Description>
+<Data>B2 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="178"/>
+</Data>
+</Tag>
+<Tag Name="TxOut0" TagType="Alias" Radix="Decimal" AliasFor="Local:1:O.Data[0]"/>
+<Tag Name="TxRxIn0" TagType="Alias" Radix="Decimal" AliasFor="Local:1:I.Data[0]"/>
+</Tags>
+<Routines>
+<Routine Name="Input" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[On first scan, store current value of Rx Transaction ID as ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(s:fs)AND(TxRxIn0,16#0FF,OldRx);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Keep low 8 bits of Rx Transaction ID (upper 8 bit are Tx)]]>
+</Comment>
+<Text>
+<![CDATA[AND(TxRxIn0,16#0FF,NewRx);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[When Rx Transaction ID changes, it indicates .
+Save data in a STRING tag.
+Indicate to MainRoutine that new data has arrived.
+Save this value of Rx Transaction ID, so we can detect next change.]]>
+</Comment>
+<Text>
+<![CDATA[NEQ(OldRx,NewRx)[MOV(LenIn,InData.LEN) ,COP(Local:1:I.Data[8],InData.DATA[0],LenIn) ,OTL(NewInput) ,MOV(NewRx,OldRx) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+
+   ----------------------------------------------------         
+
+Check to see if the  ASCII Module has new input data.]]>
+</Comment>
+<Text>
+<![CDATA[JSR(Input,0);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[If we have new input data, copy it to the output STRING and append the CR/LF characters so that after we echo the data, HyperTerminal starts a new line.
+Call the routine that gives the string to the ASCII Module.
+Clear  flag.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(NewInput)[COP(InData,OutData,1) ,CONCAT(OutData,CrLf,OutData) ,JSR(Output,0) ,OTU(NewInput) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Output" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Calculate number of INTs to copy (number of characters divided by two, rounded up to next whole INT).]]>
+</Comment>
+<Text>
+<![CDATA[CPT(NumInts,(OutData.LEN + 1) /2);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Copy data from the STRING to the ASCII Module's output tag.]]>
+</Comment>
+<Text>
+<![CDATA[COP(OutData.DATA[0],Local:1:O.Data[8],NumInts);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Set the length in the ASCII Module's output tag to the number of characters to be sent.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(OutData.LEN,LenOut);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Change the Tx Transaction ID in the ASCII Module's output tag.  This tells it that we have some data for it to send.]]>
+</Comment>
+<Text>
+<![CDATA[CPT(TxOut0,(TxOut0 + 1) MOD 256);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="5000" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

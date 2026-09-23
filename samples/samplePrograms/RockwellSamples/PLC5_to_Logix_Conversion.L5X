@@ -1,0 +1,3445 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="_CONVERT" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:41:49 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="_CONVERT" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:41:32 2018" LastModifiedDate="Fri Jan 19 07:41:33 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="DHRIO_MODULE" CatalogNumber="1756-DHRIO/B" Vendor="1" ProductType="12" ProductCode="18" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="6" Type="ICP" Upstream="true"/>
+<Port Id="2" Type="DHPlus" Upstream="false"/>
+<Port Id="3" Type="RIO" Upstream="false">
+<Bus Baud="230.4"/>
+</Port>
+</Ports>
+<Communications CommMethod="536870913">
+<Connections>
+<Connection Name="Standard" RPI="25000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DHRIO:I:0">
+<DataValueMember Name="CHA_Status" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CHB_Status" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="_1771_RIO_Adapter" CatalogNumber="1771-ASB" Vendor="1" ProductType="12" ProductCode="57" Major="1" Minor="1" ParentModule="DHRIO_MODULE" ParentModPortId="3" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Type="RIOChassis" Upstream="false">
+<Bus Size="8"/>
+</Port>
+<Port Id="2" Address="4" Type="RIO" Upstream="true" Width="2"/>
+</Ports>
+<Communications CommMethod="536870913">
+<Connections>
+<Connection Name="Rack" RPI="48000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:RIO_4IOGROUP:I:0">
+<DataValueMember Name="RackStatus" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="InputGroupsValid" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00 00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:RIO_4IOGROUP:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="_1771_IFE" CatalogNumber="RIO-MODULE" Vendor="1" ProductType="103" ProductCode="1" Major="1" Minor="1" ParentModule="_1771_RIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="RIOChassis" Upstream="true"/>
+</Ports>
+</Module>
+<Module Name="_1794_RIO_Adapter" CatalogNumber="1794-ASB" Vendor="1" ProductType="12" ProductCode="49" Major="1" Minor="1" ParentModule="DHRIO_MODULE" ParentModPortId="3" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Type="RIOChassis" Upstream="false">
+<Bus Size="8"/>
+</Port>
+<Port Id="2" Address="8" Type="RIO" Upstream="true" Width="2"/>
+</Ports>
+<Communications CommMethod="536870913">
+<Connections>
+<Connection Name="Rack" RPI="48000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:RIO_4IOGROUP:I:0">
+<DataValueMember Name="RackStatus" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="InputGroupsValid" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00 00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:RIO_4IOGROUP:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="_1794_IE4XOE2" CatalogNumber="RIO-MODULE" Vendor="1" ProductType="103" ProductCode="1" Major="1" Minor="1" ParentModule="_1794_RIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="RIOChassis" Upstream="true"/>
+</Ports>
+</Module>
+<Module Name="Input" CatalogNumber="RIO-MODULE" Vendor="1" ProductType="103" ProductCode="1" Major="1" Minor="1" ParentModule="_1794_RIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="2" Type="RIOChassis" Upstream="true"/>
+</Ports>
+</Module>
+<Module Name="Output" CatalogNumber="RIO-MODULE" Vendor="1" ProductType="103" ProductCode="1" Major="1" Minor="1" ParentModule="_1794_RIO_Adapter" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="6" Type="RIOChassis" Upstream="true"/>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="A11" TagType="Base" DataType="INT" Dimensions="23" Radix="Hex">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="23" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="A_MSG_TEMPBUF1" TagType="Base" DataType="INT" Dimensions="100" Radix="Hex">
+<Description>
+<![CDATA[Temporary Buffer Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="100" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0000"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0000"/>
+<Element Index="[28]" Value="16#0000"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="A_MSG_TEMPBUF2" TagType="Base" DataType="INT" Dimensions="5" Radix="Hex">
+<Description>
+<![CDATA[Temporary Buffer Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="5" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="A_MSG_TEMPBUF3" TagType="Base" DataType="INT" Dimensions="5" Radix="Hex">
+<Description>
+<![CDATA[Temporary Buffer Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="5" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="B3" TagType="Base" DataType="DINT" Dimensions="201" Radix="Binary">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="201" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[4]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[5]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[6]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[7]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[8]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[9]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[10]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[11]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[12]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[13]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[14]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[15]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[16]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[17]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[18]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[19]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[20]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[21]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[22]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[23]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[24]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[25]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[26]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[27]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[28]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[29]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[30]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[31]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[32]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[33]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[34]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[35]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[36]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[37]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[38]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[39]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[40]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[41]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[42]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[43]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[44]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[45]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[46]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[47]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[48]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[49]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[50]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[51]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[52]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[53]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[54]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[55]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[56]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[57]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[58]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[59]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[60]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[61]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[62]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[63]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[64]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[65]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[66]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[67]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[68]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[69]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[70]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[71]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[72]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[73]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[74]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[75]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[76]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[77]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[78]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[79]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[80]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[81]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[82]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[83]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[84]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[85]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[86]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[87]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[88]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[89]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[90]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[91]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[92]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[93]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[94]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[95]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[96]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[97]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[98]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[99]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[100]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[101]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[102]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[103]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[104]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[105]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[106]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[107]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[108]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[109]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[110]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[111]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[112]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[113]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[114]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[115]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[116]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[117]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[118]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[119]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[120]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[121]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[122]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[123]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[124]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[125]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[126]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[127]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[128]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[129]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[130]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[131]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[132]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[133]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[134]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[135]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[136]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[137]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[138]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[139]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[140]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[141]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[142]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[143]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[144]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[145]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[146]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[147]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[148]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[149]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[150]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[151]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[152]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[153]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[154]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[155]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[156]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[157]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[158]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[159]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[160]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[161]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[162]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[163]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[164]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[165]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[166]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[167]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[168]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[169]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[170]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[171]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[172]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[173]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[174]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[175]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[176]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[177]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[178]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[179]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[180]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[181]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[182]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[183]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[184]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[185]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[186]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[187]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[188]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[189]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[190]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[191]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[192]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[193]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[194]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[195]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[196]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[197]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[198]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[199]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<Element Index="[200]" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="BT14_0" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="1" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BT14_1" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BT14_2" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BT14_3" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BT14_4" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BT14_5" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Block Transfer Write" RequestedLength="5" CommTypeCode="3" Channel="&apos;$00&apos;" Rack="8#000" Group="0" Slot="0" LocalIndex="0" LocalElement="A_MSG_TEMPBUF3" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="BTR_1771" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Block Transfer Read" RequestedLength="20" ConnectionPath="DHRIO_MODULE" CommTypeCode="3" Channel="&apos;B&apos;" Rack="8#001" Group="0" Slot="0" LocalIndex="0" LocalElement="IFE_read_data" CacheConnections="TRUE"
+/>
+</Data>
+</Tag>
+<Tag Name="BTR_1794" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Block Transfer Read" RequestedLength="5" ConnectionPath="DHRIO_MODULE" CommTypeCode="3" Channel="&apos;B&apos;" Rack="8#002" Group="0" Slot="0" LocalIndex="0" LocalElement="FLEX_combo_input_data" CacheConnections="TRUE"
+/>
+</Data>
+</Tag>
+<Tag Name="BTW_1771" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Block Transfer Write" RequestedLength="37" ConnectionPath="DHRIO_MODULE" CommTypeCode="3" Channel="&apos;B&apos;" Rack="8#001" Group="0" Slot="0" LocalIndex="0" LocalElement="IFE_config_data" CacheConnections="TRUE"
+/>
+</Data>
+</Tag>
+<Tag Name="BTW_1794" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Block Transfer Write" RequestedLength="1" ConnectionPath="DHRIO_MODULE" CommTypeCode="3" Channel="&apos;B&apos;" Rack="8#002" Group="0" Slot="0" LocalIndex="0" LocalElement="FLEX_combo_output_data" CacheConnections="TRUE"
+/>
+</Data>
+</Tag>
+<Tag Name="C5" TagType="Base" DataType="COUNTER" Dimensions="23">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 7D 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="COUNTER" Dimensions="23">
+<Element Index="[0]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[20]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[21]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[22]">
+<Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="32000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="D13" TagType="Base" DataType="DINT" Dimensions="33" Radix="Hex">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="33" Radix="Hex">
+<Element Index="[0]" Value="16#0000_0000"/>
+<Element Index="[1]" Value="16#0000_0000"/>
+<Element Index="[2]" Value="16#0000_0000"/>
+<Element Index="[3]" Value="16#0000_0000"/>
+<Element Index="[4]" Value="16#0000_0000"/>
+<Element Index="[5]" Value="16#0000_0000"/>
+<Element Index="[6]" Value="16#0000_0000"/>
+<Element Index="[7]" Value="16#0000_0000"/>
+<Element Index="[8]" Value="16#0000_0000"/>
+<Element Index="[9]" Value="16#0000_0000"/>
+<Element Index="[10]" Value="16#0000_0000"/>
+<Element Index="[11]" Value="16#0000_0000"/>
+<Element Index="[12]" Value="16#0000_0000"/>
+<Element Index="[13]" Value="16#0000_0000"/>
+<Element Index="[14]" Value="16#0000_0000"/>
+<Element Index="[15]" Value="16#0000_0000"/>
+<Element Index="[16]" Value="16#0000_0000"/>
+<Element Index="[17]" Value="16#0000_0000"/>
+<Element Index="[18]" Value="16#0000_0000"/>
+<Element Index="[19]" Value="16#0000_0000"/>
+<Element Index="[20]" Value="16#0000_0000"/>
+<Element Index="[21]" Value="16#0000_0000"/>
+<Element Index="[22]" Value="16#0000_0000"/>
+<Element Index="[23]" Value="16#0000_0000"/>
+<Element Index="[24]" Value="16#0000_0000"/>
+<Element Index="[25]" Value="16#0000_0000"/>
+<Element Index="[26]" Value="16#0000_0000"/>
+<Element Index="[27]" Value="16#0000_0000"/>
+<Element Index="[28]" Value="16#0000_0000"/>
+<Element Index="[29]" Value="16#0000_0000"/>
+<Element Index="[30]" Value="16#0000_0000"/>
+<Element Index="[31]" Value="16#0000_0000"/>
+<Element Index="[32]" Value="16#0000_0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="F8" TagType="Base" DataType="REAL" Dimensions="56" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 E0 3F 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="56" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="1.75"/>
+<Element Index="[13]" Value="0.0"/>
+<Element Index="[14]" Value="0.0"/>
+<Element Index="[15]" Value="0.0"/>
+<Element Index="[16]" Value="0.0"/>
+<Element Index="[17]" Value="0.0"/>
+<Element Index="[18]" Value="0.0"/>
+<Element Index="[19]" Value="0.0"/>
+<Element Index="[20]" Value="0.0"/>
+<Element Index="[21]" Value="0.0"/>
+<Element Index="[22]" Value="0.0"/>
+<Element Index="[23]" Value="0.0"/>
+<Element Index="[24]" Value="0.0"/>
+<Element Index="[25]" Value="0.0"/>
+<Element Index="[26]" Value="0.0"/>
+<Element Index="[27]" Value="0.0"/>
+<Element Index="[28]" Value="0.0"/>
+<Element Index="[29]" Value="0.0"/>
+<Element Index="[30]" Value="0.0"/>
+<Element Index="[31]" Value="0.0"/>
+<Element Index="[32]" Value="0.0"/>
+<Element Index="[33]" Value="0.0"/>
+<Element Index="[34]" Value="0.0"/>
+<Element Index="[35]" Value="0.0"/>
+<Element Index="[36]" Value="0.0"/>
+<Element Index="[37]" Value="0.0"/>
+<Element Index="[38]" Value="0.0"/>
+<Element Index="[39]" Value="0.0"/>
+<Element Index="[40]" Value="0.0"/>
+<Element Index="[41]" Value="0.0"/>
+<Element Index="[42]" Value="0.0"/>
+<Element Index="[43]" Value="0.0"/>
+<Element Index="[44]" Value="0.0"/>
+<Element Index="[45]" Value="0.0"/>
+<Element Index="[46]" Value="0.0"/>
+<Element Index="[47]" Value="0.0"/>
+<Element Index="[48]" Value="0.0"/>
+<Element Index="[49]" Value="0.0"/>
+<Element Index="[50]" Value="0.0"/>
+<Element Index="[51]" Value="0.0"/>
+<Element Index="[52]" Value="0.0"/>
+<Element Index="[53]" Value="0.0"/>
+<Element Index="[54]" Value="0.0"/>
+<Element Index="[55]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="FLEX_combo_input_data" TagType="Base" DataType="INT" Dimensions="5" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="5" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="FLEX_combo_output_data" TagType="Base" DataType="INT" Dimensions="8" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="8" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="I" TagType="Base" DataType="INT" Dimensions="128" Radix="Binary">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="128" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[4]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[5]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[6]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[7]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[8]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[9]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[10]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[11]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[12]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[13]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[14]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[15]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[16]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[17]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[18]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[19]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[20]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[21]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[22]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[23]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[24]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[25]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[26]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[27]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[28]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[29]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[30]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[31]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[32]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[33]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[34]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[35]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[36]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[37]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[38]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[39]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[40]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[41]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[42]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[43]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[44]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[45]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[46]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[47]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[48]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[49]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[50]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[51]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[52]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[53]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[54]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[55]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[56]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[57]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[58]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[59]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[60]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[61]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[62]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[63]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[64]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[65]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[66]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[67]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[68]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[69]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[70]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[71]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[72]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[73]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[74]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[75]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[76]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[77]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[78]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[79]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[80]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[81]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[82]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[83]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[84]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[85]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[86]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[87]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[88]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[89]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[90]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[91]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[92]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[93]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[94]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[95]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[96]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[97]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[98]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[99]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[100]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[101]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[102]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[103]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[104]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[105]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[106]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[107]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[108]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[109]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[110]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[111]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[112]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[113]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[114]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[115]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[116]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[117]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[118]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[119]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[120]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[121]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[122]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[123]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[124]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[125]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[126]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[127]" Value="2#0000_0000_0000_0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="IFE_config_data" TagType="Base" DataType="INT" Dimensions="37" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="37" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="IFE_read_data" TagType="Base" DataType="INT" Dimensions="20" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="20" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Input_1" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="I_01" TagType="Alias" Radix="Binary" AliasFor="I[1]"/>
+<Tag Name="L1_to_L1" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Data Table Write" RemoteElement="DESTINATION_BUFFER" RequestedLength="1" ConnectedFlag="1" ConnectionPath="DHRIO_MODULE, 2, 3, 1, 0" CommTypeCode="0" LocalIndex="0" LocalElement="SOURCE_DATA" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="L1_to_PLC5" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="PLC5 Typed Read" RemoteElement="S:23" RequestedLength="1" ConnectionPath="DHRIO_MODULE" CommTypeCode="1" Channel="&apos;A&apos;" DHPlusSourceLink="99" DHPlusDestinationLink="10" DHPlusDestinationNode="8#000_004" LocalIndex="0" LocalElement="PLC5_SEC_CLOCK"
+ CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_0" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_1" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_2" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_3" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_4" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_5" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_6" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="0" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="MG15_7" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="PLC5 Typed Write" RequestedLength="100" CommTypeCode="0" LocalIndex="0" LocalElement="A_MSG_TEMPBUF1" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="module_config_enable" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="N0_0" TagType="Alias" AliasFor="N0[0]"/>
+<Tag Name="N17" TagType="Base" DataType="DINT" Dimensions="100" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="100" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+<Element Index="[50]" Value="0"/>
+<Element Index="[51]" Value="0"/>
+<Element Index="[52]" Value="0"/>
+<Element Index="[53]" Value="0"/>
+<Element Index="[54]" Value="0"/>
+<Element Index="[55]" Value="0"/>
+<Element Index="[56]" Value="0"/>
+<Element Index="[57]" Value="0"/>
+<Element Index="[58]" Value="0"/>
+<Element Index="[59]" Value="0"/>
+<Element Index="[60]" Value="0"/>
+<Element Index="[61]" Value="0"/>
+<Element Index="[62]" Value="0"/>
+<Element Index="[63]" Value="0"/>
+<Element Index="[64]" Value="0"/>
+<Element Index="[65]" Value="0"/>
+<Element Index="[66]" Value="0"/>
+<Element Index="[67]" Value="0"/>
+<Element Index="[68]" Value="0"/>
+<Element Index="[69]" Value="0"/>
+<Element Index="[70]" Value="0"/>
+<Element Index="[71]" Value="0"/>
+<Element Index="[72]" Value="0"/>
+<Element Index="[73]" Value="0"/>
+<Element Index="[74]" Value="0"/>
+<Element Index="[75]" Value="0"/>
+<Element Index="[76]" Value="0"/>
+<Element Index="[77]" Value="0"/>
+<Element Index="[78]" Value="0"/>
+<Element Index="[79]" Value="0"/>
+<Element Index="[80]" Value="0"/>
+<Element Index="[81]" Value="0"/>
+<Element Index="[82]" Value="0"/>
+<Element Index="[83]" Value="0"/>
+<Element Index="[84]" Value="0"/>
+<Element Index="[85]" Value="0"/>
+<Element Index="[86]" Value="0"/>
+<Element Index="[87]" Value="0"/>
+<Element Index="[88]" Value="0"/>
+<Element Index="[89]" Value="0"/>
+<Element Index="[90]" Value="0"/>
+<Element Index="[91]" Value="0"/>
+<Element Index="[92]" Value="0"/>
+<Element Index="[93]" Value="0"/>
+<Element Index="[94]" Value="0"/>
+<Element Index="[95]" Value="0"/>
+<Element Index="[96]" Value="0"/>
+<Element Index="[97]" Value="0"/>
+<Element Index="[98]" Value="0"/>
+<Element Index="[99]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="N17_0" TagType="Alias" Radix="Decimal" AliasFor="N17[0]"/>
+<Tag Name="N7" TagType="Base" DataType="DINT" Dimensions="506" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="506" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="1"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+<Element Index="[50]" Value="0"/>
+<Element Index="[51]" Value="0"/>
+<Element Index="[52]" Value="0"/>
+<Element Index="[53]" Value="0"/>
+<Element Index="[54]" Value="0"/>
+<Element Index="[55]" Value="0"/>
+<Element Index="[56]" Value="0"/>
+<Element Index="[57]" Value="0"/>
+<Element Index="[58]" Value="0"/>
+<Element Index="[59]" Value="0"/>
+<Element Index="[60]" Value="0"/>
+<Element Index="[61]" Value="0"/>
+<Element Index="[62]" Value="0"/>
+<Element Index="[63]" Value="0"/>
+<Element Index="[64]" Value="0"/>
+<Element Index="[65]" Value="0"/>
+<Element Index="[66]" Value="0"/>
+<Element Index="[67]" Value="0"/>
+<Element Index="[68]" Value="0"/>
+<Element Index="[69]" Value="0"/>
+<Element Index="[70]" Value="0"/>
+<Element Index="[71]" Value="0"/>
+<Element Index="[72]" Value="0"/>
+<Element Index="[73]" Value="0"/>
+<Element Index="[74]" Value="0"/>
+<Element Index="[75]" Value="0"/>
+<Element Index="[76]" Value="0"/>
+<Element Index="[77]" Value="0"/>
+<Element Index="[78]" Value="0"/>
+<Element Index="[79]" Value="0"/>
+<Element Index="[80]" Value="0"/>
+<Element Index="[81]" Value="0"/>
+<Element Index="[82]" Value="0"/>
+<Element Index="[83]" Value="0"/>
+<Element Index="[84]" Value="0"/>
+<Element Index="[85]" Value="0"/>
+<Element Index="[86]" Value="0"/>
+<Element Index="[87]" Value="0"/>
+<Element Index="[88]" Value="0"/>
+<Element Index="[89]" Value="0"/>
+<Element Index="[90]" Value="0"/>
+<Element Index="[91]" Value="0"/>
+<Element Index="[92]" Value="0"/>
+<Element Index="[93]" Value="0"/>
+<Element Index="[94]" Value="0"/>
+<Element Index="[95]" Value="0"/>
+<Element Index="[96]" Value="0"/>
+<Element Index="[97]" Value="0"/>
+<Element Index="[98]" Value="0"/>
+<Element Index="[99]" Value="0"/>
+<Element Index="[100]" Value="0"/>
+<Element Index="[101]" Value="0"/>
+<Element Index="[102]" Value="0"/>
+<Element Index="[103]" Value="0"/>
+<Element Index="[104]" Value="0"/>
+<Element Index="[105]" Value="0"/>
+<Element Index="[106]" Value="0"/>
+<Element Index="[107]" Value="0"/>
+<Element Index="[108]" Value="0"/>
+<Element Index="[109]" Value="0"/>
+<Element Index="[110]" Value="0"/>
+<Element Index="[111]" Value="0"/>
+<Element Index="[112]" Value="0"/>
+<Element Index="[113]" Value="0"/>
+<Element Index="[114]" Value="0"/>
+<Element Index="[115]" Value="0"/>
+<Element Index="[116]" Value="0"/>
+<Element Index="[117]" Value="0"/>
+<Element Index="[118]" Value="0"/>
+<Element Index="[119]" Value="0"/>
+<Element Index="[120]" Value="0"/>
+<Element Index="[121]" Value="0"/>
+<Element Index="[122]" Value="0"/>
+<Element Index="[123]" Value="0"/>
+<Element Index="[124]" Value="0"/>
+<Element Index="[125]" Value="0"/>
+<Element Index="[126]" Value="0"/>
+<Element Index="[127]" Value="0"/>
+<Element Index="[128]" Value="0"/>
+<Element Index="[129]" Value="0"/>
+<Element Index="[130]" Value="0"/>
+<Element Index="[131]" Value="0"/>
+<Element Index="[132]" Value="0"/>
+<Element Index="[133]" Value="0"/>
+<Element Index="[134]" Value="0"/>
+<Element Index="[135]" Value="0"/>
+<Element Index="[136]" Value="0"/>
+<Element Index="[137]" Value="0"/>
+<Element Index="[138]" Value="0"/>
+<Element Index="[139]" Value="0"/>
+<Element Index="[140]" Value="0"/>
+<Element Index="[141]" Value="0"/>
+<Element Index="[142]" Value="0"/>
+<Element Index="[143]" Value="0"/>
+<Element Index="[144]" Value="0"/>
+<Element Index="[145]" Value="0"/>
+<Element Index="[146]" Value="0"/>
+<Element Index="[147]" Value="0"/>
+<Element Index="[148]" Value="0"/>
+<Element Index="[149]" Value="0"/>
+<Element Index="[150]" Value="0"/>
+<Element Index="[151]" Value="0"/>
+<Element Index="[152]" Value="0"/>
+<Element Index="[153]" Value="0"/>
+<Element Index="[154]" Value="0"/>
+<Element Index="[155]" Value="0"/>
+<Element Index="[156]" Value="0"/>
+<Element Index="[157]" Value="0"/>
+<Element Index="[158]" Value="0"/>
+<Element Index="[159]" Value="0"/>
+<Element Index="[160]" Value="0"/>
+<Element Index="[161]" Value="0"/>
+<Element Index="[162]" Value="0"/>
+<Element Index="[163]" Value="0"/>
+<Element Index="[164]" Value="0"/>
+<Element Index="[165]" Value="0"/>
+<Element Index="[166]" Value="0"/>
+<Element Index="[167]" Value="0"/>
+<Element Index="[168]" Value="0"/>
+<Element Index="[169]" Value="0"/>
+<Element Index="[170]" Value="0"/>
+<Element Index="[171]" Value="0"/>
+<Element Index="[172]" Value="0"/>
+<Element Index="[173]" Value="0"/>
+<Element Index="[174]" Value="0"/>
+<Element Index="[175]" Value="0"/>
+<Element Index="[176]" Value="0"/>
+<Element Index="[177]" Value="0"/>
+<Element Index="[178]" Value="0"/>
+<Element Index="[179]" Value="0"/>
+<Element Index="[180]" Value="0"/>
+<Element Index="[181]" Value="0"/>
+<Element Index="[182]" Value="0"/>
+<Element Index="[183]" Value="0"/>
+<Element Index="[184]" Value="0"/>
+<Element Index="[185]" Value="0"/>
+<Element Index="[186]" Value="0"/>
+<Element Index="[187]" Value="0"/>
+<Element Index="[188]" Value="0"/>
+<Element Index="[189]" Value="0"/>
+<Element Index="[190]" Value="0"/>
+<Element Index="[191]" Value="0"/>
+<Element Index="[192]" Value="0"/>
+<Element Index="[193]" Value="0"/>
+<Element Index="[194]" Value="0"/>
+<Element Index="[195]" Value="0"/>
+<Element Index="[196]" Value="0"/>
+<Element Index="[197]" Value="0"/>
+<Element Index="[198]" Value="0"/>
+<Element Index="[199]" Value="0"/>
+<Element Index="[200]" Value="0"/>
+<Element Index="[201]" Value="0"/>
+<Element Index="[202]" Value="0"/>
+<Element Index="[203]" Value="0"/>
+<Element Index="[204]" Value="0"/>
+<Element Index="[205]" Value="0"/>
+<Element Index="[206]" Value="0"/>
+<Element Index="[207]" Value="0"/>
+<Element Index="[208]" Value="0"/>
+<Element Index="[209]" Value="0"/>
+<Element Index="[210]" Value="0"/>
+<Element Index="[211]" Value="0"/>
+<Element Index="[212]" Value="0"/>
+<Element Index="[213]" Value="0"/>
+<Element Index="[214]" Value="0"/>
+<Element Index="[215]" Value="0"/>
+<Element Index="[216]" Value="0"/>
+<Element Index="[217]" Value="0"/>
+<Element Index="[218]" Value="0"/>
+<Element Index="[219]" Value="0"/>
+<Element Index="[220]" Value="0"/>
+<Element Index="[221]" Value="0"/>
+<Element Index="[222]" Value="0"/>
+<Element Index="[223]" Value="0"/>
+<Element Index="[224]" Value="0"/>
+<Element Index="[225]" Value="0"/>
+<Element Index="[226]" Value="0"/>
+<Element Index="[227]" Value="0"/>
+<Element Index="[228]" Value="0"/>
+<Element Index="[229]" Value="0"/>
+<Element Index="[230]" Value="0"/>
+<Element Index="[231]" Value="0"/>
+<Element Index="[232]" Value="0"/>
+<Element Index="[233]" Value="0"/>
+<Element Index="[234]" Value="0"/>
+<Element Index="[235]" Value="0"/>
+<Element Index="[236]" Value="0"/>
+<Element Index="[237]" Value="0"/>
+<Element Index="[238]" Value="0"/>
+<Element Index="[239]" Value="0"/>
+<Element Index="[240]" Value="0"/>
+<Element Index="[241]" Value="0"/>
+<Element Index="[242]" Value="0"/>
+<Element Index="[243]" Value="0"/>
+<Element Index="[244]" Value="0"/>
+<Element Index="[245]" Value="0"/>
+<Element Index="[246]" Value="0"/>
+<Element Index="[247]" Value="0"/>
+<Element Index="[248]" Value="0"/>
+<Element Index="[249]" Value="0"/>
+<Element Index="[250]" Value="0"/>
+<Element Index="[251]" Value="0"/>
+<Element Index="[252]" Value="0"/>
+<Element Index="[253]" Value="0"/>
+<Element Index="[254]" Value="0"/>
+<Element Index="[255]" Value="0"/>
+<Element Index="[256]" Value="0"/>
+<Element Index="[257]" Value="0"/>
+<Element Index="[258]" Value="0"/>
+<Element Index="[259]" Value="0"/>
+<Element Index="[260]" Value="0"/>
+<Element Index="[261]" Value="0"/>
+<Element Index="[262]" Value="0"/>
+<Element Index="[263]" Value="0"/>
+<Element Index="[264]" Value="0"/>
+<Element Index="[265]" Value="0"/>
+<Element Index="[266]" Value="0"/>
+<Element Index="[267]" Value="0"/>
+<Element Index="[268]" Value="0"/>
+<Element Index="[269]" Value="0"/>
+<Element Index="[270]" Value="0"/>
+<Element Index="[271]" Value="0"/>
+<Element Index="[272]" Value="0"/>
+<Element Index="[273]" Value="0"/>
+<Element Index="[274]" Value="0"/>
+<Element Index="[275]" Value="0"/>
+<Element Index="[276]" Value="0"/>
+<Element Index="[277]" Value="0"/>
+<Element Index="[278]" Value="0"/>
+<Element Index="[279]" Value="0"/>
+<Element Index="[280]" Value="0"/>
+<Element Index="[281]" Value="0"/>
+<Element Index="[282]" Value="0"/>
+<Element Index="[283]" Value="0"/>
+<Element Index="[284]" Value="0"/>
+<Element Index="[285]" Value="0"/>
+<Element Index="[286]" Value="0"/>
+<Element Index="[287]" Value="0"/>
+<Element Index="[288]" Value="0"/>
+<Element Index="[289]" Value="0"/>
+<Element Index="[290]" Value="0"/>
+<Element Index="[291]" Value="0"/>
+<Element Index="[292]" Value="0"/>
+<Element Index="[293]" Value="0"/>
+<Element Index="[294]" Value="0"/>
+<Element Index="[295]" Value="0"/>
+<Element Index="[296]" Value="0"/>
+<Element Index="[297]" Value="0"/>
+<Element Index="[298]" Value="0"/>
+<Element Index="[299]" Value="0"/>
+<Element Index="[300]" Value="0"/>
+<Element Index="[301]" Value="0"/>
+<Element Index="[302]" Value="0"/>
+<Element Index="[303]" Value="0"/>
+<Element Index="[304]" Value="0"/>
+<Element Index="[305]" Value="0"/>
+<Element Index="[306]" Value="0"/>
+<Element Index="[307]" Value="0"/>
+<Element Index="[308]" Value="0"/>
+<Element Index="[309]" Value="0"/>
+<Element Index="[310]" Value="0"/>
+<Element Index="[311]" Value="0"/>
+<Element Index="[312]" Value="0"/>
+<Element Index="[313]" Value="0"/>
+<Element Index="[314]" Value="0"/>
+<Element Index="[315]" Value="0"/>
+<Element Index="[316]" Value="0"/>
+<Element Index="[317]" Value="0"/>
+<Element Index="[318]" Value="0"/>
+<Element Index="[319]" Value="0"/>
+<Element Index="[320]" Value="0"/>
+<Element Index="[321]" Value="0"/>
+<Element Index="[322]" Value="0"/>
+<Element Index="[323]" Value="0"/>
+<Element Index="[324]" Value="0"/>
+<Element Index="[325]" Value="0"/>
+<Element Index="[326]" Value="0"/>
+<Element Index="[327]" Value="0"/>
+<Element Index="[328]" Value="0"/>
+<Element Index="[329]" Value="0"/>
+<Element Index="[330]" Value="0"/>
+<Element Index="[331]" Value="0"/>
+<Element Index="[332]" Value="0"/>
+<Element Index="[333]" Value="0"/>
+<Element Index="[334]" Value="0"/>
+<Element Index="[335]" Value="0"/>
+<Element Index="[336]" Value="0"/>
+<Element Index="[337]" Value="0"/>
+<Element Index="[338]" Value="0"/>
+<Element Index="[339]" Value="0"/>
+<Element Index="[340]" Value="0"/>
+<Element Index="[341]" Value="0"/>
+<Element Index="[342]" Value="0"/>
+<Element Index="[343]" Value="0"/>
+<Element Index="[344]" Value="0"/>
+<Element Index="[345]" Value="0"/>
+<Element Index="[346]" Value="0"/>
+<Element Index="[347]" Value="0"/>
+<Element Index="[348]" Value="0"/>
+<Element Index="[349]" Value="0"/>
+<Element Index="[350]" Value="0"/>
+<Element Index="[351]" Value="0"/>
+<Element Index="[352]" Value="0"/>
+<Element Index="[353]" Value="0"/>
+<Element Index="[354]" Value="0"/>
+<Element Index="[355]" Value="0"/>
+<Element Index="[356]" Value="0"/>
+<Element Index="[357]" Value="0"/>
+<Element Index="[358]" Value="0"/>
+<Element Index="[359]" Value="0"/>
+<Element Index="[360]" Value="0"/>
+<Element Index="[361]" Value="0"/>
+<Element Index="[362]" Value="0"/>
+<Element Index="[363]" Value="0"/>
+<Element Index="[364]" Value="0"/>
+<Element Index="[365]" Value="0"/>
+<Element Index="[366]" Value="0"/>
+<Element Index="[367]" Value="0"/>
+<Element Index="[368]" Value="0"/>
+<Element Index="[369]" Value="0"/>
+<Element Index="[370]" Value="0"/>
+<Element Index="[371]" Value="0"/>
+<Element Index="[372]" Value="0"/>
+<Element Index="[373]" Value="0"/>
+<Element Index="[374]" Value="0"/>
+<Element Index="[375]" Value="0"/>
+<Element Index="[376]" Value="0"/>
+<Element Index="[377]" Value="0"/>
+<Element Index="[378]" Value="0"/>
+<Element Index="[379]" Value="0"/>
+<Element Index="[380]" Value="0"/>
+<Element Index="[381]" Value="0"/>
+<Element Index="[382]" Value="0"/>
+<Element Index="[383]" Value="0"/>
+<Element Index="[384]" Value="0"/>
+<Element Index="[385]" Value="0"/>
+<Element Index="[386]" Value="0"/>
+<Element Index="[387]" Value="0"/>
+<Element Index="[388]" Value="0"/>
+<Element Index="[389]" Value="0"/>
+<Element Index="[390]" Value="0"/>
+<Element Index="[391]" Value="0"/>
+<Element Index="[392]" Value="0"/>
+<Element Index="[393]" Value="0"/>
+<Element Index="[394]" Value="0"/>
+<Element Index="[395]" Value="0"/>
+<Element Index="[396]" Value="0"/>
+<Element Index="[397]" Value="0"/>
+<Element Index="[398]" Value="0"/>
+<Element Index="[399]" Value="0"/>
+<Element Index="[400]" Value="0"/>
+<Element Index="[401]" Value="0"/>
+<Element Index="[402]" Value="0"/>
+<Element Index="[403]" Value="0"/>
+<Element Index="[404]" Value="0"/>
+<Element Index="[405]" Value="0"/>
+<Element Index="[406]" Value="0"/>
+<Element Index="[407]" Value="0"/>
+<Element Index="[408]" Value="0"/>
+<Element Index="[409]" Value="0"/>
+<Element Index="[410]" Value="0"/>
+<Element Index="[411]" Value="0"/>
+<Element Index="[412]" Value="0"/>
+<Element Index="[413]" Value="0"/>
+<Element Index="[414]" Value="0"/>
+<Element Index="[415]" Value="0"/>
+<Element Index="[416]" Value="0"/>
+<Element Index="[417]" Value="0"/>
+<Element Index="[418]" Value="0"/>
+<Element Index="[419]" Value="0"/>
+<Element Index="[420]" Value="0"/>
+<Element Index="[421]" Value="0"/>
+<Element Index="[422]" Value="0"/>
+<Element Index="[423]" Value="0"/>
+<Element Index="[424]" Value="0"/>
+<Element Index="[425]" Value="0"/>
+<Element Index="[426]" Value="0"/>
+<Element Index="[427]" Value="0"/>
+<Element Index="[428]" Value="0"/>
+<Element Index="[429]" Value="0"/>
+<Element Index="[430]" Value="0"/>
+<Element Index="[431]" Value="0"/>
+<Element Index="[432]" Value="0"/>
+<Element Index="[433]" Value="0"/>
+<Element Index="[434]" Value="0"/>
+<Element Index="[435]" Value="0"/>
+<Element Index="[436]" Value="0"/>
+<Element Index="[437]" Value="0"/>
+<Element Index="[438]" Value="0"/>
+<Element Index="[439]" Value="0"/>
+<Element Index="[440]" Value="0"/>
+<Element Index="[441]" Value="0"/>
+<Element Index="[442]" Value="0"/>
+<Element Index="[443]" Value="0"/>
+<Element Index="[444]" Value="0"/>
+<Element Index="[445]" Value="0"/>
+<Element Index="[446]" Value="0"/>
+<Element Index="[447]" Value="0"/>
+<Element Index="[448]" Value="0"/>
+<Element Index="[449]" Value="0"/>
+<Element Index="[450]" Value="0"/>
+<Element Index="[451]" Value="0"/>
+<Element Index="[452]" Value="0"/>
+<Element Index="[453]" Value="0"/>
+<Element Index="[454]" Value="0"/>
+<Element Index="[455]" Value="0"/>
+<Element Index="[456]" Value="0"/>
+<Element Index="[457]" Value="0"/>
+<Element Index="[458]" Value="0"/>
+<Element Index="[459]" Value="0"/>
+<Element Index="[460]" Value="0"/>
+<Element Index="[461]" Value="0"/>
+<Element Index="[462]" Value="0"/>
+<Element Index="[463]" Value="0"/>
+<Element Index="[464]" Value="0"/>
+<Element Index="[465]" Value="0"/>
+<Element Index="[466]" Value="0"/>
+<Element Index="[467]" Value="0"/>
+<Element Index="[468]" Value="0"/>
+<Element Index="[469]" Value="0"/>
+<Element Index="[470]" Value="0"/>
+<Element Index="[471]" Value="0"/>
+<Element Index="[472]" Value="0"/>
+<Element Index="[473]" Value="0"/>
+<Element Index="[474]" Value="0"/>
+<Element Index="[475]" Value="0"/>
+<Element Index="[476]" Value="0"/>
+<Element Index="[477]" Value="0"/>
+<Element Index="[478]" Value="0"/>
+<Element Index="[479]" Value="0"/>
+<Element Index="[480]" Value="0"/>
+<Element Index="[481]" Value="0"/>
+<Element Index="[482]" Value="0"/>
+<Element Index="[483]" Value="0"/>
+<Element Index="[484]" Value="0"/>
+<Element Index="[485]" Value="0"/>
+<Element Index="[486]" Value="0"/>
+<Element Index="[487]" Value="0"/>
+<Element Index="[488]" Value="0"/>
+<Element Index="[489]" Value="0"/>
+<Element Index="[490]" Value="0"/>
+<Element Index="[491]" Value="0"/>
+<Element Index="[492]" Value="0"/>
+<Element Index="[493]" Value="0"/>
+<Element Index="[494]" Value="0"/>
+<Element Index="[495]" Value="0"/>
+<Element Index="[496]" Value="0"/>
+<Element Index="[497]" Value="0"/>
+<Element Index="[498]" Value="0"/>
+<Element Index="[499]" Value="0"/>
+<Element Index="[500]" Value="0"/>
+<Element Index="[501]" Value="0"/>
+<Element Index="[502]" Value="0"/>
+<Element Index="[503]" Value="0"/>
+<Element Index="[504]" Value="0"/>
+<Element Index="[505]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="N7_200" TagType="Alias" Radix="Decimal" AliasFor="N7[200]"/>
+<Tag Name="N7_220" TagType="Alias" Radix="Decimal" AliasFor="N7[220]"/>
+<Tag Name="O" TagType="Base" DataType="INT" Dimensions="128" Radix="Binary">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="128" Radix="Binary">
+<Element Index="[0]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[1]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[2]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[3]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[4]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[5]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[6]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[7]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[8]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[9]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[10]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[11]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[12]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[13]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[14]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[15]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[16]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[17]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[18]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[19]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[20]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[21]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[22]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[23]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[24]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[25]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[26]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[27]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[28]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[29]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[30]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[31]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[32]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[33]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[34]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[35]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[36]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[37]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[38]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[39]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[40]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[41]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[42]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[43]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[44]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[45]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[46]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[47]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[48]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[49]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[50]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[51]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[52]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[53]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[54]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[55]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[56]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[57]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[58]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[59]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[60]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[61]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[62]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[63]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[64]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[65]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[66]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[67]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[68]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[69]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[70]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[71]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[72]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[73]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[74]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[75]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[76]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[77]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[78]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[79]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[80]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[81]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[82]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[83]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[84]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[85]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[86]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[87]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[88]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[89]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[90]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[91]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[92]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[93]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[94]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[95]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[96]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[97]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[98]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[99]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[100]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[101]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[102]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[103]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[104]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[105]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[106]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[107]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[108]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[109]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[110]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[111]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[112]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[113]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[114]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[115]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[116]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[117]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[118]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[119]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[120]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[121]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[122]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[123]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[124]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[125]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[126]" Value="2#0000_0000_0000_0000"/>
+<Element Index="[127]" Value="2#0000_0000_0000_0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Output_4" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="O_04" TagType="Alias" Radix="Binary" AliasFor="O[4]"/>
+<Tag Name="O_06" TagType="Alias" Radix="Binary" AliasFor="O[6]"/>
+<Tag Name="PD16" TagType="Base" DataType="PID" Dimensions="1">
+<Data>00 00 00 00 00 00 80 3F 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="PID" Dimensions="1">
+<Element Index="[0]">
+<Structure DataType="PID">
+<DataValueMember Name="CTL" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DOE" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SWM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MO" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PE" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NDF" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NOBC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NOZC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="INI" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPOR" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OLL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OLH" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EWD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DVNA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DVPA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVLA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVHA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SP" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="KP" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="KI" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="KD" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="BIAS" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXS" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINS" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SO" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXO" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINO" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UPD" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ERR" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="OUT" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVH" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVL" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVP" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVN" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVDB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVDB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXI" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINI" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="TIE" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXCV" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINCV" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINTIE" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXTIE" DataType="REAL" Radix="Float" Value="0.0"/>
+<ArrayMember Name="DATA" DataType="REAL" Dimensions="17" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+<Element Index="[6]" Value="0.0"/>
+<Element Index="[7]" Value="0.0"/>
+<Element Index="[8]" Value="0.0"/>
+<Element Index="[9]" Value="0.0"/>
+<Element Index="[10]" Value="0.0"/>
+<Element Index="[11]" Value="0.0"/>
+<Element Index="[12]" Value="0.0"/>
+<Element Index="[13]" Value="0.0"/>
+<Element Index="[14]" Value="0.0"/>
+<Element Index="[15]" Value="0.0"/>
+<Element Index="[16]" Value="0.0"/>
+</ArrayMember>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="PLC5_SEC_CLOCK" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="R6" TagType="Base" DataType="CONTROL" Dimensions="14">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="CONTROL" Dimensions="14">
+<Element Index="[0]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="R_MSG_CTL1" TagType="Base" DataType="CONTROL">
+<Description>
+<![CDATA[Temporary Message Control Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="R_MSG_CTL2" TagType="Base" DataType="CONTROL">
+<Description>
+<![CDATA[Temporary Message Control Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 05 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="5"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="R_MSG_CTL3" TagType="Base" DataType="CONTROL">
+<Description>
+<![CDATA[Temporary Message Control Tag created during conversion]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="S" TagType="Base" DataType="INT" Dimensions="164" Radix="Hex">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 F4 01 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="164" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0000"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0000"/>
+<Element Index="[28]" Value="16#01f4"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+<Element Index="[100]" Value="16#0000"/>
+<Element Index="[101]" Value="16#0000"/>
+<Element Index="[102]" Value="16#0000"/>
+<Element Index="[103]" Value="16#0000"/>
+<Element Index="[104]" Value="16#0000"/>
+<Element Index="[105]" Value="16#0000"/>
+<Element Index="[106]" Value="16#0000"/>
+<Element Index="[107]" Value="16#0000"/>
+<Element Index="[108]" Value="16#0000"/>
+<Element Index="[109]" Value="16#0000"/>
+<Element Index="[110]" Value="16#0000"/>
+<Element Index="[111]" Value="16#0000"/>
+<Element Index="[112]" Value="16#0000"/>
+<Element Index="[113]" Value="16#0000"/>
+<Element Index="[114]" Value="16#0000"/>
+<Element Index="[115]" Value="16#0000"/>
+<Element Index="[116]" Value="16#0000"/>
+<Element Index="[117]" Value="16#0000"/>
+<Element Index="[118]" Value="16#0000"/>
+<Element Index="[119]" Value="16#0000"/>
+<Element Index="[120]" Value="16#0000"/>
+<Element Index="[121]" Value="16#0000"/>
+<Element Index="[122]" Value="16#0000"/>
+<Element Index="[123]" Value="16#0000"/>
+<Element Index="[124]" Value="16#0000"/>
+<Element Index="[125]" Value="16#0000"/>
+<Element Index="[126]" Value="16#0000"/>
+<Element Index="[127]" Value="16#0000"/>
+<Element Index="[128]" Value="16#0000"/>
+<Element Index="[129]" Value="16#0000"/>
+<Element Index="[130]" Value="16#0000"/>
+<Element Index="[131]" Value="16#0000"/>
+<Element Index="[132]" Value="16#0000"/>
+<Element Index="[133]" Value="16#0000"/>
+<Element Index="[134]" Value="16#0000"/>
+<Element Index="[135]" Value="16#0000"/>
+<Element Index="[136]" Value="16#0000"/>
+<Element Index="[137]" Value="16#0000"/>
+<Element Index="[138]" Value="16#0000"/>
+<Element Index="[139]" Value="16#0000"/>
+<Element Index="[140]" Value="16#0000"/>
+<Element Index="[141]" Value="16#0000"/>
+<Element Index="[142]" Value="16#0000"/>
+<Element Index="[143]" Value="16#0000"/>
+<Element Index="[144]" Value="16#0000"/>
+<Element Index="[145]" Value="16#0000"/>
+<Element Index="[146]" Value="16#0000"/>
+<Element Index="[147]" Value="16#0000"/>
+<Element Index="[148]" Value="16#0000"/>
+<Element Index="[149]" Value="16#0000"/>
+<Element Index="[150]" Value="16#0000"/>
+<Element Index="[151]" Value="16#0000"/>
+<Element Index="[152]" Value="16#0000"/>
+<Element Index="[153]" Value="16#0000"/>
+<Element Index="[154]" Value="16#0000"/>
+<Element Index="[155]" Value="16#0000"/>
+<Element Index="[156]" Value="16#0000"/>
+<Element Index="[157]" Value="16#0000"/>
+<Element Index="[158]" Value="16#0000"/>
+<Element Index="[159]" Value="16#0000"/>
+<Element Index="[160]" Value="16#0000"/>
+<Element Index="[161]" Value="16#0000"/>
+<Element Index="[162]" Value="16#0000"/>
+<Element Index="[163]" Value="16#0000"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="S24" TagType="Base" DataType="INT" Radix="Hex">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Hex" Value="16#0000"/>
+</Data>
+</Tag>
+<Tag Name="SOURCE_DATA" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="T4" TagType="Base" DataType="TIMER" Dimensions="30">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+50 C3 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="TIMER" Dimensions="30">
+<Element Index="[0]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[20]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[21]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[22]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[23]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[24]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[25]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[26]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[27]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[28]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[29]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="50000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="Continuous" TestEdits="false" MainRoutineName="mcpMain" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="mcpMain" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[With the translation tool the PLC5 Input bits, I:001, were converted to a tag name I_01 with a type of integer.  Before each scan the input bits will be copied to a new destination to simulate the PLC5's I/O image table scan.  ]]>
+</Comment>
+<Text>
+<![CDATA[BTD(I_01,0,Input_1,0,16);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[If the whole input word can not be copied to simulate the PLC5's I/O image table scan the update can be done on a bit level.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(I_01.4)OTE(Input_1.4);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(_2_LADDER,0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[With the translation tool the PLC5 Output bits, O:004, were converted to a tag name O_04 with a type of integer.  Before each scan the input bits will be copied to a new destination to simulate the PLC5's I/O image table scan.  ]]>
+</Comment>
+<Text>
+<![CDATA[BTD(O_04,0,Output_4,0,16);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[If the whole input word can not be copied to simulate the PLC5's I/O image table scan the update can be done on a bit level.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(O_04.12)OTE(Output_4.12);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MSG_BTR" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously reads location S:23 from a PLC5 controller on DH+.
+
+SYSTEM CONFIGURATION - Local ControlLogix chassis consists of a 1756-L1 in slot 0 and a 1756-DHRIO in slot 6.  Channel A (node 2) of the DHRIO module is connected to a DH+ network.  A PLC5 (node 4) is also on the network.
+
+ROUTING TABLE - A routing table is necessary in this example because the 1756-DHRIO module will be used in the Message Communication path to the PLC5.  To set up the routing table, the 1756-GTWY software is needed. Set up the necessary link numbers for the backplane of the ControlLogix chassis as well as Channel A of the DHRIO module. For this example:  configure the chassis backplane to be  and Channel A to be .
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration Tab' in the Message setup screen, the 'Message Type' is ,  the 'Source Element' is  of the PLC5 controller, the 'Number of Elements' is , and the 'Destination Tag' is a tag called .  The 'Destination Tag' is a Controller scoped tag of data type integer (same as S:23).  
+
+Under the 'Communication Tab' in the Message setup screen, the communication 'Path' to the PLC5 is specified.  First, the location of the 1756-DHRIO module is specified by the way of the path  which stands for connection to the back plane (the number 1) and the connection to slot 6 where the DHRIO module is.  Select  as the 'Communication Method' and use the link numbers configured in the DHRIO module routing table to make the connection to the PLC5.    This is simular to remote messaging in the PLC5 where a local link, a remote link, and a destination address are specified.  For this example, 'Channel' is , 'Source Link' is the backplane (link ),  'Destination Link' is the DH+ network on Channel A (link ),  and 'Destination Node' is the PLC5 (node ).
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L1_to_PLC5.EN)MSG(L1_to_PLC5);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously writes a 1-DINT-message from the local 1756-L1controller to a remote 1756-L1controller over DH+.
+
+SYSTEM CONFIGURATION - Local ControlLogix chassis consists of a 1756-L1 in slot 0 and a 1756-DHRIO in slot 6.  Channel A of the DHRIO module is connected to a DH+ network. The remote ControlLogix chassis consists of a 1756-L1 controller in slot 0 and a 1756-DHRIO in slot 6.  Channel A of the DHRIO is also connected to the same DH+ network as the local chassis.  Channel A of the local DHRIO module is configured to be node address 2 and Channel A of the remote DHRIO is configured to be node address 3.
+
+ROUTING TABLE - In this example, the CIP messaging method will be used.  The CIP messaging method makes use of a Communication 'Path', therefore, NO DHRIO routing table is necessary.  On a DH+ network, this method can only be used when both of the controllers are ControlLogix controllers.
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration' Tab in the message setup screen, the 'Message Type' is , the 'Source Tag' is a tag called , the 'Number Of Elements' is , the 'Destination Element' is a tag located in the remote controller called .  You will have to create the tag  in the remote controller as a DINT data type.  Both tags,  and  are Controller scoped and of data type DINT.
+
+Under the 'Communication Tab' in the Message setup screen, the 'Path' to the remote controller is specified.  The following describes the path (1, 6, 2, 3, 1, 0) used in this example:   indicates a connection to the backplane from the controller,  indicates a connection to the local DHRIO module in slot 6,  indicates a connection to port 2 (Channel A) of the DHRIO module (get on the DH+ network),  indicates a connection to the remote DHRIO module at node address 3,  indicates a connection to the backplane of the remote chassis, and finally,  indicates a connection to the remote controller in slot 0.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L1_to_L1.EN)MSG(L1_to_L1);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[PURPOSE - The following two rungs (rung 2 and rung 3) of ladder logic configure and read inputs from a 1771-IFE module.  The user can initiate a BTW to configure the IFE module by triggering on the  tag, and thereafter, the continuous BTR reads data from the module.
+
+SYSTEM CONFIGURATION - The ControlLogix chassis consists of a 1756-L1 in slot 0 and a 1756-DHRIO in slot 6.  Channel B of the DHRIO module is configured for and connected to a RIO network.  There are two RIO adapters on the network:  a 1771-ASB and a 1794-ASB.  The 1771 adapter (rack 1) is configured as a 1/2 rack with a 1771-IFE module located in slot 0.  The 1794 adapter (rack 2) is configured as a 1/4 rack with a 1794-IE4XOE2 module located in slot 0.  
+
+ROUTING TABLE - no routing table is necessary for RIO activities.
+
+RSLOGIX5000 - Before any programming takes place, the proper I/O Configuration  must be established.  Under the I/O Configuration section in the Controller Organizer, add all the devices necessary to form the path to the Block Transfer device.  For this particular example, the path to the 1771-IFE module includes the 1756-DHRIO, 1771-ASB, and 1771-IFE.   Make certain that all information such as channel used, rack #, rack size, and module location is correctly filled in.
+
+RUNG 0 MESSAGE SETUP - The message control tag used in this rung is  which is created under the controller scope.
+
+Under the 'Configuration' Tab in the message setup screen,  is selected as the message type, the source tag (write words) is created as an array of 37 INTs called ,  and the number of elements transferred will be 37.  The source tag must be created under controller scope.
+
+Under the 'Communication' Tab in the message setup screen, the path to the RIO module (the 1771-IFE module in this example) must be identified.  To do so, hit the browse button and expand the I/O Configuration tree until the desired RIO-MODULE is visible.  Select the RIO-MODULE (_1771_IFE) and it will be used in the path as the destination device.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(module_config_enable)XIO(BTW_1771.EN)MSG(BTW_1771);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[RUNG 1 MESSAGE SETUP - The message control tag used in this rung is  which is created under the controller scope.
+
+Under the 'Configuration' Tab in the message setup screen,  is selected as the message type, the read data will be placed in the destination tag called  created as an array of 20 INTs,  and the number of elements transferred will be 20.  The destination tag must be created under controller scope.
+
+Under the 'Communication' Tab in the message setup screen, the path to the RIO module (the 1771-IFE module in this example) must be identified.  To do so, hit the browse button and expand the I/O Configuration tree until the desired RIO-MODULE is visible.  Select the RIO-MODULE (_1771_IFE) and it will be used in the path as the source device.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(BTR_1771.EN)MSG(BTR_1771);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[******************************************************************************************************************************************************************
+PURPOSE - The following two rungs (rung 4 and rung 5) of ladder logic configure, read inputs from and write outputs to a 1794-IE4XOE2 module.  Continuous alternating Block Transfer Reads and Writes will be performed to the module.
+
+SYSTEM CONFIGURATION - The ControlLogix chassis consists of a 1756-L1 in slot 0 and a 1756-DHRIO in slot 6.  Channel B of the DHRIO module is configured for and connected to an RIO network.  There are two RIO adapters on the network:  a 1771-ASB and a 1794-ASB.  The 1771 adapter (rack 1) is configured as a 1/2 rack with a 1771-IFE module located in slot 0.  The 1794 adapter (rack 2) is configured as a 1/4 rack with a 1794-IE4XOE2 module located in slot 0.  
+
+ROUTING TABLE - no routing table is necessary for RIO activities.
+
+RSLOGIX5000 - Before any programming takes place, the proper I/O Configuration  must be established.  Under the I/O Configuration section in the Controller Organizer, add all the devices necessary to form the path to the Block Transfer device.  For this particular example, the path to the 1794-IE4XOE2 module includes the 1756-DHRIO, 1794-ASB, and 1794-IE4XOE2.  Make certain that all information such as channel used, rack #, rack size, and module location is correctly filled in.
+
+RUNG 2 MESSAGE SETUP - The message control tag used in this rung is  which is created under the controller scope.
+
+Under the 'Configuration' Tab in the message setup screen,  is selected as the message type, the source tag (write words) is created as an array of 8 INTs called ,  and the number of elements transferred will be 8.  The source tag must be created under controller scope.
+
+Under the Communication' Tab in the message setup screen, the path to the RIO module (the 1794-IE4XOE2 module in this example) must be identified.  To do so, hit the browse button and expand the I/O Configuration tree until the desired RIO-MODULE is visible.  Select the RIO-MODULE (_1794_IE4XOE2) and it will be used in the path as the destination device.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(BTW_1794.EN)XIO(BTR_1794.EN)MSG(BTW_1794);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[RUNG 3 MESSAGE SETUP - The message control tag used in this rung is  which is created under the controller scope.
+
+Under the 'Configuration' Tab in the message setup screen,  is selected as the message type, the read data will be placed in the destination tag called  created as an array of 5 INTs,  and the number of elements transferred will be 5.  The destination tag must be created under controller scope.
+
+Under the 'Communication' Tab in the message setup screen, the path to the RIO module (the 1794-IE4XOE2 module in this example) must be identified.  To do so, hit the browse button and expand the I/O Configuration tree until the desired RIO-MODULE is visible.  Select the RIO-MODULE (_1794_IE4XOE2) and it will be used in the path as the source device.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(BTR_1794.EN)XIO(BTW_1794.EN)MSG(BTR_1794);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="_2_LADDER" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Counter Data Type
+Converts by changing PLC5 counter value (C5:22) to a tag name of C5[22].
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(B3[0].1)CTU(C5[22],?,?);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Float Data Type
+Converts by changing the PLC5 Float Address (F8:12) to the same tag name F8(12).]]>
+</Comment>
+<Text>
+<![CDATA[MUL(F8[12],1.23,F8[33]);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Timer Data Type
+Converts by changing PLC5 timer value T4:29 to a tag name of T4(29).
+The time base in a PLC5 accepts 1 sec. or 10msec.  In Control Logix there is only 1 time base of 1msec.  The preset value will need to change to reflect the new time base.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(C5[22].CU)TON(T4[29],?,?);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Input Data is converted from the PLC5 I:001 format to a tag name of I_01.  When the Translate 
+A new module under the I/0 Configuration will need to be entered.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(I_01,N7[150]);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Output Data is converted the same as input data.
+A new module under the I/O Configuration will need to be entered.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(N7[152],O_04);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[This copy instruction was originally using a PLC5 string type to another PLC5 string type.  String types are currently not available in the ControlLogix controller.  The 2 Program Conversion Errors (PCE) will be given if the Translate PLC5 tool is used.]]>
+</Comment>
+<Text>
+<![CDATA[PCE(100,PCE001 )PCE(100,PCE002 )COP(?,?,1);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[ASCII Data Type]]>
+</Comment>
+<Text>
+<![CDATA[XIC(S:FS)COP(A11[0],A11[20],3);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[BCD Data Type]]>
+</Comment>
+<Text>
+<![CDATA[MOV(D13[11],D13[32]);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[PID(PD16[0],N7_200,0,N7[220],0,0,0);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[The Get System Value instruction is the ControlLogix version of the status file.  Instead of using Status type data bits, the system uses objects.  Currently there are 14 predefined Objects to choose from.  After selecting the Object name, an Attribute name will be used to select precisely the information needed.
+In this example the Faultlog Object Class is being used to check the battery status of controller.  ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(FAULTLOG,,MinorFaultBits,N7[7]);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[To check the status of the battery the predefined Object name, MinorFaultBits, was used.  This tag gets data for a number of different minor faults.  To battery fault is bit 10, so this rung monitors bit 10 of the destination address given in the GSV instruction.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(N7[7].10)OTL(N7[1].0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="Continuous" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="Continuous"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

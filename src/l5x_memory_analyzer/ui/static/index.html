@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>L5X Memory Analyzer</title>
+<!-- Inline data-URI icon: this runs on airgapped OT workstations, and a
+     missing favicon.ico is otherwise a 404 in every session's console. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%231f2430'/%3E%3Crect x='2' y='2' width='7' height='9' fill='%234a90d9'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%237ec27e'/%3E%3Crect x='10' y='7' width='4' height='4' fill='%23d9a34a'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23888'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header id="app-header">
+    <div id="app-title">L5X Memory Analyzer</div>
+    <label id="open-file-btn" class="toolbar-btn">
+      File&nbsp;Open&hellip;
+      <input type="file" id="file-input" accept=".L5X,.l5x" hidden>
+    </label>
+    <div id="file-info">No file loaded</div>
+    <div id="export-buttons" class="hidden">
+      <a id="export-csv-btn" class="toolbar-btn" href="/api/export.csv">Export&nbsp;CSV</a>
+      <a id="export-xlsx-btn" class="toolbar-btn" href="/api/export.xlsx">Export&nbsp;XLSX</a>
+    </div>
+    <div id="budget-bar-wrap">
+      <div id="budget-bar"><div id="budget-bar-fill"></div></div>
+      <div id="budget-label"></div>
+    </div>
+  </header>
+
+  <div id="safety-warning" class="hidden"></div>
+  <div id="export-warning" class="hidden"></div>
+
+  <nav id="tabs">
+    <button class="tab-btn active" data-tab="treemap">Treemap</button>
+    <button class="tab-btn" data-tab="list">List</button>
+    <button class="tab-btn" data-tab="types">Type Summary</button>
+    <button class="tab-btn" data-tab="errors" id="errors-tab-btn">0 Errors</button>
+    <button class="tab-btn" data-tab="xref" id="xref-tab-btn" title="Where this type is used">Cross-Reference</button>
+    <span class="tabs-spacer"></span>
+    <label class="tab-toggle depth-stepper" title="How many levels to nest inside each tile">
+      <span>Depth</span>
+      <button type="button" id="depth-minus" class="step-btn" aria-label="Fewer levels">&minus;</button>
+      <input type="number" id="depth-input" min="1" max="10" step="1" value="2">
+      <button type="button" id="depth-plus" class="step-btn" aria-label="More levels">+</button>
+    </label>
+    <label id="empty-space-toggle" class="tab-toggle" hidden
+           title="Show the controller's remaining free memory as a block. Root level only -- inside a program or a UDT there is no such thing as the empty part.">
+      <input type="checkbox" id="empty-space-input">
+      <span>Show Empty Space</span>
+    </label>
+    <button id="split-toggle" class="tab-btn split-toggle-btn" title="Show List / Type Summary alongside the treemap">⊞ Details</button>
+  </nav>
+
+  <div id="nav-row">
+    <button id="back-btn" title="Back to where you came from" disabled>&larr;&nbsp;Back</button>
+    <div id="breadcrumb"></div>
+    <div id="node-actions"></div>
+    <!-- Always visible, far right: what the level currently on screen
+         costs, and what share of its parent and of the whole controller
+         that is. Previously only reachable by hovering a tile. -->
+    <div id="level-stats"></div>
+  </div>
+
+  <div id="empty-state" class="hidden">
+    <p>No file loaded.</p>
+    <label id="open-file-btn-2" class="toolbar-btn">
+      File&nbsp;Open&hellip;
+      <input type="file" id="file-input-2" accept=".L5X,.l5x" hidden>
+    </label>
+  </div>
+
+  <main>
+    <section id="panel-treemap" class="panel active">
+      <div id="treemap-main">
+        <svg id="treemap-svg"></svg>
+        <div id="tooltip" class="hidden"></div>
+      </div>
+      <div id="details-dock">
+        <div id="dock-tabs">
+          <button class="dock-tab-btn active" data-dock="list">List</button>
+          <button class="dock-tab-btn" data-dock="types">Type Summary</button>
+        </div>
+        <div class="dock-body">
+          <div class="dock-panel active" data-dock-panel="list">
+            <table id="list-table-dock">
+              <thead>
+                <tr>
+                  <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+                  <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+                  <th data-sort="bytes">Bytes</th>
+                  <th data-sort="pct_of_total">% of Parent</th>
+                  <th data-sort="pct_of_controller">% of Controller</th>
+                  <th data-sort="conf" class="conf-only">Confidence</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="dock-panel" data-dock-panel="types">
+            <div id="type-summary-dock"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-list" class="panel">
+      <table id="list-table">
+        <thead>
+          <tr>
+            <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+            <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
+            <th data-sort="bytes">Bytes</th>
+            <th data-sort="pct_of_total">% of Parent</th>
+            <th data-sort="pct_of_controller">% of Controller</th>
+            <th data-sort="conf" class="conf-only">Confidence</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="panel-types" class="panel">
+      <div id="type-summary"></div>
+    </section>
+
+    <section id="panel-errors" class="panel">
+      <div id="errors-detail"></div>
+    </section>
+
+    <section id="panel-xref" class="panel">
+      <div id="xref-detail"></div>
+    </section>
+  </main>
+
+  <button id="errors-banner" class="hidden" type="button"
+          title="Open the Errors tab"></button>
+
+  <!-- One shared modal for every long operation the user would otherwise
+       only see in the Python console: loading a file, and expanding a node
+       with enough children that the fetches take visible time. -->
+  <div id="progress-modal" class="hidden">
+    <div id="progress-box">
+      <div id="progress-title"></div>
+      <div class="progress-track"><div id="progress-fill"></div></div>
+      <div id="progress-detail"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

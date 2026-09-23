@@ -1,0 +1,890 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Generic_Profile" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:18:18 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Generic_Profile" ProcessorType="1769-L35E" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:18:08 2018" LastModifiedDate="Fri Jan 19 07:18:08 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Controller" CatalogNumber="1769-L35E" Vendor="1" ProductType="14" ProductCode="65" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="CompactLogixL35Controller" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalENB" CatalogNumber="1769-L35E Ethernet Port" Vendor="1" ProductType="12" ProductCode="120" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="CompactLogixL35Ethernet" Upstream="true"/>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local" CatalogNumber="CompactBus" Vendor="1" ProductType="12" ProductCode="71" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="Compact" Upstream="false">
+<Bus Size="31"/>
+</Port>
+<Port Id="2" Address="3" Type="CompactVirtualAdapter" Upstream="true"/>
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false"/>
+</Connections>
+</Communications>
+<ExtendedProperties><public><ConfigID>900</ConfigID></public></ExtendedProperties>
+</Module>
+<Module Name="OV16" CatalogNumber="1769-MODULE" Vendor="1" ProductType="0" ProductCode="17" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="1" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870915" PrimCxnInputSize="6" PrimCxnOutputSize="2">
+<ConfigTag ConfigSize="14">
+<Data>12 00 00 00 66 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE:C:0">
+<DataValueMember Name="Reserved" DataType="DINT" Radix="Decimal" Value="1"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="198" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0000"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0000"/>
+<Element Index="[28]" Value="16#0000"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+<Element Index="[100]" Value="16#0000"/>
+<Element Index="[101]" Value="16#0000"/>
+<Element Index="[102]" Value="16#0000"/>
+<Element Index="[103]" Value="16#0000"/>
+<Element Index="[104]" Value="16#0000"/>
+<Element Index="[105]" Value="16#0000"/>
+<Element Index="[106]" Value="16#0000"/>
+<Element Index="[107]" Value="16#0000"/>
+<Element Index="[108]" Value="16#0000"/>
+<Element Index="[109]" Value="16#0000"/>
+<Element Index="[110]" Value="16#0000"/>
+<Element Index="[111]" Value="16#0000"/>
+<Element Index="[112]" Value="16#0000"/>
+<Element Index="[113]" Value="16#0000"/>
+<Element Index="[114]" Value="16#0000"/>
+<Element Index="[115]" Value="16#0000"/>
+<Element Index="[116]" Value="16#0000"/>
+<Element Index="[117]" Value="16#0000"/>
+<Element Index="[118]" Value="16#0000"/>
+<Element Index="[119]" Value="16#0000"/>
+<Element Index="[120]" Value="16#0000"/>
+<Element Index="[121]" Value="16#0000"/>
+<Element Index="[122]" Value="16#0000"/>
+<Element Index="[123]" Value="16#0000"/>
+<Element Index="[124]" Value="16#0000"/>
+<Element Index="[125]" Value="16#0000"/>
+<Element Index="[126]" Value="16#0000"/>
+<Element Index="[127]" Value="16#0000"/>
+<Element Index="[128]" Value="16#0000"/>
+<Element Index="[129]" Value="16#0000"/>
+<Element Index="[130]" Value="16#0000"/>
+<Element Index="[131]" Value="16#0000"/>
+<Element Index="[132]" Value="16#0000"/>
+<Element Index="[133]" Value="16#0000"/>
+<Element Index="[134]" Value="16#0000"/>
+<Element Index="[135]" Value="16#0000"/>
+<Element Index="[136]" Value="16#0000"/>
+<Element Index="[137]" Value="16#0000"/>
+<Element Index="[138]" Value="16#0000"/>
+<Element Index="[139]" Value="16#0000"/>
+<Element Index="[140]" Value="16#0000"/>
+<Element Index="[141]" Value="16#0000"/>
+<Element Index="[142]" Value="16#0000"/>
+<Element Index="[143]" Value="16#0000"/>
+<Element Index="[144]" Value="16#0000"/>
+<Element Index="[145]" Value="16#0000"/>
+<Element Index="[146]" Value="16#0000"/>
+<Element Index="[147]" Value="16#0000"/>
+<Element Index="[148]" Value="16#0000"/>
+<Element Index="[149]" Value="16#0000"/>
+<Element Index="[150]" Value="16#0000"/>
+<Element Index="[151]" Value="16#0000"/>
+<Element Index="[152]" Value="16#0000"/>
+<Element Index="[153]" Value="16#0000"/>
+<Element Index="[154]" Value="16#0000"/>
+<Element Index="[155]" Value="16#0000"/>
+<Element Index="[156]" Value="16#0000"/>
+<Element Index="[157]" Value="16#0000"/>
+<Element Index="[158]" Value="16#0000"/>
+<Element Index="[159]" Value="16#0000"/>
+<Element Index="[160]" Value="16#0000"/>
+<Element Index="[161]" Value="16#0000"/>
+<Element Index="[162]" Value="16#0000"/>
+<Element Index="[163]" Value="16#0000"/>
+<Element Index="[164]" Value="16#0000"/>
+<Element Index="[165]" Value="16#0000"/>
+<Element Index="[166]" Value="16#0000"/>
+<Element Index="[167]" Value="16#0000"/>
+<Element Index="[168]" Value="16#0000"/>
+<Element Index="[169]" Value="16#0000"/>
+<Element Index="[170]" Value="16#0000"/>
+<Element Index="[171]" Value="16#0000"/>
+<Element Index="[172]" Value="16#0000"/>
+<Element Index="[173]" Value="16#0000"/>
+<Element Index="[174]" Value="16#0000"/>
+<Element Index="[175]" Value="16#0000"/>
+<Element Index="[176]" Value="16#0000"/>
+<Element Index="[177]" Value="16#0000"/>
+<Element Index="[178]" Value="16#0000"/>
+<Element Index="[179]" Value="16#0000"/>
+<Element Index="[180]" Value="16#0000"/>
+<Element Index="[181]" Value="16#0000"/>
+<Element Index="[182]" Value="16#0000"/>
+<Element Index="[183]" Value="16#0000"/>
+<Element Index="[184]" Value="16#0000"/>
+<Element Index="[185]" Value="16#0000"/>
+<Element Index="[186]" Value="16#0000"/>
+<Element Index="[187]" Value="16#0000"/>
+<Element Index="[188]" Value="16#0000"/>
+<Element Index="[189]" Value="16#0000"/>
+<Element Index="[190]" Value="16#0000"/>
+<Element Index="[191]" Value="16#0000"/>
+<Element Index="[192]" Value="16#0000"/>
+<Element Index="[193]" Value="16#0000"/>
+<Element Index="[194]" Value="16#0000"/>
+<Element Index="[195]" Value="16#0000"/>
+<Element Index="[196]" Value="16#0000"/>
+<Element Index="[197]" Value="16#0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="2000" Type="Output" InputCxnPoint="101" OutputCxnPoint="100" OutputSize="2" InputSize="6" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_6Bytes:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="1" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_2Bytes:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="1" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="OF2" CatalogNumber="1769-MODULE" Vendor="1" ProductType="0" ProductCode="17" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="2" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870915" PrimCxnInputSize="12" PrimCxnOutputSize="4">
+<ConfigTag ConfigSize="14">
+<Data>12 00 00 00 66 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE:C:0">
+<DataValueMember Name="Reserved" DataType="DINT" Radix="Decimal" Value="1"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="198" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0000"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0000"/>
+<Element Index="[28]" Value="16#0000"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+<Element Index="[100]" Value="16#0000"/>
+<Element Index="[101]" Value="16#0000"/>
+<Element Index="[102]" Value="16#0000"/>
+<Element Index="[103]" Value="16#0000"/>
+<Element Index="[104]" Value="16#0000"/>
+<Element Index="[105]" Value="16#0000"/>
+<Element Index="[106]" Value="16#0000"/>
+<Element Index="[107]" Value="16#0000"/>
+<Element Index="[108]" Value="16#0000"/>
+<Element Index="[109]" Value="16#0000"/>
+<Element Index="[110]" Value="16#0000"/>
+<Element Index="[111]" Value="16#0000"/>
+<Element Index="[112]" Value="16#0000"/>
+<Element Index="[113]" Value="16#0000"/>
+<Element Index="[114]" Value="16#0000"/>
+<Element Index="[115]" Value="16#0000"/>
+<Element Index="[116]" Value="16#0000"/>
+<Element Index="[117]" Value="16#0000"/>
+<Element Index="[118]" Value="16#0000"/>
+<Element Index="[119]" Value="16#0000"/>
+<Element Index="[120]" Value="16#0000"/>
+<Element Index="[121]" Value="16#0000"/>
+<Element Index="[122]" Value="16#0000"/>
+<Element Index="[123]" Value="16#0000"/>
+<Element Index="[124]" Value="16#0000"/>
+<Element Index="[125]" Value="16#0000"/>
+<Element Index="[126]" Value="16#0000"/>
+<Element Index="[127]" Value="16#0000"/>
+<Element Index="[128]" Value="16#0000"/>
+<Element Index="[129]" Value="16#0000"/>
+<Element Index="[130]" Value="16#0000"/>
+<Element Index="[131]" Value="16#0000"/>
+<Element Index="[132]" Value="16#0000"/>
+<Element Index="[133]" Value="16#0000"/>
+<Element Index="[134]" Value="16#0000"/>
+<Element Index="[135]" Value="16#0000"/>
+<Element Index="[136]" Value="16#0000"/>
+<Element Index="[137]" Value="16#0000"/>
+<Element Index="[138]" Value="16#0000"/>
+<Element Index="[139]" Value="16#0000"/>
+<Element Index="[140]" Value="16#0000"/>
+<Element Index="[141]" Value="16#0000"/>
+<Element Index="[142]" Value="16#0000"/>
+<Element Index="[143]" Value="16#0000"/>
+<Element Index="[144]" Value="16#0000"/>
+<Element Index="[145]" Value="16#0000"/>
+<Element Index="[146]" Value="16#0000"/>
+<Element Index="[147]" Value="16#0000"/>
+<Element Index="[148]" Value="16#0000"/>
+<Element Index="[149]" Value="16#0000"/>
+<Element Index="[150]" Value="16#0000"/>
+<Element Index="[151]" Value="16#0000"/>
+<Element Index="[152]" Value="16#0000"/>
+<Element Index="[153]" Value="16#0000"/>
+<Element Index="[154]" Value="16#0000"/>
+<Element Index="[155]" Value="16#0000"/>
+<Element Index="[156]" Value="16#0000"/>
+<Element Index="[157]" Value="16#0000"/>
+<Element Index="[158]" Value="16#0000"/>
+<Element Index="[159]" Value="16#0000"/>
+<Element Index="[160]" Value="16#0000"/>
+<Element Index="[161]" Value="16#0000"/>
+<Element Index="[162]" Value="16#0000"/>
+<Element Index="[163]" Value="16#0000"/>
+<Element Index="[164]" Value="16#0000"/>
+<Element Index="[165]" Value="16#0000"/>
+<Element Index="[166]" Value="16#0000"/>
+<Element Index="[167]" Value="16#0000"/>
+<Element Index="[168]" Value="16#0000"/>
+<Element Index="[169]" Value="16#0000"/>
+<Element Index="[170]" Value="16#0000"/>
+<Element Index="[171]" Value="16#0000"/>
+<Element Index="[172]" Value="16#0000"/>
+<Element Index="[173]" Value="16#0000"/>
+<Element Index="[174]" Value="16#0000"/>
+<Element Index="[175]" Value="16#0000"/>
+<Element Index="[176]" Value="16#0000"/>
+<Element Index="[177]" Value="16#0000"/>
+<Element Index="[178]" Value="16#0000"/>
+<Element Index="[179]" Value="16#0000"/>
+<Element Index="[180]" Value="16#0000"/>
+<Element Index="[181]" Value="16#0000"/>
+<Element Index="[182]" Value="16#0000"/>
+<Element Index="[183]" Value="16#0000"/>
+<Element Index="[184]" Value="16#0000"/>
+<Element Index="[185]" Value="16#0000"/>
+<Element Index="[186]" Value="16#0000"/>
+<Element Index="[187]" Value="16#0000"/>
+<Element Index="[188]" Value="16#0000"/>
+<Element Index="[189]" Value="16#0000"/>
+<Element Index="[190]" Value="16#0000"/>
+<Element Index="[191]" Value="16#0000"/>
+<Element Index="[192]" Value="16#0000"/>
+<Element Index="[193]" Value="16#0000"/>
+<Element Index="[194]" Value="16#0000"/>
+<Element Index="[195]" Value="16#0000"/>
+<Element Index="[196]" Value="16#0000"/>
+<Element Index="[197]" Value="16#0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="2000" Type="Output" InputCxnPoint="101" OutputCxnPoint="100" OutputSize="4" InputSize="12" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_12Bytes:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="4" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_4Bytes:O:0">
+<ArrayMember Name="Data" DataType="INT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="IF4" CatalogNumber="1769-MODULE" Vendor="1" ProductType="0" ProductCode="17" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="3" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870923" PrimCxnInputSize="16">
+<ConfigTag ConfigSize="12">
+<Data>10 00 00 00 66 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE:C:0">
+<DataValueMember Name="Reserved" DataType="DINT" Radix="Decimal" Value="1"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="198" Radix="Hex">
+<Element Index="[0]" Value="16#0000"/>
+<Element Index="[1]" Value="16#0000"/>
+<Element Index="[2]" Value="16#0000"/>
+<Element Index="[3]" Value="16#0000"/>
+<Element Index="[4]" Value="16#0000"/>
+<Element Index="[5]" Value="16#0000"/>
+<Element Index="[6]" Value="16#0000"/>
+<Element Index="[7]" Value="16#0000"/>
+<Element Index="[8]" Value="16#0000"/>
+<Element Index="[9]" Value="16#0000"/>
+<Element Index="[10]" Value="16#0000"/>
+<Element Index="[11]" Value="16#0000"/>
+<Element Index="[12]" Value="16#0000"/>
+<Element Index="[13]" Value="16#0000"/>
+<Element Index="[14]" Value="16#0000"/>
+<Element Index="[15]" Value="16#0000"/>
+<Element Index="[16]" Value="16#0000"/>
+<Element Index="[17]" Value="16#0000"/>
+<Element Index="[18]" Value="16#0000"/>
+<Element Index="[19]" Value="16#0000"/>
+<Element Index="[20]" Value="16#0000"/>
+<Element Index="[21]" Value="16#0000"/>
+<Element Index="[22]" Value="16#0000"/>
+<Element Index="[23]" Value="16#0000"/>
+<Element Index="[24]" Value="16#0000"/>
+<Element Index="[25]" Value="16#0000"/>
+<Element Index="[26]" Value="16#0000"/>
+<Element Index="[27]" Value="16#0000"/>
+<Element Index="[28]" Value="16#0000"/>
+<Element Index="[29]" Value="16#0000"/>
+<Element Index="[30]" Value="16#0000"/>
+<Element Index="[31]" Value="16#0000"/>
+<Element Index="[32]" Value="16#0000"/>
+<Element Index="[33]" Value="16#0000"/>
+<Element Index="[34]" Value="16#0000"/>
+<Element Index="[35]" Value="16#0000"/>
+<Element Index="[36]" Value="16#0000"/>
+<Element Index="[37]" Value="16#0000"/>
+<Element Index="[38]" Value="16#0000"/>
+<Element Index="[39]" Value="16#0000"/>
+<Element Index="[40]" Value="16#0000"/>
+<Element Index="[41]" Value="16#0000"/>
+<Element Index="[42]" Value="16#0000"/>
+<Element Index="[43]" Value="16#0000"/>
+<Element Index="[44]" Value="16#0000"/>
+<Element Index="[45]" Value="16#0000"/>
+<Element Index="[46]" Value="16#0000"/>
+<Element Index="[47]" Value="16#0000"/>
+<Element Index="[48]" Value="16#0000"/>
+<Element Index="[49]" Value="16#0000"/>
+<Element Index="[50]" Value="16#0000"/>
+<Element Index="[51]" Value="16#0000"/>
+<Element Index="[52]" Value="16#0000"/>
+<Element Index="[53]" Value="16#0000"/>
+<Element Index="[54]" Value="16#0000"/>
+<Element Index="[55]" Value="16#0000"/>
+<Element Index="[56]" Value="16#0000"/>
+<Element Index="[57]" Value="16#0000"/>
+<Element Index="[58]" Value="16#0000"/>
+<Element Index="[59]" Value="16#0000"/>
+<Element Index="[60]" Value="16#0000"/>
+<Element Index="[61]" Value="16#0000"/>
+<Element Index="[62]" Value="16#0000"/>
+<Element Index="[63]" Value="16#0000"/>
+<Element Index="[64]" Value="16#0000"/>
+<Element Index="[65]" Value="16#0000"/>
+<Element Index="[66]" Value="16#0000"/>
+<Element Index="[67]" Value="16#0000"/>
+<Element Index="[68]" Value="16#0000"/>
+<Element Index="[69]" Value="16#0000"/>
+<Element Index="[70]" Value="16#0000"/>
+<Element Index="[71]" Value="16#0000"/>
+<Element Index="[72]" Value="16#0000"/>
+<Element Index="[73]" Value="16#0000"/>
+<Element Index="[74]" Value="16#0000"/>
+<Element Index="[75]" Value="16#0000"/>
+<Element Index="[76]" Value="16#0000"/>
+<Element Index="[77]" Value="16#0000"/>
+<Element Index="[78]" Value="16#0000"/>
+<Element Index="[79]" Value="16#0000"/>
+<Element Index="[80]" Value="16#0000"/>
+<Element Index="[81]" Value="16#0000"/>
+<Element Index="[82]" Value="16#0000"/>
+<Element Index="[83]" Value="16#0000"/>
+<Element Index="[84]" Value="16#0000"/>
+<Element Index="[85]" Value="16#0000"/>
+<Element Index="[86]" Value="16#0000"/>
+<Element Index="[87]" Value="16#0000"/>
+<Element Index="[88]" Value="16#0000"/>
+<Element Index="[89]" Value="16#0000"/>
+<Element Index="[90]" Value="16#0000"/>
+<Element Index="[91]" Value="16#0000"/>
+<Element Index="[92]" Value="16#0000"/>
+<Element Index="[93]" Value="16#0000"/>
+<Element Index="[94]" Value="16#0000"/>
+<Element Index="[95]" Value="16#0000"/>
+<Element Index="[96]" Value="16#0000"/>
+<Element Index="[97]" Value="16#0000"/>
+<Element Index="[98]" Value="16#0000"/>
+<Element Index="[99]" Value="16#0000"/>
+<Element Index="[100]" Value="16#0000"/>
+<Element Index="[101]" Value="16#0000"/>
+<Element Index="[102]" Value="16#0000"/>
+<Element Index="[103]" Value="16#0000"/>
+<Element Index="[104]" Value="16#0000"/>
+<Element Index="[105]" Value="16#0000"/>
+<Element Index="[106]" Value="16#0000"/>
+<Element Index="[107]" Value="16#0000"/>
+<Element Index="[108]" Value="16#0000"/>
+<Element Index="[109]" Value="16#0000"/>
+<Element Index="[110]" Value="16#0000"/>
+<Element Index="[111]" Value="16#0000"/>
+<Element Index="[112]" Value="16#0000"/>
+<Element Index="[113]" Value="16#0000"/>
+<Element Index="[114]" Value="16#0000"/>
+<Element Index="[115]" Value="16#0000"/>
+<Element Index="[116]" Value="16#0000"/>
+<Element Index="[117]" Value="16#0000"/>
+<Element Index="[118]" Value="16#0000"/>
+<Element Index="[119]" Value="16#0000"/>
+<Element Index="[120]" Value="16#0000"/>
+<Element Index="[121]" Value="16#0000"/>
+<Element Index="[122]" Value="16#0000"/>
+<Element Index="[123]" Value="16#0000"/>
+<Element Index="[124]" Value="16#0000"/>
+<Element Index="[125]" Value="16#0000"/>
+<Element Index="[126]" Value="16#0000"/>
+<Element Index="[127]" Value="16#0000"/>
+<Element Index="[128]" Value="16#0000"/>
+<Element Index="[129]" Value="16#0000"/>
+<Element Index="[130]" Value="16#0000"/>
+<Element Index="[131]" Value="16#0000"/>
+<Element Index="[132]" Value="16#0000"/>
+<Element Index="[133]" Value="16#0000"/>
+<Element Index="[134]" Value="16#0000"/>
+<Element Index="[135]" Value="16#0000"/>
+<Element Index="[136]" Value="16#0000"/>
+<Element Index="[137]" Value="16#0000"/>
+<Element Index="[138]" Value="16#0000"/>
+<Element Index="[139]" Value="16#0000"/>
+<Element Index="[140]" Value="16#0000"/>
+<Element Index="[141]" Value="16#0000"/>
+<Element Index="[142]" Value="16#0000"/>
+<Element Index="[143]" Value="16#0000"/>
+<Element Index="[144]" Value="16#0000"/>
+<Element Index="[145]" Value="16#0000"/>
+<Element Index="[146]" Value="16#0000"/>
+<Element Index="[147]" Value="16#0000"/>
+<Element Index="[148]" Value="16#0000"/>
+<Element Index="[149]" Value="16#0000"/>
+<Element Index="[150]" Value="16#0000"/>
+<Element Index="[151]" Value="16#0000"/>
+<Element Index="[152]" Value="16#0000"/>
+<Element Index="[153]" Value="16#0000"/>
+<Element Index="[154]" Value="16#0000"/>
+<Element Index="[155]" Value="16#0000"/>
+<Element Index="[156]" Value="16#0000"/>
+<Element Index="[157]" Value="16#0000"/>
+<Element Index="[158]" Value="16#0000"/>
+<Element Index="[159]" Value="16#0000"/>
+<Element Index="[160]" Value="16#0000"/>
+<Element Index="[161]" Value="16#0000"/>
+<Element Index="[162]" Value="16#0000"/>
+<Element Index="[163]" Value="16#0000"/>
+<Element Index="[164]" Value="16#0000"/>
+<Element Index="[165]" Value="16#0000"/>
+<Element Index="[166]" Value="16#0000"/>
+<Element Index="[167]" Value="16#0000"/>
+<Element Index="[168]" Value="16#0000"/>
+<Element Index="[169]" Value="16#0000"/>
+<Element Index="[170]" Value="16#0000"/>
+<Element Index="[171]" Value="16#0000"/>
+<Element Index="[172]" Value="16#0000"/>
+<Element Index="[173]" Value="16#0000"/>
+<Element Index="[174]" Value="16#0000"/>
+<Element Index="[175]" Value="16#0000"/>
+<Element Index="[176]" Value="16#0000"/>
+<Element Index="[177]" Value="16#0000"/>
+<Element Index="[178]" Value="16#0000"/>
+<Element Index="[179]" Value="16#0000"/>
+<Element Index="[180]" Value="16#0000"/>
+<Element Index="[181]" Value="16#0000"/>
+<Element Index="[182]" Value="16#0000"/>
+<Element Index="[183]" Value="16#0000"/>
+<Element Index="[184]" Value="16#0000"/>
+<Element Index="[185]" Value="16#0000"/>
+<Element Index="[186]" Value="16#0000"/>
+<Element Index="[187]" Value="16#0000"/>
+<Element Index="[188]" Value="16#0000"/>
+<Element Index="[189]" Value="16#0000"/>
+<Element Index="[190]" Value="16#0000"/>
+<Element Index="[191]" Value="16#0000"/>
+<Element Index="[192]" Value="16#0000"/>
+<Element Index="[193]" Value="16#0000"/>
+<Element Index="[194]" Value="16#0000"/>
+<Element Index="[195]" Value="16#0000"/>
+<Element Index="[196]" Value="16#0000"/>
+<Element Index="[197]" Value="16#0000"/>
+</ArrayMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Standard" RPI="2000" Type="Input" InputCxnPoint="101" OutputCxnPoint="104" OutputSize="0" InputSize="16" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1769_MODULE_INT_16Bytes:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Data" DataType="INT" Dimensions="6" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags/>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

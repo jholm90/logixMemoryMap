@@ -1,0 +1,1084 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="ControllerLogServices" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:18:45 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="ControllerLogServices" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="34" ShareUnusedTimeSlice="0" ProjectCreationDate="Fri Jan 19 07:18:34 2018" LastModifiedDate="Fri Jan 19 07:18:34 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0038_1d8b" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[This program demonstrates the Controller Logging Feature which is a program change tracking mechanism.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="LogEntry" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Desc" DataType="STRING" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="ExtendedInfo" DataType="STRING" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Force_Test_Module" CatalogNumber="1756-IA16I" Vendor="1" ProductType="7" ProductCode="5" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="true" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="2" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="24">
+<Data>1C 00 00 00 10 00 00 00 01 00 00 00 00 00 00 00 
+01 09 01 09 00 00 00 00 FF FF 00 00 FF FF 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:C:0">
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="9"/>
+<DataValueMember Name="FilterOffOn_8_15" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_8_15" DataType="SINT" Radix="Decimal" Value="9"/>
+<DataValueMember Name="FilterOffOn_16_23" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOnOff_16_23" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOffOn_24_31" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FilterOnOff_24_31" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_1111_1111_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#1111_1111_1111_1111_1111_1111_1111_1111"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="AddZero" TagType="Base" DataType="STRING">
+<Data>02 00 00 00 27 30 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="2">
+<![CDATA['$'0']]>
+</Data>
+</Tag>
+<Tag Name="AutoWriteGet" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0015" LocalIndex="0" DestinationTag="AutoWriteState"
+/>
+</Data>
+</Tag>
+<Tag Name="AutoWriteSet" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="1" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#0010" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0015" LocalIndex="0" LocalElement="AutoWriteSetSource"
+/>
+</Data>
+</Tag>
+<Tag Name="AutoWriteSetSource" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="AutoWriteState" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Auto_Write_To_CompactFlash_Sent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Bogus_Force" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="Button_Alias" TagType="Alias" Radix="Decimal" AliasFor="Local:2:I.Data.14"/>
+<Tag Name="ControllerSlot" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ControllerSlot_Invalid" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CustomEntry" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="176" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#005d" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0" LocalElement="CustomLog"
+/>
+</Data>
+</Tag>
+<Tag Name="CustomEntryMSG_Sent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CustomLog" TagType="Base" DataType="LogEntry">
+<Data>22 00 00 00 4D 61 63 68 69 6E 65 20 73 6C 69 67 
+68 74 6C 79 20 6F 75 74 20 6F 66 20 74 6F 6C 65 
+72 61 6E 63 65 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 2D 00 00 00 56 61 6C 75 
+65 20 3D 32 20 20 20 20 20 20 20 20 20 20 20 20 
+20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 
+20 20 20 20 20 20 20 20 20 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="LogEntry">
+<StructureMember Name="Desc" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="34"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['Machine slightly out of tolerance$00']]>
+</DataValueMember>
+</StructureMember>
+<StructureMember Name="ExtendedInfo" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="45"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['Value =2                                     ']]>
+</DataValueMember>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="ExecConfigMaskGet" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0016" LocalIndex="0" DestinationTag="ExecConfigState"
+/>
+</Data>
+</Tag>
+<Tag Name="ExecConfigMaskSet" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="4" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#0010" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0016" LocalIndex="0" LocalElement="ExecConfigSet"
+/>
+</Data>
+</Tag>
+<Tag Name="ExecConfigSet" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExecConfigState" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExecModifyCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ExtendedInfoPre" TagType="Base" DataType="STRING">
+<Data>01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['$01']]>
+</Data>
+</Tag>
+<Tag Name="FirstHalfofString" TagType="Base" DataType="STRING">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="Force_Unlatch" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="ForcingEnabled_Success" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="GetExecCnfg" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="GetWrite" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Hex" TagType="Base" DataType="STRING" Dimensions="20">
+<Data>01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 09 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 03 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 05 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 06 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 07 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 09 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 0B 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 0C 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 0D 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 0E 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 0F 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 10 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['$00']]>
+</Data>
+</Tag>
+<Tag Name="LogForcesOption_Sent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="LogForces_Enabled" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="LVB" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="Unconfigured" RequestedLength="1" CommTypeCode="0" LocalIndex="0" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="Messages_OK" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="MSGPath" TagType="Base" DataType="STRING">
+<Data>02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="2">
+<![CDATA['$00$00']]>
+</Data>
+</Tag>
+<Tag Name="NewPathString" TagType="Base" DataType="STRING">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="Path_Set" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="RemoteElementString" TagType="Base" DataType="STRING">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="RemoteElement_Set" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SendCustom" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SendFormattedCustom" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SetCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SetExec" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SetExecCnfg" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SetTotal" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SetWrite" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SlotNumber" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SlotString" TagType="Base" DataType="STRING">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="TempString" TagType="Base" DataType="STRING">
+<Data>01 00 00 00 32 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['2']]>
+</Data>
+</Tag>
+<Tag Name="ToleranceValue" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="TotalCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="UnsavedCount" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>02 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="2"/>
+</Data>
+</Tag>
+<Tag Name="UserSpecifiedSlot" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WriteLog" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 0" CommTypeCode="0" ServiceCode="16#005d" ObjectType="16#008e" TargetObject="1" AttributeNumber="16#0000" LocalIndex="0"/>
+</Data>
+</Tag>
+<Tag Name="WriteStart" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="WriteTimeTotal" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>03 36 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="13827"/>
+</Data>
+</Tag>
+<Tag Name="Write_To_CompactFlash_MSG_Sent" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="Bogus_Force2" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="LogReadyToView" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Step_000" TagType="Base" DataType="SFC_STEP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STEP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LS" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmEn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmLow" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmHigh" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PauseTimer" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="T" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TMax" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LimitHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Stop_000" TagType="Base" DataType="SFC_STOP">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="SFC_STOP">
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="X" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Reset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Count" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Tran_000" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Write" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Commands" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[***COMMANDS ROUTINE***
+
+This routine allows the user to set up and send (using message instructions) the following services to the controller: 
+write, auto-write, special counter configuration, and custom entry. ]]>
+</Comment>
+<Text>
+<![CDATA[AFI()NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Toggle the Write bit to send the service to write the controller log to CompactFlash memory card at any time. 
+
+If the message instruction has an error, you can use the Instruction Help file and/or the following error codes to help you diagnose the problem.
+
+0x04 (Error Code), 0x0000 (Extended Error)  - Internal Object Identifier (IOI) syntax: an error was detected decoding the IOI, wrong syntax
+0x05 (Error Code), 0x0000 (Extended Error) - IOI destination unknown: probably an error with the semaphore instance number
+0x26 (Error Code), N/A (Extended Error) - The IOI size received was shorter or longer than expected.
+0xFF (Error Code), 0x221A (Extended Error) - Removable media is full (no available space)
+0xFF (Error Code), 0x221B (Extended Error) - No removable media present
+0xFF (Error Code), 0x221C (Extended Error) - Unrecognized media format
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Write)XIO(WriteLog.EN)MSG(WriteLog)OTU(Write);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(WriteLog.DN)XIO(WriteLog.ER)OTL(Write_To_CompactFlash_MSG_Sent);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Service to set the auto-write attribute
+By default, auto-write to card is disabled. If you want to enable auto-write set, toggle the SetWrite  bit.
+Then when  the log is 80% full in the controller and it will automatically write to a file on CompactFlash.
+
+0 - Manual calls to the write service will write the log to compact flash.
+1 - Log will automatically be written when 80 records are inserted.
+
+
+If the instructions have an error, use the Instruction Help file to diagnose the problem.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(SetWrite)XIO(AutoWriteSet.EN)MSG(AutoWriteSet)OTU(SetWrite)OTE(GetWrite);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(GetWrite)XIC(AutoWriteSet.DN)XIO(AutoWriteGet.EN)MSG(AutoWriteGet)OTU(GetWrite);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(AutoWriteSet.DN)XIO(AutoWriteSet.ER)XIO(AutoWriteGet.ER)OTL(Auto_Write_To_CompactFlash_Sent);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Service to set the Execution Config
+This determines which controller log entries increment the ExecModifyCount.
+
+
+Set the LogForcesEnabled value to:
+ 0 - program/task properties change, online edits, and controller timeslice modifications (forces not included in log)
+1 - Everything in the default + forces
+
+If the instructions have an error, use the Instruction Help file to diagnose the problem.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(LogForces_Enabled,ExecConfigSet);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[XIC(SetExecCnfg)XIO(ExecConfigMaskSet.EN)MSG(ExecConfigMaskSet)OTU(SetExecCnfg)OTE(GetExecCnfg);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[XIC(GetExecCnfg)XIC(ExecConfigMaskSet.DN)XIO(ExecConfigMaskGet.EN)MSG(ExecConfigMaskGet)OTU(GetExecCnfg);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[XIC(ExecConfigMaskSet.DN)XIO(ExecConfigMaskSet.ER)XIO(ExecConfigMaskGet.ER)OTL(LogForcesOption_Sent);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[This rung jumps to the CustomEntryFormatting subroutine. 
+This subroutine allows the user to format the log entry.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(SendFormattedCustom)JSR(CustomEntryFormatting,0)OTU(SendFormattedCustom);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[Toggle the SendCustom bit to send the service to write the custom entry log to the CompactFlash memory card at any time. 
+
+If the message instruction has an error, you can use the Instruction Help file and/or the following error codes to help you diagnose the problem.
+
+0x04 (Error Code), 0x0000 (Extended Error)  - Internal Object Identifier (IOI) syntax: an error was detected decoding the IOI, wrong syntax
+0x13 (Error Code), N/A (Extended Error) - Insufficient command data, the packet did not contain sufficient parameter data.
+0x15 (Error Code), N/A (Extended Error) - More data sent than expected/allowed.
+0x26 (Error Code), N/A (Extended Error) - The IOI size received was shorter or longer than expected.
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(SendCustom)XIO(CustomEntry.EN)MSG(CustomEntry)OTU(SendCustom);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[XIC(CustomEntry.DN)XIO(CustomEntry.ER)OTE(CustomEntryMSG_Sent);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Counters" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[***COUNTERS ROUTINE***
+
+This routine gets three log counters for tracking purposes.]]>
+</Comment>
+<Text>
+<![CDATA[AFI()NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[TOTAL COUNT
+
+  The number of total entries for the lifetime of this firmware.  
+Increments whenever any entry is added to the controller log. 
+GSV/SSV access]]>
+</Comment>
+<Text>
+<![CDATA[GSV(Controller,,ControllerLogTotalEntryCount,TotalCount);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[UNSAVED COUNT
+
+ The number of controller log entries cached in controller RAM that HAVE NOT been written to compact flash yet
+GSV Access only
+Value ranges from 0 - 100]]>
+</Comment>
+<Text>
+<![CDATA[GSV(Controller,,ControllerLogUnsavedEntryCount,UnsavedCount);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[MODIFY EXECUTION COUNT
+
+ Number of controller log entries generated from the following modifications
+-Program properties change
+-Task properties change
+-Online Edit
+-Controller timeslice changes
+-Optionally force changes*
+
+*this is configured by the execution count configure mask
+]]>
+</Comment>
+<Text>
+<![CDATA[GSV(Controller,,ControllerLogExecutionModificationCount,ExecModifyCount);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Set the Modify Execution Count]]>
+</Comment>
+<Text>
+<![CDATA[XIC(SetTotal)SSV(Controller,,ControllerLogTotalEntryCount,SetCount)OTU(SetTotal);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Set the Total Entry Count]]>
+</Comment>
+<Text>
+<![CDATA[XIC(SetExec)SSV(Controller,,ControllerLogExecutionModificationCount,SetCount)OTU(SetExec);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="CustomEntryFormatting" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[***CUSTOM ENTRY FORMATTING ROUTINE***
+
+In this sample code, this routine concatenates  with a 'ToleranceValue' number. 
+Everytime the routine is executed, the ToleranceValue is incremented by 1.
+You can see this in the log file.]]>
+</Comment>
+<Text>
+<![CDATA[DTOS(ToleranceValue,TempString);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[INSERT(ExtendedInfoPre,TempString,9,CustomLog.ExtendedInfo);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[ADD(ToleranceValue,1,ToleranceValue);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Initialize" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[***INITIALIZE ROUTINE***
+
+This routine initializes all the data that is required in the controller logging message instructions (COMMANDS ROUTINE). This initialization allows the user to download the program and ensure that all data is entered into the message instructions is correct.
+]]>
+</Comment>
+<Text>
+<![CDATA[AFI()NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[The following rungs initialize the parameters associated with all the message instructions in WriteCommands routine.]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(16#008e,WriteLog.Class) ,MOV(16#0000,WriteLog.Attribute) ,MOV(1,WriteLog.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[[MOV(16#008e,AutoWriteSet.Class) ,MOV(16#0015,AutoWriteSet.Attribute) ,MOV(1,AutoWriteSet.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[[MOV(16#008e,AutoWriteGet.Class) ,MOV(16#0015,AutoWriteGet.Attribute) ,MOV(1,AutoWriteGet.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[[MOV(16#008e,ExecConfigMaskSet.Class) ,MOV(16#0016,ExecConfigMaskSet.Attribute) ,MOV(1,ExecConfigMaskSet.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[[MOV(16#008e,ExecConfigMaskGet.Class) ,MOV(16#0016,ExecConfigMaskGet.Attribute) ,MOV(1,ExecConfigMaskGet.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[[MOV(16#008e,CustomEntry.Class) ,MOV(16#0000,CustomEntry.Attribute) ,MOV(1,CustomEntry.Instance) ];]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[The following rungs use the user entered ControllerSlot number (from Rung 1 of the MainRoutine) and the Hex[20] array to properly set the path of the controller.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(ControllerSlot,0)CONCAT(ExtendedInfoPre,Hex[0],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,1)CONCAT(ExtendedInfoPre,Hex[10],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,2)CONCAT(ExtendedInfoPre,Hex[2],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,3)CONCAT(ExtendedInfoPre,Hex[3],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,4)CONCAT(ExtendedInfoPre,Hex[4],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,5)CONCAT(ExtendedInfoPre,Hex[5],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,6)CONCAT(ExtendedInfoPre,Hex[6],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,7)CONCAT(ExtendedInfoPre,Hex[7],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,8)CONCAT(ExtendedInfoPre,Hex[8],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="16" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,9)CONCAT(ExtendedInfoPre,Hex[9],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="17" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,10)CONCAT(ExtendedInfoPre,Hex[10],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="18" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,11)CONCAT(ExtendedInfoPre,Hex[11],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="19" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,12)CONCAT(ExtendedInfoPre,Hex[12],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="20" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,13)CONCAT(ExtendedInfoPre,Hex[13],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="21" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,14)CONCAT(ExtendedInfoPre,Hex[14],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="22" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,15)CONCAT(ExtendedInfoPre,Hex[15],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="23" Type="N">
+<Text>
+<![CDATA[EQU(ControllerSlot,16)CONCAT(ExtendedInfoPre,Hex[16],MSGPath);]]>
+</Text>
+</Rung>
+<Rung Number="24" Type="N">
+<Comment>
+<![CDATA[The following rung copies the message path into the Message.Path tag.]]>
+</Comment>
+<Text>
+<![CDATA[COP(MSGPath,WriteLog.Path,2)COP(MSGPath,AutoWriteSet.Path,2)COP(MSGPath,AutoWriteGet.Path,2)COP(MSGPath,ExecConfigMaskSet.Path,2)COP(MSGPath,ExecConfigMaskGet.Path,2)COP(MSGPath,CustomEntry.Path,2)OTE(Path_Set);]]>
+</Text>
+</Rung>
+<Rung Number="25" Type="N">
+<Text>
+<![CDATA[COP(RemoteElementString,WriteLog.RemoteElement,1)COP(RemoteElementString,AutoWriteSet.RemoteElement,1)COP(RemoteElementString,AutoWriteGet.RemoteElement,1)COP(RemoteElementString,ExecConfigMaskSet.RemoteElement,1)COP(RemoteElementString,ExecConfigMaskGet.RemoteElement,1)COP(RemoteElementString,CustomEntry.RemoteElement,1)OTE(RemoteElement_Set);]]>
+</Text>
+</Rung>
+<Rung Number="26" Type="N">
+<Text>
+<![CDATA[XIC(Path_Set)XIC(RemoteElement_Set)OTL(Messages_OK);]]>
+</Text>
+</Rung>
+<Rung Number="27" Type="N">
+<Text>
+<![CDATA[OTU(ControllerSlot_Invalid);]]>
+</Text>
+</Rung>
+<Rung Number="28" Type="N">
+<Text>
+<![CDATA[XIC(Force_Unlatch)OTU(Messages_OK);]]>
+</Text>
+</Rung>
+<Rung Number="29" Type="N">
+<Text>
+<![CDATA[RET(Messages_OK);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[***CONTROLLER LOGGING SERVICE SAMPLE CODE***
+
+***The controller runtime logging feature allows the capability to log high level runtime controller configuration changes to it's internal memory. These changes include download, online edits occurred, forces enabled/disabled, mode changes, and major faults. The Logix Controller will temporarily store up to 100 log entries in its internal memory, a separate memory from the user memory.  When the log is 80% full in the controller it can automatically write to a file on CompactFlash or the user can use a Message instruction to force a write to CompactFlash at any time.  The log is preserved through downloads and memory clears. In an event of a power loss (without battery backup) or controller firmware update, the log records are erased. These logs can be used to help reconstruct how a machine ended up in its current state. This sample code demonstrates this feature.
+
+***The user has the option to transfer the logs to the controllers removable compact flash card (100 max records in a log).  Once the log is written, the entries will be cleared in RAM. The log will be written to the removable media at  where XXXXXXXX is the 8 digit  product serial number of the controller and YY_ZZ is the version number of the firmware. The file will be called ControllerLog_yyy.txt where yy is a sequential number from 000 to 999. 
+To view the entries, transfer the files to from the CompactFlash card to a PC using a CompactFlash card reader.
+
+***This feature is supported only in ControlLogix and GuardLogix controllers with CompactFlash. Note: It is recommended to use a controller that has front loaded ControlFlash memory insertion - such as ControlLogix L63 Series B.  Proper use of this feature requires a battery in the controller and a removable media card with space available.
+]]>
+</Comment>
+<Text>
+<![CDATA[AFI()NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Step 1: SET UP CONTROLLER SLOT NUMBER
+
+ Enter the Slot number of the ControlLogix or GuardLogix chassis in which your controller resides below in the ControllerSlot tag.  
+The default is slot 0.]]>
+</Comment>
+<Text>
+<![CDATA[DTOS(ControllerSlot,SlotString);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[If the controller slot number entered is less than or equal to 16. If you enter a number greater than 16, the ladder logic will not execute.
+
+IMPORTANT: Verify that the slot number you enter is correct. If it is not correct the communications path will not be set correctly and the MSG instructions will error.]]>
+</Comment>
+<Text>
+<![CDATA[GRT(ControllerSlot,16)OTL(ControllerSlot_Invalid);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Step 2: INITIALIZE 
+
+THIS ROUTINE INITIALIZES ALL THE PARAMETERS AND PATHS OF THE MSG INSTRUCTIONS.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(ControllerSlot_Invalid)GEQ(ControllerSlot,0)LEQ(ControllerSlot,16)JSR(Initialize,1,ControllerSlot,Messages_OK);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Step 3: COMMANDS
+
+Double click on this routine in the controller organizer - this routine contains message instructions (commands) to perform the following:
+                     -set up manual write to the compact flash card                                     
+                                                                            -set up automatic write to the compact flash card (write when the internal controller memory is 80% full)
+                                         -enable or disable the the feature to log I/O forcing                                                   
+                                        -set up a custom logging entry                                                                                  
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Messages_OK)JSR(Commands,0);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[COUNTERS  CONTAINS ALL THE LOG COUNTER INFORMATION
+
+To monitor these counters, you can set up the following tags in QuickWatch pane:
+           -ExecModifyCount
+-TotalCount
+      -UnsavedCount
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(Counters,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

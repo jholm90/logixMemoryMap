@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="JsrScaleN50" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Mon Aug 31 03:03:06 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="JsrScaleN50" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Mon Aug 31 03:03:06 2026" LastModifiedDate="Mon Aug 31 03:03:06 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX00,0);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX01,0);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX02,0);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX03,0);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX04,0);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX05,0);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX06,0);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX07,0);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX08,0);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX09,0);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX10,0);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX11,0);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX12,0);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX13,0);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX14,0);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX15,0);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX16,0);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX17,0);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX18,0);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX19,0);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX20,0);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX21,0);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX22,0);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX23,0);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX24,0);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX25,0);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX26,0);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX27,0);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX28,0);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX29,0);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX30,0);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX31,0);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX32,0);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX33,0);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX34,0);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX35,0);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX36,0);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX37,0);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX38,0);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX39,0);]]></Text>
+              </Rung>
+              <Rung Number="40" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX40,0);]]></Text>
+              </Rung>
+              <Rung Number="41" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX41,0);]]></Text>
+              </Rung>
+              <Rung Number="42" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX42,0);]]></Text>
+              </Rung>
+              <Rung Number="43" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX43,0);]]></Text>
+              </Rung>
+              <Rung Number="44" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX44,0);]]></Text>
+              </Rung>
+              <Rung Number="45" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX45,0);]]></Text>
+              </Rung>
+              <Rung Number="46" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX46,0);]]></Text>
+              </Rung>
+              <Rung Number="47" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX47,0);]]></Text>
+              </Rung>
+              <Rung Number="48" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX48,0);]]></Text>
+              </Rung>
+              <Rung Number="49" Type="N">
+                <Text><![CDATA[JSR(JsrScaleTgtXXX49,0);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+<Routine Name="JsrScaleTgtXXX00" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX01" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX02" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX03" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX04" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX05" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX06" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX07" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX08" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX09" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX10" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX11" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX12" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX13" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX14" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX15" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX16" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX17" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX18" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX19" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX20" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX21" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX22" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX23" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX24" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX25" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX26" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX27" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX28" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX29" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX30" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX31" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX32" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX33" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX34" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX35" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX36" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX37" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX38" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX39" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX40" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX41" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX42" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX43" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX44" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX45" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX46" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX47" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX48" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+<Routine Name="JsrScaleTgtXXX49" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[NOP();]]></Text>
+              </Rung></RLLContent></Routine>
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

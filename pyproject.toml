@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "l5x-memory-analyzer"
+version = "0.0.1"
+description = "WinDirStat for CompactLogix controller memory -- parses an L5X export and shows where the memory budget goes."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+# openpyxl is a core dependency, not an extra: the UI and CLI both offer
+# XLSX export as a first-class button, and shipping it optional meant the
+# feature failed at click time with a "pip install openpyxl" error rather
+# than at install time.
+dependencies = ["pyyaml>=6.0", "flask>=3.0", "openpyxl>=3.1", "waitress>=3.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+# Kept as a no-op alias so an existing `pip install .[xlsx]` still resolves.
+xlsx = []
+
+[project.scripts]
+l5x-memory-analyzer = "l5x_memory_analyzer.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+l5x_memory_analyzer = ["sizing/memory_model.yaml", "sizing/controller_budgets.yaml", "ui/static/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

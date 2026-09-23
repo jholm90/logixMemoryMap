@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="BridgePlaceholderTen" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Wed Sep 02 22:32:06 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="BridgePlaceholderTen" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Wed Sep 02 22:32:06 2026" LastModifiedDate="Wed Sep 02 22:32:06 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Bridge1" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.1" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge2" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.2" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge3" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.3" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge4" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.4" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge5" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.5" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge6" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.6" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge7" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.7" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge8" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.8" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge9" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.9" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+<Module Name="Bridge10" CatalogNumber="ETHERNET-BRIDGE" Vendor="1" ProductType="0" ProductCode="23" Major="1" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<EKey State="Disabled" />
+<Ports>
+<Port Id="1" Type="CIPBus" Upstream="false">
+<Bus Size="100" />
+</Port>
+<Port Id="2" Address="192.168.200.10" Type="Ethernet" Upstream="true" />
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N"><Text><![CDATA[NOP();]]></Text></Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

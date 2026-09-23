@@ -1,0 +1,2580 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="SLC_status" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:46:43 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="SLC_status" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:46:34 2018" LastModifiedDate="Fri Jan 19 07:46:35 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="_status_BigFaults_type" Family="NoFamily" Class="User">
+<Members>
+<Member Name="TimeLow" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[lower 32 timestamp]]>
+</Description>
+</Member>
+<Member Name="TimeHigh" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[upper 32 timestamp]]>
+</Description>
+</Member>
+<Member Name="Type" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Fault type]]>
+</Description>
+</Member>
+<Member Name="Code" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Unique code for fault]]>
+</Description>
+</Member>
+<Member Name="Info" DataType="DINT" Dimension="8" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[fault specific info]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+<DataType Name="_Status_Diag_counters_type" Family="NoFamily" Class="User">
+<Members>
+<Member Name="bad_crc" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="timeout" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="rtry_exhaust" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="illegal_proto" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="bad_LSAP" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="no_memory" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="too_short" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="too_long" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="some_other" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="token_timeout" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="token_retry" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="claim_sequence" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="token_claim" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="bad_frame" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="illegal_nak_proto" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="NAK_bad_LSAP" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="NAK_no_mem" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="frame_too_short" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="frame_too_long" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="retrans_frame" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="frame_aborted" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="msg_sent_ok" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="msg_rcvd_ok" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="cmd_sent_ok" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="reply_rcvd_ok" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="cmd_rcvd_OK" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="reply_sent_ok" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="cant_send_reply" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="duplicate_node" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="dupl_token" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="out_of_memory" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="underrun" DataType="SINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="_Status_majorevents_type" Family="NoFamily" Class="User">
+<Members>
+<Member Name="TimeStamp" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="error_type" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Fault_code" DataType="INT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="fault_specific" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Analog_OF6CI" CatalogNumber="1756-OF6CI" Vendor="1" ProductType="10" ProductCode="4" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="5" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="304">
+<Data>34 01 00 00 10 00 00 00 01 00 00 00 00 00 00 00 
+59 59 59 59 59 59 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 A0 41 00 00 00 00 00 00 A0 41 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_AO6_Float:C:0">
+<DataValueMember Name="ProgToFaultEn" DataType="BOOL" Value="0"/>
+<StructureMember Name="Ch0Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch1Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch2Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch3Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch4Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch5Config" DataType="AB:1756_AO6_Struct:C:0">
+<DataValueMember Name="HoldForInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToRun" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToProg" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RampToFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MaxRampRate" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="FaultValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ProgValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Float" RPI="25000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_AO6_Float:I:0">
+<DataValueMember Name="ChannelFaults" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Fault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ModuleFaults" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="AnalogGroupFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OutGroupFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Calibrating" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch0NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch1NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch2NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch3NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch4NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Status" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Ch5NotANumber" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5InHold" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5RampAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5LLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HLimitAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch1Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch2Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch3Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch4Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch5Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="RollingTimestamp" DataType="INT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_AO6_Float:O:0">
+<DataValueMember Name="Ch0Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch1Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch2Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch3Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch4Data" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Ch5Data" DataType="REAL" Radix="Float" Value="0.0"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="Analog_IF6I" CatalogNumber="1756-IF6I" Vendor="1" ProductType="10" ProductCode="1" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="8" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="304">
+<Data>34 01 00 00 10 00 00 00 01 00 64 00 00 00 00 00 
+41 41 41 41 41 41 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 20 C1 00 00 20 41 00 00 20 C1 00 00 20 41 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:C:0">
+<DataValueMember Name="RemoteTermination" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CJDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TempMode" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RealTimeSample" DataType="INT" Radix="Decimal" Value="100"/>
+<DataValueMember Name="CJOffset" DataType="REAL" Radix="Float" Value="0.0"/>
+<StructureMember Name="Ch0Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch1Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch2Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch3Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch4Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Ch5Config" DataType="AB:1756_AI6_Struct:C:0">
+<DataValueMember Name="RangeTypeNotch" DataType="INT" Radix="Hex" Value="16#0002"/>
+<DataValueMember Name="AlarmDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProcessAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RateAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DigitalFilter" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TenOhmOffset" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="RateAlarmLimit" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="LowSignal" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighSignal" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LowEngineering" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HighEngineering" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="LLAlarmLimit" DataType="REAL" Radix="Float" Value="-10.0"/>
+<DataValueMember Name="HHAlarmLimit" DataType="REAL" Radix="Float" Value="10.0"/>
+<DataValueMember Name="AlarmDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CalBias" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Float" RPI="100000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_AI6_Float:I:0">
+<DataValueMember Name="ChannelFaults" DataType="INT" Radix="Binary" Value="2#0000_0000_0011_1111"/>
+<DataValueMember Name="Ch0Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch1Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Fault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ModuleFaults" DataType="INT" Radix="Binary" Value="2#1100_0000_0000_0000"/>
+<DataValueMember Name="AnalogGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="InGroupFault" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Calibrating" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch0CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch1Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch1CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch1RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch1LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch2CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch2LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch3CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch3LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch4CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch4LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch4HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5Status" DataType="SINT" Radix="Binary" Value="2#0010_0101"/>
+<DataValueMember Name="Ch5CalFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Underrange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5Overrange" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5RateAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5LAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch5LLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch5HHAlarm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Ch0Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch1Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch2Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch3Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch4Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="Ch5Data" DataType="REAL" Radix="Float" Value="10.546881"/>
+<DataValueMember Name="RollingTimestamp" DataType="INT" Radix="Decimal" Value="415"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+<Module Name="ACInput_IA8D" CatalogNumber="1756-IA8D" Vendor="1" ProductType="7" ProductCode="1" Major="2" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="9" Type="ICP" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="40">
+<Data>2C 00 00 00 11 00 00 00 01 00 00 00 00 00 00 00 
+01 09 00 00 00 00 00 00 FF 00 00 00 FF 00 00 00 
+FF 00 00 00 00 00 00 00 FF 00 00 00 FF 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_AC_Diag:C:0">
+<DataValueMember Name="DiagCOSDisable" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterOffOn_0_7" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="FilterOnOff_0_7" DataType="SINT" Radix="Decimal" Value="9"/>
+<DataValueMember Name="COSOnOffEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="COSOffOnEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="FaultLatchEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="OpenWireEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="FieldPwrLossEn" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="StandardInput" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated"><Structure DataType="AB:1756_DI_AC_Diag:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<ArrayMember Name="CSTTimestamp" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="38167521"/>
+<Element Index="[1]" Value="-2147483648"/>
+</ArrayMember>
+<DataValueMember Name="OpenWire" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+<DataValueMember Name="FieldPwrLoss" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_1111_1111"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Count_2" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 C8 AF 00 00 25 1A 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="45000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="6693"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="major_faults" TagType="Base" DataType="_Status_majorevents_type">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="_Status_majorevents_type">
+<DataValueMember Name="TimeStamp" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="error_type" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Fault_code" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="fault_specific" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="RIO_baudrate" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="2" AttributeNumber="16#0008" LocalIndex="0"/>
+</Data>
+</Tag>
+<Tag Name="time_2" TagType="Base" DataType="TIMER">
+<Data>36 83 20 C0 88 13 00 00 B0 04 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="5000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="1200"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="_ModuleStatus" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>01 42</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="16897"/>
+</Data>
+</Tag>
+<Tag Name="_Status_active_tbl" TagType="Base" DataType="SINT" Dimensions="9" Radix="Decimal">
+<Data>02 02 00 01 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="SINT" Dimensions="9" Radix="Decimal">
+<Element Index="[0]" Value="2"/>
+<Element Index="[1]" Value="2"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="1"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="_Status_baud_rate" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="1" AttributeNumber="16#0003" LocalIndex="0" DestinationTag="_Status_ch1_baud"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_ch1_baud" TagType="Base" DataType="SINT" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_ch2_baud" TagType="Base" DataType="SINT" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_chn_state" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="_Status_counters" TagType="Base" DataType="_Status_Diag_counters_type">
+<Data>00 00 00 00 00 00 00 00 00 00 00 0C 0C 00 00 00 
+00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="_Status_Diag_counters_type">
+<DataValueMember Name="bad_crc" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="timeout" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="rtry_exhaust" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="illegal_proto" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="bad_LSAP" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="no_memory" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="too_short" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="too_long" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="some_other" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="token_timeout" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="token_retry" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="claim_sequence" DataType="SINT" Radix="Decimal" Value="12"/>
+<DataValueMember Name="token_claim" DataType="SINT" Radix="Decimal" Value="12"/>
+<DataValueMember Name="bad_frame" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="illegal_nak_proto" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="NAK_bad_LSAP" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="NAK_no_mem" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="frame_too_short" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="frame_too_long" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="retrans_frame" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="frame_aborted" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="msg_sent_ok" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="msg_rcvd_ok" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="cmd_sent_ok" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="reply_rcvd_ok" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="cmd_rcvd_OK" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="reply_sent_ok" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="cant_send_reply" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="duplicate_node" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="dupl_token" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="out_of_memory" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="underrun" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="_Status_dupl_node" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="1" AttributeNumber="16#0007" LocalIndex="0" DestinationTag="_Status_counters"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_inhibit" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#0001" ObjectType="16#0080" TargetObject="1" AttributeNumber="16#0008" LocalIndex="0" DestinationTag="_Status_inhibit_numb"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_inhibit_numb" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_last_state" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="1" AttributeNumber="16#0009" LocalIndex="0" DestinationTag="_Status_chn_state"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_node" TagType="Base" DataType="SINT" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_node_addr" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="1" AttributeNumber="16#0001" LocalIndex="0" DestinationTag="_Status_node"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_node_tbl" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#000e" ObjectType="16#00a5" TargetObject="1" AttributeNumber="16#0008" LocalIndex="0" DestinationTag="_Status_active_tbl"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_results" TagType="Base" DataType="_status_BigFaults_type">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="_status_BigFaults_type">
+<DataValueMember Name="TimeLow" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="TimeHigh" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Type" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Code" DataType="INT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="Info" DataType="DINT" Dimensions="8" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="_Status_RIO" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Generic" RequestedLength="0" ConnectedFlag="2" ConnectionPath="1, 4" CommTypeCode="0" ServiceCode="16#0001" ObjectType="16#0080" TargetObject="1" AttributeNumber="16#0018" LocalIndex="0" DestinationTag="_Status_RIO_rack"
+/>
+</Data>
+</Tag>
+<Tag Name="_Status_RIO_rack" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="two" TestEdits="false" MainRoutineName="second_one" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="second_one" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[TON(time_2,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(time_2.DN)[CTU(Count_2,?,?) ,RES(time_2) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="_Status" TestEdits="false" MainRoutineName="MainRoutine" FaultRoutineName="fault_program" Disabled="false">
+<Tags>
+<Tag Name="duplicate" TagType="Base" DataType="INT" Dimensions="36" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="INT" Dimensions="36" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="major_faults" TagType="Base" DataType="_Status_majorevents_type">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="_Status_majorevents_type">
+<DataValueMember Name="TimeStamp" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="error_type" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Fault_code" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="fault_specific" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="msg_cnt" TagType="Base" DataType="COUNTER">
+<Data>00 00 00 00 03 D9 00 00 04 5E 00 00</Data>
+<Data Format="Decorated"><Structure DataType="COUNTER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="55555"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="24068"/>
+<DataValueMember Name="CU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OV" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MyMajorFaults" TagType="Base" DataType="DINT" Dimensions="11" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="11" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="my_faults" TagType="Base" DataType="DINT" Dimensions="11" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="11" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="S_0" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Tag1" TagType="Base" DataType="DINT" Dimensions="100" Radix="Decimal">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="100" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+<Element Index="[50]" Value="0"/>
+<Element Index="[51]" Value="0"/>
+<Element Index="[52]" Value="0"/>
+<Element Index="[53]" Value="0"/>
+<Element Index="[54]" Value="0"/>
+<Element Index="[55]" Value="0"/>
+<Element Index="[56]" Value="0"/>
+<Element Index="[57]" Value="0"/>
+<Element Index="[58]" Value="0"/>
+<Element Index="[59]" Value="0"/>
+<Element Index="[60]" Value="0"/>
+<Element Index="[61]" Value="0"/>
+<Element Index="[62]" Value="0"/>
+<Element Index="[63]" Value="0"/>
+<Element Index="[64]" Value="0"/>
+<Element Index="[65]" Value="0"/>
+<Element Index="[66]" Value="0"/>
+<Element Index="[67]" Value="0"/>
+<Element Index="[68]" Value="0"/>
+<Element Index="[69]" Value="0"/>
+<Element Index="[70]" Value="0"/>
+<Element Index="[71]" Value="0"/>
+<Element Index="[72]" Value="0"/>
+<Element Index="[73]" Value="0"/>
+<Element Index="[74]" Value="0"/>
+<Element Index="[75]" Value="0"/>
+<Element Index="[76]" Value="0"/>
+<Element Index="[77]" Value="0"/>
+<Element Index="[78]" Value="0"/>
+<Element Index="[79]" Value="0"/>
+<Element Index="[80]" Value="0"/>
+<Element Index="[81]" Value="0"/>
+<Element Index="[82]" Value="0"/>
+<Element Index="[83]" Value="0"/>
+<Element Index="[84]" Value="0"/>
+<Element Index="[85]" Value="0"/>
+<Element Index="[86]" Value="0"/>
+<Element Index="[87]" Value="0"/>
+<Element Index="[88]" Value="0"/>
+<Element Index="[89]" Value="0"/>
+<Element Index="[90]" Value="0"/>
+<Element Index="[91]" Value="0"/>
+<Element Index="[92]" Value="0"/>
+<Element Index="[93]" Value="0"/>
+<Element Index="[94]" Value="0"/>
+<Element Index="[95]" Value="0"/>
+<Element Index="[96]" Value="0"/>
+<Element Index="[97]" Value="0"/>
+<Element Index="[98]" Value="0"/>
+<Element Index="[99]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="_DeviceName" TagType="Base" DataType="SINT" Dimensions="33" Radix="Decimal">
+<Description>
+<![CDATA[Catalog number of controller as an ASCII string]]>
+</Description>
+<Data>1F 31 37 35 36 2D 4C 35 35 2F 41 20 31 37 35 36 
+2D 4D 31 36 2F 41 20 4C 4F 47 49 58 35 35 35 35 
+00</Data>
+<Data Format="Decorated"><Array DataType="SINT" Dimensions="33" Radix="Decimal">
+<Element Index="[0]" Value="31"/>
+<Element Index="[1]" Value="49"/>
+<Element Index="[2]" Value="55"/>
+<Element Index="[3]" Value="53"/>
+<Element Index="[4]" Value="54"/>
+<Element Index="[5]" Value="45"/>
+<Element Index="[6]" Value="76"/>
+<Element Index="[7]" Value="53"/>
+<Element Index="[8]" Value="53"/>
+<Element Index="[9]" Value="47"/>
+<Element Index="[10]" Value="65"/>
+<Element Index="[11]" Value="32"/>
+<Element Index="[12]" Value="49"/>
+<Element Index="[13]" Value="55"/>
+<Element Index="[14]" Value="53"/>
+<Element Index="[15]" Value="54"/>
+<Element Index="[16]" Value="45"/>
+<Element Index="[17]" Value="77"/>
+<Element Index="[18]" Value="49"/>
+<Element Index="[19]" Value="54"/>
+<Element Index="[20]" Value="47"/>
+<Element Index="[21]" Value="65"/>
+<Element Index="[22]" Value="32"/>
+<Element Index="[23]" Value="76"/>
+<Element Index="[24]" Value="79"/>
+<Element Index="[25]" Value="71"/>
+<Element Index="[26]" Value="73"/>
+<Element Index="[27]" Value="88"/>
+<Element Index="[28]" Value="53"/>
+<Element Index="[29]" Value="53"/>
+<Element Index="[30]" Value="53"/>
+<Element Index="[31]" Value="53"/>
+<Element Index="[32]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="_Status_battery_low" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:5/11 - Battery is Low]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_carry" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:0/0 - Arithmetic flag, carry]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_cntrl_rev" TagType="Base" DataType="CONTROL">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="_Status_Day" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:39 - Processor Clock  Day]]>
+</Description>
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="_Status_edits_disabled" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:33 - Processor test edits are
+disabled]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_edits_enabled" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[ S:33/11 & 12 - Processor test edits are enabled]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Fault_code" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:6 -This is the Major Fault Record Code.]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Fault_handler" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Fault routine does not exist]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Fault_info" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:6 Major Fault Record Information]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Fault_type" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:6  Fault Type]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_first_scan" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1/15 - This is the first scan bit]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_forces" TagType="Base" DataType="INT" Radix="Decimal">
+<Description>
+<![CDATA[Forces on Processor]]>
+</Description>
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_forces_enabled" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1/05 - Forces are enabled]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_forces_present" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1/06 - Forces are present]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Hour" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:40 - Processor Clock Hour]]>
+</Description>
+<Data>03 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="3"/>
+</Data>
+</Tag>
+<Tag Name="_Status_key_prog" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1 Processor in PROGRAM
+Mode]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_key_remote" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1 Processor in REMOTE
+Mode]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_key_run" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1 Processor in RUN Mode]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Logix_timeslice" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:77 - Time Slice for Controller]]>
+</Description>
+<Data>0A 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="10"/>
+</Data>
+</Tag>
+<Tag Name="_Status_majorevents_type" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_majorfaults" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_max_Scantime" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:22 - This is the Maximum scan time for the complete program]]>
+</Description>
+<Data>BA 03 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="954"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Microsec" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Processor Clock Microseconds
+]]>
+</Description>
+<Data>A1 31 04 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="274849"/>
+</Data>
+</Tag>
+<Tag Name="_Status_minorfaults" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>10 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="16"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Minute" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:41 - Processor Clock  Minute]]>
+</Description>
+<Data>33 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="51"/>
+</Data>
+</Tag>
+<Tag Name="_Status_mode" TagType="Base" DataType="INT" Radix="Decimal">
+<Description>
+<![CDATA[mode status bits]]>
+</Description>
+<Data>60 31</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="12640"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Month" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:38 Processor Clock Month]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_overflow" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:0/1 - Arithmetic flag, overflow]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Periodic_task" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:5/10 - Periodic Task overlap/not completed]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Power_loss" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[ Start Up protection fault.]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Program_time" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[This is the last scan time for the complete program]]>
+</Description>
+<Data>68 02 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="616"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Prog_Scantime" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[This is the program scan time]]>
+</Description>
+<Data>46 02 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="582"/>
+</Data>
+</Tag>
+<Tag Name="_Status_rev" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>07 08</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="2055"/>
+</Data>
+</Tag>
+<Tag Name="_Status_rev_revision" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>08 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="8"/>
+</Data>
+</Tag>
+<Tag Name="_Status_rev_Series" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>07 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="7"/>
+</Data>
+</Tag>
+<Tag Name="_Status_RS232_error" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:5/14 - Serial Port Error]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Seconds" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:42 - Processor Clock Seconds]]>
+</Description>
+<Data>0A 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="10"/>
+</Data>
+</Tag>
+<Tag Name="_Status_sign" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:0/3 - Arithmetic flag, Sign- result is negative]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Stat" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_taskscan_time" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:3L - Last Scan time for a particular task]]>
+</Description>
+<Data>BC 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="188"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Task_LastScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:43 - Last Scan Time for a Task]]>
+</Description>
+<Data>BE 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="190"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Task_MaxScan" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Maximum Scan Time for a Task]]>
+</Description>
+<Data>E9 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="489"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Task_rate" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:30 Task Time Setpoint]]>
+</Description>
+<Data>10 27 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="10000"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Task_Scantime" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:3L - Particular task scan time]]>
+</Description>
+<Data>BC 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="188"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Task_watchdog" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:3H Task Watchdog testpoint]]>
+</Description>
+<Data>20 A1 07 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="500000"/>
+</Data>
+</Tag>
+<Tag Name="_Status_test_edits" TagType="Base" DataType="SINT" Radix="Decimal">
+<Description>
+<![CDATA[Processor Test Edits]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_test_mode" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:1 Processor in TEST Mode]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_time" TagType="Base" DataType="DINT" Dimensions="7" Radix="Decimal">
+<Description>
+<![CDATA[Status file for Clock & Date]]>
+</Description>
+<Data>CE 07 00 00 01 00 00 00 03 00 00 00 03 00 00 00 
+33 00 00 00 09 00 00 00 FF D6 09 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="7" Radix="Decimal">
+<Element Index="[0]" Value="1998"/>
+<Element Index="[1]" Value="1"/>
+<Element Index="[2]" Value="3"/>
+<Element Index="[3]" Value="3"/>
+<Element Index="[4]" Value="51"/>
+<Element Index="[5]" Value="9"/>
+<Element Index="[6]" Value="644863"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="_Status_Watchdog_faulted" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[ Major fault on Watchdog]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="_Status_Year" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[S:37 Processor Clock  Year]]>
+</Description>
+<Data>CE 07 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1998"/>
+</Data>
+</Tag>
+<Tag Name="_Status_zero" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[S:0/2 - Arithmetic flag, zero]]>
+</Description>
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="fault_program" Type="RLL"/>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[The ControlLogix controller does not use a Processor Status file like the PLC5 and SLC500 programmable controllers do.  To get some status information from the ControlLogix controller and it's modules, the GSV (Get System Value) and SSV (Set System Value) instructions are used.  Another difference between the ControlLogix controller and SLC500's is that in the SLC500 the status file was updated automatically in the housekeeping.  With the ControlLogix controller this automatic update in housekeeping is not done.  This is to cut down on housekeeping time.  So, keep in mind, get this status information, ladder logic needs to be created and programmed for when and how the information is needed. 
+
+This program was devised to show what information from the PLC5 status file can be used in the ControlLogix controller.  It shows examples on how to get or set the information for a ControlLogix controller.  It can be used as examples.  It is set up to allow a copy/paste into another file.  Unfortunately,  MSG instructions may need to be re-configured.  All set-up information for the MSG instructions are explained in their appropriate rung comments.  
+
+NOTE: The MSG, GSV and SSV instructions utilize objects. The Logix5000 Controllers General Instruction Set Reference Manual shows GSV and SSV examples with [Object class] and [Object name] fields. The RSLogix5000 programming software terminology has been changed to {Class name] for [Object class] and [Instance name] for [Object name] respectively.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[S:0
+Shows ControlLogix version of the Arithmetic Flags]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S0_Arithmetic_Flags,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[S:1
+Shows ControlLogix version of the Processor Status and Flags.
+Included are: 
+S:1/00 to S:1/04  Processor in run mode,  Processor in test mode, Processor in program mode, Mode select switch in Remote position
+S:1/05 Forces enabled
+S:1/06 Forces installed
+S:1/15 First Pass Bit
+ S:33 Processor has test edits enabled
+
+ControlLogix either does not have the functionality or need for the following bits:  
+S:1/7 Comms Active Bit Channel 1
+S:1/08 Fault Override at PowerUp Bit 
+S:1/09 Start Up protection Fault Bit
+S:1/10 Load memory module on Memory Error bit
+S:1/11 Load Memory Module Always Bit
+S:1/12 Load Memory Module and run bit
+S:1/13 Major error haulted bit
+S:1/14 Access Denied Bit (OEM) Lock
+
+S:2/1 STI Enabled Bit
+S:2/2 STI Executing Bit
+S:2/3 Index Addressing File Range bit
+S:2/4 Saved with Single Step Test Enabled Bit
+S:2/5 Incoming Command Pending Bit Channel 1
+S:2/6 Message Reply Pending Bit Channel 1
+S:2/7 Outgoing Message Command Pending Bit Channel 1
+S:2/8 CIF Addressing Mode
+S:2/9 Memory Module Program Compare
+S:2/10 STI Resolution Selection Bit
+S:2/11 DII Pending Bit
+S:2/12 DII Enabled Bit
+S:2/13 DII Executing Bit
+S:2/14 math overflow selection bit
+S:2/15 Communications Serviicing Selection Bit
+    ]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S1_S2_S33_Processor_Status,0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[S:9 Ethernet Daughter Board Firmware Series is not available
+S:10 Ethernet Daughter Board Firmware Revision is not available
+S:9 & S:10 Active Nodes on DH Link
+S:11 & S:12 I/O Slot Enables is not available
+S:13 & S:14 Math Register is not available
+S:15L Node Address
+S:15H Baud Rate
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S9_S15_DH_ENET,0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[S:5 Minor Fault 
+Included are
+S:5/11 Battery is low
+S:5/14 Channel 0 Modem Lost
+S:5/10 Arithmetic overflow
+
+ControlLogix either does not have the functionality or need for the following bits:
+S:5/01 Reserved
+S:5/2 Control Register error bit
+S:5/3 Major error Detected while executing user fault routine bit
+S:5/4 M0-M1 referenced on disabled slot bit
+S:5/5 S:5/7 Reserved
+S:5/8 Memory Module Boot bit
+S:5/9 Memory Module Password Mismatch bit
+S:5/12 DII Overflow Bit
+S:5/13 Unsuccessful Operating system load was attempted
+S:5/15 ASCI String Manipulation Error]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S5_Minor_Faults,0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[S:6 Major Fault Codes
+
+
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S6_Major_Faults,0);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[S37 - S42 Processor Date & Time
+
+Included are S:37 Processor Clock Year
+S:38 Processor Clock Month
+S:39 Processor Clock Day
+S:40 Processor Clock Hour
+S:41 Processor Clock Minute
+S:42 Processor Clock Second]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S37_S42_Processor_Clock,0);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[S:3L Current Scan Time
+S:3H Watchdog Scan Time
+S:4 Free Running Clock
+S:22 Maximum Observed Scan Time
+S:23 Average Scan Time is not available]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S3_S4_S22_S23_ScanTimes,0);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[S:36 - S:52 are PII information which is not available
+S:55 & S:56 are PII information which is not available
+S:53 STI (Periodic Task) time
+S:54 STI (Periodic Task) maximum scan time
+S:57 User program checksum is not available
+S:58 Reserved is not applicable
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S45_S56_DII_Stuff,0);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[S:67 - S:82 Channel 0 Active Node Table is not applicable
+S:83 - S:86 Channel 1 Active Node Table is not applicable
+S:87 - S:98 Reserved is not applicable
+S:99 Global Status Word is not applicable
+S:100 - S:163 Global Status file is not applicable]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S67_S163_NodeTable_Global,0);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[S:24 Index Register  is not available
+S:25 & S:26 I/O Interrupt Pending  is not available
+S:27 & S:28 I/O Interrupt Enabled  is not available
+S:29 User Fault Routine File Number is not available
+S:32 I/O Interrrupt Executing  is not available
+S:33 see S1_S2_S33 _Processor_Status routine
+S:34 is Not available
+S:35 see S3_S4_S22_S23_ScanTimes routine
+S:36 is not available
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S24_S36_S44_Extended_IO_Misc,0);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[S:30 Selectable Interrupt (SII) - Setpoint
+S:31 SII File Number is not available
+S:43 SII Time
+S:44 I/O Event Interrupt
+S:45 Discrete Input Interrupt (DII)
+
+]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S30_S31_S43_STI,0);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Comment>
+<![CDATA[S:45 - S:56 DII (Discrete Input Interrupt) does not exist on the ControlLogix controller.]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S45_S56_DII_Stuff,0);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Comment>
+<![CDATA[S:61 Processor Series
+S:62 Processor Revision
+
+S:57 Operating System Catalog Number is not available
+S:58 Operating system Series is not available
+S:59 Operating system FRN is not available
+S:60 Processor Catalog Number is not available
+S:63 User Program Type is not available
+S:64 User Program functionality index is not available
+S:65 User RAM size is not available
+S:66 Flash EEPROM Size is not available]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S57_S66_Processor_specifics,0);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Comment>
+<![CDATA[S:7 & S:8  Suspend Code/Suspend File
+S:16 & S:17 Test Single Step - Start Step on -- Rung File
+S:18 & S:19 Test Single Step - Breakpoint - Rung/File
+S:20  & S:21 Test - Fault/Powerdown - Rung File
+
+ControlLogix does not support this functionality]]>
+</Comment>
+<Text>
+<![CDATA[JSR(S7_S8_S16_S21_Debug,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S0_Arithmetic_Flags" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[SLC500's S:0/2 Arithmetic zero bit
+Use the already defined s:z.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(s:z)OTE(_Status_zero);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:0/1  Arithmetic Overflow bit
+Use the already defined s:v.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(s:v)OTE(_Status_overflow);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SLC500's S:0/3 Arithmetic negative sign bit.
+Use the already defined s:n.
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(s:n)OTE(_Status_sign);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[SLC500's S:0/0 Arithmetic carry bit.
+Use the already defined s:c.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(s:c)OTE(_Status_carry);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S1_S2_S33_Processor_Status" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:1
+Shows ControlLogix version of the Processor Status and Flags.
+Included are: 
+S:1/00 to S:1/04  Processor in run mode,  Processor in test mode, Processor in program mode, Mode select switch in Remote position
+S:1/05 Forces enabled
+S:1/06 Forces installed
+S:1/15 First Pass Bit
+ S:33 Processor has test edits enabled
+
+ControlLogix either does not have the functionality or need for the following bits:  
+S:1/7 Comms Active Bit Channel 1
+S:1/08 Fault Override at PowerUp Bit 
+S:1/09 Start Up protection Fault Bit
+S:1/10 Load memory module on Memory Error bit
+S:1/11 Load Memory Module Always Bit
+S:1/12 Load Memory Module and run bit
+S:1/13 Major error haulted bit
+S:1/14 Access Denied Bit (OEM) Lock
+
+S:2/1 STI Enabled Bit
+S:2/2 STI Executing Bit
+S:2/3 Index Addressing File Range bit
+S:2/4 Saved with Single Step Test Enabled Bit
+S:2/5 Incoming Command Pending bit Channel 1
+S:2/6 Message Reply Pending Bit Channel 1
+S:2/7 Outgoing Message Command Pending Bit Channel 1
+S:2/8 CIF Addressing Mode
+S:2/9 Memory Module Program Compare
+S:2/10 STI Resolution Selection Bit
+S:2/11 DII Pending Bit
+S:2/12 DII Enabled Bit
+S:2/13 DII Executing Bit
+S:2/14 math overflow selection bit
+S:2/15 Communications Serviicing Selection Bit
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1 Bits 0-4 can determine whether the controller is in run mode ,test mode, program mode or remote mode.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the ControllerDevice object and Status Attribute to get processor mode information.  Bits 12 - 15 are used for this information.  The next 4 rungs show how to use the GSV ControllerDevice object to read the proceesor mode information.  See the GSV/SSV ControllerDevice Object for specific details.
+    ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(CONTROLLERDEVICE,,Status,_Status_mode);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1 Bits 0-4 Run Mode
+Use with the GSV/SSV ControllerDevice Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_mode.13)XIC(_Status_mode.12)OTE(_Status_key_run);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1 Bits 0-4 Program Mode
+Use with the GSV/SSV ControllerDevice Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_mode.13)XIO(_Status_mode.12)OTE(_Status_key_prog);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1 Bits 0-4 Remote Mode
+Use with the GSV/SSV ControllerDevice Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_mode.13)XIC(_Status_mode.12)OTE(_Status_key_remote);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1 bits 0-4 Test Mode
+Use with the GSV/SSV ControllerDevice Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_mode.15)XIO(_Status_mode.14)OTE(_Status_test_mode);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1/5 (forces enabled)  & S:1/6 (forces present) bits.   
+Uses only  the GSV (Get System Value) command with the Module object and ForceStatus Attribute to get the forcing information.  A tag with a INT type will need to be created for the destination. Bit 0  will be analyzed to determine whether forces are installed and bit 1 will determine whether or not forces are enabled.  See the GSV/SSV Module Object for specific details.
+   ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(MODULE,,ForceStatus,_Status_forces);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1/06  Forces Present
+Use with the GSV Module Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_forces.0)OTE(_Status_forces_present);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1/05  Forces Enabled
+Use with the GSV Module Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_forces.1)OTE(_Status_forces_enabled);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1/15 First Scan bit
+Use the already defined s:fs.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(s:fs)OTE(_Status_first_scan);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[SLC500's S:33 bits 11 & 12 test edits enabled bit.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the Program object and DisableFlag Attribute to get test edits enabled information. A tag with a SINT type will need to be created for the destination. If the value is 0, then edits are enabled; if the value is 1, then edits are disabled.  See the GSV/SSV Program Object for specific details.
+   ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(PROGRAM,THIS,DISABLEFLAG,_Status_test_edits);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[SLC500's S:33 Bits 11 & 12  Test Edits Enabled
+Use with the GSV/SSV Program Object above.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(_Status_test_edits,0)OTE(_Status_edits_enabled);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Comment>
+<![CDATA[SLC500's S:33 Bits 11 & 12 Test Edits Enabled
+Use with the GSV/SSV Program Object above.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(_Status_test_edits,1)OTE(_Status_edits_disabled);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S24_S36_S44_Extended_IO_Misc" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:24 Index Register is not available
+S:25 & S:26 I/O Interrupt Pending  is not available
+S:27 & S:28 I/O Interrupt Enabled  is not available
+S:29 User Fault Routine File Number is not available
+S:32 I/O Interrrupt Executing  is not available
+S:33 (see S1_S2_S33 _Processor_Status routine)
+S:34 is not available
+S:35 see S3_S4_S22_S23_ScanTimes routine
+S:36 is not available
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S30_S31_S43_STI" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:30 Selectable Interrupt - Setpoint
+S:31 SII File Number is not available
+S:43 SII Time
+S:44 I/O Event Interrupt
+S:45 Discrete Input Interrupt
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[SLC500's S:30 STI (Periodic Task) Setpoint.   
+Use the GSV (Get System Value) command with the Task object and Rate Attribute to get or modify the setpoint value of a particular task.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Task Object for specific details. ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(TASK,MainTask,RATE,_Status_Task_rate);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:43 SII (Periodic Task) Scan Time.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the Task object and LastScanTime  Attribute to get or modify the setpoint value of the Last scan time of a particular task in microseconds.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Task Object for specific details. 
+   ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(TASK,SecondTask,LASTSCANTIME,_Status_Task_LastScan);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SII (PeriodicTask) Maximum Scan Time.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the Task object and MaxScanTime Attribute to get or modify the maximum scan time of a particular task.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Task Object for specific details. 
+   ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(TASK,SecondTask,MAXSCANTIME,_Status_Task_MaxScan);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S37_S42_Processor_Clock" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S37 - S42 Processor Date & Time
+
+Included are S:37 Processor Clock Year
+S:38 Processor Clock Month
+S:39 Processor Clock Day
+S:40 Processor Clock Hour
+S:41 Processor Clock Minute
+S:42 Processor Clock Second]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Use the GSV Wallclocktime object, DateTime attribute to get the data from the processor.  Use a MOV instruction with the appropriate array from the GSV to move the data into a location.  
+SLC500's S:37 - 42  Processor Date & Time.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the WallClockTime object and DataTime Attribute to get the Processor Data & Time information.   A tag with an array of 7 DINT types will  need to be created for the destination. See the GSV/SSV WallClockTime Object for specific details.]]>
+</Comment>
+<Text>
+<![CDATA[GSV(WALLCLOCKTIME,,DateTime,_Status_time[0]);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:37 - S:39 Processor Date
+Use the GSV Wallclocktime object above to get the Processor date information.  Use the MOV instruction with the appropriate array from the GSV to move the data into a location. Array[0] is year, Array[1] is month, and Array[2] is day.  
+   ]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(_Status_time[0],_Status_Year) ,MOV(_Status_time[1],_Status_Month) ,MOV(_Status_time[2],_Status_Day) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SLC500's S:40 - S:42 Processor Time
+Use the GSV Wallclocktime object above to get the Processor time information.  Use the MOV instruction with the appropriate array from the GSV to move the data into a location. Array[3] is hour, Array[4] is minute, and Array[5] is seconds.  There is also an Array[6] for microseconds.  ]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(_Status_time[3],_Status_Hour) ,MOV(_Status_time[4],_Status_Minute) ,MOV(_Status_time[5],_Status_Seconds) ,MOV(_Status_time[6],_Status_Microsec) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S3_S4_S22_S23_ScanTimes" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:3L Current Scan Time
+S:3H Watchdog Scan Time
+S:4 Free Running Clock
+S:22 Maximum Observed Scan Time
+S:23 Average Scan Time is not available]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[SLC500's S:1/14 Last Scan of Ladder.   
+Use the GSV (Get System Value) command with the Task object and LastScanTime Attribute to get the value of the last scan time of a particular task.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Task Object for specific details. ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(TASK,SecondTask,LASTSCANTIME,_Status_taskscan_time);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:3L  Last Scan Time of Task
+Use with the GSV Task Object above.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(_Status_taskscan_time,_Status_Task_Scantime);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SLC500's S:3H Watchdog Setpoint.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the Task object and WatchDog Attribute to get or modify the setpoint value of the watchdog  time of a particular task.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Task Object for specific details. ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(TASK,SecondTask,WATCHDOG,_Status_Task_watchdog);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Last Scan Time of the Program.   
+Use the GSV (Get System Value) command with the Program object and LastScanTime Attribute to get the value of the last scan time of the complete program.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Program Object for specific details. ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(PROGRAM,THIS,LASTSCANTIME,_Status_Prog_Scantime);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Last Scan Time of Program
+Use with the GSV Program Object (Class Name) above.]]>
+</Comment>
+<Text>
+<![CDATA[MOV(_Status_Prog_Scantime,_Status_Program_time);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[SLC500's S:22 Maximum Scan Time of a program.   
+Use the GSV (Get System Value) command with the Program object and MaxScanTime Attribute to get the value of the maximum scan time of a particular program.  A tag with a DINT type will need to be created for the destination.  See the GSV/SSV Program Object for specific details.]]>
+</Comment>
+<Text>
+<![CDATA[GSV(PROGRAM,THIS,MAXSCANTIME,_Status_max_Scantime);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S45_S56_DII_Stuff" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:45 - S:56 DII (Discrete Input Interrupt) does not exist on the ControlLogix controller.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S57_S66_Processor_specifics" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:61 Processor Series
+S:62 Processor Revision
+
+S:57 Operating system Catalog Number is not available
+S:58 Operating system Series is not available
+S:59 Operating system FRN is not available
+S:60 Processor Catalog Number is not available
+S:63 User Program Type is not available
+S:64 User Program functionality index is not available
+S:65 User RAM size is not available
+S:66 Flash EEPROM Size is not available]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[S:61 & S:62 Processor Series & revision
+Use the GSV ControllerDevice object, ProductRev attribute to get the series and revision of the controller.  The ProductRev value will give both the series & revision of the controller.  The low byte is the major revision and the high byte is the minor revision.    
+MVM and BTD instructions were used to get the appropriate bits.   
+See the GSV/SSV ControllerDevice Object for specific details.]]>
+</Comment>
+<Text>
+<![CDATA[GSV(CONTROLLERDEVICE,,ProductRev,_Status_rev);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[S:61 Processor Series
+Use the GSV with the ControllerDevice Object above to get the needed data.]]>
+</Comment>
+<Text>
+<![CDATA[MVM(_Status_rev,16#000f,_Status_rev_Series);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[S:62 Processor Revision
+Use the GSV with the ControllerDevice Object above to get the needed data.]]>
+</Comment>
+<Text>
+<![CDATA[BTD(_Status_rev,8,_Status_rev_revision,0,8);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S5_Minor_Faults" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:5 Minor Fault 
+Included are
+S:5/11 Battery is low
+S:5/14 Channel 0 Modem Lost
+S:5/10 Arithmetic overflow
+
+ControlLogix either does not have the functionality or need for the following bits:
+S:5/01 Reserved
+S:5/2 Control Register error bit
+S:5/3 Major error Detected while executing user fault routine bit
+S:5/4 M0-M1 referenced on disabled slot bit
+S:5/5 S:5/7 Reserved
+S:5/8 Memory Module Boot bit
+S:5/9 Memory Module Password Mismatch bit
+S:5/12 DII Overflow Bit
+S:5/13 Unsuccessful Operating system load was attempted
+S:5/15 ASCI String Manipulation Error]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[S:17/09 Duplicate Node Address
+Use a CIP Generic MSG instruction to get information from the 1756-DHRIO module.   Set the values to the following:  Service Code 'e', Class Name 'a5', Instance Name '1', & Attribute Name '7'.  The Source section is left blank and the number of elements is zero.   For this information a user defined data type called Diag_counters was created and is used in the _Status_counters tag.  This attribute gets information for a number of diagnostic counters.  You can get a count on the number of duplicate nodes by using the user defined address of Diag_counters.duplicate_node.  The Path should point to the 1756-DHRIO module.  In this example we have set up the DHRIO module in the I/O Configuration.  It is named dhp and is the address named in the path.  This CIP Generic MSG can also be used for channel B by changing the Instance Name to 2.
+   
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_dupl_node.EN)MSG(_Status_dupl_node);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[SLC500's S:5/11 (battery low) , S:5/10 (Periodic Task overlap/not completed), S:5/0 (arithmetic overflow), & S:5/14 (serial port error) bits.   
+Use the GSV (Get System Value) or SSV (Set System Value) commands with the FaultLog object and MinorFaultBits Attribute to get some minor fault information.  Bits 12 - 15 are used for this information.  The next 4 rungs show how to use the GSV ControllerDevice object to read the proceesor mode information.  See the GSV/SSV ControllerDevice Object for specific details.
+      ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(FAULTLOG,,MinorFaultBits,_Status_minorfaults);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[SLC500's S:10/0 Battery Low Minor Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_minorfaults.10)OTE(_Status_battery_low);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[SLC500's S:10/2 STI (Periodic Task) Overlap/NotCompleted Minor Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_minorfaults.6)OTE(_Status_Periodic_task);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[SLC500's S:17/05 No Modem on Serial port (Serial Port or RS232 Error)  Minor Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_minorfaults.9)OTE(_Status_RS232_error);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[SLC500's S:0/1 & S:10/14 Arithmetic Overflow bit
+Use the already defined s:v.]]>
+</Comment>
+<Text>
+<![CDATA[XIO(s:v)OTE(_Status_overflow);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S67_S163_NodeTable_Global" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:67 - S:82 Channel 0 Active Node Table is not applicable
+S:83 - S:86 Channel 1 Active Node Table is not applicable
+S:87 - S:98 Reserved is not applicable
+S:99 Global Status Word is not applicable
+S:100 - S:163 Global Status file is not applicable]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S6_Major_Faults" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:6 Major Fault Codes
+
+
+
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Use the GSV (Get System Value)  command with the FaultLog object and MajorFaultBits Attribute to get some major fault information.  The next 3 rungs show how to use the GSV FaultLog object to read the major fault information.  See the GSV/SSV FaultLog Object for specific details.]]>
+</Comment>
+<Text>
+<![CDATA[GSV(FAULTLOG,,MajorFaultBits,_Status_majorfaults);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Watch Dog Timeout Major Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_majorfaults.6)OTE(_Status_Watchdog_faulted);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Power Loss Major Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_majorfaults.1)OTE(_Status_Power_loss);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Fault Routine does not exist Major Fault
+Use with the GSV FaultLog Object above.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(_Status_majorfaults.5)OTE(_Status_Fault_handler);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[SLC500's S:6 Major Fault Codes.   
+Use the GSV (Get System Value)  command with the Program object and MajorFaultRecord Attribute to get the Major Fault Type, Code, & Information.  See the GSV/SSV Program Object for specific details. The Major Fault Record can use either a GSV to read the value or an SSV to write the value to the processor.    A user defined data type called BigFaults was created for the destination.  The tag results uses the BigFaults user defined data type.
+Even though the Major Fault is cleared, the fault code is retained in the processor.  But the fault code can be overwritten when the controller is placed into RUN mode. A routine should be added to save this value.
+   ]]>
+</Comment>
+<Text>
+<![CDATA[GSV(PROGRAM,THIS,MAJORFAULTRECORD,_Status_results.TimeLow);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Use the GSV MajorFault Record above to get the specific Major fault information. Get the information from the results tag.  This rung shows how to get the Major Fault Type, Major fault code, and the major Fault Record Information.
+    ]]>
+</Comment>
+<Text>
+<![CDATA[[MOV(_Status_results.Type,_Status_Fault_type) ,MOV(_Status_results.Code,_Status_Fault_code) ,MOV(_Status_results.Info[0],_Status_Fault_info) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S7_S8_S16_S21_Debug" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:7 & S:8  Suspend Code/Suspend File
+S:16 & S:17 Test Single Step - Start Step on -- Rung File
+S:18 & S:19 Test Single Step - Breakpoint - Rung/File
+S:20  & S:21 Test - Fault/Powerdown - Rung File
+
+ControlLogix does not support this functionality]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="S9_S15_DH_ENET" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[S:9 Ethernet Daughter Board Firmware Series is not available
+S:10 Ethernet Daughter Board Firmware Revision is not available
+S:9 & S:10 Active Nodes on DH Link
+S:11 & S:12 I/O Slot Enables is not available
+S:13 & S:14 Math Register is not available
+S:15L Node Address
+S:15H Baud Rate
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[S:15L  Channel 1A DH+ Station Number.
+Use a CIP Generic MSG instruction to get information from the 1756-DHRIO module.   Set the values to the following:  Service Code 'e', Class Name 'a5', Instance Name '1', & Attribute Name '1'.  The Source section is left blank and the number of elements is zero.  A destination tag of the SINT type needs to be created.  In this example it is called _Status_node.  The Path should point to the 1756-DHRIO module.  In this example we have set up the DHRIO module in the I/O Configuration.  It is named dhp and this is the address which is named in the path. This CIP Generic MSG can also be used for channel B by changing the Instance Name to 2.
+The tag address will show the node of the DH+ node of the selected 1756-DHRIO module.  The value will be displayed in decimal format.  It will need to be converted to Octal to reflect the address displayed on the module.
+    
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_node_addr.EN)MSG(_Status_node_addr);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[S:15H Channel 1A DH+ Baud Rate
+Use a CIP Generic MSG instruction to get information from the 1756-DHRIO module.   Set the values to the following:  Service Code 'e', Class Name 'a5', Instance Name '1', & Attribute Name '3'.  The Source section is left blank and the number of elements is zero.  A destination tag of the SINT type needs to be created.  In this example it is called _Status_ch1_baud. The Path should point to the 1756-DHRIO module.  In this example we have set up the DHRIO module in the I/O Configuration.  It is named dhp and this is the address which is named in the path. This CIP Generic MSG can also be used for channel B by changing the Instance Name to 2.
+The tag address will show the baud rate of the DH+ node of the selected 1756-DHRIO module.  
+0 = 57.6 Kbps
+1 = 115.2 Kbps
+2 = 230.4 Kbps
+
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_baud_rate.EN)MSG(_Status_baud_rate);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[S:9 & S:10 Active Node table for DH+ Channel 1A.
+Use a CIP Generic MSG instruction to get information from the 1756-DHRIO module. Set the values to the following: Service Code 'e', Class Name 'a5', Instance Name '1', &  Attribute Name '8'. The Source section is left blank and the number of elements is zero.  A destination tag of the SINT type needs to be created.  In this example it is called _Status_active_tbl.  The Path should point to the 1756-DHRIO module.  In this example we have set up the DHRIO module in the I/O Configuration.  It is named dhp and this is the address which is named in the path.
+This CIP Generic MSG can also be used for channel B by changing the Instance Name to 2.
+The tag address should be in the SINT format and have an array of 8. The first SINT gives the number of nodes on the link.
+The second SINT will give the node addresses from 0 - 7.  If bit 2 is set than there is a device on node 2.
+The third SINT will give the node addresses from 10 - 17.  If bit 4 & 6 are set than there are devices on nodes 14 & 16.
+The fourth SINT will follow the same format as the second and third but for addresses 20 - 27.
+This format will repeat for the fifth, sixth, seventh, & eighth SINTs.
+   ]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_node_tbl.EN)MSG(_Status_node_tbl);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[This MSG instruction does not have a coinciding SLC500 Status address.
+Use this MSG instruction when trying to find the mode (Program, Run, Idle) of the DH+ link being analyzed.
+Use a CIP Generic MSG instruction to get information from the 1756-DHRIO module.   Set the values to the following:  Service Code 'e', Class Name 'a5', Instance Name '1', &  Attribute Name '9'.  The Source section is left blank and the number of elements is zero.  A destination tag of the SINT type needs to be created.  In this example it is called _Status_chn_state.  The Path should point to the 1756-DHRIO module.  In this example we have set up the DHRIO module in the I/O Configuration.  It is named dhp and this is the address which is named in the path.  
+A hexidecimal value will be given to designate the following mode/state of the DH+ Link:
+               00  Non-existent
+ 01  Idle
+  02  Wait
+   03  Store
+  04  Run
+  05  Stop
+          06 -ffff Invalid
+This CIP Generic MSG can also be used for channel B by changing the Instance Name to 2.
+   ]]>
+</Comment>
+<Text>
+<![CDATA[XIO(_Status_last_state.EN)MSG(_Status_last_state);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+<Task Name="SecondTask" Type="PERIODIC" Rate="100" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<Description>
+<![CDATA[This is another task]]>
+</Description>
+<ScheduledPrograms>
+<ScheduledProgram Name="two"/>
+</ScheduledPrograms>
+</Task>
+<Task Name="Status_File" Type="PERIODIC" Rate="10" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="_Status"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

@@ -1,0 +1,3251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="RsStExprMirror" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 04 09:15:25 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="RsStExprMirror" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 04 09:15:25 2026" LastModifiedDate="Fri Sep 04 09:15:25 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="D0" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D1" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D2" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D3" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D4" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D5" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D6" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D7" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D8" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="D9" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="R0" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R1" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R2" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R3" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R4" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R5" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R6" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R7" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R8" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="R9" TagType="Base" DataType="REAL" Radix="Float" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0" /></Data>
+      </Tag>
+      <Tag Name="B0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B2" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B3" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B4" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B5" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B6" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B7" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B8" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="B9" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S0" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S1" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S2" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S3" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="S4" TagType="Base" DataType="SINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="SINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="STR0" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR1" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR2" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR3" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="STR4" TagType="Base" DataType="STRING" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K">
+<![CDATA[[0,'$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00$00'
+		]]]>
+</Data>
+        <Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+      </Tag>
+      <Tag Name="TMR0" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TMR1" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="TMR2" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,1000,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="TIMER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="EN" DataType="BOOL" Value="0" /><DataValueMember Name="TT" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR0" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR1" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="CTR2" TagType="Base" DataType="COUNTER" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="L5K"><![CDATA[[0,100,0]]]></Data>
+        <Data Format="Decorated"><Structure DataType="COUNTER"><DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="100" /><DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0" /><DataValueMember Name="CU" DataType="BOOL" Value="0" /><DataValueMember Name="CD" DataType="BOOL" Value="0" /><DataValueMember Name="DN" DataType="BOOL" Value="0" /><DataValueMember Name="OV" DataType="BOOL" Value="0" /><DataValueMember Name="UN" DataType="BOOL" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="ARR0" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="ARR1" TagType="Base" DataType="DINT" Dimensions="20" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Array DataType="DINT" Dimensions="20" Radix="Decimal"><Element Index="[0]" Value="0" /><Element Index="[1]" Value="0" /><Element Index="[2]" Value="0" /><Element Index="[3]" Value="0" /><Element Index="[4]" Value="0" /><Element Index="[5]" Value="0" /><Element Index="[6]" Value="0" /><Element Index="[7]" Value="0" /><Element Index="[8]" Value="0" /><Element Index="[9]" Value="0" /><Element Index="[10]" Value="0" /><Element Index="[11]" Value="0" /><Element Index="[12]" Value="0" /><Element Index="[13]" Value="0" /><Element Index="[14]" Value="0" /><Element Index="[15]" Value="0" /><Element Index="[16]" Value="0" /><Element Index="[17]" Value="0" /><Element Index="[18]" Value="0" /><Element Index="[19]" Value="0" /></Array></Data>
+      </Tag>
+      <Tag Name="StIdx" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[JSR(StTarget,0);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+<Routine Name="StTarget" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="1">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="2">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="3">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="4">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="5">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="6">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="7">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="8">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="9">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="10">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="11">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="12">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="13">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="14">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="15">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="16">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="17">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="18">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="19">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="20">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="21">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="22">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="23">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="24">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="25">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="26">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="27">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="28">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="29">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="30">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="31">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="32">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="33">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="34">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="35">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="36">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="37">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="38">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="39">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="40">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="41">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="42">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="43">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="44">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="45">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="46">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="47">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="48">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="49">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="50">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="51">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="52">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="53">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="54">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="55">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="56">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="57">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="58">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="59">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="60">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="61">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="62">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="63">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="64">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="65">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="66">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="67">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="68">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="69">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="70">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="71">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="72">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="73">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="74">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="75">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="76">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="77">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="78">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="79">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="80">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="81">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="82">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="83">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="84">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="85">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="86">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="87">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="88">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="89">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="90">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="91">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="92">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="93">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="94">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="95">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="96">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="97">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="98">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="99">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="100">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="101">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="102">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="103">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="104">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="105">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="106">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="107">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="108">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="109">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="110">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="111">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="112">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="113">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="114">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="115">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="116">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="117">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="118">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="119">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="120">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="121">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="122">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="123">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="124">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="125">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="126">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="127">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="128">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="129">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="130">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="131">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="132">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="133">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="134">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="135">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="136">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="137">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="138">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="139">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="140">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="141">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="142">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="143">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="144">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="145">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="146">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="147">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="148">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="149">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="150">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="151">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="152">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="153">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="154">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="155">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="156">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="157">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="158">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="159">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="160">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="161">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="162">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="163">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="164">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="165">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="166">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="167">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="168">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="169">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="170">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="171">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="172">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="173">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="174">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="175">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="176">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="177">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="178">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="179">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="180">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="181">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="182">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="183">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="184">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="185">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="186">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="187">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="188">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="189">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="190">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="191">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="192">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="193">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="194">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="195">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="196">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="197">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="198">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="199">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="200">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="201">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="202">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="203">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="204">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="205">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="206">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="207">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="208">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="209">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="210">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="211">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="212">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="213">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="214">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="215">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="216">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="217">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="218">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="219">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="220">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="221">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="222">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="223">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="224">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="225">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="226">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="227">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="228">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="229">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="230">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="231">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="232">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="233">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="234">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="235">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="236">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="237">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="238">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="239">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="240">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="241">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="242">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="243">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="244">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="245">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="246">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="247">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="248">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="249">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="250">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="251">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="252">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="253">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="254">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="255">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="256">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="257">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="258">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="259">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="260">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="261">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="262">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="263">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="264">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="265">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="266">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="267">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="268">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="269">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="270">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="271">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="272">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="273">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="274">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="275">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="276">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="277">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="278">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="279">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="280">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="281">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="282">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="283">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="284">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="285">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="286">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="287">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="288">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="289">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="290">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="291">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="292">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="293">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="294">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="295">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="296">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="297">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="298">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="299">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="300">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="301">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="302">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="303">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="304">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="305">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="306">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="307">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="308">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="309">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="310">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="311">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="312">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="313">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="314">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="315">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="316">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="317">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="318">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="319">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="320">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="321">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="322">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="323">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="324">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="325">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="326">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="327">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="328">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="329">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="330">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="331">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="332">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="333">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="334">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="335">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="336">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="337">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="338">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="339">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="340">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="341">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="342">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="343">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="344">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="345">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="346">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="347">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="348">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="349">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="350">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="351">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="352">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="353">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="354">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="355">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="356">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="357">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="358">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="359">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="360">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="361">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="362">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="363">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="364">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="365">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="366">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="367">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="368">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="369">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="370">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="371">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="372">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="373">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="374">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="375">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="376">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="377">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="378">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="379">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="380">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="381">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="382">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="383">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="384">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="385">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="386">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="387">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="388">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="389">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="390">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="391">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="392">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="393">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="394">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="395">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="396">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="397">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="398">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="399">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="400">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="401">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="402">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="403">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="404">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="405">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="406">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="407">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="408">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="409">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="410">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="411">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="412">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="413">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="414">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="415">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="416">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="417">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="418">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="419">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="420">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="421">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="422">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="423">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="424">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="425">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="426">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="427">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="428">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="429">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="430">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="431">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="432">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="433">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="434">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="435">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="436">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="437">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="438">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="439">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="440">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="441">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="442">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="443">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="444">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="445">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="446">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="447">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="448">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="449">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="450">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="451">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="452">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="453">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="454">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="455">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="456">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="457">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="458">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="459">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="460">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="461">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="462">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="463">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="464">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="465">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="466">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="467">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="468">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="469">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="470">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="471">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="472">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="473">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="474">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="475">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="476">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="477">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="478">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="479">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="480">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="481">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="482">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="483">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="484">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="485">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="486">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="487">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="488">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="489">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="490">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="491">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="492">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="493">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="494">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="495">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="496">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="497">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="498">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="499">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="500">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="501">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="502">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="503">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="504">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="505">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="506">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="507">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="508">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="509">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="510">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="511">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="512">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="513">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="514">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="515">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="516">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="517">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="518">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="519">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="520">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="521">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="522">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="523">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="524">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="525">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="526">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="527">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="528">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="529">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="530">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="531">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="532">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="533">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="534">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="535">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="536">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="537">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="538">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="539">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="540">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="541">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="542">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="543">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="544">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="545">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="546">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="547">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="548">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="549">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="550">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="551">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="552">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="553">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="554">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="555">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="556">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="557">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="558">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="559">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="560">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="561">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="562">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="563">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="564">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="565">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="566">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="567">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="568">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="569">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="570">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="571">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="572">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="573">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="574">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="575">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="576">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="577">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="578">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="579">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="580">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="581">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="582">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="583">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="584">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="585">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="586">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="587">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="588">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="589">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="590">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="591">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="592">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="593">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="594">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="595">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="596">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="597">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="598">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="599">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="600">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="601">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="602">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="603">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="604">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="605">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="606">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="607">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="608">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="609">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="610">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="611">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="612">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="613">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="614">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="615">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="616">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="617">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="618">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="619">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="620">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="621">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="622">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="623">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="624">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="625">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="626">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="627">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="628">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="629">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="630">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="631">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="632">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="633">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="634">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="635">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="636">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="637">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="638">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="639">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="640">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="641">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="642">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="643">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="644">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="645">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="646">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="647">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="648">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="649">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="650">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="651">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="652">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="653">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="654">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="655">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="656">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="657">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="658">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="659">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="660">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="661">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="662">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="663">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="664">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="665">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="666">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="667">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="668">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="669">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="670">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="671">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="672">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="673">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="674">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="675">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="676">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="677">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="678">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="679">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="680">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="681">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="682">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="683">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="684">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="685">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="686">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="687">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="688">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="689">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="690">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="691">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="692">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="693">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="694">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="695">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="696">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="697">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="698">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="699">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="700">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="701">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="702">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="703">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="704">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="705">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="706">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="707">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="708">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="709">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="710">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="711">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="712">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="713">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="714">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="715">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="716">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="717">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="718">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="719">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="720">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="721">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="722">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="723">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="724">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="725">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="726">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="727">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="728">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="729">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="730">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="731">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="732">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="733">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="734">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="735">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="736">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="737">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="738">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="739">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="740">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="741">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="742">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="743">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="744">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="745">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="746">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="747">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="748">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="749">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="750">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="751">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="752">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="753">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="754">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="755">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="756">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="757">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="758">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="759">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="760">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="761">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="762">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="763">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="764">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="765">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="766">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="767">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="768">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="769">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="770">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="771">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="772">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="773">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="774">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="775">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="776">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="777">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="778">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="779">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="780">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="781">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="782">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="783">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="784">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="785">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="786">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="787">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="788">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="789">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="790">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="791">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="792">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="793">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="794">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="795">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="796">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="797">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="798">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="799">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="800">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="801">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="802">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="803">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="804">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="805">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="806">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="807">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="808">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="809">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="810">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="811">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="812">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="813">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="814">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="815">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="816">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="817">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="818">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="819">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="820">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="821">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="822">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="823">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="824">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="825">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="826">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="827">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="828">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="829">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="830">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="831">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="832">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="833">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="834">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="835">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="836">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="837">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="838">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="839">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="840">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="841">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="842">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="843">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="844">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="845">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="846">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="847">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="848">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="849">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="850">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="851">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="852">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="853">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="854">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="855">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="856">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="857">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="858">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="859">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="860">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="861">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="862">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="863">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="864">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="865">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="866">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="867">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="868">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="869">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="870">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="871">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="872">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="873">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="874">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="875">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="876">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="877">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="878">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="879">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="880">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="881">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="882">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="883">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="884">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="885">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="886">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="887">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="888">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="889">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="890">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="891">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="892">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="893">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="894">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="895">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="896">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="897">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="898">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="899">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="900">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="901">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="902">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="903">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="904">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="905">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="906">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="907">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="908">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="909">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="910">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="911">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="912">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="913">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="914">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="915">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="916">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="917">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="918">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="919">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="920">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="921">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="922">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="923">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="924">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="925">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="926">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="927">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="928">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="929">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="930">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="931">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="932">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="933">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="934">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="935">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="936">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="937">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="938">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="939">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="940">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="941">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="942">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="943">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="944">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="945">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="946">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="947">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="948">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="949">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="950">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="951">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="952">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="953">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="954">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="955">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="956">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="957">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="958">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="959">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="960">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="961">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="962">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="963">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="964">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="965">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="966">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="967">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="968">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="969">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="970">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="971">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="972">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="973">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="974">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="975">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="976">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="977">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="978">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="979">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="980">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="981">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="982">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="983">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="984">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="985">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="986">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="987">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="988">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="989">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+<Line Number="990">
+<![CDATA[R0 := (D0 + D1) * R1 - R2 / 2 + 1.5;]]>
+</Line>
+<Line Number="991">
+<![CDATA[R1 := (D1 + D2) * R2 - R3 / 2 + 1.5;]]>
+</Line>
+<Line Number="992">
+<![CDATA[R2 := (D2 + D3) * R3 - R4 / 2 + 1.5;]]>
+</Line>
+<Line Number="993">
+<![CDATA[R3 := (D3 + D4) * R4 - R5 / 2 + 1.5;]]>
+</Line>
+<Line Number="994">
+<![CDATA[R4 := (D4 + D5) * R5 - R6 / 2 + 1.5;]]>
+</Line>
+<Line Number="995">
+<![CDATA[R5 := (D5 + D6) * R6 - R7 / 2 + 1.5;]]>
+</Line>
+<Line Number="996">
+<![CDATA[R6 := (D6 + D7) * R7 - R8 / 2 + 1.5;]]>
+</Line>
+<Line Number="997">
+<![CDATA[R7 := (D7 + D8) * R8 - R9 / 2 + 1.5;]]>
+</Line>
+<Line Number="998">
+<![CDATA[R8 := (D8 + D9) * R9 - R0 / 2 + 1.5;]]>
+</Line>
+<Line Number="999">
+<![CDATA[R9 := (D9 + D0) * R0 - R1 / 2 + 1.5;]]>
+</Line>
+</STContent>
+</Routine>
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

@@ -1,0 +1,283 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="MSG_to_Multiple_Controllers" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:39:11 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="MSG_to_Multiple_Controllers" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:38:59 2018" LastModifiedDate="Fri Jan 19 07:38:59 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="MESSAGE_CONFIGURATION" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Path" DataType="STRING" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="RemoteElement" DataType="STRING" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="STRING_30" Family="StringFamily" Class="User">
+<Members>
+<Member Name="LEN" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="DATA" DataType="SINT" Dimension="30" Radix="ASCII" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local_ENB" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true"/>
+<Port Id="2" Address="130.130.130.2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+<ExtendedProperties><public><ConfigID>4325481</ConfigID><Vendor>Allen-Bradley</Vendor><CatNum>1756-ENBT</CatNum></public></ExtendedProperties>
+</Module>
+<Module Name="chassis_b" CatalogNumber="1756-ENBT/A" Vendor="1" ProductType="12" ProductCode="58" Major="1" Minor="1" ParentModule="Local_ENB" ParentModPortId="2" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="10"/>
+</Port>
+<Port Id="2" Address="130.130.130.11" Type="Ethernet" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+<ExtendedProperties><public><ConfigID>4325481</ConfigID><Vendor>Allen-Bradley</Vendor><CatNum>1756-ENBT</CatNum></public></ExtendedProperties>
+</Module>
+<Module Name="peer_controller" CatalogNumber="1756-L55" Vendor="1" ProductType="14" ProductCode="51" Major="6" Minor="1" ParentModule="chassis_b" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true"/>
+</Ports>
+</Module>
+<Module Name="CLX_slot_3" CatalogNumber="1756-L55" Vendor="1" ProductType="14" ProductCode="51" Major="6" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="3" Type="ICP" Upstream="true"/>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="index" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[value to step through the array of configuration properties]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="local_array" TagType="Base" DataType="DINT" Dimensions="2" Radix="Decimal">
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[values read from each controller]]>
+</Comment>
+</Comments>
+<Data>00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="2" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="local_array_length" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="message" TagType="Base" DataType="MESSAGE">
+<Description>
+<![CDATA[message that reads a status value from two controllers]]>
+</Description>
+<Data Format="Message">
+<MessageParameters MessageType="CIP Data Table Read" RemoteElement="temperature" RequestedLength="1" ConnectedFlag="1" ConnectionPath="1, 2" CommTypeCode="0" LocalIndex="0" LocalElement="local_array[*]" CacheConnections="FALSE"/>
+</Data>
+</Tag>
+<Tag Name="message_config" TagType="Base" DataType="MESSAGE_CONFIGURATION" Dimensions="2">
+<Data>14 00 00 00 01 01 12 0E 31 33 30 2E 31 33 30 2E 
+31 33 30 2E 31 31 01 01 01 01 01 00 CA 05 01 00 
+B2 05 01 00 A6 05 01 00 2A 04 02 00 40 00 00 00 
+31 00 00 00 50 00 45 00 45 00 52 00 5F 00 43 00 
+4F 00 4E 00 54 00 52 00 4F 00 4C 00 4C 00 45 00 
+52 00 00 00 D4 03 00 00 0A 00 00 00 72 65 6D 6F 
+74 65 5F 74 61 67 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+02 00 00 00 01 03 01 03 00 00 00 00 30 00 00 00 
+51 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 0A 00 00 00 72 65 6D 6F 
+74 65 5F 74 61 67 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MESSAGE_CONFIGURATION" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="MESSAGE_CONFIGURATION">
+<StructureMember Name="Path" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="20"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['$01$01$12$0E130.130.130.11$01$01']]>
+</DataValueMember>
+</StructureMember>
+<StructureMember Name="RemoteElement" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="10"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['remote_tag']]>
+</DataValueMember>
+</StructureMember>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MESSAGE_CONFIGURATION">
+<StructureMember Name="Path" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['$01$03']]>
+</DataValueMember>
+</StructureMember>
+<StructureMember Name="RemoteElement" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="10"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['remote_tag']]>
+</DataValueMember>
+</StructureMember>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Purpose
+This routine demonstrates how to use a single MSG instruction to get data from several controllers. This controller continuously sends the message to two controllers, one controller at a time. It reads a tag from each controller and stores each value in an array.
+
+This example only monitors each value. The value from each message overwrites the previous value for that controller. To log the data, copy the array to a different location before you read a new set of values from the controllers.
+
+Local Array
+This example stores the data from each controller in an array named local_array. The array contains two elements, one for each controller from which the message reads a value.
+
+User-Defined Data Type
+To send a message to multiple controllers, you create a table of configuration properties for the message to each controller. This example uses a user-defined data type named MESSAGE_CONFIGURATON. The members of the data type correspond to those members of the message control tag that you must change to send the message to a different controller. See the controller organizer, Data Types folder, User-Defined folder.
+
+The MESSAGE_CONFIGURATON data type uses the default STRING data type to store paths and remote tag names or addresses. The STRING data type stores 82 characters. If your paths, tag names, or addresses use less than 82 characters and you want to conserve memory, create a new string data type that stores fewer characters. For example, the STRING_30 data type stores 30 characters.
+
+Configuration Array
+For the table of configuration properties, an array named message_config uses the MESSAGE_CONFIGURATON data type and contains one element for each controller to which the message is sent. Each element of the array stores the path and name of the remote tag for the message to a specific controller.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[The SIZE instruction counts the number of elements in local_array and stores the length in local_array_length. This value tells a subsequent rung when the message has been sent to all the controllers and to start with the first controller again.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[SIZE(local_array[0],0,local_array_length);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[The MSG instruction executes continuously. Before each execution, the COP instructions load new configuration properties so the message goes to a different controller.
+
+The configuration properties come from the message_config array, which stores the properties for the message to each controller. The index tag steps the COP instructions through the message_config array. When the message is done, a subsequent rung increments the index.
+
+The first COP instruction copies a new path for the message. Each path directs the message to a different controller. In this example, the first path is over an EtherNet/IP network to a controller in a remote chassis. The second path is to a different controller in the local chassis.
+
+The second COP instruction loads the name of the tag in the controller to which the message is sent. In this example, the message gets the same tag name in each controller.
+
+The destination element (location to which the message stores the data) uses an asterisk [*] as the array subscript. This lets the message store the data in different elements within the array. After each execution of the message, a subsequent rung increments the index value for the destination (LocalIndex). This stores the next value from the message into the next element of the array.
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(message.EN)COP(message_config[index].Path,message.Path,1)COP(message_config[index].RemoteElement,message.RemoteElement,1)MSG(message);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[After the message is sent to a controller (message.DN is on):
+> The first ADD instruction increments the index by one. This prepares the COP instructions from the previous rung to load the next set of configuration properties into the message.
+> The second ADD instruction increments the LocalIndex member of the message control tag. This configures the message to store the next value that it reads into the next element of the destination array. (The array uses an asterisk [*] as the array subscript.)]]>
+</Comment>
+<Text>
+<![CDATA[XIC(message.DN)ADD(1,index,index)ADD(1,message.LocalIndex,message.LocalIndex);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[When the index value equals the number of elements in the array (destination_array_length) the routine has sent the message to each controller. The CLR instructions reset the index values to zero so the sequence of messages can start again.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(index,local_array_length)CLR(index)CLR(message.LocalIndex);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

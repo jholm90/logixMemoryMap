@@ -1,0 +1,748 @@
+"""50 large, realistic-scope composite test programs, with I/O, logic, AOIs
+and UDTs together.
+
+Built in response to a real error over 20% on a customer project. Every prior
+calibration file isolated ONE feature at a time and never combined enough
+real-world complexity at once to catch interaction effects or
+structural gaps like OQ-AOIORPHAN (orphaned AOI definitions) that only
+show up in a big real project.
+
+Each of the 50 files is a genuinely different composition, not the same
+shape with a number swapped -- every file combines, at real-world scale:
+  - Several UDT definitions, at least one nested (a UDT containing
+    another UDT), varying member count/type mix.
+  - Several AOI definitions, MOST referenced (instantiated + called from
+    a rung) but always at least one deliberately ORPHANED (declared,
+    never instantiated) -- more real data points for OQ-AOIORPHAN across
+    different AOI complexity/count combinations, not just the one
+    minimal pair already built.
+  - Large atomic-type arrays (DINT/INT/REAL/SINT/BOOL, varying element
+    counts) plus at least one array-of-UDT.
+  - TIMER/COUNTER tags (real predefined structures already confirmed
+    elsewhero in this project).
+  - 2-4 real I/O modules, cycled from gen_module_sweep.py's own
+    _MODULE_CHAINS (86 real, already-extracted catalog blocks) -- never
+    fabricated module content.
+  - A meaningful rung count (150-900, scaling with file index) mixing
+    XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call instructions, not just NOP
+    filler.
+
+All 50 stay on the wrapper's default processor (1756-L81E/fw35.05,
+DEFAULT_PROCESSOR_TYPE in wrapper.py -- corrected, this
+docstring previously claimed "5069-L306ER" but build_l5x() below never
+actually receives a processor_type override, so every file has always
+really been on the default) -- the processor-family question (blocks vs
+bytes) is already isolated separately by gen_blockbyte_l71.py/
+OQ-BLOCKBYTE, and mixing that confound into this batch would make any
+interaction-effect findings here ambiguous.
+
+The composition scales across the 50 files via a deterministic index-based
+schedule (documented in _profile_for_index below), not randomness -- every
+file's exact feature mix is reproducible and auditable.
+
+Run: python -m sample_gen.gen_composite_realistic
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
+from sample_gen.builders import (
+    MemberSpec, aoi_xml, collect_nested_datatypes, counter_tag_xml, rung_xml, rungs_xml,
+    tag_xml, timer_tag_xml, udt_xml,
+)
+from sample_gen.gen_module_sweep import _MODULE_CHAINS, _SIL2_CATALOGS, _UNDIAGNOSED_RETEST_CATALOGS
+from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
+from sample_gen.wrapper import build_l5x
+
+OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
+OUT_ROOT.mkdir(parents=True, exist_ok=True)
+
+# real: composite_realistic_v2 regenerated the exact same
+# already-known-bad-catalog import failures (5069-OB16/B, FANUC Robot
+# R30iB Plus/A, etc. -- see gen_module_sweep.py's own
+# _UNDIAGNOSED_RETEST_CATALOGS, the canonical list) because this pool
+# still included them. "if its a known bug then why was it generated a
+# second time? ... fix the generation script now." Fixed here at the
+# source -- gen_composite_realistic_v2.py imports _MODULE_CATALOGS/
+# _profile_for_index from this module, so excluding these catalogs from
+# the pool fixes future generation from both. Note: composite_realistic
+# _32's failure was NOT catalog-explained (no bad catalog in its mix --
+# see OPEN_QUESTIONS.md/known_conversion_failures.csv), so this fix won't
+# necessarily resolve that one; it remains separately tracked.
+#
+# second real exclusion class added: a safety module had been
+# placed inside a non-safety PLC (composite_realistic_v2_19/_30,
+# both include 2198-S130-ERS3). This generator always builds on the
+# wrapper's plain non-safety default processor and never applies a
+# safety_level override, so ANY catalog in gen_module_sweep.py's own
+# _SIL2_CATALOGS (genuinely requires a safety-capable controller,
+# confirmed via the real "Failed to set the 'SafetyEnabled'
+# property" errors) is structurally incompatible with this generator's
+# design. Excluded here for the same reason _UNDIAGNOSED_RETEST_CATALOGS
+# is.
+#
+# CORRECTION, same day: '2198-S130-ERS3' was briefly added to
+# _SIL2_CATALOGS on the theory that its real error_count=2 meant it also
+# needed a safety-capable controller (matching a clean 7/7 signal across
+# every "-ERS3" Kinetix catalog in this corpus) -- DISPROVEN within the
+# hour by export 24 production file, which runs
+# a real 2198-D057-ERS3 module on a plain non-safety 1756-L82E
+# (SafetyEnabled="false", no SafetyNetwork, no SafetyTask anywhere) --
+# an "-ERS3" catalog genuinely CAN run on a non-safety controller for
+# real. Reverted out of _SIL2_CATALOGS (see that set's own docstring in
+# gen_module_sweep.py). The real error_count=2 signal is still real and
+# still unexplained, so '2198-S130-ERS3' moves into the same genuinely-
+# undiagnosed bucket as '193-ECM-ETR/A'/'193-ECM-ETR/B' below rather than
+# a second guessed theory.
+#
+# Third exclusion, same push: '193-ECM-ETR/A'/'193-ECM-ETR/B'
+# ("Error: TestMod2_193ECMETRA: Child module incompatible with parent
+# module" on composite_realistic_v2_18/_50). Genuinely NOT diagnosed --
+# manifest.csv shows BOTH standalone modulesweep_193_ecm_etr_a/b already
+# carry a real error_count=1 (never previously investigated, found only
+# by this audit), so it isn't a composite-specific interaction,
+# but the actual Studio 5000 root cause under that error still isn't
+# known. Excluded from this pool anyway so composite files stop
+# reproducing a known-bad catalog while it's worked on, same convention
+# as an undiagnosed _UNDIAGNOSED_RETEST_CATALOGS entry.
+_UNDIAGNOSED_COMPOSITE_CATALOGS = {"193-ECM-ETR/A", "193-ECM-ETR/B", "2198-S130-ERS3"}
+_MODULE_CATALOGS = sorted(
+    set(_MODULE_CHAINS.keys())
+    - _UNDIAGNOSED_RETEST_CATALOGS
+    - _SIL2_CATALOGS
+    - _UNDIAGNOSED_COMPOSITE_CATALOGS
+)
+_ATOMIC_TYPES = ["DINT", "INT", "REAL", "SINT", "BOOL"]
+
+
+def _write(l5x: str, out_name: str, description: str) -> None:
+    out_path = OUT_ROOT / f"{out_name}.L5X"
+    try:
+        bytes_ = write_sample(l5x, out_path)
+        append_manifest_row(out_name, description, "composite", out_path, bytes_)
+        print(f"Wrote {out_path} (predicted {bytes_} bytes)")
+    except RuntimeError as exc:
+        # Some real I/O module shapes (rack-aliased, embedded, etc.) are
+        # already-known unmodeled cases elsewhere in this project (see
+        # gen_fw_catalog_matrix.py's _write) -- same convention here
+        # rather than hand-picking only "safe" catalogs, which would bias
+        # this batch's module coverage toward whatever's easiest.
+        write_sample_unmodeled(l5x, out_path)
+        append_manifest_row(out_name, f"{description} (unmodeled module shape in this file's I/O mix)", "composite", out_path, 0)
+        print(f"Wrote {out_path} (predicted N/A -- unmodeled module shape: {exc})")
+
+
+@dataclass
+class Profile:
+    index: int
+    udt_count: int
+    aoi_referenced_count: int
+    aoi_orphaned_count: int
+    array_sizes: list[int]
+    module_catalogs: list[str]
+    rung_count: int
+    udt_array_len: int
+
+
+def _profile_for_index(i: int) -> Profile:
+    """Deterministic feature schedule -- i in [1, 50]. Scale ramps
+    smoothly with i; feature mix (which UDT nesting depth, which AOI
+    param shapes, which modules) cycles through fixed pools so every file
+    is a distinct real combination, not a re-roll of the same one."""
+    scale = i / 50.0  # 0.02 .. 1.0
+    udt_count = 2 + (i % 5)  # 2..6
+    aoi_referenced = 2 + (i % 4)  # 2..5
+    aoi_orphaned = 1 + (i % 3)  # 1..3, always >= 1 (OQ-AOIORPHAN coverage)
+    n_arrays = 3 + (i % 4)  # 3..6 array tags
+    base_size = int(200 + scale * 15000)
+    array_sizes = [base_size + j * (137 + i * 3) for j in range(n_arrays)]
+    n_modules = 2 + (i % 3)  # 2..4
+    start = (i * 7) % len(_MODULE_CATALOGS)
+    module_catalogs = [_MODULE_CATALOGS[(start + k) % len(_MODULE_CATALOGS)] for k in range(n_modules)]
+    rung_count = int(150 + scale * 750)
+    udt_array_len = 20 + (i % 10) * 15
+    return Profile(i, udt_count, aoi_referenced, aoi_orphaned, array_sizes, module_catalogs, rung_count, udt_array_len)
+
+
+def _udt_specs(profile: Profile) -> tuple[str, list[tuple[str, list[MemberSpec]]]]:
+    """Returns (combined DataTypes XML, [(name, members)]) for this
+    profile's UDT count -- UDT 0 is always nested (contains UDT 1) when
+    udt_count >= 2, matching the real-corpus "mixed and garbled" nesting
+    pattern already established in gen_axis_composite.py.
+
+    Real bug caught in review before this batch was sent for testing: the
+    "Nested" member on UDT 0 was built with only a bare data_type=<UDT 1's
+    name> and no `nested_members` -- MemberSpec.nested_members is what
+    _udt_structure_body_xml (builders.py) actually needs to recurse into a
+    nested UDT's real Structure content when an INSTANCE of the containing
+    UDT gets rendered; without it, that render path falls through to a
+    bare "<!-- unsupported member ... -->" comment instead of real
+    content. UDT 1's own member list has to exist BEFORE UDT 0's wrapper
+    member can reference it here (build order matters), so UDT 1 (and
+    every plain, non-nested UDT) is built first, then UDT 0 wraps it."""
+    plain_members: dict[int, list[MemberSpec]] = {}
+    for u in range(1, profile.udt_count):
+        plain_members[u] = [
+            MemberSpec(f"D{k}", "DINT") for k in range(3 + (u % 3))
+        ] + [
+            MemberSpec(f"I{k}", "INT") for k in range(2)
+        ] + [
+            MemberSpec(f"B{k}", "BOOL") for k in range(4)
+        ]
+
+    udt0_own_members = [
+        MemberSpec("D0", "DINT"), MemberSpec("D1", "DINT"), MemberSpec("D2", "DINT"),
+        MemberSpec("I0", "INT"), MemberSpec("I1", "INT"),
+        MemberSpec("B0", "BOOL"), MemberSpec("B1", "BOOL"), MemberSpec("B2", "BOOL"), MemberSpec("B3", "BOOL"),
+    ]
+    if profile.udt_count >= 2:
+        nested_name = f"Comp{profile.index:02d}Udt1"
+        nested_target_members = plain_members[1]
+        udt0_members = [MemberSpec("Nested", nested_name, nested_members=tuple(nested_target_members))] + udt0_own_members
+    else:
+        udt0_members = udt0_own_members
+
+    udts: list[tuple[str, list[MemberSpec]]] = [(f"Comp{profile.index:02d}Udt0", udt0_members)]
+    for u in range(1, profile.udt_count):
+        udts.append((f"Comp{profile.index:02d}Udt{u}", plain_members[u]))
+
+    types_xml_parts = [udt_xml(name, members) for name, members in udts]
+    return "\n".join(types_xml_parts), udts
+
+
+def _aoi_specs(profile: Profile) -> list[tuple[str, str, list[MemberSpec]]]:
+    """Returns [(aoi_name, def_xml, storage_members)] for every AOI this
+    profile declares (referenced + orphaned combined) -- caller decides
+    which get instantiated."""
+    total = profile.aoi_referenced_count + profile.aoi_orphaned_count
+    out = []
+    for a in range(total):
+        name = f"Comp{profile.index:02d}Aoi{a}"
+        def_xml, storage = aoi_xml(
+            name,
+            # REAL BUG FOUND (real Studio 5000 verify
+            # error on composite_realistic_02/03.ACD, "Invalid number of
+            # arguments for instruction" on every referenced-AOI call
+            # rung): an AOI's input and output parameters must be marked
+            # required or visible to appear on the ladder call site, and a
+            # required one needs a hard-coded value or tag there.
+            # MemberSpec defaults
+            # required=False/visible=False -- _aoi_parameter_xml (see
+            # builders.py) correctly renders that as Required="false"
+            # Visible="false" for a plain (non-array) Input/Output
+            # Parameter, which real Studio 5000 treats as HIDDEN from the
+            # instruction's own call signature (not a real argument slot
+            # at all). But _build() below always supplies a literal "0"/
+            # tag "OutBit" argument for every In/Out param regardless,
+            # so the actual call always has more operands than the real
+            # (hidden) signature allows -- an argument-count mismatch.
+            # Fixed with required=True, which real Studio 5000 accepts
+            # either a hardcoded value or a tag reference for (matches
+            # this file's own call-argument construction exactly).
+            input_params=[MemberSpec(f"In{k}", "DINT", required=True) for k in range(1 + a % 3)],
+            output_params=[MemberSpec(f"Out{k}", "BOOL", required=True) for k in range(1 + a % 2)],
+            local_tags=[MemberSpec(f"Wrk{k}", "DINT") for k in range(2 + a % 3)],
+)
+        out.append((name, def_xml, storage))
+    return out
+
+
+_LOCAL_ICP_SLOT_RE = re.compile(
+    # real bug found generating the v3 batch: the original
+    # `.*?` (DOTALL) between ParentModule="Local" and the Port element had
+    # no boundary, so on a catalog whose real root module is Ethernet-
+    # upstream to Local (e.g. 1756-OW16I's 1756-EN2T bridge -- its OWN ICP
+    # port is Upstream="false", a downstream backplane bus, not the
+    # upstream-to-Local connection this regex is meant to find), the
+    # non-greedy match skipped straight past that non-matching port and
+    # kept searching FORWARD into the NEXT module's tag, finding a child
+    # module's own unrelated upstream ICP port and corrupting its real,
+    # already-valid, in-bounds Address into a slot number that overflows
+    # its actual parent's Bus Size. `(?:(?!<Module).)*?` refuses to cross
+    # into a subsequent <Module ...> tag, so the match is now scoped to
+    # ONE module's own attributes/Ports, not "anywhere later in the file."
+    #
+    # didnt see the 5069 -- combining multiple 5069
+    # Compact I/O catalogs together revealed the identical real slot-
+    # collision bug this regex already fixes for Type="ICP", just under a
+    # different Port Type: every 5069 module mounts directly on its own
+    # controller's local bus via `Type="5069"` (confirmed across all 6 real
+    # 5069 catalogs in this corpus), not "ICP" -- so this regex never
+    # matched them and their real, stale captured-slot Address collided
+    # the instant 2+ landed in the same file, exactly like 1756-CNB/D
+    # catalogs did for ICP before that fix. Same remap, same convention,
+    # just widened to match either real Type value.
+    r'(ParentModule="Local"(?:(?!<Module).)*?<Port Id="1" Address=")\d+("\s*Type="(?:ICP|5069)"\s*Upstream="true"\s*/>)',
+    re.DOTALL,
+)
+
+
+def _remap_local_icp_slot(xml: str, slot: int) -> str:
+    """: real Studio 5000 error on composite_realistic_07
+    (module mix: 1794-OE4/B, 1794-OW8/A, 1794-VHSC/A): "Slot number in use
+    by another module" + "Failed to set the 'ParentModule' property
+    (Requested item could not be found.)" for the chain's downstream
+    modules. Root cause: all three of those catalogs' _MODULE_CHAINS
+    blocks were extracted from the SAME real reference export
+    (a real export) and each one's own root module (a
+    1756-CNB/D ControlNet bridge, ParentModule="Local") independently
+    claims the identical real physical backplane slot that one customer's
+    rack actually used (Address="3" on its ICP Port) -- correct for a
+    single standalone catalog test, but a genuine collision the instant 2+
+    such catalogs land in the same composite file, exactly like the IP
+    collision _modules_xml_unique_ips (below) already fixes for Ethernet
+    addresses. The downstream 'ParentModule not found' errors are a
+    cascade: once the slot-colliding root module fails to import, its
+    children (which reference it by name) can't resolve their parent
+    either. Remaps ONLY the root module's own ICP-backplane Port Address
+    to a given unique slot -- a catalog with no Local-parented ICP module
+    at all (e.g. already Ethernet-only) is left untouched (no match, no
+    collision risk)."""
+    return _LOCAL_ICP_SLOT_RE.sub(rf"\g<1>{slot}\g<2>", xml, count=1)
+
+
+_MODULE_BLOCK_RE = re.compile(r"<Module\b[^>]*>.*?</Module>", re.DOTALL)
+_MODULE_OPEN_TAG_RE = re.compile(r"<Module\b[^>]*>")
+# Only a PointIO/Flex downstream Port's Bus -- these are the two real
+# catalog types with a visible "N Slot Chassis" concept in Studio 5000's
+# I/O tree. A ControlNet/Ethernet/ICP Port can also carry a bare `<Bus />`
+# placeholder (no Size, no slot-count semantics), which this deliberately
+# leaves untouched -- see _normalize_chain_bus_sizes's docstring.
+_BUS_PORT_RE = re.compile(
+    r'(<Port\b(?=[^>]*\bType="(?:PointIO|Flex)")[^>]*\bId="([^"]+)"[^>]*>\s*)'
+    r'(<Bus(?:\s+Size="\d+")?\s*/>)(\s*</Port>)',
+    re.DOTALL,
+)
+
+
+def _attr(tag: str, name: str) -> str | None:
+    m = re.search(rf'\b{name}="([^"]*)"', tag)
+    return m.group(1) if m else None
+
+
+def _rewrite_child_upstream_address(block: str, new_address: str) -> str:
+    """Rewrites the FIRST self-closing Upstream="true" Port's Address in
+    this module block. Safe because every real child module found behind a
+    PointIO/Flex adapter in this project's corpus has exactly one Port
+    total (its own upstream connection back to the adapter) -- it has no
+    downstream bus of its own, so there's no ambiguity about which Port to
+    touch."""
+    def repl(m: re.Match) -> str:
+        tag = m.group(0)
+        return re.sub(r'\bAddress="[^"]*"', f'Address="{new_address}"', tag, count=1)
+    return re.sub(r'<Port\b[^>]*\bUpstream="true"[^>]*/>', repl, block, count=1)
+
+
+_SLOT_STRUCTURE_TYPE_RE = re.compile(r'\d+(SLOT:[IO]:0)')
+_ARRAY_MEMBER_DIMENSIONS_RE = re.compile(r'(<ArrayMember Name="Data" DataType="\w+" Dimensions=")\d+(")')
+_ARRAY_MEMBER_BLOCK_RE = re.compile(
+    r'<ArrayMember Name="Data"[^>]*>.*?</ArrayMember>', re.DOTALL,
+)
+_ELEMENT_RE = re.compile(r'<Element\b[^/]*/>')
+# The innermost pure-numeric bracket group in an OutputTag's L5K literal --
+# e.g. the "[0,0]" in "[-1,-1,[0,0]]" (1734 family) or the "[0,0,1,...]" in
+# "[[0,0,1,0,0,0,0,0]]" (1794 family). Whatever scalar values sit outside
+# this innermost bracket (fault/config words -- vary per catalog, unrelated
+# to slot count) are deliberately left untouched.
+_L5K_INNER_ARRAY_RE = re.compile(r'\[([\d,\s-]*)\]')
+
+
+def _resize_slot_structure(block: str, new_n: int) -> str:
+    """: real Studio 5000 import error on the first
+    _normalize_chain_bus_sizes verification samples: "Data doesn't match
+    the data type of the member as defined in the containing data type"
+    (warning) then "Failed to set the 'Data' property (Data type
+    mismatch...)" (error) on the adapter's own Connection/InputTag and
+    OutputTag. Root cause: Studio cross-validates a PointIO/Flex Port's
+    Bus Size against its OWN Connection's predefined I/O structure, which
+    bakes the SAME slot count into its DataType name (e.g.
+    "AB:1734_3SLOT:I:0"), its ArrayMember's Dimensions ("3"), and the
+    literal count of <Element> entries -- all three, PLUS the Bus Size
+    itself, must agree. _normalize_chain_bus_sizes only touched Bus Size,
+    leaving these three still declaring the ORIGINAL (larger, stale)
+    real-capture slot count -- a real, structural mismatch, not a cosmetic
+    one. Fixed here: rewrite the DataType name's slot number and each
+    ArrayMember's Dimensions to new_n, then resize each Element list to
+    exactly new_n entries. Shrinking always TRUNCATES (never regenerates)
+    -- confirmed correct against real data: this project's own reused
+    child module always sits at the SAME real bus position it occupied in
+    the original capture (see _normalize_chain_bus_sizes), so the first
+    new_n Elements are genuinely that exact real data for the positions
+    being kept (all-zero placeholders for the 1734 family, real non-zero
+    per-slot config words for the 1794 FLEX family -- truncating preserves
+    whichever is real instead of guessing at replacement values). Growing
+    (I want to see some 14+ racks now -- a real multi-
+    catalog rack bigger than any single real capture happened to
+    populate) pads new positions with an all-zero Element matching the
+    existing ones' own bit-width/DataType, the same "unpopulated slot"
+    pattern every real capture already uses at its own genuinely-empty
+    positions. Same resize (truncate or pad) applied to the OutputTag's
+    parallel L5K literal's innermost numeric array."""
+    block = _SLOT_STRUCTURE_TYPE_RE.sub(rf'{new_n}\1', block)
+    block = _ARRAY_MEMBER_DIMENSIONS_RE.sub(rf'\g<1>{new_n}\g<2>', block)
+
+    def _truncate_array_member(m: re.Match) -> str:
+        am = m.group(0)
+        elements = _ELEMENT_RE.findall(am)
+        if not elements:
+            return am
+        if new_n <= len(elements):
+            resized = elements[:new_n]
+        else:
+            # Growing beyond the real captured slot count (e.g. building a
+            # bigger real multi-catalog rack than any single real capture
+            # happened to populate): pad with additional all-zero Elements,
+            # same bit-width/format as the real ones already here (SINT vs
+            # INT differ in width) -- matches the "unpopulated slot" zero
+            # pattern already used at every genuinely-unpopulated real
+            # position in this exact corpus (see this function's docstring).
+            zero_value = re.sub(r"[01]", "0", re.search(r'Value="([^"]+)"', elements[-1]).group(1))
+            padding = [f'<Element Index="[{i}]" Value="{zero_value}" />' for i in range(len(elements), new_n)]
+            resized = elements + padding
+        head = am[: am.index(elements[0])]
+        tail = am[am.index("</ArrayMember>"):]
+        return head + "\n".join(resized) + ("\n" if resized else "") + tail
+
+    block = _ARRAY_MEMBER_BLOCK_RE.sub(_truncate_array_member, block)
+
+    output_tag_m = re.search(r'<OutputTag\b.*?</OutputTag>', block, re.DOTALL)
+    if output_tag_m:
+        output_tag = output_tag_m.group(0)
+        l5k_m = re.search(r'<Data Format="L5K">.*?</Data>', output_tag, re.DOTALL)
+        if l5k_m:
+            l5k = l5k_m.group(0)
+            inner_matches = list(_L5K_INNER_ARRAY_RE.finditer(l5k))
+            if inner_matches:
+                last = inner_matches[-1]
+                values = [v.strip() for v in last.group(1).split(",") if v.strip() != ""]
+                if new_n <= len(values):
+                    resized_values = values[:new_n]
+                else:
+                    resized_values = values + ["0"] * (new_n - len(values))
+                new_l5k = l5k[: last.start()] + "[" + ",".join(resized_values) + "]" + l5k[last.end():]
+                block = block[: output_tag_m.start()] + output_tag[: l5k_m.start()] + new_l5k + \
+                    output_tag[l5k_m.end():] + block[output_tag_m.end():]
+    return block
+
+
+def _normalize_chain_bus_sizes(xml: str) -> str:
+    """Normalise a chain's declared Bus Size to what it actually holds.
+
+    Real issue caught reviewing the v4 Studio 5000
+    I/O tree: every PointIO/Flex adapter+child pair in _MODULE_CHAINS
+    carries the real "Bus Size" (chassis slot count) and child slot
+    Address it happened to have in whatever real, larger rack it was
+    originally captured from (e.g. a bus coupler captured from a real
+    12-slot chassis still declares Bus Size="12" and its one reused child
+    still sits at slot [11], even though this project only ever reuses ONE
+    child per catalog). Point I/O must use sequential slots, and the AENTR's
+    Chassis Size has to be large enough to hold them (Bus Coupler + 1 I/O
+    module = Chassis Size 2). Confirmed against an already-correct real example in the
+    same corpus (1734-232ASC/C: adapter at slot 0, its one real child at
+    slot 1, Bus Size="2") -- Bus Size counts the ADAPTER too, not just its
+    children (bus coupler + 1 IO module = 2, not 1). Fixed generically,
+    not per-catalog: for every Module in this chain whose own PointIO/Flex
+    downstream Port carries a <Bus>, count the REAL number of other
+    Modules in this same chain that declare it as their ParentModule
+    (matching ParentModPortId), rewrite Bus/@Size to that count PLUS the
+    adapter itself, then renumber each of those children's own upstream
+    Port Address sequentially from 1 in chain order (slot 0 is implicitly
+    the adapter's own position, matching every already-correct real
+    example found). A catalog with no matching
+    children in its own fragment (a bare adapter reused with nothing
+    attached) is left untouched -- nothing to renumber. Deliberately
+    scoped to PointIO/Flex Port types only (see _BUS_PORT_RE) -- a bare
+    ControlNet/Ethernet/ICP `<Bus />` placeholder has no slot-count
+    semantics and isn't part of what flagged."""
+    blocks = _MODULE_BLOCK_RE.findall(xml)
+    if len(blocks) < 2:
+        return xml
+    open_tags = [_MODULE_OPEN_TAG_RE.search(b).group(0) for b in blocks]
+    names = [_attr(t, "Name") for t in open_tags]
+
+    new_blocks = list(blocks)
+    for i, block in enumerate(blocks):
+        this_name = names[i]
+        if this_name is None:
+            continue
+        bus_m = _BUS_PORT_RE.search(block)
+        if not bus_m:
+            continue
+        port_id = bus_m.group(2)
+        children_idx = [
+            j for j, t in enumerate(open_tags)
+            if j != i and _attr(t, "ParentModule") == this_name and _attr(t, "ParentModPortId") == port_id
+        ]
+        if not children_idx:
+            continue
+        old_bus_size = _attr(bus_m.group(3), "Size")
+        new_n = len(children_idx) + 1
+        new_bus = f'<Bus Size="{new_n}" />'
+        resized_block = block[: bus_m.start(3)] + new_bus + block[bus_m.end(3):]
+        if old_bus_size != str(new_n):
+            # See _resize_slot_structure's docstring: Studio cross-validates
+            # this Port's Bus Size against this SAME Module's own Connection
+            # I/O structure (DataType slot-number, ArrayMember Dimensions,
+            # Element count) -- all of it has to move together or Studio
+            # rejects the whole import.
+            resized_block = _resize_slot_structure(resized_block, new_n)
+        new_blocks[i] = resized_block
+        for slot, j in enumerate(children_idx, start=1):
+            new_blocks[j] = _rewrite_child_upstream_address(new_blocks[j], str(slot))
+
+    result = xml
+    for old, new in zip(blocks, new_blocks):
+        if old != new:
+            result = result.replace(old, new, 1)
+    return result
+
+
+def _modules_xml_unique_ips(catalogs: list[str]) -> str:
+    """: real bug caught by self-audit before any file was
+    sent for testing: each catalog's block in gen_module_sweep.py's
+    _MODULE_CHAINS was extracted from a real reference export assuming it's
+    the ONLY networked device in its own file -- nearly all of them default
+    to the same real "192.168.1.63" Ethernet address. Combining 2-4 real
+    catalogs verbatim into one composite file (as this generator does)
+    reused that identical IP across multiple distinct real devices in 33 of
+    the first 50 files -- a genuine address collision, not something Studio
+    5000 would ever accept from real hardware. Fixed by assigning each
+    catalog in the file its own non-overlapping 192.168.1.x block (spaced
+    10 apart, since the largest number of distinct real IPs any single
+    catalog's own block legitimately uses is 2 -- e.g. 193-ECM-ETR/A/B) and
+    remapping ONLY those literal address strings, preserving each catalog's
+    own internal relative offset between its addresses (a 2-IP catalog
+    keeps using two DIFFERENT addresses, just shifted to a block nobody
+    else in the file is using) -- nothing else in any block is touched.
+
+    also remaps each catalog's own Local-parented ICP
+    backplane slot to a unique value per catalog in the file -- see
+    _remap_local_icp_slot's docstring for the real error this fixes.
+
+    "lots of racks did not have the slot numbers used
+    in sequence" -- real bug in that same remap. It keyed the assigned
+    slot off the catalog's raw index in the file (slot=2+i) regardless of
+    whether that catalog even HAS a Local-ICP root module: catalogs 0 and
+    2 could get real ICP slots 2 and 4 while catalog 1 (Ethernet-only,
+    no match) silently consumed no slot at all, leaving slot 3 unused --
+    a real gap in the backplane numbering, which is exactly the reported
+    fault (composite_realistic_v2_16 is a real example: slots 2 and 4 present,
+    3 missing). It also always started at slot 2 -- wrong base, not just
+    a gap: wrapper.py's own Local module template puts the CPU's
+    downstream ICP port at Address="0" (confirmed across every
+    safety_level branch), so the first real expansion module on the
+    backplane is physically slot 1, not 2. Fixed: only catalogs whose
+    block actually contains a Local-ICP root module consume a slot, and
+    they're numbered sequentially starting at 1, with no gaps.
+
+    real Studio 5000 verify error on the v3 batch:
+    "Failed to set the 'Address' property (Address out of range.)" on
+    several modules from 15-34-catalog files. Root cause: `base = 60 +
+    (i+1)*10` was written for v1/v2's 2-4-catalog files and never checked
+    against a larger count -- at i=19, base=260, an invalid IPv4 4th-octet
+    value (>255), and every catalog past that point inherited the same
+    out-of-range problem, cascading into unrelated "ParentModule ...
+    Requested item could not be found" errors on their own children.
+    Fixed by rolling the 4th octet's block over into a new 3rd-octet
+    block (192.168.2.x, 192.168.3.x, ...) well before it would overflow,
+    instead of letting it run unbounded -- supports an effectively
+    unlimited catalog count per file."""
+    parts = []
+    next_icp_slot = 1
+    # 60..250 leaves headroom for a full 10-wide block (up to 2 real IPs
+    # used per catalog, see this function's own docstring) without ever
+    # touching the 255 ceiling; rolls into the next 3rd-octet block once
+    # that range is exhausted.
+    _BLOCK_START, _BLOCK_SPACING, _BLOCK_CEILING = 60, 10, 250
+    _CATALOGS_PER_THIRD_OCTET = (_BLOCK_CEILING - _BLOCK_START) // _BLOCK_SPACING
+    for i, cat in enumerate(catalogs):
+        xml, _source, _chain_len = _MODULE_CHAINS[cat]
+        xml = _normalize_chain_bus_sizes(xml)
+        real_ips = sorted(set(re.findall(r"192\.168\.1\.\d+", xml)))
+        block_num, pos_in_block = divmod(i, _CATALOGS_PER_THIRD_OCTET)
+        third_octet = 1 + block_num
+        base = _BLOCK_START + (pos_in_block + 1) * _BLOCK_SPACING
+        mapping = {ip: f"192.168.{third_octet}.{base + j}" for j, ip in enumerate(real_ips)}
+        for old, new in mapping.items():
+            xml = xml.replace(old, new)
+        # real bug found generating the v3 batch: comparing
+        # remapped != xml to detect "did this catalog have a Local-ICP root
+        # module" breaks whenever the newly assigned slot happens to equal
+        # the catalog's own original hardcoded slot number (e.g. original
+        # Address="2", next_icp_slot also 2 -- identical text, so the
+        # string comparison wrongly concludes "no match" and the counter
+        # never advances, letting the NEXT real ICP catalog collide on the
+        # same slot). Check the regex match directly instead.
+        has_local_icp = _LOCAL_ICP_SLOT_RE.search(xml) is not None
+        if has_local_icp:
+            xml = _remap_local_icp_slot(xml, slot=next_icp_slot)
+            next_icp_slot += 1
+        parts.append(xml)
+    return "\n".join(parts)
+
+
+def _build(profile: Profile) -> tuple[str, str]:
+    types_xml, udts = _udt_specs(profile)
+    aois = _aoi_specs(profile)
+
+    tags_parts: list[str] = []
+    call_instrs: list[str] = []
+
+    # Array tags (atomic types cycled)
+    for j, size in enumerate(profile.array_sizes):
+        t = _ATOMIC_TYPES[j % len(_ATOMIC_TYPES)]
+        tags_parts.append(tag_xml(f"Arr{j}", t, dimensions=(size,)))
+
+    # One array-of-UDT -- targets UDT 0 (the nested one, when udt_count >= 2)
+    # so the nested-UDT instance render path (StructureMember recursing
+    # into the Nested member's own real content) actually gets exercised,
+    # not just declared and left unused.
+    array_udt_name, array_udt_members = udts[0]
+    tags_parts.append(tag_xml(
+        f"UdtArr", array_udt_name, dimensions=(profile.udt_array_len,), udt_members=array_udt_members,
+))
+
+    # TIMER/COUNTER tags
+    tags_parts.append(timer_tag_xml("MainTmr", preset=1000 + profile.index * 10))
+    tags_parts.append(counter_tag_xml("MainCtr", preset=100 + profile.index))
+
+    # AOI instances -- referenced ones get a real instance tag + call rung;
+    # orphaned ones get NEITHER (declared only).
+    referenced = aois[:profile.aoi_referenced_count]
+    orphaned = aois[profile.aoi_referenced_count:]
+    for name, _def_xml, storage in referenced:
+        inst_name = f"{name}Inst"
+        tags_parts.append(tag_xml(inst_name, name, udt_members=storage))
+        n_in = sum(1 for m in storage if m.name.startswith("In"))
+        n_out = sum(1 for m in storage if m.name.startswith("Out"))
+        call_args = ",".join([inst_name] + ["0"] * n_in + ["OutBit"] * n_out)
+        call_instrs.append(f"{name}({call_args});")
+    tags_parts.append(tag_xml("OutBit", "BOOL"))
+
+    aoi_def_xml = "\n".join(d for _n, d, _s in aois)
+
+    # Logic: base call rungs (one per referenced AOI) + a mixed-instruction
+    # sweep filling out the target rung count.
+    def rung_instr(i: int) -> str:
+        if i < len(call_instrs):
+            return call_instrs[i]
+        kind = i % 6
+        if kind == 0:
+            # REAL BUG FOUND (real Studio 5000 verify
+            # error on composite_realistic_02/03.ACD): OTE is only legal on
+            # a BOOL or on a bit within an INT/DINT/SINT -- an OTE on a
+            # whole INT is an error. Arr0 is always DINT and Arr1 is always INT
+            # (fixed j=0/j=1 position in _ATOMIC_TYPES's cycling, every
+            # file) -- XIC/OTE directly on a whole DINT/INT array element
+            # (no bit subscript) is invalid; both instructions need a
+            # BOOL or a bit-level ".N" reference into an integer. Fixed
+            # with an explicit ".0" bit subscript -- valid on both DINT
+            # and INT regardless of which specific type Arr0/Arr1 land on.
+            return f"XIC(Arr0[{i % profile.array_sizes[0]}].0)OTE(Arr1[{i % profile.array_sizes[1]}].0);"
+        if kind == 1:
+            return f"MOV(Arr0[{i % profile.array_sizes[0]}],Arr2[{i % profile.array_sizes[min(2, len(profile.array_sizes) - 1)]}]);"
+        if kind == 2:
+            return "ADD(Arr0[0],1,Arr0[0]);"
+        if kind == 3:
+            return "CPT(Arr0[1],Arr0[0]+2*Arr0[0]);"
+        if kind == 4:
+            return "TON(MainTmr,?,?);"
+        return "CTU(MainCtr,?,?);"
+
+    logic_rungs = rungs_xml(profile.rung_count, rung_instr)
+
+    modules_xml = _modules_xml_unique_ips(profile.module_catalogs)
+
+    l5x = build_l5x(
+        target_name=f"Composite{profile.index:02d}",
+        tags_xml="\n".join(tags_parts),
+        extra_datatypes_xml=types_xml,
+        extra_aoi_xml=aoi_def_xml,
+        extra_rungs_xml=logic_rungs,
+        extra_modules_xml=modules_xml,
+)
+
+    description = (
+        f"Composite realistic-scope test #{profile.index}/50 (response to real "
+        f"~20%+ gap found on a real customer project -- at least 50 large programs with I/O and "
+        f"logic, exercising AOIs and UDTs): {profile.udt_count} UDTs "
+        f"(1 nested), {profile.aoi_referenced_count} AOIs instantiated+called, "
+        f"{profile.aoi_orphaned_count} AOIs declared but ORPHANED (OQ-AOIORPHAN, more real data "
+        f"points at varying AOI complexity), {len(profile.array_sizes)} atomic arrays "
+        f"(sizes {profile.array_sizes}) + 1 UDT array ({profile.udt_array_len} elements), TIMER+COUNTER, "
+        f"{len(profile.module_catalogs)} real I/O modules ({', '.join(profile.module_catalogs)}), "
+        f"{profile.rung_count} rungs mixed XIC/OTE/MOV/ADD/CPT/TON/CTU/AOI-call. 1756-L81E/fw35.05 "
+        f"(default processor, corrected -- see this file's module docstring; the "
+        f"processor-family question is isolated separately, OQ-BLOCKBYTE)."
+)
+    return l5x, description
+
+
+# the 50 tests needed new filenames, with the old ones
+# abandoned -- every one of the 50 original
+# composite_realistic_NN files changed real content in that pass (AOI
+# Required=true fix, XIC/OTE bit-subscript fix, and for 5 files the
+# backplane-slot-collision fix), after a real l5x2acd/capture batch had
+# already run against the OLD names. Renamed with a "_r2" suffix
+# (matching this project's established convention for a regenerated-after-
+# real-bug-fix batch, e.g. modulesweep_2198_*_variant_4conn_r2) so the
+# next batch run can't conflate the two. The old composite_realistic_NN.L5X
+# files (no "_r2") are deleted -- zero of them ever had real actual_bytes
+# captured (confirmed against manifest.csv before deleting), so nothing
+# real is lost by abandoning them.
+def main() -> None:
+    for i in range(1, 51):
+        profile = _profile_for_index(i)
+        l5x, description = _build(profile)
+        _write(l5x, f"composite_realistic_{i:02d}_r2", description)
+
+
+# The nine _r2 files that never captured. Eight carried a build-invalid module
+# choice that lint correctly refused -- a CIP Safety module on a non-safety
+# controller, two modules claiming one slot, a Kinetix drive with no bus
+# supply -- and so were never submitted; the ninth was never picked up by the
+# converter. Rebuilt under new names so the conversion and capture tooling,
+# which skip any name they have already seen, treat them as new work.
+_OPEN_R2_INDICES = (10, 11, 22, 32, 34, 36, 46, 47, 48)
+# Only findings that stop a file building. chassis_size_mismatch is a
+# modelling check on adapter bus sizes that 41 captured _r2 files carry
+# without any build error, so it is not a reason to reshuffle modules.
+_BUILD_BLOCKING = frozenset({
+    "safety_module_on_non_safety_controller", "duplicate_module_slot",
+    "non_sequential_module_slots", "kinetix_drive_without_bus_supply",
+    "kinetix_axis_without_converter", "unrecognized_instruction",
+    "aoi_call_arg_count_mismatch", "module_identity_mismatch",
+})
+
+
+def regenerate_open() -> None:
+    """Rebuild the open indices as _r3. Same deterministic profile; if the
+    module window it lands on is build-invalid, slide the window one catalog
+    at a time until lint is clean. Everything but the module choice is
+    unchanged."""
+    from dataclasses import replace
+    from sample_gen.lint import lint_l5x
+    for i in _OPEN_R2_INDICES:
+        profile = _profile_for_index(i)
+        n = len(profile.module_catalogs)
+        start = _MODULE_CATALOGS.index(profile.module_catalogs[0])
+        for shift in range(len(_MODULE_CATALOGS)):
+            cats = [_MODULE_CATALOGS[(start + shift + k) % len(_MODULE_CATALOGS)] for k in range(n)]
+            l5x, description = _build(replace(profile, module_catalogs=cats))
+            if not {f.kind for f in lint_l5x(l5x)} & _BUILD_BLOCKING:
+                break
+        else:
+            raise RuntimeError(f"no build-valid module window for composite {i}")
+        _write(l5x, f"composite_realistic_{i:02d}_r3",
+               description + f" Rebuilt as _r3 with a build-valid module window (shift {shift}).")
+
+
+if __name__ == "__main__":
+    import sys
+    if "--regenerate-open" in sys.argv:
+        regenerate_open()
+    else:
+        main()

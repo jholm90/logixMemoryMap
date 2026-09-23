@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="CNET_messaging" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:17:52 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="CNET_messaging" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:17:39 2018" LastModifiedDate="Fri Jan 19 07:17:39 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalCNB" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="false"
+ ControlNetSignature="16#0000_0000">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="true"/>
+<Port Id="2" Address="5" Type="ControlNet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+<ExtendedProperties><private><Filename></Filename></private></ExtendedProperties>
+</Module>
+<Module Name="RemoteCNB" CatalogNumber="1756-CNB/D" Vendor="1" ProductType="12" ProductCode="7" Major="5" Minor="1" ParentModule="LocalCNB" ParentModPortId="2" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="ICP" Upstream="false">
+<Bus Size="10"/>
+</Port>
+<Port Id="2" Address="6" Type="ControlNet" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870914">
+<Connections/>
+</Communications>
+</Module>
+<Module Name="RemoteCPU" CatalogNumber="1756-L55" Vendor="1" ProductType="14" ProductCode="51" Major="6" Minor="1" ParentModule="RemoteCNB" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="true"/>
+</Ports>
+</Module>
+<Module Name="RemotePLC5C" CatalogNumber="1785-PLC5C" Vendor="1" ProductType="14" ProductCode="7" Major="1" Minor="1" ParentModule="LocalCNB" ParentModPortId="2" Inhibited="false" MajorFault="false"
+>
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="2" Address="7" Type="ControlNet" Upstream="true"/>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="L1_to_PLC5C" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="PLC5 Typed Read" RemoteElement="S:23" RequestedLength="1" ConnectionPath="RemotePLC5C" CommTypeCode="0" LocalIndex="0" LocalElement="PLC5C_sec_clock" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="L55_to_L55" TagType="Base" DataType="MESSAGE">
+<Data Format="Message">
+<MessageParameters MessageType="CIP Data Table Write" RemoteElement="destination_data_buffer" RequestedLength="1" ConnectedFlag="1" ConnectionPath="RemoteCPU" CommTypeCode="0" LocalIndex="0" LocalElement="Source_data_buffer" CacheConnections="TRUE"/>
+</Data>
+</Tag>
+<Tag Name="PLC5C_sec_clock" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>20 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="32"/>
+</Data>
+</Tag>
+<Tag Name="Source_data_buffer" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>2C 01 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="300"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously sends a 1-DINTmessage from the local 1756-L55 to a remote 1756-L55 over ControlNet.
+
+SYSTEM CONFIGURATION - The local ControlLogix chassis consists of a 1756-L55 in slot 0 and a 1756-CNB (node 5) in slot 1.  The remote ControlLogix chassis also consists of a 1756-L55 in slot 0 and a 1756-CNB (node 6) in slot 1.  The two 1756-CNB modules are on the same ControlNet network.
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration' Tab in the message setup screen,  is selected as the message type, the Source Tag is created as a DINT called , the Destination Element is called , and the Number Of Elements is one.  Make sure that the Destination Element is a tag created in the remote controller with the same name and same data type.  These tags need to be created under the controller scope.  
+
+Under the 'Communication' Tab in the Message setup screen, the path to the remote controller is specified.  The following describes the path (1, 1, 2, 6, 1, 0) used in this example:   indicates a connection to the backplane of the ControlLogix chassis,  indicates a connection to the CNB module in slot 1,  indicates a connection to port 2 of the CNB module (get on the  ControlNet wire),  indicates a connection to the remote CNB module at node address 6,  indicates a connection to the backplane of the remote ControlLogix chassis, and finally,  indicates a connection to the remote controller in slot 0.
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L55_to_L55.EN)MSG(L55_to_L55);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[PURPOSE - This rung continuously reads data from location S:23 of a PLC5C at node 1.
+
+SYSTEM CONFIGURATION - The ControlLogix chassis consists of a 1756-L55 in slot 0 and a 1756-CNB (node 5) in slot 1.   A PLC5C (node 1) is also on the same ControlNet network as the CNB module.
+
+THE MESSAGE INSTRUCTION - Under the 'Configuration' Tab in the message setup screen,  is selected as the Message Type, the Source element is  of the PLC5C, the Destination Tag is named , and the Number Of Elements is one.  Make sure that the destination tag is created under the controller scope and has the same data type as the source tag (INT).
+
+Under the 'Communication' Tab in the Message setup screen, the path to the PLC5C on ControlNet is specified.  The following describes the path (1, 1, 2, 7) used in this example:   indicates a connection to the backplane of the ControlLogix chassis,   indicates a connection to the CNB module in slot 1,   indicates a connection to port 2 of the CNB module (get on the ControlNet wire),   indicates a connection to the PLC5C at node address 7.
+]]>
+</Comment>
+<Text>
+<![CDATA[XIO(L1_to_PLC5C.EN)MSG(L1_to_PLC5C);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

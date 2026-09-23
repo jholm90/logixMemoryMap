@@ -1,0 +1,1884 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Kinematics_Articulated_Independent_3D" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:30:14 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Kinematics_Articulated_Independent_3D" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:30:03 2018" LastModifiedDate="Fri Jan 19 07:30:03 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0025_2732" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Begin_Application" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Center" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="CenterVia_points" TagType="Base" DataType="REAL" Dimensions="10 3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 80 41 00 00 40 C0 
+00 00 20 41 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 80 41 00 00 40 40 00 00 20 41 00 00 80 41 
+00 00 40 40 00 00 20 41 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 80 41 00 00 40 C0 00 00 20 41 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="10,3" Radix="Float">
+<Element Index="[0,0]" Value="0.0"/>
+<Element Index="[0,1]" Value="0.0"/>
+<Element Index="[0,2]" Value="0.0"/>
+<Element Index="[1,0]" Value="0.0"/>
+<Element Index="[1,1]" Value="0.0"/>
+<Element Index="[1,2]" Value="0.0"/>
+<Element Index="[2,0]" Value="16.0"/>
+<Element Index="[2,1]" Value="-3.0"/>
+<Element Index="[2,2]" Value="10.0"/>
+<Element Index="[3,0]" Value="0.0"/>
+<Element Index="[3,1]" Value="0.0"/>
+<Element Index="[3,2]" Value="0.0"/>
+<Element Index="[4,0]" Value="16.0"/>
+<Element Index="[4,1]" Value="3.0"/>
+<Element Index="[4,2]" Value="10.0"/>
+<Element Index="[5,0]" Value="16.0"/>
+<Element Index="[5,1]" Value="3.0"/>
+<Element Index="[5,2]" Value="10.0"/>
+<Element Index="[6,0]" Value="0.0"/>
+<Element Index="[6,1]" Value="0.0"/>
+<Element Index="[6,2]" Value="0.0"/>
+<Element Index="[7,0]" Value="16.0"/>
+<Element Index="[7,1]" Value="-3.0"/>
+<Element Index="[7,2]" Value="10.0"/>
+<Element Index="[8,0]" Value="0.0"/>
+<Element Index="[8,1]" Value="0.0"/>
+<Element Index="[8,2]" Value="0.0"/>
+<Element Index="[9,0]" Value="0.0"/>
+<Element Index="[9,1]" Value="0.0"/>
+<Element Index="[9,2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="cntrlTimer" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CS_3D_Artindep_Target" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="Motion_Group" SystemType="Articulated Independent" Dimension="3" Axes="Physical_Joint_1 Physical_Joint_2 Physical_Joint_3" MaximumPendingMoves="1" CoordinationMode="Ancillary Ancillary Ancillary" CoordinationUnits="Inches" ConversionRatioNumerator="1.0 1.0 1.0" ConversionRatioDenominator="1 1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="0.0"
+ MaximumAcceleration="0.0" MaximumDeceleration="0.0" ActualPositionTolerance="0.0" CommandPositionTolerance="0.0" TransformDimension="3" JointRatioNumerator="1.0 1.0 1.0" JointRatioDenominator="1 1 1" LinkLength1="10.6" LinkLength2="11.6" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0"
+ ZeroAngleOffset3="0.0" BaseOffset1="3.0" BaseOffset2="0.0" BaseOffset3="5.2" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="3.5" DynamicsConfigurationBits="7" MaximumAccelerationJerk="0.0" MaximumDecelerationJerk="0.0"/>
+</Data>
+</Tag>
+<Tag Name="CS_Source" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="Motion_Group" SystemType="Cartesian" Dimension="3" Axes="Virtual_vx_1 Virtual_vx_2 Virtual_vx_3" MaximumPendingMoves="1" CoordinationMode="Primary Primary Primary" CoordinationUnits="Inches" ConversionRatioNumerator="1.0 1.0 1.0" ConversionRatioDenominator="1 1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="10.0"
+ MaximumAcceleration="100.0" MaximumDeceleration="100.0" ActualPositionTolerance="0.1" CommandPositionTolerance="0.1" TransformDimension="3" JointRatioNumerator="1.0 1.0 1.0" JointRatioDenominator="1 1 1" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0"
+ ZeroAngleOffset3="0.0" BaseOffset1="0.0" BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="1000.0" MaximumDecelerationJerk="1000.0"/>
+</Data>
+</Tag>
+<Tag Name="CtrlNameUpdate" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CurrentTime" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>B1 26 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="9905"/>
+</Data>
+</Tag>
+<Tag Name="CW" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="DoneBit" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Go_ToStartPosition" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="IP" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 88 C1</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-17.0"/>
+</Data>
+</Tag>
+<Tag Name="mah1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 11 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mah2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 11 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mah3" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 11 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mct1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="570425344"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mc_initialposition" TagType="Base" DataType="MOTION_INSTRUCTION" Dimensions="3">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_INSTRUCTION" Dimensions="3">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="mc_transformStop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mc_transformStop2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mc_word" TagType="Base" DataType="MOTION_INSTRUCTION" Dimensions="20">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_INSTRUCTION" Dimensions="20">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Motion_Group" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="5000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="move" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="myTimer" TagType="Base" DataType="TIMER">
+<Data>00 00 00 00 10 27 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="10000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Name" TagType="Base" DataType="STRING">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="0">
+<![CDATA['']]>
+</Data>
+</Tag>
+<Tag Name="ort" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Out" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="Physical_Joint_1" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="297.619" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Degrees" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="90.0" HomeOffset="0.0" MaximumSpeed="36000.0" MaximumAcceleration="360000.0" MaximumDeceleration="450000.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="11093878.0" MaximumDecelerationJerk="16875000.0"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Physical_Joint_2" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="416.66666" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Degrees" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="-90.0" HomeOffset="0.0" MaximumSpeed="36000.0" MaximumAcceleration="360000.0" MaximumDeceleration="450000.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="10800000.0" MaximumDecelerationJerk="22500000.0"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Physical_Joint_3" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="25400.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Inches" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="5.0" HomeOffset="0.0" MaximumSpeed="200000.0" MaximumAcceleration="2000000.0" MaximumDeceleration="2000000.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="60000000.0" MaximumDecelerationJerk="58431372.0"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Physical_vx1_ActualPosition" TagType="Base" DataType="REAL" Radix="Float">
+<Data>C8 FE B3 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="89.99762"/>
+</Data>
+</Tag>
+<Tag Name="Physical_vx2_ActualPosition" TagType="Base" DataType="REAL" Radix="Float">
+<Data>C6 FE B3 C2</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-89.997604"/>
+</Data>
+</Tag>
+<Tag Name="Physical_vx3_ActualPosition" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 A0 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="5.0"/>
+</Data>
+</Tag>
+<Tag Name="PIDControl" TagType="Base" DataType="PID">
+<Data>80 A2 80 80 CD CC 4C 3E 00 00 48 41 85 EB 01 41 
+00 00 C0 3F 00 00 00 00 00 F0 7F 45 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 C8 42 00 00 00 00 
+0A D7 23 3C 4D D2 32 3E 00 D4 CF 3C 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 F0 7F 45 00 00 00 00 
+00 00 00 00 00 00 C8 42 00 00 00 00 00 00 00 00 
+00 00 C8 42 89 22 BC 3B 54 E6 1E BC 4D D2 32 3E 
+00 D4 CF 3C CD CC 4C 3E 81 0C C8 3C 00 00 80 3F 
+1F A5 8C 44 00 00 48 41 85 EB 01 41 00 00 C0 3F 
+00 00 48 41 3E 2E D2 3C 00 A0 8C 44 00 00 00 00 
+00 00 80 3F 00 00 80 3F</Data>
+<Data Format="Decorated"><Structure DataType="PID">
+<DataValueMember Name="CTL" DataType="DINT" Radix="Decimal" Value="-2139053440"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="CT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DOE" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SWM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="MO" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PE" DataType="BOOL" Value="1"/>
+<DataValueMember Name="NDF" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NOBC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="NOZC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="INI" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SPOR" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OLL" DataType="BOOL" Value="1"/>
+<DataValueMember Name="OLH" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EWD" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DVNA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DVPA" DataType="BOOL" Value="1"/>
+<DataValueMember Name="PVLA" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVHA" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SP" DataType="REAL" Radix="Float" Value="0.2"/>
+<DataValueMember Name="KP" DataType="REAL" Radix="Float" Value="12.5"/>
+<DataValueMember Name="KI" DataType="REAL" Radix="Float" Value="8.12"/>
+<DataValueMember Name="KD" DataType="REAL" Radix="Float" Value="1.5"/>
+<DataValueMember Name="BIAS" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXS" DataType="REAL" Radix="Float" Value="4095.0"/>
+<DataValueMember Name="MINS" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SO" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXO" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="MINO" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UPD" DataType="REAL" Radix="Float" Value="0.01"/>
+<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="0.17463036"/>
+<DataValueMember Name="ERR" DataType="REAL" Radix="Float" Value="0.025369644"/>
+<DataValueMember Name="OUT" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVH" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVL" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVP" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVN" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVDB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DVDB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXI" DataType="REAL" Radix="Float" Value="4095.0"/>
+<DataValueMember Name="MINI" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="TIE" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXCV" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="MINCV" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MINTIE" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="MAXTIE" DataType="REAL" Radix="Float" Value="100.0"/>
+<ArrayMember Name="DATA" DataType="REAL" Dimensions="17" Radix="Float">
+<Element Index="[0]" Value="5.74142160e-003"/>
+<Element Index="[1]" Value="-0.009698469"/>
+<Element Index="[2]" Value="0.17463036"/>
+<Element Index="[3]" Value="0.025369644"/>
+<Element Index="[4]" Value="0.2"/>
+<Element Index="[5]" Value="0.024420025"/>
+<Element Index="[6]" Value="1.0"/>
+<Element Index="[7]" Value="1125.16"/>
+<Element Index="[8]" Value="12.5"/>
+<Element Index="[9]" Value="8.12"/>
+<Element Index="[10]" Value="1.5"/>
+<Element Index="[11]" Value="12.5"/>
+<Element Index="[12]" Value="0.025656816"/>
+<Element Index="[13]" Value="1125.0"/>
+<Element Index="[14]" Value="0.0"/>
+<Element Index="[15]" Value="1.0"/>
+<Element Index="[16]" Value="1.0"/>
+</ArrayMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="PIDIn" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="PIDOut" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="PIDSetPoint" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="ReqTime" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>9B 26 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="9883"/>
+</Data>
+</Tag>
+<Tag Name="RunBit" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Signal" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="Skip" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Str_1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="sw" TagType="Base" DataType="BOOL" Dimensions="32" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="BOOL" Dimensions="32" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="testDINT" TagType="Base" DataType="DINT" Radix="Hex">
+<Data>00 00 80 7F</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Hex" Value="16#7f80_0000"/>
+</Data>
+</Tag>
+<Tag Name="testDINTA" TagType="Base" DataType="DINT" Dimensions="6" Radix="Decimal">
+<Data>00 00 80 7F 00 00 80 7F 00 00 80 7F 00 00 80 7F 
+00 00 80 7F 00 00 80 7F</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="6" Radix="Decimal">
+<Element Index="[0]" Value="2139095040"/>
+<Element Index="[1]" Value="2139095040"/>
+<Element Index="[2]" Value="2139095040"/>
+<Element Index="[3]" Value="2139095040"/>
+<Element Index="[4]" Value="2139095040"/>
+<Element Index="[5]" Value="2139095040"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Transform_Start" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="trs" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="TypeBit" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Virtual_vx_1" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3000.0" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Virtual_vx_2" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3081.6326" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Virtual_vx_3" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="8000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="2921.5686" MaximumDecelerationJerk="2921.5686"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="A" TagType="Base" DataType="REAL" Radix="Float">
+<Data>E7 3E BB 3A</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.42857141e-003"/>
+</Data>
+</Tag>
+<Tag Name="alpha1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="alpha2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 DC 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="110.0"/>
+</Data>
+</Tag>
+<Tag Name="alpha3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 70 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="240.0"/>
+</Data>
+</Tag>
+<Tag Name="B" TagType="Base" DataType="REAL" Radix="Float">
+<Data>60 F4 F0 C8</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-493475.0"/>
+</Data>
+</Tag>
+<Tag Name="BOGSV" TagType="Base" DataType="REAL" Dimensions="6" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="6" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+<Element Index="[3]" Value="0.0"/>
+<Element Index="[4]" Value="0.0"/>
+<Element Index="[5]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="BOSSV" TagType="Base" DataType="REAL" Dimensions="6" Radix="Float">
+<Data>00 00 80 7F 00 00 80 7F 00 00 80 7F 86 C7 77 80 
+86 C7 77 80 86 C7 77 80</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="6" Radix="Float">
+<Element Index="[0]" Value="1.$"/>
+<Element Index="[1]" Value="1.$"/>
+<Element Index="[2]" Value="1.$"/>
+<Element Index="[3]" Value="-1.09999996e-038"/>
+<Element Index="[4]" Value="-1.09999996e-038"/>
+<Element Index="[5]" Value="-1.09999996e-038"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="C" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 9B C3</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-310.0"/>
+</Data>
+</Tag>
+<Tag Name="cartacc" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+<Tag Name="cartdec" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+<Tag Name="cartspeed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 20 41</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="10.0"/>
+</Data>
+</Tag>
+<Tag Name="D1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 80 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.0"/>
+</Data>
+</Tag>
+<Tag Name="D2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>D8 BF 7F BF</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-0.99902105"/>
+</Data>
+</Tag>
+<Tag Name="D3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>82 CD A6 3E</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.32578665"/>
+</Data>
+</Tag>
+<Tag Name="E1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="E2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>91 08 72 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.9454432"/>
+</Data>
+</Tag>
+<Tag Name="E3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>91 08 72 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.9454432"/>
+</Data>
+</Tag>
+<Tag Name="G1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+<Tag Name="G2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>D3 A6 D0 C2</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-104.32583"/>
+</Data>
+</Tag>
+<Tag Name="G3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>F8 3E FE 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="127.122986"/>
+</Data>
+</Tag>
+<Tag Name="L1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 AF 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="350.0"/>
+</Data>
+</Tag>
+<Tag Name="L2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 48 44</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="800.0"/>
+</Data>
+</Tag>
+<Tag Name="M1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 5C C2</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-55.0"/>
+</Data>
+</Tag>
+<Tag Name="M2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>98 5B 20 C3</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-160.35779"/>
+</Data>
+</Tag>
+<Tag Name="M3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>20 04 DF C1</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-27.877014"/>
+</Data>
+</Tag>
+<Tag Name="mahstrat" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Mclm1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm10" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm11" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm3" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm4" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm5" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm6" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm7" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm8" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Mclm9" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="33554432"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="P1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>4E 2A C6 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="99.08263"/>
+</Data>
+</Tag>
+<Tag Name="P2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>4C 87 64 BF</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-0.89268947"/>
+</Data>
+</Tag>
+<Tag Name="P3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>B9 13 8B BF</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-1.0865394"/>
+</Data>
+</Tag>
+<Tag Name="pos" TagType="Base" DataType="REAL" Dimensions="12 3" Radix="Float">
+<Data>00 00 80 41 00 00 00 C1 00 00 80 41 00 00 80 41 
+00 00 00 C1 00 00 20 41 00 00 80 41 00 00 40 C0 
+00 00 70 41 00 00 80 41 00 00 40 40 00 00 70 41 
+00 00 80 41 00 00 00 41 00 00 20 41 00 00 80 41 
+00 00 40 40 00 00 70 41 00 00 80 41 00 00 40 C0 
+00 00 70 41 00 00 80 41 00 00 00 C1 00 00 20 41 
+00 00 20 41 00 00 20 41 00 00 A0 40 00 00 00 00 
+00 00 C8 C1 00 00 00 00 00 00 00 00 00 00 C8 C1 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="12,3" Radix="Float">
+<Element Index="[0,0]" Value="16.0"/>
+<Element Index="[0,1]" Value="-8.0"/>
+<Element Index="[0,2]" Value="16.0"/>
+<Element Index="[1,0]" Value="16.0"/>
+<Element Index="[1,1]" Value="-8.0"/>
+<Element Index="[1,2]" Value="10.0"/>
+<Element Index="[2,0]" Value="16.0"/>
+<Element Index="[2,1]" Value="-3.0"/>
+<Element Index="[2,2]" Value="15.0"/>
+<Element Index="[3,0]" Value="16.0"/>
+<Element Index="[3,1]" Value="3.0"/>
+<Element Index="[3,2]" Value="15.0"/>
+<Element Index="[4,0]" Value="16.0"/>
+<Element Index="[4,1]" Value="8.0"/>
+<Element Index="[4,2]" Value="10.0"/>
+<Element Index="[5,0]" Value="16.0"/>
+<Element Index="[5,1]" Value="3.0"/>
+<Element Index="[5,2]" Value="15.0"/>
+<Element Index="[6,0]" Value="16.0"/>
+<Element Index="[6,1]" Value="-3.0"/>
+<Element Index="[6,2]" Value="15.0"/>
+<Element Index="[7,0]" Value="16.0"/>
+<Element Index="[7,1]" Value="-8.0"/>
+<Element Index="[7,2]" Value="10.0"/>
+<Element Index="[8,0]" Value="10.0"/>
+<Element Index="[8,1]" Value="10.0"/>
+<Element Index="[8,2]" Value="5.0"/>
+<Element Index="[9,0]" Value="0.0"/>
+<Element Index="[9,1]" Value="-25.0"/>
+<Element Index="[9,2]" Value="0.0"/>
+<Element Index="[10,0]" Value="0.0"/>
+<Element Index="[10,1]" Value="-25.0"/>
+<Element Index="[10,2]" Value="0.0"/>
+<Element Index="[11,0]" Value="0.0"/>
+<Element Index="[11,1]" Value="0.0"/>
+<Element Index="[11,2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Q1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>6E 2B 34 C4</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-720.6786"/>
+</Data>
+</Tag>
+<Tag Name="Q2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>40 8C 1D C4</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-630.1914"/>
+</Data>
+</Tag>
+<Tag Name="Q3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>E3 99 33 C4</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-718.4045"/>
+</Data>
+</Tag>
+<Tag Name="R" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 1B 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="155.0"/>
+</Data>
+</Tag>
+<Tag Name="Ra" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 48 43</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="200.0"/>
+</Data>
+</Tag>
+<Tag Name="Rb" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 34 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="45.0"/>
+</Data>
+</Tag>
+<Tag Name="start" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="startmct" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="step" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="theta1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>9F ED CE BF</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-1.6166266"/>
+</Data>
+</Tag>
+<Tag Name="theta2" TagType="Base" DataType="REAL" Radix="Float">
+<Data>1B 90 BA BF</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="-1.4575227"/>
+</Data>
+</Tag>
+<Tag Name="theta3" TagType="Base" DataType="REAL" Radix="Float">
+<Data>08 C5 47 40</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="3.1214008"/>
+</Data>
+</Tag>
+<Tag Name="x" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+<Tag Name="y" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+<Tag Name="z" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 C8 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="100.0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="aaReadMe" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[(* This Routine describes how to run the sample project ]]>
+</Line>
+<Line Number="1">
+<![CDATA[]]>
+</Line>
+<Line Number="2">
+<![CDATA[Step1 -  Move physical axes to start position - See routine -  "Robot_StartPosition"]]>
+</Line>
+<Line Number="3">
+<![CDATA[Step2 -  Start the Transform -  See Routine  - "Transform_Routine"]]>
+</Line>
+<Line Number="4">
+<![CDATA[Step3 -  Begin Application -  See Routine - "Application Routine"]]>
+</Line>
+<Line Number="5">
+<![CDATA[Step4 -  Run Trend ]]>
+</Line>
+<Line Number="6">
+<![CDATA[]]>
+</Line>
+<Line Number="7">
+<![CDATA[]]>
+</Line>
+<Line Number="8">
+<![CDATA[]]>
+</Line>
+<Line Number="9">
+<![CDATA[]]>
+</Line>
+<Line Number="10">
+<![CDATA[]]>
+</Line>
+<Line Number="11">
+<![CDATA[]]>
+</Line>
+<Line Number="12">
+<![CDATA[]]>
+</Line>
+<Line Number="13">
+<![CDATA[]]>
+</Line>
+<Line Number="14">
+<![CDATA[]]>
+</Line>
+<Line Number="15">
+<![CDATA[]]>
+</Line>
+<Line Number="16">
+<![CDATA[]]>
+</Line>
+<Line Number="17">
+<![CDATA[]]>
+</Line>
+<Line Number="18">
+<![CDATA[]]>
+</Line>
+<Line Number="19">
+<![CDATA[]]>
+</Line>
+<Line Number="20">
+<![CDATA[]]>
+</Line>
+<Line Number="21">
+<![CDATA[]]>
+</Line>
+<Line Number="22">
+<![CDATA[]]>
+</Line>
+<Line Number="23">
+<![CDATA[]]>
+</Line>
+<Line Number="24">
+<![CDATA[]]>
+</Line>
+<Line Number="25">
+<![CDATA[]]>
+</Line>
+<Line Number="26">
+<![CDATA[]]>
+</Line>
+<Line Number="27">
+<![CDATA[*) ]]>
+</Line>
+</STContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(Transform_Routine,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[JSR(Robot_StartPosition,0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(PickAndPlace_Routine,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="PickAndPlace_Routine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Go to start position
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Begin_Application)EQU(step,0)[MCLM(CS_Source,mc_word[0],0,pos[0,0],cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[0].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Go to Pick position
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,1)[MCLM(CS_Source,mc_word[1],0,pos[1,0],cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[1].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Quarter Circle move  away from 
+pick position
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,2)[MCCM(CS_Source,mc_word[2],0,pos[2,0],Center,CenterVia_points[2,0],CW,cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[2].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[Linear Move to Drop Position
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,3)[MCLM(CS_Source,mc_word[3],0,pos[3,0],cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[3].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Circle move to drop position
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,4)[MCCM(CS_Source,mc_word[4],0,pos[4,0],Center,CenterVia_points[4,0],CW,cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[4].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Reverse Cycle
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,5)[MCCM(CS_Source,mc_word[5],0,pos[5,0],Center,CenterVia_points[4,0],CW,cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[5].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Linear Move to Pick position
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,6)[MCLM(CS_Source,mc_word[6],0,pos[6,0],cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,S-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[6].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[Go to Pick Position and Repeat Cycle
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,7)[MCCM(CS_Source,mc_word[7],0,pos[7,0],Center,CenterVia_points[7,0],CW,cartspeed,Units per sec,cartacc,Units per sec2,cartdec,Units per sec2,s-Curve,100.0,100.0,% of Time,1,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_word[7].PC) MOV(2,step) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Robot_StartPosition" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(Go_ToStartPosition)[MAM(Physical_Joint_1,mc_initialposition[0],0,-26,20.0,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ,MAM(Physical_Joint_2,mc_initialposition[1],0,80,20.0,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ,MAM(Physical_Joint_3,mc_initialposition[2],0,-80,20.0,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(mc_initialposition[0].PC)XIC(mc_initialposition[1].PC)XIC(mc_initialposition[2].PC)OTU(Go_ToStartPosition);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Transform_Routine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Enable transform and once enabled as indicated by the  status,
+  the trigger bit  is disabled
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Start)[MCT(CS_Source,CS_3D_Artindep_Target,mct1,ort[0],trs[0]) ,XIC(mct1.IP) OTU(Transform_Start) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Transform Stop Rung
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Stop1)[MCS(CS_3D_Artindep_Target,mc_transformStop,Coordinated Transform,No,100,Units per sec2,Yes,100.0,% of Time) ,XIC(mc_transformStop.PC) OTU(Transform_Stop1) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Please Note:  a Motion Axis stop  will also
+stop the transform
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Stop2)[MAS(Physical_Joint_1,mc_transformStop2,All,No,100,Units per sec2,No,1000,Units per sec3) ,XIC(mc_transformStop2.PC) OTU(Transform_Stop2) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="1"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends>
+<Trend Name="YZ_Plot" SamplePeriod="10" NumberOfCaptures="1" CaptureSizeType="Samples" CaptureSize="60000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 5 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 14 52 81 191 9 48 205 65 159 190 222 136 174 167 50 40
+ 0 0 0 0 0 0 0 0 0 0 0 0 240 74 177 58 214 48 198 1 3 0 0 0 0 6 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 213 5 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 12 0 0 0 13 0 0 0 14 0 0 0 15 0 0 0 16 0 0 0
+ 17 0 0 0 18 0 0 0 19 0 0 0 20 0 0 0 21 0 0 0 22 0 0 0 23 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 4 0 0 0 75 58 0 0 249 29 0 0 0 0 0 0 13 0 0 0 255 254 255 7 89 0 90 0 95 0 80 0
+ 108 0 111 0 116 0 0 0 0 0 1 0 0 0 1 0 0 0 200 0 0 0 255 157 3 0 255 1 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 255 254 255 0 255 254 255 0 1 96 234 0 0 0 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 0 100 5 0 0 3 0 255
+ 255 1 0 13 0 67 86 105 101 119 76 105 110 101 73 110 102 111 3 0 0 0 1 0 0 0 0 0 160 193 0 0 160 65 255 254 255 0 255 254
+ 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 27 86 0 105 0 114 0
+ 116 0 117 0 97 0 108 0 95 0 118 0 120 0 95 0 49 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0
+ 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 160 193 0 0 160 65 255
+ 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 27 86
+ 0 105 0 114 0 116 0 117 0 97 0 108 0 95 0 118 0 120 0 95 0 50 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111
+ 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 160 193
+ 0 0 160 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0
+ 255 254 255 27 86 0 105 0 114 0 116 0 117 0 97 0 108 0 95 0 118 0 120 0 95 0 51 0 46 0 65 0 99 0 116 0 117 0 97 0
+ 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 9 0 0 0 1 0 0 0 2
+ 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1
+ 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 3 0 0 0 255 0 0 255 0 0 255 255 0 0 0 0 0 0 2 0 0 0 4 0 0
+ 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 200 66 0 0 0 0 0 0 0 0 136 187 49 9 0 0 0 0 1 0 0 0 0 0 0
+ 0 3 0 1 0 0 0 1 0 0 0 1 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 1
+ 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 0 0 0 0 44 0 0 0 40 240 11 8 208 67 30 9 136 232 208
+ 8 128 63 146 9 32 245 254 7 56 114 255 7 40 53 255 7 232 192 254 7 184 165 217 8 96 111 255 7 128 128 128 0 128 128 128 0 255 239 255
+ 254 255 191 255 247 3 226 240 67 1 0 0 0 207 0 0 0 15 226 240 67 1 0 0 0 207 0 0 0 255 254 255 0 1 0 0 0 1 0 0
+ 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 40 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 92 0 0 0 245
+ 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 254 255 5 65
+ 0 114 0 105 0 97 0 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 3 0
+ 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 0 0 0 0 0
+ 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 255 255 1 0 9 0 67 76 105 110 101 73 110 102 111 3 0 0 0
+ 1 0 0 0 0 0 160 193 0 0 160 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0
+ 255 254 255 0 255 254 255 0 255 254 255 27 86 0 105 0 114 0 116 0 117 0 97 0 108 0 95 0 118 0 120 0 95 0 49 0 46 0 65 0
+ 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 5
+ 128 3 0 0 0 1 0 0 0 0 0 160 193 0 0 160 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0
+ 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 27 86 0 105 0 114 0 116 0 117 0 97 0 108 0 95 0 118 0 120 0 95 0 50
+ 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0
+ 255 254 255 0 5 128 3 0 0 0 1 0 0 0 0 0 160 193 0 0 160 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0
+ 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 27 86 0 105 0 114 0 116 0 117 0 97 0 108 0 95 0 118 0
+ 120 0 95 0 51 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0
+ 0 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 134 38 3 0</Template>
+<Pens>
+<Pen Name="Virtual_vx_1.ActualPosition" Color="16#00ff_0000" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="-20.0" Max="20.0"/>
+<Pen Name="Virtual_vx_2.ActualPosition" Color="16#0000_ff00" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="-20.0" Max="20.0"/>
+<Pen Name="Virtual_vx_3.ActualPosition" Color="16#0000_ffff" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="-20.0" Max="20.0"/>
+</Pens>
+</Trend>
+</Trends>
+</Controller>
+</RSLogix5000Content>

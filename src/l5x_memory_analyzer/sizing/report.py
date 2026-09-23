@@ -1,0 +1,1210 @@
+"""The flat report every consumer reads: {path, category, bytes, pct_of_total, tier,
+basis} rows, plus a list of errors and coverage gaps. The CLI, the UI, the CSV and
+XLSX export and every accuracy script all go through `build_report`, so no caller
+does arithmetic of its own.
+
+TWO SEPARATE CONFIDENCE CONCEPTS, and they are never blurred.
+
+  tier    "exact" for tag, UDT and AOI data space; "estimated" for compiled
+          logic. This is the one that matters. Atomic sizes and packing rules are
+          calculable and empirically verifiable; compiled ladder size is not
+          derivable from L5X at all, and every logic number must reach the UI
+          flagged as estimated. See CLAUDE.md's ground-truth constraint.
+  basis   The weakest MEMORY_MODEL.md tier (KNOWN, FITTED, ASSUMED, UNKNOWN) that
+          went into the number -- provenance within a tier, not a substitute for
+          it. A number can be tier "exact" and basis ASSUMED at the same time,
+          and that combination is exactly what needs a capture.
+
+Scoping: the whole task, program and routine shell decomposition, the project
+baseline and the firmware, catalog and safety deltas are properties of a PROJECT.
+A partial export has no project, so `parser/export_scope.py` decides first and
+those terms are charged only on a whole-controller export.
+"""
+
+from __future__ import annotations
+
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+
+from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
+from l5x_memory_analyzer.parser.datatypes import parse_data_types
+from l5x_memory_analyzer.parser.export_scope import context_names, detect_export_scope
+from l5x_memory_analyzer.parser.logic import (
+    RoutineLogic,
+    count_instructions_in_text,
+    parse_aoi_internal_logic,
+    parse_rll_routines,
+)
+from l5x_memory_analyzer.sizing.structured_text import (
+    parse_st_routines,
+    size_st_assignments,
+    size_st_control_flow,
+)
+from l5x_memory_analyzer.parser.modules import label_modules, parse_modules
+from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
+from l5x_memory_analyzer.parser.tasks import parse_tasks
+from l5x_memory_analyzer.sizing.confidence import weakest
+from l5x_memory_analyzer.sizing.alarms import size_alarm_conditions
+from l5x_memory_analyzer.sizing.coverage import audit_coverage
+from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, protected_routine_elements
+from l5x_memory_analyzer.sizing.constants import MemoryModel
+from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
+from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
+from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
+from l5x_memory_analyzer.sizing.udt import (
+    RecursiveUdtError,
+    UnknownDataTypeError,
+    compute_aoi_definition_cost,
+    compute_array_size,
+    compute_udt_definition_cost,
+    custom_string_maxlen,
+    referenced_data_type_names,
+)
+
+EXACT = "exact"
+ESTIMATED = "estimated"
+
+
+@dataclass(frozen=True)
+class SizeEntry:
+    path: str
+    category: str  # "controller_tag" | "program_tag"
+    data_type: str
+    bytes: int
+    pct_of_total: float
+    tier: str  # EXACT | ESTIMATED
+    basis: str  # KNOWN | ASSUMED | FITTED | UNKNOWN
+
+
+@dataclass(frozen=True)
+class SizeError:
+    path: str
+    message: str
+
+
+def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry], list[SizeError]]:
+    # Kept separate (not merged yet) so the udt_definition-cost pass below
+    # can tell a real UDT from an AOI -- an AOI-typed tag still sizes
+    # exactly like a UDT-typed one (merged dict below), but AOI *definition*
+    # cost isn't a confirmed formula yet (see udt.py/report.py comments),
+    # so only true UDTs get a definition-cost line item for now.
+    # Protected AOIs get a stand-in definition from their visible interface,
+    # so their instances and call sites are priced at a minimum rather than
+    # zero. See parser/protected.py.
+    add_protected_aoi_standins(root)
+    udt_types = parse_data_types(root)
+    aoi_types = parse_aoi_definitions(root)
+    data_types = {**udt_types, **aoi_types}
+    tags = parse_tags(root)
+    # AOI name -> its internal Logic-routine(s) content, aggregated across
+    # however many internal routines it declares (OQ-
+    # AOIINTERNALLOGIC -- real data confirms routine count doesn't matter,
+    # only total content does). tag_types isn't available yet at this
+    # point in the function and wouldn't resolve an AOI's own internal
+    # Parameter/LocalTag operand names anyway (they're not in the
+    # file-wide tag table), so the operand-type surcharge is skipped for
+    # this content, same as any other caller that omits tag_types.
+    # Export scope FIRST -- it decides whether this file even has a project
+    # to charge a base load to: anything that is not a
+    # controller export cannot use the base load, but rungs, routines and
+    # programs can still reference controller tags. Until this,
+    # every partial export was sized as a whole project: an exported RUNG
+    # came back at 15,080 bytes, 13,296 of which was empty_project_baseline.
+    # See parser/export_scope.py for how Studio 5000 marks target vs context.
+    scope = detect_export_scope(root)
+    ctx_names = context_names(root, scope)
+
+    aoi_internal_logic = parse_aoi_internal_logic(root)
+    # Operand -> type for every scope (sizing/operand_types.py): the
+    # operand-type surcharge follows the operand's TYPE however it is spelled.
+    file_operand_types = FileOperandTypes(root)
+
+    # Composite-scale surcharge cap (OQ-JSRSCALE/OQ-COMPOSITESCALE,
+    # see memory_model.yaml composite_surcharge_cap for the full derivation):
+    # the per-instruction surcharge rates below (aoi_logic_composite_
+    # surcharge_per_instr / jsr_target_composite_surcharge_per_instr), left
+    # uncapped, badly over-predict once a file's combined AOI+JSR content
+    # scale is much larger than the small files they were originally fit
+    # against. The cap applies to the FILE-WIDE total across every AOI's
+    # and every JSR target's own surcharge-eligible content combined, not
+    # per-entity, so it has to be computed once, up front, before either
+    # per-entity loop below applies its own share of it. A cheap early
+    # parse of the RLL routines (re-parsed again by name below where the
+    # rest of the function needs the full RoutineLogic objects, not just
+    # this instruction-count total) keeps this pre-pass self-contained.
+    _surcharge_aoi_instr = sum(
+        sum(r.instruction_counts.values()) for r in aoi_internal_logic.values()
+    )
+    _surcharge_jsr_instr = sum(
+        sum(r.instruction_counts.values())
+        for r in parse_rll_routines(root)
+        if r.is_jsr_target
+    )
+    _uncapped_total_surcharge = (
+        _surcharge_aoi_instr * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+        + _surcharge_jsr_instr * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+    )
+    # cap <= 0 means NO CAP (disabled -- see memory_model.yaml
+    # composite_surcharge_cap for why: it was patching a jsr rate that was
+    # 2.3x too high, and at real-program scale it suppressed 252k-1,261k
+    # bytes per file, which was the entire +12.62% real-file
+    # under-prediction). The mechanism is left in place, not deleted.
+    _cap = model.logic_instructions.composite_surcharge_cap
+    surcharge_scale = (
+        _cap / _uncapped_total_surcharge
+        if _cap > 0 and _uncapped_total_surcharge > _cap
+        else 1.0
+    )
+
+    sized: list[tuple[str, str, str, int, str]] = []
+    errors: list[SizeError] = []
+    # Every DECLARED UDT gets a definition-cost line, whether or not any
+    # tag currently uses it -- confirmed real (the "def_only,
+    # 0 instances" sweep specifically tests this: a UDT with zero tag
+    # instances still shows a real nonzero Capacity delta from its
+    # definition alone). Seeding with every udt_types key up front, not
+    # just ones reachable from a tag, was a real gap caught by
+    # cross-checking predictions against every real udt-category manifest
+    # row -- every *_def_only row was silently predicting 0.
+    # AOI definitions seeded in too (OQ-AOIDEF wiring) -- every
+    # declared AOI, like every declared UDT, gets a definition-cost line
+    # even with 0 tag instances (same real "def_only, 0 instances still
+    # shows a nonzero Capacity delta" finding this seeding already exists
+    # for UDTs above).
+    referenced_udts: set[str] = set(udt_types) | set(aoi_types)
+    for tag in tags:
+        category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
+        if tag.is_alias:
+            # An Alias tag is a pointer/rename onto another tag or module I/O
+            # point -- it has no DataType/data space of its own in the L5X,
+            # only a tag-table entry. Real cost confirmed
+            # (OQ-ALIASSIZE, RESOLVED_QUESTIONS.md): same shape as ordinary
+            # tag_overhead but with its own flat_base (56 vs 84).
+            alias_bytes = model.alias_overhead.bytes_for(tag.name)
+            sized.append((tag.path, category, "ALIAS", alias_bytes, model.alias_overhead.confidence))
+            continue
+        try:
+            size, basis = compute_array_size(tag.data_type, tag.dimensions, data_types, model)
+        except (UnknownDataTypeError, RecursiveUdtError) as exc:
+            errors.append(SizeError(path=tag.path, message=str(exc)))
+            continue
+        # A STANDALONE atomic tag's data occupies a fixed 4-byte slot whatever
+        # its declared type (OQ-SHELLCONST, wired). Six bare
+        # tag-count files with 50 tags each and nothing else in them give
+        # -3.00/tag on SINT, -2.00 on INT, +4.00 on LINT and exactly 0 on
+        # BOOL/DINT/REAL -- all six fitting "the slot is 4" with zero residual:
+        # SINT and INT pad up to it, LINT is reported in it rather than the 8
+        # its value needs.
+        #
+        # This is what the 69 typesweep_* files at exactly -5 were. Their pool
+        # is 5 tags each of SINT/INT/DINT/LINT/REAL: -15 -10 +0 +20 +0 = -5, on
+        # every one of them regardless of instruction or operand type.
+        #
+        # Arrays and structure members are deliberately untouched -- an array
+        # keeps element_size x count and a member keeps its packed size, both
+        # confirmed across every array and UDT sweep in the corpus -- so this is
+        # a per-TAG slot, not a change to atomic sizes anywhere else.
+        if not tag.dimensions and tag.data_type in model.atomic_types:
+            size = model.standalone_atomic_tag_slot_bytes
+            basis = weakest(basis, model.standalone_atomic_tag_slot_confidence)
+        # A standalone (non-array) UDT-typed tag's data slot is padded up to 8
+        # bytes -- the same kind of per-TAG slot rule as the atomic 4 above, one
+        # level up. Derived (capture-batch segment 5) from the one
+        # place two families disagreed: a 40-byte 10-DINT UDT tag measured
+        # -7.000/tag over 360 tags on the additivity D axis (addit_dm_ln vs
+        # addit_dh_ln) while a 9-byte 3-member UDT tag measured EXACTLY right
+        # over 500 tags (dscale2_udt_u001_t001..t500, 14 of 18 rows exact).
+        # One hypothesis fits both with zero residual: pad the slot to 8 (40
+        # stays 40, 9 becomes 16) and set udt_tag_extra to -4 instead of +3.
+        # Arrays are deliberately untouched -- dscale2_udt_arr002..arr500 read
+        # +1 at every length against a 12-byte 4-aligned ELEMENT, so the
+        # padding is on the tag's slot, not on each element.
+        elif not tag.dimensions:
+            slot_def = data_types.get(tag.data_type)
+            if (slot_def is not None and not slot_def.is_string_family
+                    and not slot_def.is_aoi):
+                align = model.standalone_udt_tag_slot_alignment
+                size = align * -(-size // align)
+        # tag_overhead is a per-Tag-entry cost additive with the tag's own
+        # raw data size (RESOLVED_QUESTIONS.md OQ-TAGOVERHEAD) -- applies
+        # regardless of data type, confirmed across atomic/UDT tags alike.
+        overhead = model.tag_overhead.bytes_for(tag.name)
+        size += overhead
+        basis = weakest(basis, model.tag_overhead.confidence)
+        # OQ-DEFSCALE: a UDT tag instance costs 3 more than the flat
+        # tag_overhead, and an AOI instance 8 LESS. Both exact over sweeps that
+        # vary definition count and instance count independently -- see
+        # memory_model.yaml definition_scale_correction.
+        # data_types, not udt_types -- AOI definitions live in aoi_types and a
+        # lookup against udt_types alone silently skipped every AOI instance.
+        tag_def = data_types.get(tag.data_type)
+        if tag_def is not None and not tag_def.is_string_family:
+            size += model.aoi_instance_extra if tag_def.is_aoi else model.udt_tag_extra
+        # Built-in STRING tags cost 2 bytes less than the flat tag_overhead
+        # formula above predicts (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD)
+        # -- confirmed KNOWN, not yet extended to custom StringFamily types.
+        if tag.data_type == "STRING":
+            size += model.string.builtin_tag_overhead_correction
+            basis = weakest(basis, model.string.builtin_tag_overhead_correction_confidence)
+        # Custom StringFamily-typed tags: no separate per-tag correction
+        # needed -- compute_udt_size's nearest-8 DATA-padding rule (real
+        # bug fix) already produces the exact real byte count.
+        # The mod4==1 bucket's own +8 one-time bonus is applied at the
+        # definition-cost line item below, not here.
+        elif tag.data_type in udt_types and udt_types[tag.data_type].is_string_family:
+            basis = weakest(basis, model.string.custom_data_padding_confidence)
+        sized.append((tag.path, category, tag.data_type, size, basis))
+        referenced_udts |= referenced_data_type_names(tag.data_type, data_types)
+
+    definition_entries: list[tuple[str, str, str, int, str]] = []
+    # An AOI's internal ladder, one entry per AOI. Compiled logic, so it is
+    # emitted as routine_logic (tier ESTIMATED) under the AOI's own path --
+    # never folded into the definition entry, which is tier EXACT. Folded in,
+    # it inherited the definition's exact tier (a breach of the ground-truth
+    # rule that every compiled-logic number is flagged as estimated), drew in
+    # the tree as an unexplained "Unitemized definition cost", and could not
+    # be given its rungs' measured confidence.
+    aoi_logic_entries: list[tuple[str, str, str, int, str]] = []
+    rll_names_by_aoi = {
+        aoi_el.get("Name"): [
+            r.get("Name") for r in aoi_el.iter("Routine") if (r.get("Type") or "RLL") == "RLL"
+        ]
+        for aoi_el in root.iter("AddOnInstructionDefinition")
+    }
+    for name in sorted(referenced_udts):
+        # Custom STRING types (Family="StringFamily") have their own
+        # confirmed cost model (OQ-CUSTOMSTRING: total ~= maxlen + 302,
+        # already fully captured by compute_udt_size's is_string_family
+        # branch) -- the generic udt_definition formula was fit against
+        # ordinary UDTs and doesn't apply. Applying it here was a real bug
+        # caught (every customstring_* real data point was
+        # over-predicted by a spurious ~224-228 blocks).
+        if name in aoi_types:
+            # AOI definition cost, wired (OQ-AOIDEF) -- FITTED,
+            # not KNOWN, see memory_model.yaml aoi_definition for the real
+            # limitation (DINT-rate confirmed exact, BOOL/LINT-heavy AOIs
+            # under-predicted). Checked before the udt_types string-family
+            # branch below since an AOI name is never also a udt_types key.
+            def_bytes, def_basis = compute_aoi_definition_cost(name, data_types, model)
+            # OQ-DEFSCALE: an AOI DEFINITION is over-charged 3 --
+            # the remaining 3*n_def term of the fitted law once the per-instance
+            # -8 is applied. See memory_model.yaml definition_scale_correction.
+            def_bytes += model.aoi_definition_extra
+            internal_routine = aoi_internal_logic.get(name)
+            if internal_routine is not None:
+                # Real, confirmed (OQ-AOIINTERNALLOGIC): an AOI's
+                # internal Logic-routine content is NOT free -- weighed with
+                # the same per-instruction model as ordinary routine logic.
+                # charge_shell=False: the internal routine doesn't pay its
+                # own fixed_base_per_routine (that's a separate, already-
+                # confirmed cost the aoi_definition base already covers).
+                content_bytes, content_basis = compute_routine_logic_bytes(
+                    internal_routine, model.logic_instructions, charge_shell=False,
+                    operand_types=file_operand_types.for_aoi(name),
+                )
+                # real composite-scale regression (memory_model.
+                # yaml aoi_logic_composite_surcharge_per_instr): the per-
+                # instruction weights above, fit against the small dedicated
+                # isolation test, still underpredict an AOI's real internal-
+                # logic cost at composite scale (multiple distinct AOI
+                # definitions with real logic in the same file) -- this
+                # additive surcharge is that real, FITTED (not KNOWN) gap.
+                content_instr_count = sum(internal_routine.instruction_counts.values())
+                # File-wide cap applied as a uniform scale factor -- see
+                # surcharge_scale's own derivation above.
+                surcharge = round(
+                    content_instr_count
+                    * model.logic_instructions.aoi_logic_composite_surcharge_per_instr
+                    * surcharge_scale
+                )
+                if surcharge:
+                    content_bytes += surcharge
+                    content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
+                # Per-rung cost of AOI-internal logic, over and above the
+                # per-instruction weights. Measured from
+                # aoistr_scale_rung_n{011,024,048,085} -- identical rungs, only
+                # the count varies -- where the residual is a dead-straight
+                # 4 bytes per rung (slope exactly 4.0 between every consecutive
+                # pair, over the real corpus range of 11 to 85 internal rungs).
+                per_rung = model.logic_instructions.aoi_internal_per_rung
+                if per_rung and internal_routine.rung_count:
+                    content_bytes += per_rung * internal_routine.rung_count
+                    content_basis = weakest(
+                        content_basis, model.logic_instructions.aoi_internal_per_rung_confidence
+                    )
+                # OQ-AOIINTERNALLOGIC: an AOI-internal instruction
+                # that WRITES a non-BOOL destination costs 4 more than the same
+                # instruction in a Program routine; one writing a BOOL, or
+                # writing nothing, costs the same. This is what per_rung above
+                # was really measuring -- aoistr_scale_rung's rungs carry one
+                # MOV each, so per-rung and per-word-destination are the same
+                # number there and nowhere else. See memory_model.yaml
+                # aoi_internal_per_word_destination.
+                per_word_dest = model.logic_instructions.aoi_internal_per_word_destination
+                if per_word_dest and internal_routine.word_destination_count:
+                    content_bytes += per_word_dest * internal_routine.word_destination_count
+                    content_basis = weakest(
+                        content_basis,
+                        model.logic_instructions.aoi_internal_per_word_destination_confidence,
+                    )
+                names = [n for n in rll_names_by_aoi.get(name, []) if n] or ["Logic"]
+                aoi_logic_entries.append((
+                    f"aoi_definitions/{name}/{'+'.join(names)}", "routine_logic", "RLL",
+                    content_bytes, content_basis,
+                ))
+            definition_entries.append((
+                f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis,
+            ))
+            continue
+        if udt_types[name].is_string_family:
+            # Custom STRING types get their own one-time definition cost
+            # instead (OQ-CUSTOMSTRINGDEF, resolved) -- the
+            # ordinary udt_definition formula was fit against ordinary
+            # UDTs and doesn't apply (confirmed: applying it over-predicted
+            # every real customstring_* data point by ~224-228 blocks).
+            # maxlen mod 4 == 1 gets an extra +8 one-time definition-cost
+            # bonus, confirmed (3/3 real points exact: 49, 101,
+            # 501) -- paired with the "no per-tag correction" branch above.
+            # The base itself depends on the TYPE's own name length --
+            # SOLVED a clean step function, see
+            # memory_model.yaml's custom_definition_base for the
+            # derivation.
+            def_cost = model.string.custom_definition_cost_for(len(name))
+            if custom_string_maxlen(udt_types[name]) % 4 == 1:
+                def_cost += model.string.custom_mod4eq1_definition_bonus
+            definition_entries.append((
+                f"udt_definitions/{name}", "udt_definition", name,
+                def_cost, model.string.custom_definition_confidence,
+            ))
+            continue
+        def_bytes, def_basis = compute_udt_definition_cost(name, udt_types, model)
+        # OQ-DEFSCALE: a UDT DEFINITION costs 16 more than the
+        # member-count-and-name formula gives. Exact over 14 rows spanning 1..25
+        # definitions -- see memory_model.yaml definition_scale_correction.
+        def_bytes += model.udt_definition_extra
+        definition_entries.append((f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis))
+
+    # Compiled logic size -- ESTIMATED tier, never blurred with the EXACT
+    # tag/UDT/AOI tier above (CLAUDE.md's ground-truth constraint: L5X
+    # doesn't reveal how Logix compiles rungs, this is a fitted heuristic
+    # model, not a formula derived from first principles). ST routines are
+    # skipped entirely by parse_rll_routines, not estimated as if RLL.
+    # Bare tag name -> DataType, for the operand-type surcharge
+    # (OQ-OPERANDTYPE) to resolve a type-sensitive instruction's operands
+    # against. Deliberately GLOBAL (controller-scope + every program's
+    # tags merged by bare name, last one wins on a collision) rather than
+    # scoped per-routine's own program -- a real simplification, not
+    # something confirmed safe: two different programs each declaring
+    # their own same-named tag of different types would resolve to
+    # whichever one this dict saw last, not necessarily the one the
+    # routine doing the actual instruction call can see. None of this
+    # project's real calibration data exercises that collision, so it's
+    # untested territory, not a guessed-away one -- flagged here rather
+    # than silently assumed correct.
+    tag_types = {t.name: t.data_type for t in tags if t.data_type}
+
+    # Tag-based alarm conditions (OQ-ALARMCOND, solved exactly).
+    # Placed here because it needs tag_types, which is built just above, and
+    # a UDT member map -- real AssocTagN references are member paths like
+    # "Alarms_Edger1[0].Number", so bare-tag-name resolution would find
+    # almost nothing on a real file. See sizing/alarms.py.
+    _udt_member_types = {
+        name: {mem.name: mem.data_type for mem in defn.members}
+        for name, defn in udt_types.items()
+    }
+    alarm_entries, alarm_conditions = size_alarm_conditions(
+        root, model, tag_types, _udt_member_types
+    )
+
+    all_routines = parse_rll_routines(root)
+
+    # Target routine name -> declared param count, from every real JSR(...)
+    # call site across the whole file (OQ-JSRPARAMCOST, wired).
+    # A(n) below is a property of the TARGET routine's own Parameters-block
+    # declaration, not of any one caller/call-site, so it's built once here
+    # rather than inside the per-routine loop. Real Logix wouldn't compile
+    # mismatched param counts across call sites to the same target, so the
+    # first count seen for a name is trusted.
+    jsr_target_param_counts: dict[str, int] = {}
+    for routine in all_routines:
+        for target, n_in, _m_out in routine.jsr_calls:
+            jsr_target_param_counts.setdefault(target, n_in)
+    # Structured (UDT/STRING) parameters per distinct target, read off the first
+    # call to it -- the target-side half of the COP-style copy.
+    jsr_target_structured: dict[str, int] = {}
+    for routine in all_routines:
+        for target, args in routine.jsr_call_args:
+            jsr_target_structured.setdefault(
+                target, structured_arg_count(args, tag_types, _udt_member_types))
+
+    logic_entries: list[tuple[str, str, str, int, str]] = list(aoi_logic_entries)
+    n_plain_routines = 0
+    # Fixed shell for routines that CALL a subroutine. Billed as its own line
+    # item rather than hidden inside the calling routine's instruction total.
+    n_jsr_caller_routines = 0
+    rll_aoi_file_charged = False
+    # (program, routine) for every ordinary (non-JSR, non-Safety) routine, in
+    # document order, so the shell block below can charge each name past the
+    # first one IN ITS OWN PROGRAM.
+    plain_routine_names: list[tuple[str, str]] = []
+    for routine in all_routines:
+        if routine.is_jsr_target:
+            # The "target content is already folded into the
+            # caller's jsr_fixed_base_per_routine" finding only ever held
+            # for a trivial 1-NOP-rung stub target -- see RoutineLogic.
+            # is_jsr_target's docstring. Real data
+            # (jsr_target_content_scale_{010,050,100,150}), disproves it at
+            # real scale: predicted stayed flat regardless of target size
+            # while real Capacity grew cleanly with it (see OPEN_QUESTIONS.md
+            # OQ-JSRPARAMCOST). jsr_fixed_base_per_routine is a flat constant
+            # (the caller's own one-time cost of declaring/having a target
+            # subroutine exist), not content-scaled, so it was never actually
+            # capable of absorbing variable content -- the old confirmation
+            # just never varied content size enough to notice. Fixed: weigh
+            # the target's own instructions with the same per-instruction
+            # model as any other routine (charge_shell=False -- the target
+            # doesn't pay its own fixed_base_per_routine; the caller's
+            # jsr_fixed_base_per_routine already covers the one-time cost of
+            # the target existing, this only adds its CONTENT). The target's
+            # own Parameters-block declaration cost (A(n), OQ-JSRPARAMCOST)
+            # is a separate, one-time cost, charged once per distinct target
+            # since it belongs to the callee, not the caller.
+            n = jsr_target_param_counts.get(routine.routine_name)
+            a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
+            a_cost += (model.logic_instructions.jsr_param_cost.structured_arg_target_extra
+                       * jsr_target_structured.get(routine.routine_name, 0))
+            # Its RETs that return values (jsr_multiret_*, jsr_mixedio_*,
+            # jsredge_ret_*): 48 per RET + 22 per value, less 72 per target.
+            a_cost += model.logic_instructions.jsr_param_cost.ret_cost(routine.ret_operand_counts)
+            a_basis = model.logic_instructions.jsr_param_cost.confidence
+            # Declaring a distinct target costs more than its parameter
+            # block alone (refit over all 61 captured JSR
+            # files). The residual there correlates +0.883 with distinct
+            # target COUNT and -0.445 with call count -- the model was
+            # under-charging each target by ~152 while over-charging each
+            # call by 4, two errors in opposite directions that hid each
+            # other. Name-dependent: matched namelen16/namelen32 pairs
+            # differ by exactly +1 per character per target.
+            a_cost += model.jsr_target_declaration.cost_for(
+                routine.routine_name, model.identifier_name_length,
+                routine.sbr_ret_operands)
+            a_basis = weakest(a_basis, model.jsr_target_declaration.confidence)
+            content_bytes, content_basis = compute_routine_logic_bytes(
+                routine, model.logic_instructions, tag_types, charge_shell=False,
+                operand_types=file_operand_types.for_program(routine.program_name),
+            )
+            # real composite-scale regression (memory_model.yaml
+            # jsr_target_composite_surcharge_per_instr): the per-instruction
+            # weights above, fit against the small dedicated isolation test,
+            # still underpredict a JSR target's real content cost at
+            # composite scale -- this additive surcharge is that real,
+            # FITTED (not KNOWN) gap, not a replacement for the weights.
+            content_instr_count = sum(routine.instruction_counts.values())
+            # File-wide cap applied as a uniform scale factor -- see
+            # surcharge_scale's own derivation near the top of this function.
+            surcharge = round(
+                content_instr_count
+                * model.logic_instructions.jsr_target_composite_surcharge_per_instr
+                * surcharge_scale
+            )
+            if surcharge:
+                content_bytes += surcharge
+                content_basis = weakest(content_basis, model.logic_instructions.composite_surcharge_confidence)
+            target_bytes = a_cost + content_bytes
+            if target_bytes:
+                # One entry per routine.path, same convention as every other
+                # routine below -- two separate tuples sharing a path would
+                # silently collide in any by-path grouping (hierarchy.py,
+                # tests) since only the total sum, not per-path dedup, is
+                # done downstream.
+                target_basis = a_basis if content_bytes == 0 else (content_basis if a_cost == 0 else weakest(a_basis, content_basis))
+                logic_entries.append((routine.path, "routine_logic", "RLL", target_bytes, target_basis))
+            continue
+        # Task/Program/Routine shell decomposition (OQ-
+        # TASKOVERHEAD, see memory_model.yaml task_program_overhead): a
+        # JSR-caller routine keeps paying its own jsr_fixed_base_per_routine
+        # here, unchanged from before this fix -- that pathway is
+        # separately validated and untouched. A PLAIN routine (no JSR
+        # involvement at all) no longer pays fixed_base_per_routine per
+        # routine; the shell entry built below charges it once for the
+        # whole file plus the real per-extra-Task/Program/routine marginal
+        # costs instead.
+        # OQ-SAFETYSCOPE-SIZING: "they are safety tasks
+        # and safety programs therefore they need separate sizing
+        # calculations" -- a Safety routine's own content is still sized
+        # normally below (charge_shell unaffected), it just doesn't count
+        # toward the ORDINARY n_plain_routines shell aggregate; its real
+        # shell cost is the separate safety_task_program_shell constant
+        # emitted after this loop.
+        is_plain = "JSR" not in routine.instruction_counts
+        # A JSR-CALLER routine is an ordinary routine for shell purposes
+        # (OQ-JSRCALLERBASE, closed). jsrcallers_k{01,02,04,05,10,20} hold 20
+        # calls and 20 targets fixed while the caller count runs 1 -> 20, and
+        # every extra caller adds exactly 280 bytes -- the same as an extra
+        # plain routine. The old per-caller jsr_fixed_base_per_routine charged
+        # 5,096 for each, so it over-predicted k20 by 91,784 bytes.
+        if not routine.is_safety_program:
+            n_plain_routines += 1
+            plain_routine_names.append(
+                (routine.program_name or "", routine.routine_name or ""))
+        # A JSR-caller routine's fixed base is SHELL, not logic. It is the
+        # cost of the routine existing and being dispatched to, and it does
+        # not move with call count, target count or target name length -- so
+        # folding it into the routine's instruction total made a rung of pure
+        # dispatch look expensive and mispriced, and charged the difference
+        # against JSR. Content and shell are now separate line items; the sum
+        # is unchanged.
+        logic_bytes, logic_basis = compute_routine_logic_bytes(
+            routine, model.logic_instructions, tag_types, charge_shell=False,
+            operand_types=file_operand_types.for_program(routine.program_name),
+        )
+        logic_bytes += jsr_structured_call_bytes(
+            routine, model.logic_instructions.jsr_param_cost, tag_types, _udt_member_types)
+        # An RLL file that calls an AOI carries a one-time 264 beyond the
+        # call sites themselves: dscale2_aoi_*, defscale_aoiinst and
+        # litop_bool_* all read exactly +264 (+252) with the call sites priced.
+        # Every such file has ONE calling routine, so "per file" and "per
+        # calling routine" fit identically; per file is the reading the data
+        # proves. The per-routine reading is worth 0.24% of the real programs,
+        # under the noise floor. Same constant as st_aoi_call_routine_bytes.
+        if routine.aoi_call_count and not rll_aoi_file_charged:
+            logic_bytes += model.structured_text.st_aoi_call_routine_bytes
+            rll_aoi_file_charged = True
+        logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
+        if not is_plain:
+            n_jsr_caller_routines += 1
+
+    # Structured Text (OQ-STSIZING, wired). Before this, ST
+    # contributed exactly ZERO -- parse_rll_routines filters to RLL and
+    # nothing else looked at an ST routine, while the real corpus carries
+    # 297 ST routines / 24,017 ST lines and one real program has 1,894 ST
+    # lines. See sizing/structured_text.py for the full derivation.
+    #
+    # Instructions inside ST are charged through the SAME weight table the
+    # rung sizer uses, not a parallel ST table: four ST/RLL pairs built
+    # operand-for-operand identical came back separated by exactly +432
+    # every time and by nothing else, so the per-instruction weights and
+    # the tier-aware CPT expression model both transfer unchanged.
+    #
+    # The 432 ST routine shell is deliberately NOT charged here. The empty
+    # ST control (realscale_st_n00000, one ST routine, zero statements)
+    # measures 23,376 and the model already predicts 23,365 for it without
+    # any ST term -- the routine's mere existence is already priced by the
+    # generic project/routine accounting, so adding the shell on top would
+    # double it. The +432 seen in the ST/RLL pairs is the difference
+    # between an ST routine and an RLL one, which that generic accounting
+    # already absorbs. Charging content only keeps the empty control exact.
+    for st_routine in parse_st_routines(root):
+        st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, tag_types)
+        st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
+        if st_unpriced_ops:
+            errors.append(SizeError(
+                path=f"coverage/st_operator/{st_routine.program_name}/{st_routine.routine_name}",
+                message=(
+                    f"ST assignment uses operator(s) {', '.join(st_unpriced_ops)} that have no "
+                    f"measured tier cost in this model, so their contribution is not priced. "
+                    f"The rest of each expression is still charged. See OQ-STBOOLOP."
+                ),
+            ))
+        for shape in sorted(set(st_unmeasured)):
+            n_ops, is_real = shape.split("|")
+            errors.append(SizeError(
+                path=f"coverage/st_expression/{st_routine.program_name}/{st_routine.routine_name}",
+                message=(
+                    f"ST assignment with {n_ops} operator(s) and "
+                    f"{'REAL' if is_real == 'true' else 'integer'} destination -- "
+                    f"shape not in the measured assignment_expression_cost table "
+                    f"(only 5 shapes measured), so its cost is unpriced. See OQ-STEXPR."
+                ),
+            ))
+        # Instruction calls AND assignment right-hand sides both go through
+        # the shared rung sizer -- the ST/RLL pairs showed each costs the
+        # same in either language, so ST reuses the weight table and the
+        # tier-aware CPT expression model rather than duplicating them.
+        instr_counts = count_instructions_in_text([st_routine.code_text])
+        st_instr_bytes, st_instr_basis = compute_routine_logic_bytes(
+            RoutineLogic(
+                program_name=st_routine.program_name,
+                routine_name=st_routine.routine_name,
+                rung_count=0,
+                instruction_counts=instr_counts,
+            ),
+            model.logic_instructions, tag_types, charge_shell=False,
+        )
+        # AOI-internal ST is attributed to the AOI DEFINITION, not to a
+        # phantom program. parse_st_routines names those owners "aoi:<Name>"
+        # (once it was established that most real ST lives inside
+        # AOIs -- 37% of real ST lines by measurement). Routing them through
+        # the program path would have rendered each AOI as a bogus
+        # top-level "Program: aoi:X" in the tree, which is exactly what the
+        # first cut did.
+        if st_routine.program_name.startswith("aoi:"):
+            aoi_name = st_routine.program_name[len("aoi:"):]
+            path = f"aoi_definitions/{aoi_name}/{st_routine.routine_name}"
+        else:
+            path = f"program:{st_routine.program_name}/{st_routine.routine_name}"
+        # An ST routine that is a JSR target pays the same declaration as an
+        # RLL target (jsr_target_declaration + A(n)). It had no charge at all:
+        # the per-caller jsr_fixed_base_per_routine used to cover it by
+        # accident, and every st_* file -- an RLL MainRoutine JSRing into an
+        # ST routine -- read +280 the moment that constant was corrected
+        # (OQ-JSRCALLERBASE). This prices them at 272, inside the noise floor.
+        n_params = jsr_target_param_counts.get(st_routine.routine_name)
+        if n_params is not None and not st_routine.program_name.startswith("aoi:"):
+            st_bytes += model.jsr_target_declaration.cost_for(
+                st_routine.routine_name, model.identifier_name_length)
+            st_bytes += model.logic_instructions.jsr_param_cost.a_cost(n_params)
+        logic_entries.append((
+            path, "routine_logic", "ST",
+            st_bytes + st_instr_bytes,
+            weakest(model.structured_text.confidence, st_instr_basis),
+        ))
+
+    # A protected routine is still a routine: its shell is priced like any
+    # other, its encrypted content is not (reported by audit_coverage).
+    for program_name, enc in protected_routine_elements(root):
+        n_plain_routines += 1
+        plain_routine_names.append((program_name, enc.get("Name") or ""))
+
+    if n_plain_routines > 0 and scope.is_whole_controller:
+        # PROJECT-ONLY: this whole decomposition is
+        # "one base + per-extra-task + per-extra-program + per-extra-routine
+        # ACROSS A PROJECT", fitted on whole-project captures. A partial
+        # export has no task list and no project-wide routine count -- the
+        # routines it does carry are mostly CONTEXT, present only so the
+        # target can reference them, so counting them here invents a shell
+        # for a project that is not in the file. The target's own logic is
+        # still sized normally; only the project-level scaffolding is
+        # dropped. What a single exported program/routine really costs in
+        # shell terms on import is unmeasured and accepted as such -- see
+        # OQ-EXPORTSCOPE in RESOLVED_QUESTIONS.md.
+        # See memory_model.yaml task_program_overhead for the full
+        # derivation (5 real files, exact/near-exact). Untouched when
+        # n_plain_routines == 0 -- a file whose only routines are JSR
+        # callers/targets already has its shell fully accounted for by
+        # jsr_fixed_base_per_routine above, adding this would double it.
+        # Safety tasks/programs excluded from these counts -- see below.
+        all_tasks = parse_tasks(root)
+        n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
+        n_tasks = max(len(all_tasks) - n_safety_tasks, 1)
+        programs_el = root.find("Controller/Programs")
+        if programs_el is not None:
+            all_program_els = programs_el.findall("Program")
+            n_safety_programs = sum(1 for p in all_program_els if p.get("Class") == "Safety")
+            n_programs = max(len(all_program_els) - n_safety_programs, 1)
+        else:
+            n_programs = 1
+        overhead = model.logic_instructions.task_program_overhead
+        shell_bytes = (
+            model.logic_instructions.fixed_base_per_routine
+            + overhead.task_extra * (n_tasks - 1)
+            + overhead.program_extra * (n_programs - 1)
+            + overhead.routine_extra * (n_plain_routines - 1)
+        )
+        # A Program's own NAME costs bytes (OQ-IDENTNAMELEN, wired)
+        # and had no term at all here, so program_multi_distinct_namelen40 was
+        # under-predicting by 400 bytes on 10 programs -- a flat prediction
+        # against a real +40/program. Same law as a JSR target's name, from
+        # two independent sweeps that agree at every measured length; see
+        # memory_model.yaml identifier_name_length.
+        #
+        # Charged for the extra programs only, matching program_extra's own
+        # n-1 convention: the first program's name is inside the baseline the
+        # 4,816-byte fixed_base_per_routine was fitted against.
+        if programs_el is not None:
+            named = [p for p in all_program_els if p.get("Class") != "Safety"]
+            for program_el in named[1:]:
+                shell_bytes += model.identifier_name_length.bytes_for(
+                    program_el.get("Name") or "")
+        # A TASK's own name costs too, and had no term at all -- the five
+        # identnamelen_task_* rows were the ones segment 9 closed without. Same
+        # n-1 convention as task_extra: the first task's name is inside the
+        # baseline. Tasks use bytes_for_task, which never returns zero.
+        for task in all_tasks[1:]:
+            if task.is_safety:
+                continue
+            shell_bytes += model.identifier_name_length.bytes_for_task(task.name)
+        # A ROUTINE's own name costs the same, and ordinary routines were getting
+        # nothing -- only JSR targets were charged, via jsr_target_declaration.
+        #
+        # PER PROGRAM, not per project: the first routine in each program is
+        # free and every additional one in that program pays. The two arms of
+        # the identnamelen_* sweep separate those two readings cleanly, because
+        # they distribute the same routine count differently.
+        # identnamelen_rtn_c* puts 11 routines in ONE program and reads 10 x 8
+        # per 8-character bucket; identnamelen_prog_c* puts 11 routines across
+        # 11 programs, one each, and reads ZERO for their names at every length.
+        # A flat project-wide n-1 fits the first and over-charges the second by
+        # exactly 80 on all twelve files.
+        seen_programs: set[str] = set()
+        for program_name, routine_name in plain_routine_names:
+            if program_name not in seen_programs:
+                seen_programs.add(program_name)
+                continue
+            shell_bytes += model.identifier_name_length.bytes_for(routine_name)
+        # The shell's own constants, not the instruction-weight block's tier:
+        # nothing in this entry is an instruction weight.
+        shell_basis = weakest(
+            model.logic_instructions.fixed_base_per_routine_confidence,
+            overhead.confidence,
+            model.identifier_name_length.confidence,
+        )
+        # Own category, NOT "routine_logic" -- this entry's path is
+        # "task_program_shell", not a "program:X/Y" routine path, so it
+        # can't go through hierarchy.py's per-program routine grouping (same
+        # class of bug already fixed once for project_baseline/udt_definition,
+        # see hierarchy.py's NON_TAG_GROUPS comment). Still ESTIMATED tier
+        # (it's part of the same fitted structural-logic estimate as every
+        # other routine_logic entry, just not attributable to one routine).
+        logic_entries.append(
+            ("task_program_shell", "task_program_shell", "SHELL", shell_bytes, shell_basis)
+        )
+    else:
+        all_tasks = parse_tasks(root)
+        n_safety_tasks = sum(1 for t in all_tasks if t.is_safety)
+
+    if n_safety_tasks > 0:
+        # OQ-SAFETYSCOPE-SIZING, real fix: previously a
+        # SafetyTask/SafetyProgram/SafetyRoutine triple was counted as one
+        # more of EACH ordinary shell component above (task_extra +
+        # program_extra + routine_extra = 1,456 bytes), overpredicting the
+        # real safety/non-safety delta (a flat +312 at fw v31-v33, +296 at
+        # v34-v38, confirmed exact across every real GuardLogix ES fwmatrix
+        # row) by nearly 5x. This flat constant replaces that entirely for
+        # every Safety task/program pair -- fitted from the v31-v33 real
+        # delta (312) minus the SafetyProgram's own already-separately-
+        # sized real MainRoutine content (this engine always predicts 16
+        # bytes for it, firmware-independent), landing on 296. Live-
+        # verified against all 24 real L81ES-L84ES fwmatrix
+        # rows: exact (0 delta) at v31-v33, a small known +16-byte
+        # (0.087%) residual at v34-v38 where the real MainRoutine content
+        # apparently drops to 0 bytes on real hardware but this engine
+        # still predicts 16 -- a genuine, tiny, firmware-dependent CONTENT
+        # gap (not a shell gap), well inside the <1% North Star, not
+        # chased further here.
+        safety_shell_bytes = model.logic_instructions.safety_task_program_shell * n_safety_tasks
+        safety_shell_basis = model.logic_instructions.safety_task_program_shell_confidence
+        logic_entries.append((
+            "safety_task_program_shell", "task_program_shell", "SHELL",
+            safety_shell_bytes, safety_shell_basis,
+        ))
+
+    # Fixed per-project overhead (controller/module/task/program scaffolding)
+    # confirmed -- see memory_model.yaml empty_project_baseline
+    # for the derivation (a literal, zero-variance 13,296-block gap between
+    # every clean real Capacity reading and this engine's own total, across
+    # 200+ independent real data points spanning wildly different
+    # categories). Every real program has this cost regardless of content,
+    # so it's emitted once per file, unconditionally.
+    # ...but ONLY for a whole-controller export. A program, routine, rung,
+    # AOI or UDT export is not a project and has no controller scaffolding
+    # of its own; charging it this baseline is charging it for a controller
+    # that is not in the file.
+    baseline_entries = (
+        [("project_baseline", "project_baseline", "PROJECT_BASELINE",
+          model.empty_project_baseline_bytes, model.empty_project_baseline_confidence)]
+        if scope.is_whole_controller else []
+    )
+
+    all_exact = sized + definition_entries + alarm_entries + baseline_entries
+    exact_total = sum(size for _, _, _, size, _ in all_exact)
+    logic_total = sum(size for _, _, _, size, _ in logic_entries)
+    total_bytes = exact_total + logic_total
+
+    entries = [
+        SizeEntry(
+            path=path,
+            category=category,
+            data_type=data_type,
+            bytes=size,
+            pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+            tier=EXACT,
+            basis=basis,
+        )
+        for path, category, data_type, size, basis in all_exact
+    ] + [
+        SizeEntry(
+            path=path,
+            category=category,
+            data_type=data_type,
+            bytes=size,
+            pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+            tier=ESTIMATED,
+            basis=basis,
+        )
+        for path, category, data_type, size, basis in logic_entries
+    ]
+
+    # Module I/O (WIRED -- see parser/modules.py docstring for
+    # the full derivation). module_defined_bytes is the real raw member-sum
+    # of the module's own auto-generated "Module-Defined" data type
+    # (InputTag/OutputTag/ConfigTag Structure content, computed the same
+    # way any UDT sizes) -- module_overhead (memory_model.yaml, FITTED from
+    # only 2 real points so far) is added on top, matching what those 2
+    # real captures showed: ~98% of a module's real cost is NOT its I/O
+    # data, it's a large near-flat per-module allocation. ESTIMATED tier,
+    # not EXACT -- unlike tag/UDT/AOI sizing this is NOT yet backed by
+    # enough real data to trust at the same confidence level (n=2), so it
+    # gets the same "flagged as estimated" treatment as compiled logic
+    # rather than silently living in the exact-tier total (CLAUDE.md's
+    # ground-truth constraint: never blur what's actually confirmed with
+    # what's still a fitted guess). A rack-aliased module (RackConnection/
+    # InAliasTag) does NOT get module_overhead charged -- zero real data
+    # exists for that shape's own incremental cost, it would be a pure
+    # guess; only its own module_defined_bytes (typically just a ConfigTag)
+    # is included, unmodeled-overhead noted via a SizeError instead so it's
+    # visible, not silently dropped.
+    module_entries: list[tuple[str, str, str, int, str]] = []
+    # How many modules of each catalog have been charged so far -- drives the
+    # first-instance vs repeat-instance overhead split below.
+    catalog_occurrence: dict[tuple[str, str], int] = {}
+    # Modules can be nameless (a real POINT I/O card is identified only by
+    # catalog and slot), so labels come from one file-level pass that can
+    # guarantee uniqueness -- see parser/modules.py label_modules.
+    _modules = parse_modules(root)
+    _module_labels = label_modules(_modules)
+
+    for _module_index, module in enumerate(_modules):
+        # "Local" is the processor's own self-entry (always present, always
+        # zero connections of its own) -- its overhead is already covered by
+        # empty_project_baseline elsewhere, never module_overhead. Excluded
+        # by name, not by the 0/0 heuristic below, so a genuine zero-
+        # connection I/O module isn't confused with the processor itself.
+        if module.name == "Local":
+            continue
+        label = _module_labels[_module_index]
+        if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
+            # real, found reviewing the export 24
+            # production file: a bridge/gateway module with NO connections
+            # of its own (e.g. a plain Ethernet-only "ETHERNET-BRIDGE" node
+            # fanning out to a remote PC/HMI/server -- 10 real instances in
+            # that one file) has zero module_defined_bytes and zero stated
+            # size, so it was silently `continue`d past with no SizeEntry
+            # AND no SizeError -- invisible, not just unmodeled. Every
+            # OTHER unmodeled-module case in this function (rack-aliased,
+            # processor-embedded, legacy-network) gets a visible SizeError
+            # instead of silent disappearance; this one didn't, purely
+            # because it predates OQ-MODULEIO's "several _variant_noconn
+            # files cost real nonzero bytes despite module_defined_bytes=0"
+            # finding. Same real gap, same fix direction: made visible, not
+            # silently dropped. Still genuinely unmodeled -- zero real data
+            # exists yet for what a zero-connection module's own overhead
+            # actually is, so no byte value is guessed here.
+            # WIRED (was: charged nothing, reported as a pure gap).
+            # Across the captured corpus, files where every module is priced
+            # have a median residual of 4 bytes (n=1,663) while files with at
+            # least one of these has a median of +2,750 (n=81) -- the single
+            # largest structural error in the corpus. It is now charged a flat
+            # rate; see memory_model.yaml zero_connection_module for why a
+            # per-catalog table was tried and REJECTED by cross-validation.
+            module_entries.append((
+                f"modules/{label}", "module_io", module.catalog_number,
+                model.zero_connection_module_bytes,
+                model.zero_connection_module_confidence,
+            ))
+            display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
+            errors.append(SizeError(
+                path=f"coverage/module_zero_connection/{label}",
+                message=(
+                    f"Module {display}: no connections/stated size of its own (a bridge/gateway "
+                    f"node, e.g. an Ethernet-only fan-out to a remote device). Charged the FLAT "
+                    f"zero_connection_module rate ({model.zero_connection_module_bytes} bytes) "
+                    f"rather than a per-catalog value -- a per-catalog fit was rejected by "
+                    f"cross-validation (see OQ-MODULEZEROCONN), so this number is right on "
+                    f"average and can be off for any single catalog"
+                ),
+            ))
+            continue
+        display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
+        # found live-checking this wiring against the 1769-
+        # series fw_baseline corpus: CompactLogix 5370 "ER" processors
+        # carry a real CatalogNumber="Embedded" module for their built-in
+        # discrete I/O points (no separate physical module). module_
+        # overhead was fitted from 2 real discrete ADD-ON modules
+        # (1756-IB16, 1734-AENTR/C) -- zero real data confirms an embedded
+        # processor-integrated I/O block costs the same, so it stays fully
+        # unmodeled (same treatment as a rack-aliased module below) rather
+        # than guessing module_overhead applies unchanged.
+        # LEGACY NETWORKS ARE EXCLUDED. A ControlNet/DeviceNet/DH+/DH-485/RIO
+        # bridge module gets the same unmodeled treatment as a rack-aliased
+        # or processor-embedded module, not a fitted module_overhead_by_
+        # catalog byte value: zero real corpus data exists for these
+        # networks (see parser/modules.py's _LEGACY_NETWORK_PORT_TYPES
+        # comment and OQ-LEGACYNETOVERHEAD).
+        #
+        # WITH ONE EXCEPTION, because a catalog that has been measured does
+        # not need modelling. That exclusion was
+        # a blanket SHAPE-level rule, but real per-catalog data now exists
+        # for several rack-aliased/legacy-network catalogs specifically
+        # (memory_model.yaml module_overhead_by_catalog, see its
+        # comment for the derivation). A catalog with its OWN confirmed
+        # real entry gets charged normally even if it's one of these
+        # shapes; only a catalog with NO real data still falls through to
+        # the $0/unmodeled path below.
+        has_real_catalog_data = model.module_overhead_by_catalog.has_real_data_for(module.catalog_number)
+        if not has_real_catalog_data and (
+            module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network
+        ):
+            if module.uses_rack_connection:
+                reason = "rack-aliased (RackConnection/InAliasTag)"
+            elif module.catalog_number == "Embedded":
+                reason = "processor-embedded I/O (CatalogNumber=\"Embedded\")"
+            else:
+                reason = f"legacy-network bridge (Port Type={sorted(module.port_types)})"
+            errors.append(SizeError(
+                # A coverage notice, not a sizing failure: the file
+                # contains a module shape the model does not price yet.
+                # Its own sibling case (zero_connection) has always been
+                # filed under coverage/; this one was filed under
+                # modules/, which manifest.predicted_bytes treats as a
+                # blocking generator bug -- so a sample built precisely to
+                # MEASURE this gap could not be generated at all.
+                path=f"coverage/module_unmodeled_shape/{label}",
+                message=(
+                    f"Module {display}: {reason} -- module_overhead (fitted from 2 real discrete "
+                    f"add-on modules) is NOT charged here, zero real data confirms it applies the "
+                    f"same way to this shape; module_defined_bytes ({module.module_defined_bytes}) "
+                    f"not summed into the total either, controller-memory cost unmodeled for now"
+                ),
+            ))
+            # Charged its OWN DECLARED DATA and still emitted.
+            #
+            # This used to be charged exactly ZERO, on the reasoning that
+            # module_overhead was fitted from two modules with their own
+            # Connection and there is no data for whether it applies to a
+            # rack-aliased shape. That reasoning holds for the OVERHEAD and
+            # does not hold for the module's own data: the L5X states
+            # module_defined_bytes for these modules just as plainly as for
+            # any other, and a size the file states outright is not a thing
+            # to guess about. The file is the final decision on sizing.
+            #
+            # So the overhead stays unmodelled and uncharged -- the SizeError
+            # above is still the record of that -- while the declared data is
+            # charged like anywhere else. Across the sixteen real programs this
+            # is 28 modules and 1,956 declared bytes that were previously free.
+            #
+            # It does NOT close the rack gap on its own and is not claimed to:
+            # rack_pointio_n02 is 2,434 bytes short with ZERO rack-aliased
+            # modules in it, so most of that family's -9% to -28% is its priced
+            # cards' own ASSUMED overheads being too low, which needs the
+            # per-catalog refit (OQ-MODULESTRUCTURAL), not this.
+            # OQ-POINTIOCONN: the overhead is no longer unmodelled
+            # for the rack-aliased shape. The pioconn_* count sweep (five counts
+            # per connection format, 1/2/4/8/16 cards, everything else held
+            # identical) had been captured and never differenced; it puts a
+            # rack-aliased card at 488 bytes all-in against the ~34 of declared
+            # data charged here, so 454 of overhead was missing. FITTED, not
+            # KNOWN: the per-card marginals are 480/488/492/488 and that wobble
+            # is real. See memory_model.yaml rack_aliased_module.
+            rack_overhead = (
+                model.rack_aliased_module_bytes if module.uses_rack_connection else 0
+            )
+            module_entries.append((
+                f"modules/{label}", "module_io", module.catalog_number,
+                module.module_defined_bytes + rack_overhead,
+                model.rack_aliased_module_confidence if rack_overhead else "UNKNOWN",
+            ))
+            continue
+        # OQ-MODULEIO: real per-catalog overhead (memory_model.yaml
+        # module_overhead_by_catalog) replaces the flat cross-catalog FITTED
+        # average for any catalog with an unambiguous real capture point;
+        # falls back to the same flat default otherwise.
+        # the SECOND and later modules of the same catalog cost
+        # less than the first (memory_model.yaml module_overhead_by_catalog
+        # repeat_bytes -- 16 catalogs measured, discount 432..3,768 bytes, no
+        # constant or ratio behind it). Counted per catalog in document order;
+        # which physical module is called "first" does not matter because only
+        # the count of each catalog affects the total.
+        # what "same project" scopes to is itself unsettled --
+        # repeat_scope picks whether the count runs project-wide or restarts
+        # under each parent module. occurrence_key carries that choice so
+        # this loop does not have to know about it.
+        occ_key = model.module_overhead_by_catalog.occurrence_key(
+            module.catalog_number, module.parent_module)
+        catalog_occurrence[occ_key] = catalog_occurrence.get(occ_key, 0) + 1
+        overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(
+            module.catalog_number, catalog_occurrence[occ_key])
+        module_bytes = module.module_defined_bytes + overhead_bytes
+        # A generic ETHERNET-MODULE's connection data costs 4x its declared
+        # bytes, not 1x (memory_model.yaml module_connection_data, wired
+        # exact on 14 captured points from W=2 to W=114). The
+        # declared bytes are already inside module_defined_bytes, so they come
+        # back out and the word law goes in. Scoped to the profiles the law was
+        # measured on -- every other catalog keeps declared bytes at 1x.
+        connection_data = model.module_connection_data
+        if connection_data.applies_to(module.catalog_number):
+            declared = module.connection_input_bytes + module.connection_output_bytes
+            module_bytes += connection_data.bytes_for(
+                module.connection_input_bytes, module.connection_output_bytes) - declared
+            overhead_basis = weakest(overhead_basis, connection_data.confidence)
+        module_entries.append((f"modules/{label}", "module_io", module.catalog_number,
+                                module_bytes, overhead_basis))
+        if module.unknown_member_types:
+            errors.append(SizeError(
+                path=f"modules/{label}",
+                message=(
+                    f"Module {display}: {len(module.unknown_member_types)} member(s) with an "
+                    f"unrecognized/nested type not summed into module_defined_bytes "
+                    f"({', '.join(module.unknown_member_types)}) -- included total is a floor, "
+                    f"not complete"
+                ),
+            ))
+
+    module_total = sum(size for _, _, _, size, _ in module_entries)
+    total_bytes += module_total
+    entries += [
+        SizeEntry(
+            path=path, category=category, data_type=data_type, bytes=size,
+            pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+            tier=ESTIMATED, basis=basis,
+        )
+        for path, category, data_type, size, basis in module_entries
+    ]
+    # Every earlier pct_of_total was computed against the pre-module total;
+    # recompute now that module bytes are folded in, same as any other
+    # category would need if inserted after the fact.
+    if module_total and total_bytes:
+        entries = [
+            e if e.path.startswith("modules/") else
+            SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
+                      pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
+            for e in entries
+        ]
+
+    # Firmware-version + safety-capable-model + per-catalog baseline
+    # corrections (OQ-BASELINE-PROCFW, wired -- see
+    # memory_model.yaml firmware_baseline_delta / safety_capable_baseline_
+    # delta / catalog_baseline_delta for the full derivation). All three
+    # are real per-file structural deltas layered on top of the
+    # already-confirmed flat empty_project_baseline -- same class of
+    # correction as module_overhead above (FITTED/ASSUMED from real
+    # capture data, not yet KNOWN-grade), so ESTIMATED tier for the same
+    # reason. catalog_baseline_delta (added same day) is the 1769-series
+    # thread: real per-catalog baseline is enormous (+51,488 to +80,832)
+    # and exact-string-keyed only, unlike the other two. Category
+    # "project_baseline" (not a new category) deliberately reuses the
+    # existing NON_TAG_GROUPS "Project Overhead" grouping in ui/hierarchy.py
+    # -- these are structural scaffolding costs, not a new kind of thing.
+    controller_el = root.find("Controller")
+    software_revision = root.get("SoftwareRevision")
+    processor_type = controller_el.get("ProcessorType") if controller_el is not None else None
+
+    # Same scope rule as the flat baseline above: these are per-PROJECT
+    # structural deltas (firmware revision, safety-capable model, catalog),
+    # so a partial export gets none of them. Skipping the block wholesale
+    # rather than each term individually -- there is no such thing as "the
+    # firmware baseline of a rung".
+    baseline_delta_entries: list[tuple[str, str, str, int, str]] = []
+    fw_bytes, fw_basis = (
+        model.firmware_baseline_delta.delta_for(software_revision)
+        if scope.is_whole_controller else (0, "")
+    )
+    if fw_bytes:
+        fw_major = software_revision.split(".")[0] if software_revision else "?"
+        baseline_delta_entries.append((
+            "firmware_baseline_delta", "project_baseline", f"FW_V{fw_major}_BASELINE",
+            fw_bytes, fw_basis,
+        ))
+    # Per-family firmware correction on top of the global ladder above
+    # (OQ-BASELINE-PROCFW). One ladder cannot fit every family:
+    # each processor's fwmatrix residual is constant within a firmware band and
+    # the bands differ by family, which left 72 bare-baseline captures sitting
+    # at -48/-32/-8/+8/+16 -- and on a content-free file the residual IS the
+    # baseline error.
+    pfc_bytes, pfc_basis = (
+        model.processor_firmware_correction.correction_for(processor_type, software_revision)
+        if scope.is_whole_controller else (0, "")
+    )
+    if pfc_bytes:
+        baseline_delta_entries.append((
+            "processor_firmware_correction", "project_baseline",
+            f"{processor_type}_V{software_revision.split('.')[0]}_CORRECTION",
+            pfc_bytes, pfc_basis,
+        ))
+    if scope.is_whole_controller and model.safety_capable_baseline_delta.applies_to(processor_type):
+        baseline_delta_entries.append((
+            "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
+            model.safety_capable_baseline_delta.bytes,
+            model.safety_capable_baseline_delta.confidence,
+        ))
+    catalog_delta = (model.catalog_baseline_delta.delta_for(processor_type)
+                      if scope.is_whole_controller else None)
+    if catalog_delta is not None:
+        catalog_bytes, catalog_basis = catalog_delta
+        baseline_delta_entries.append((
+            "catalog_baseline_delta", "project_baseline", "CATALOG_BASELINE",
+            catalog_bytes, catalog_basis,
+        ))
+
+    # Absolute per-catalog baseline (the 1756-L7x family): this
+    # catalog's real empty-project baseline is a fixed floor that does NOT
+    # track the firmware ladder, so instead of adding to what the flat
+    # baseline and the firmware/safety deltas produced, it REPLACES that
+    # sum. Emitted as a correcting delta rather than by rewriting the
+    # earlier entries, so the report still shows every adjustment as its own
+    # auditable line and the arithmetic stays inspectable.
+    catalog_absolute = (model.catalog_baseline_delta.absolute_for(processor_type)
+                        if scope.is_whole_controller else None)
+    if catalog_absolute is not None:
+        absolute_bytes, absolute_basis = catalog_absolute
+        so_far = model.empty_project_baseline_bytes + sum(
+            size for _, _, _, size, _ in baseline_delta_entries
+        )
+        baseline_delta_entries.append((
+            "catalog_absolute_baseline", "project_baseline", "CATALOG_ABSOLUTE",
+            absolute_bytes - so_far, absolute_basis,
+        ))
+
+    if baseline_delta_entries:
+        baseline_delta_total = sum(size for _, _, _, size, _ in baseline_delta_entries)
+        total_bytes += baseline_delta_total
+        new_paths = {path for path, _, _, _, _ in baseline_delta_entries}
+        entries += [
+            SizeEntry(
+                path=path, category=category, data_type=data_type, bytes=size,
+                pct_of_total=(size / total_bytes * 100) if total_bytes else 0.0,
+                tier=ESTIMATED, basis=basis,
+            )
+            for path, category, data_type, size, basis in baseline_delta_entries
+        ]
+        entries = [
+            e if e.path in new_paths else
+            SizeEntry(path=e.path, category=e.category, data_type=e.data_type, bytes=e.bytes,
+                      pct_of_total=(e.bytes / total_bytes * 100), tier=e.tier, basis=e.basis)
+            for e in entries
+        ]
+
+    # Coverage audit LAST, so it reports against the whole file: every
+    # calculation has to live in the engine itself rather than in an
+    # ad-hoc analysis run alongside it. Content this engine
+    # prices at zero WITHOUT modelling it -- a non-RLL routine, an
+    # instruction with no weight -- previously left no trace at all in the
+    # output; the only thing that ever caught it was reading the file by
+    # hand. It now surfaces through the same errors channel as an unsized
+    # tag or an unmodeled module, so the CLI, the UI and the CSV/XLSX
+    # export all report it for free. See sizing/coverage.py.
+    errors += [
+        SizeError(path=gap.path, message=gap.message)
+        for gap in audit_coverage(root, model.logic_instructions.weights)
+    ]
+
+    # A partial export says so in its own report, every time. Without this
+    # line the number above looks exactly like a whole-project number and
+    # is not comparable to a controller's Capacity reading at all.
+    if not scope.is_whole_controller:
+        errors.append(SizeError(
+            path="scope/partial_export",
+            message=(
+                f"PARTIAL EXPORT ({scope.describe()}) -- no project base load, firmware/"
+                f"catalog/safety baseline delta or task/program shell is charged here, "
+                f"because none of those belong to anything but a whole controller. This "
+                f"total is NOT comparable to a controller Capacity reading. It also carries "
+                f"{len(ctx_names.controller_tags)} controller tag(s), {len(ctx_names.udts)} "
+                f"UDT(s) and {len(ctx_names.aois)} AOI(s) as CONTEXT -- real declarations the "
+                f"target references, which cost their bytes only if the destination "
+                f"controller does not already have them. Use split_totals() for the "
+                f"target/context breakdown."
+            ),
+        ))
+
+    return entries, errors

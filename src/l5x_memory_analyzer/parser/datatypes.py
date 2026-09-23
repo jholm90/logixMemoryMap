@@ -1,0 +1,82 @@
+"""Parses Controller/DataTypes (UDT definitions) out of an L5X document.
+
+BOOL members inside a UDT are represented by Logix Designer itself as a
+hidden backing SINT member plus visible DataType="BIT" alias members
+(Target/BitNumber pointing at the backing SINT) -- the 8-per-byte packing
+described in docs/MEMORY_MODEL.md is already encoded in the XML shape, not
+something this parser has to re-derive.
+"""
+
+from __future__ import annotations
+
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
+class Member:
+    name: str
+    data_type: str
+    dimension: int
+    hidden: bool = False
+    # For a DataType="BIT" alias member only: the hidden backing member it
+    # addresses, and which bit of it. The storage belongs entirely to that
+    # backing SINT -- the alias costs nothing of its own -- so carrying the
+    # target through lets the UI say "alias of X, bit n" instead of showing
+    # a mysterious zero-byte member.
+    target: str | None = None
+    bit_number: int | None = None
+
+    @property
+    def is_bit_alias(self) -> bool:
+        return self.data_type == "BIT"
+
+
+@dataclass(frozen=True)
+class DataTypeDef:
+    name: str
+    family: str = "NoFamily"  # "StringFamily" marks a user-defined string type
+    members: list[Member] = field(default_factory=list)
+    # True for AddOnInstructionDefinitions (parser/aoi.py), False for plain
+    # Controller/DataTypes UDTs -- both produce a DataTypeDef with the same
+    # shape (instance storage sizes identically), but ARRAY-of-instances
+    # sizing genuinely differs between the two (see sizing/udt.py's
+    # AOI-array BOOL-packing formula, memory_model.yaml aoi_array section)
+    # -- confirmed real, not the same as a plain array-of-UDT.
+    is_aoi: bool = False
+
+    @property
+    def is_string_family(self) -> bool:
+        return self.family == "StringFamily"
+
+
+def parse_data_types(root: ET.Element) -> dict[str, DataTypeDef]:
+    result: dict[str, DataTypeDef] = {}
+    data_types_el = root.find("Controller/DataTypes")
+    if data_types_el is None:
+        return result
+
+    for dt_el in data_types_el.findall("DataType"):
+        name = dt_el.get("Name")
+        members = []
+        members_el = dt_el.find("Members")
+        if members_el is not None:
+            for m_el in members_el.findall("Member"):
+                members.append(
+                    Member(
+                        name=m_el.get("Name"),
+                        data_type=m_el.get("DataType"),
+                        dimension=int(m_el.get("Dimension", "0")),
+                        hidden=m_el.get("Hidden", "false").lower() == "true",
+                        target=m_el.get("Target"),
+                        bit_number=(
+                            int(m_el.get("BitNumber"))
+                            if m_el.get("BitNumber") is not None else None
+                        ),
+                    )
+                )
+        result[name] = DataTypeDef(
+            name=name, family=dt_el.get("Family", "NoFamily"), members=members
+        )
+
+    return result

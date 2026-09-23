@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Swap_Bytes_in_Array" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:49:49 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Swap_Bytes_in_Array" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:49:35 2018" LastModifiedDate="Fri Jan 19 07:49:35 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags/>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="array" TagType="Base" DataType="DINT" Dimensions="4" Radix="ASCII">
+<Data>34 33 32 31 38 37 36 35 34 33 32 31 38 37 36 35</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="4" Radix="ASCII">
+<Element Index="[0]" Value="&apos;1234&apos;"/>
+<Element Index="[1]" Value="&apos;5678&apos;"/>
+<Element Index="[2]" Value="&apos;1234&apos;"/>
+<Element Index="[3]" Value="&apos;5678&apos;"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="array_bytes_reverse" TagType="Base" DataType="DINT" Dimensions="4" Radix="ASCII">
+<Data>31 32 33 34 35 36 37 38 31 32 33 34 35 36 37 38</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="4" Radix="ASCII">
+<Element Index="[0]" Value="&apos;4321&apos;"/>
+<Element Index="[1]" Value="&apos;8765&apos;"/>
+<Element Index="[2]" Value="&apos;4321&apos;"/>
+<Element Index="[3]" Value="&apos;8765&apos;"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="array_length" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="index" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[The following three rungs reverse the bytes in each element of an array.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This rung initializes the tags for subsequent rungs:
+
+The CLR instruction clears index. The next rungs uses index to act on a different element in the array.
+
+The SIZE instruction finds the number of elements in array and stores that value in array_length. A subsequent rung uses this value to determine when the routine has acted on all the elements in the array.]]>
+</Comment>
+<Text>
+<![CDATA[CLR(index)SIZE(array[0],0,array_length);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[This rung reverses the bytes in one element of array.
+
+The SWPB instruction reverses the bytes of the element number that is indicated by the value of index. For example, when index equals 0, the SWPB instruction acts on array[0].
+
+The ADD instruction increments index. The next time the rung executes, the SWPB instruction will act on the next element in array..]]>
+</Comment>
+<Text>
+<![CDATA[LBL(swap_bytes)SWPB(array[index],REVERSE,array_bytes_reverse[index])ADD(1,index,index);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[This rung determines when the SWPB instruction has acted on all the elements in the array.
+
+If index is less then the number of elements in the array (array_length), then execution jumps to the rung that has the swap_bytes label (the previous rung). This lets the routine act on the next element in the array.
+
+If index equals the number of elements in the array (array_length), then the SWPB has acted on all the elements in the array. Execution goes to the next rung.]]>
+</Comment>
+<Text>
+<![CDATA[LES(index,array_length)JMP(swap_bytes);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

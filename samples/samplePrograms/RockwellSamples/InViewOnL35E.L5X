@@ -1,0 +1,1066 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="InViewOnL35E" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:29:27 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="InViewOnL35E" ProcessorType="1769-L35E" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:29:14 2018" LastModifiedDate="Fri Jan 19 07:29:14 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Controller" CatalogNumber="1769-L35E" Vendor="1" ProductType="14" ProductCode="65" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="CompactLogixL35Controller" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalENB" CatalogNumber="1769-L35E Ethernet Port" Vendor="1" ProductType="12" ProductCode="120" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="CompactLogixL35Ethernet" Upstream="true"/>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local" CatalogNumber="CompactBus" Vendor="1" ProductType="12" ProductCode="71" Major="17" Minor="2" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="Compact" Upstream="false">
+<Bus Size="31"/>
+</Port>
+<Port Id="2" Address="3" Type="CompactVirtualAdapter" Upstream="true"/>
+</Ports>
+<Communications CommMethod="805306369">
+<Connections>
+<Connection Name="Output" RPI="5000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false"/>
+</Connections>
+</Communications>
+<ExtendedProperties><public><ConfigID>900</ConfigID></public></ExtendedProperties>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Decmial_100th_Part_to_Display0" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_100th_Part_to_Display01" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_10th_Part_to_Display0" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_10th_Part_to_Display01" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_Part_of_Number0" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 83 3A</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="9.99450684e-004"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_Part_of_Number01" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 40 34 3C</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.011001587"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_Trunk_X_10_01" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 50 E1 3D</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.11001587"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_X10_Trunk_0" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 C0 23 3C</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.009994507"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_X_100_0" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 B0 CC 3D</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.09994507"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_X_100_01" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 D2 8C 3F</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="1.1001587"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_X_10_0" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[10th Fractional Part]]>
+</Description>
+<Data>00 C0 23 3C</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.009994507"/>
+</Data>
+</Tag>
+<Tag Name="Decmial_X_10_01" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 50 E1 3D</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.11001587"/>
+</Data>
+</Tag>
+<Tag Name="Display_Address" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Display Address
+1-255
+255=All ]]>
+</Description>
+<Data>F8 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="248"/>
+</Data>
+</Tag>
+<Tag Name="Final_Variable_Trigger_Timer" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Final Variable Trigger Timer]]>
+</Description>
+<Data>5F 3D 2C 00 FA 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="First_Trigger_Delay_01" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[1st Trigger Delay
+for Variables 4,5,6]]>
+</Description>
+<Data>70 40 2C A0 FA 00 00 00 FA 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Function" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Message Function
+1=Priority
+2=Add Message
+3=Remove Message]]>
+</Description>
+<Data>01 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="InView_Message_String" TagType="Base" DataType="STRING" Dimensions="16">
+<Description>
+<![CDATA[$14MSG#\Function
+\Display Address\]]>
+</Description>
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[$14=^T
+(Trigger)]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[MSG#
+(Message Number)
+Variable]]>
+</Comment>
+<Comment Operand="[2]">
+<![CDATA[$14MSG#
+(^TMSG#)....]]>
+</Comment>
+<Comment Operand="[3]">
+<![CDATA[\
+(Backslash)]]>
+</Comment>
+<Comment Operand="[4]">
+<![CDATA[$14MSG#\
+(^TMSG#\)....]]>
+</Comment>
+<Comment Operand="[5]">
+<![CDATA[Function
+(Message Function)
+1=Priority
+2=Add Message
+3=Remove Message]]>
+</Comment>
+<Comment Operand="[6]">
+<![CDATA[$14MSG#\Function
+(^TMSG#\Function)...]]>
+</Comment>
+<Comment Operand="[7]">
+<![CDATA[\
+(Backslash)]]>
+</Comment>
+<Comment Operand="[8]">
+<![CDATA[$14MSG#\Function\
+(^TMSG#\Function\).]]>
+</Comment>
+<Comment Operand="[9]">
+<![CDATA[Display Address
+1-255
+255=All]]>
+</Comment>
+<Comment Operand="[10]">
+<![CDATA[$14MSG#\Function
+\Display Address
+(^TMSG#\Function
+\Display Adress)...]]>
+</Comment>
+<Comment Operand="[11]">
+<![CDATA[$r 
+(^M)
+Return]]>
+</Comment>
+<Comment Operand="[12]">
+<![CDATA[$14MSG#\Function
+\Display Address$r
+(^TMSG#\Function
+\Display Adress$r)]]>
+</Comment>
+</Comments>
+<Data>01 00 00 00 14 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 34 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+02 00 00 00 14 34 34 39 35 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 5C 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03 00 00 00 14 34 5C 5C 35 5C 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 31 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+04 00 00 00 14 34 5C 31 31 5C 31 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 5C 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+05 00 00 00 14 34 5C 31 5C 5C 31 5C 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 03 00 00 00 32 34 38 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+08 00 00 00 14 34 5C 31 5C 32 34 38 38 34 38 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 0D 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+09 00 00 00 14 34 5C 31 5C 32 34 38 0D 0D 38 0D 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['$14']]>
+</Data>
+</Tag>
+<Tag Name="InView_Variable_String" TagType="Base" DataType="STRING" Dimensions="24">
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[$16
+(^V...)]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[Variable Data]]>
+</Comment>
+<Comment Operand="[2]">
+<![CDATA[$16Variable Data
+(^V,Data....)]]>
+</Comment>
+<Comment Operand="[3]">
+<![CDATA[\]]>
+</Comment>
+<Comment Operand="[4]">
+<![CDATA[$16Variable Data\
+(^V,Data,\....)]]>
+</Comment>
+<Comment Operand="[5]">
+<![CDATA[Variable Number]]>
+</Comment>
+<Comment Operand="[6]">
+<![CDATA[$16Variable Data\Number
+(^V,Data,\Variable Nuumber....)]]>
+</Comment>
+<Comment Operand="[7]">
+<![CDATA[\]]>
+</Comment>
+<Comment Operand="[8]">
+<![CDATA[$16Variable Data\Number\
+(^V,Data,\Variable Nuumber\....)]]>
+</Comment>
+<Comment Operand="[9]">
+<![CDATA[Display Address]]>
+</Comment>
+<Comment Operand="[10]">
+<![CDATA[$16Variable Data\Number\Address
+(^V,Data,\Variable Nuumber\DisplayAddress....)]]>
+</Comment>
+<Comment Operand="[11]">
+<![CDATA[$r  (^M)
+Return]]>
+</Comment>
+<Comment Operand="[12]">
+<![CDATA[$16Variable Data\Number\Address
+\$r
+(^V,Data,\Variable Nuumber\Display Address^M....)]]>
+</Comment>
+<Comment Operand="[12].DATA[0]">
+<![CDATA[$16 ^T]]>
+</Comment>
+</Comments>
+<Data>01 00 00 00 16 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 02 00 00 00 37 37 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03 00 00 00 16 37 37 33 35 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 5C 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+04 00 00 00 16 37 37 5C 5C 5C 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 34 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+05 00 00 00 16 37 37 5C 34 34 31 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 5C 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+06 00 00 00 16 37 37 5C 34 5C 5C 5C 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 03 00 00 00 32 34 38 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+09 00 00 00 16 37 37 5C 34 5C 32 34 38 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 0D 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+0A 00 00 00 16 37 37 5C 34 5C 32 34 38 0D 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="1">
+<![CDATA['$16']]>
+</Data>
+</Tag>
+<Tag Name="Message_No_Enter" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Message Number
+Enter from PV+]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Message_No_Enter_HS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Message Number
+Enter HandShake]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Message_No_From_PV" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Message Number 
+From Pv+]]>
+</Description>
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="Message_Number" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[InView 
+Message #
+4095=Clear All Messages]]>
+</Description>
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="Message_SINT" TagType="Base" DataType="SINT" Dimensions="50" Radix="Decimal">
+<Description>
+<![CDATA[Message String]]>
+</Description>
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[Toggle Bit]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[Buffer Byte]]>
+</Comment>
+<Comment Operand="[2]">
+<![CDATA[Buffer Byte]]>
+</Comment>
+</Comments>
+<Data>00 00 00 14 34 5C 31 5C 32 34 38 0D 0D 38 0D 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00</Data>
+<Data Format="Decorated"><Array DataType="SINT" Dimensions="50" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="20"/>
+<Element Index="[4]" Value="52"/>
+<Element Index="[5]" Value="92"/>
+<Element Index="[6]" Value="49"/>
+<Element Index="[7]" Value="92"/>
+<Element Index="[8]" Value="50"/>
+<Element Index="[9]" Value="52"/>
+<Element Index="[10]" Value="56"/>
+<Element Index="[11]" Value="13"/>
+<Element Index="[12]" Value="13"/>
+<Element Index="[13]" Value="56"/>
+<Element Index="[14]" Value="13"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+<Element Index="[32]" Value="0"/>
+<Element Index="[33]" Value="0"/>
+<Element Index="[34]" Value="0"/>
+<Element Index="[35]" Value="0"/>
+<Element Index="[36]" Value="0"/>
+<Element Index="[37]" Value="0"/>
+<Element Index="[38]" Value="0"/>
+<Element Index="[39]" Value="0"/>
+<Element Index="[40]" Value="0"/>
+<Element Index="[41]" Value="0"/>
+<Element Index="[42]" Value="0"/>
+<Element Index="[43]" Value="0"/>
+<Element Index="[44]" Value="0"/>
+<Element Index="[45]" Value="0"/>
+<Element Index="[46]" Value="0"/>
+<Element Index="[47]" Value="0"/>
+<Element Index="[48]" Value="0"/>
+<Element Index="[49]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Message_Trigger_Off_Time" TagType="Base" DataType="TIMER">
+<Data>34 35 2D 00 F4 01 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="500"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Messsage_Trigger" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Message Trigger
+On Time]]>
+</Description>
+<Data>34 35 2D 00 FE 01 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="510"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="OneShots" TagType="Base" DataType="BOOL" Dimensions="32" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="BOOL" Dimensions="32" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="0"/>
+<Element Index="[4]" Value="0"/>
+<Element Index="[5]" Value="0"/>
+<Element Index="[6]" Value="0"/>
+<Element Index="[7]" Value="0"/>
+<Element Index="[8]" Value="0"/>
+<Element Index="[9]" Value="0"/>
+<Element Index="[10]" Value="0"/>
+<Element Index="[11]" Value="0"/>
+<Element Index="[12]" Value="0"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+<Element Index="[24]" Value="0"/>
+<Element Index="[25]" Value="0"/>
+<Element Index="[26]" Value="0"/>
+<Element Index="[27]" Value="0"/>
+<Element Index="[28]" Value="0"/>
+<Element Index="[29]" Value="0"/>
+<Element Index="[30]" Value="0"/>
+<Element Index="[31]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Second_Trigger_Delay_0" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[2nd Trigger Delay 
+for Variables 1,2,3]]>
+</Description>
+<Data>7A 40 2C A0 FA 00 00 00 FA 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Second_Trigger_Delay_01" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[2nd Trigger Delay
+for Variables 4,5,6]]>
+</Description>
+<Data>84 40 2C C0 FA 00 00 00 2D 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="45"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Third_Trigger_Delay_0" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[3rd Trigger Delay 
+for Variables 1,2,3]]>
+</Description>
+<Data>6B 40 2C A0 FA 00 00 00 FA 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Third_Trigger_Delay_01" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[3rd Trigger 
+for Variables 4,5,6]]>
+</Description>
+<Data>5F 3D 2C 00 FA 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="250"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Truncated_Value0" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Truncated Fraction of Analog 00
+]]>
+</Description>
+<Data>38 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="56"/>
+</Data>
+</Tag>
+<Tag Name="Truncated_Value01" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Truncated Fraction
+of Analog 01]]>
+</Description>
+<Data>4D 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="77"/>
+</Data>
+</Tag>
+<Tag Name="Variable_0_Enter" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Variable 0
+Entere PB from PV+]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_0_Enter_HS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Variable 0
+Enter HandShake]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_0_From_PV" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Variable 0
+From PV]]>
+</Description>
+<Data>00 00 60 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="56.0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_1_Enter" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Variable 1
+Entere PB from PV+]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_1_Enter_HS" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Variable 1 
+Enter HandShake]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_1_From_PV" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Variable Data 1
+to InView]]>
+</Description>
+<Data>1F 05 9A 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="77.01"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Data" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[InView 
+Variable Data]]>
+</Description>
+<Data>4D 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="77"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Data_0" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Variable Data 0
+to InView]]>
+</Description>
+<Data>00 00 60 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="56.0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Data_1" TagType="Base" DataType="REAL" Radix="Float">
+<Description>
+<![CDATA[Variable Data 1
+to InView]]>
+</Description>
+<Data>1F 05 9A 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="77.01"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Data_Decimal0" TagType="Base" DataType="REAL" Radix="Float">
+<Data>06 01 60 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="56.001"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Data_Decimal1" TagType="Base" DataType="REAL" Radix="Float">
+<Data>A2 05 9A 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="77.011"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Number" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[InView 
+Variable Number]]>
+</Description>
+<Data>04 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="4"/>
+</Data>
+</Tag>
+<Tag Name="Variable_SINT" TagType="Base" DataType="SINT" Dimensions="24" Radix="Decimal">
+<Description>
+<![CDATA[Variable 
+String]]>
+</Description>
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[Toggle Bit]]>
+</Comment>
+<Comment Operand="[1]">
+<![CDATA[Buffer Byte]]>
+</Comment>
+<Comment Operand="[2]">
+<![CDATA[Buffer Byte]]>
+</Comment>
+</Comments>
+<Data>00 00 00 16 30 5C 35 5C 32 34 38 0D 0D 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="SINT" Dimensions="24" Radix="Decimal">
+<Element Index="[0]" Value="0"/>
+<Element Index="[1]" Value="0"/>
+<Element Index="[2]" Value="0"/>
+<Element Index="[3]" Value="22"/>
+<Element Index="[4]" Value="48"/>
+<Element Index="[5]" Value="92"/>
+<Element Index="[6]" Value="53"/>
+<Element Index="[7]" Value="92"/>
+<Element Index="[8]" Value="50"/>
+<Element Index="[9]" Value="52"/>
+<Element Index="[10]" Value="56"/>
+<Element Index="[11]" Value="13"/>
+<Element Index="[12]" Value="13"/>
+<Element Index="[13]" Value="0"/>
+<Element Index="[14]" Value="0"/>
+<Element Index="[15]" Value="0"/>
+<Element Index="[16]" Value="0"/>
+<Element Index="[17]" Value="0"/>
+<Element Index="[18]" Value="0"/>
+<Element Index="[19]" Value="0"/>
+<Element Index="[20]" Value="0"/>
+<Element Index="[21]" Value="0"/>
+<Element Index="[22]" Value="0"/>
+<Element Index="[23]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Variable_Triggers_Done" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Description>
+<![CDATA[Variable Triggers Done, 
+All timers complete]]>
+</Description>
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Variable_Trigger_Off_Time" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Variable Trigger
+Off Time]]>
+</Description>
+<Data>11 40 2C 00 C8 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="200"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Variable_Trigger_On_Time" TagType="Base" DataType="TIMER">
+<Description>
+<![CDATA[Variable Trigger
+On Time]]>
+</Description>
+<Data>6B 40 2C C0 C8 00 00 00 50 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="200"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="80"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Whole_Part_to_Display0" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[Whole Part of Number to Display]]>
+</Description>
+<Data>38 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="56"/>
+</Data>
+</Tag>
+<Tag Name="Whole_Part_to_Display01" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>4D 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="77"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="InView" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[The Message Number Enter from the PV+ is intended to toggle the next message number.
+The Message Number From PV is the message number that will be . 
+Remember, the Controller does not  the message, it is the InView Message display that polls for a 0 to 1 transition. ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Message_No_Enter)[MOV(Message_No_From_PV,Message_Number) ,OTE(Message_No_Enter_HS) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Variable 1,2 and 3 are grouped together to display one  value with a fixed decimal at two places.  The decimal is part of the message text.
+To display 89.45:
+Variable 1 is the whole part of the number (89)
+Variable 2 is the 10ths place (4)
+Variable 3 is the 100ths place (5).
+It takes all three Variables and three triggers to display the number 89.45.
+Keep in mind that the variables in the message are configured not to display zeros in front of the number (i.e. None:1). ]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Variable_0_Enter)[MOV(Variable_0_From_PV,Variable_Data_0) ,OTE(Variable_0_Enter_HS) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(Variable_1_Enter)[MOV(Variable_1_From_PV,Variable_Data_1) ,OTE(Variable_1_Enter_HS) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[The Message Enter Pushbutton is toggled to  the message.
+The transition from 0 to 1 of Message_SINT[0].0  the message.
+The InView Display polls for this transition at the value in the InterScan Delay.
+The on to off time must be greater thant the InterScan Delay.  The InterScan Delay is set in \the Communications Setup and is downloaded to the InView communications module.  This file is a *ivc file.]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Message_No_Enter) ONS(OneShots[0]) ,XIC(Messsage_Trigger.EN) ]XIO(Message_Trigger_Off_Time.DN)[TON(Messsage_Trigger,?,?) ,XIC(Messsage_Trigger.DN) OTE(Message_SINT[0].0) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[XIC(Messsage_Trigger.DN)TON(Message_Trigger_Off_Time,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIO(Variable_Trigger_Off_Time.DN)[TON(Variable_Trigger_On_Time,?,?) ,XIC(Variable_Trigger_On_Time.DN) OTE(Variable_SINT[0].0) ];]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[XIC(Variable_Trigger_On_Time.DN)TON(Variable_Trigger_Off_Time,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[This rung is used to convert the Message_Number, Function and Display Address to a String.  This is done because it is easier to manipulate string data than integer data.
+Message_Number=DINT
+Message Function=DINT
+Display Address=DINT (Power up the Inview and determine the Display Address, the default is 248)
+]]>
+</Comment>
+<Text>
+<![CDATA[DTOS(Message_Number,InView_Message_String[1])DTOS(Function,InView_Message_String[5])DTOS(Display_Address,InView_Message_String[9]);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks/>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

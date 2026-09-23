@@ -1,0 +1,1651 @@
+"""Local heuristic pre-flight check for generated L5X files.
+The original question was whether the SDK's L5X->ACD conversion performs
+controller validation or program checking that would catch a bad program
+before real capture time is spent on it.
+
+Checked: `samples/convert_log.csv` shows every file from the two real
+bugs (the missing `[0]` array subscript on CPS/COP/FLL/BTD/SIZE, and T_ADD
+called with no AOI definition at all) converted via `l5xgit l5x2acd` with
+status "ok". The SDK's L5X->ACD conversion only opens/parses the project
+(catches structural/schema failures like an unsupported ProcessorType,
+confirmed from the 27 real FAILED rows in that log) -- it does NOT perform
+ladder-logic verification. A file can convert cleanly and still contain
+rung-level errors that only a real Studio 5000 Verify would catch. There's
+no way to run that verify from this environment (needs the licensed SDK on
+Windows), so this is the next best thing: a local, heuristic, non-
+authoritative check for the specific classes of error already found the
+hard way, run against every file before it ships rather than after real
+capture time has been spent on it.
+
+Checks:
+  1. Array-typed tag referenced without a [index] subscript anywhere it's
+     used as an instruction operand in rung text (the CPS/COP/FLL/BTD bug).
+     SIZE is a confirmed exception (a real COP_Samples.L5X:
+     SIZE(COP_Source,0,COP_Size); -- bare array tag, no bracket) since its
+     first operand is the whole array, not one element -- see lint_l5x.
+  2. An instruction/AOI-style call (ALLCAPS mnemonic followed by "(") whose
+     name isn't a known native instruction AND doesn't match any
+     AddOnInstructionDefinition actually declared in the same file (the
+     T_ADD bug).
+  3. duplicate_module_slot / chassis_size_exceeded (see _module_slot_findings)
+     --: chassis size and duplicated slots both need
+     validating.
+  4. aoi_call_arg_count_mismatch --: real Studio 5000
+     verify error on composite_realistic_02/03.ACD ("Invalid number of
+     arguments for instruction" on every AOI call rung), and again on a
+     1,000-rung literal-operand family. A declared AOI's call signature is
+     exactly its Required="true" Input/Output parameters plus its InOut
+     parameters; Visible="true" alone is a ladder-line display flag and
+     creates no call slot, and neither flag set hides the parameter from the
+     ladder line entirely. Checks the argument count at each call site for
+     exact equality with that number -- see _aoi_call_arg_count for the
+     917-call-site evidence.
+  5. bit_level_instruction_on_non_bool_operand --: real,
+     caught TWICE on re-conversion: "SINT/INT/DINT cannot be used
+     for bit level instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools
+     and .Bits of SINT/INT/DINT." A bit-level instruction's operand must
+     be BOOL or a bit-subscripted (".N") SINT/INT/DINT reference -- flags
+     a bare non-BOOL operand with no subscript. Only checks operands this
+     project's own generators can actually resolve a type for (see
+     _resolve_operand_type); an unresolvable operand is silently skipped,
+     not flagged.
+  6. rung_missing_output_instruction -- a conditional instruction such as EQU
+     needs an output or a NOP() at the end of the rung. Basic ladder logic. A
+     rung whose every instruction is a pure condition or test
+     (_PURE_CONDITION_INSTRUCTIONS) with no real output instruction has no
+     effect and real Studio 5000 rejects it.
+  7. non_sequential_module_slots -- a rack whose slot numbers are not used in
+     sequence. See _slot_sequence_findings for the real generator bug this
+     caught.
+  8. chassis_size_mismatch -- a real issue found
+     reviewing the v4 Studio 5000 I/O tree: a PointIO/Flex adapter's
+     declared Bus Size can be stale even when its child IS at a
+     sequential, in-bounds slot number (chassis_size_exceeded above only
+     flags an address >= Size, not a Size that's simply too generous for
+     how many modules are actually present -- a lone child at slot 1
+     under a Bus Size="12" never trips that check). "Bus Coupler + 1 IO
+     module = Chassis Size 2" -- see _chassis_size_findings.
+  9. safety_module_on_non_safety_controller --: "You
+     need to do better checking on safety stuff... you need to 'read'
+     these modules and use your logic to verify safety stuff cannot go on
+     non-safety processors." Real Studio 5000 error rebuilding an already-
+     once-diagnosed real bug by hand without checking for the existing
+     fix first (5069-IB8S/A / 5069-OBV8S/A, SafetyEnabled="true", built
+     into a default non-safety controller) -- see _safety_module_findings.
+  10. aoi_array_param_wrong_usage --: "the issue is
+      BOOL/SINT/INT/DINT cannot be arrays for Inputs. Arrays require
+      InOut." Root cause of the aoi_array_param_def_only.L5X import
+      failure two prior "fixes" chased without success -- an array-
+      dimensioned atomic AOI Parameter is only legal as Usage="InOut".
+      builders.py's _aoi_parameter_xml hard-fails on this shape at
+      generation time; this check is the defense-in-depth net -- see
+      _aoi_array_param_usage_findings.
+
+These last five were added in the same pass their bug class was found TWICE --
+once fixed by hand in the one generator that hit it, then reintroduced
+fresh in 3 more files written the same session. Hand-fixing a generator
+when a real bug is found is not enough; the check has to be enforced here
+so a FUTURE generator can't make the identical mistake silently.
+
+Explicitly NOT a substitute for real Studio 5000 verification -- it can't
+catch every type mismatch or bad instance-tag wiring. It only catches the
+specific real mistakes this project has already made, plus close
+relatives of them.
+"""
+
+from __future__ import annotations
+
+import re
+import xml.etree.ElementTree as ET
+
+from sample_gen.data.kinetix import (
+    CONFIG_DATA,
+    DRIVE_CHANNELS,
+    MODULE_IDENTITY,
+    REAL_CONFIG_PAIRS,
+)
+from dataclasses import dataclass
+
+# Every native instruction mnemonic this project has confirmed real via
+# the corpus scan (gen_logic_sweep.py's INSTRUCTIONS dict) plus JSR/LBL/JMP
+# (handled specially there, not simple single-rung patterns) and a handful
+# of other extremely common native instructions not yet in that sweep.
+# Deliberately a whitelist, not the AB instruction set exhaustively -- an
+# unrecognized-but-real instruction just means "not flagged as suspicious
+# vs known-good," not "confirmed good," so keeping this list honest and
+# growing it as new real instructions get used matters more than
+# completeness on day one.
+_KNOWN_NATIVE_INSTRUCTIONS = {
+    "ABS", "ADD", "AFI", "ALMD", "BTD", "CLR", "CMP", "CONCAT", "COP", "CPS", "CPT",
+    "CTU", "CTD", "DELETE", "DIV", "DTOS", "EQU", "FLL", "GEQ", "GRT", "GSV",
+    "JMP", "JSR", "LBL", "LEQ", "LES", "LIM", "MEQ", "MID", "MOD", "MOV",
+    "MSG", "MUL", "MVM", "NEQ", "NOP", "ONS", "OTE", "OTL", "OTU", "RES",
+    "RTO", "SIZE", "SSV", "STOD", "SUB", "TOF", "TON", "XIC", "XIO", "XPY",
+    "OSR", "OSF", "TRN", "SQR", "SBR", "RET",
+    # Motion instructions (gen_motion_instructions.py) --
+    # MAH/MSO corpus-confirmed call syntax, the rest real per Rockwell
+    # documentation though not independently corpus-confirmed for that
+    # exact mnemonic (see that generator's own docstring caveat).
+    "MAM", "MAJ", "MAH", "MAS", "MSO", "MRP", "MAPC", "MCCP", "MAFR", "MASR",
+    # First-pass instruction coverage sweep (gen_instruction_firstpass.py)
+    # -- every real corpus-confirmed or documented-family-
+    # inferred mnemonic added that batch. See that generator's own
+    # docstring for the CORPUS_CONFIRMED/INFERRED/NEAR_VERBATIM citation
+    # per instruction.
+    "NOT", "NEG", "UID", "UIE", "MCR", "TND", "ATN", "DEG", "RAD", "TAN",
+    "SWPB", "XOR", "FIND", "INSERT", "BSL", "BSR", "FFL", "FFU", "SRT",
+    "AVE", "FAL", "FSC", "MDW", "MASD", "MGSD", "MGSR", "CROUT",
+    # Added from the hand-built, BUILD-CLEAN export
+    # (a real export). These are
+    # the strongest possible provenance in this repo: not corpus-inferred,
+    # not documented-family-guessed -- the rungs were written by hand,
+    # Studio 5000 accepted them, and the verified call shapes now live in
+    # gen_verified_instructions.py. NXT is deliberately absent: it is not a
+    # valid RLL mnemonic.
+    "BRK", "COS", "LOG", "SIN", "PID", "FBC", "STOR",
+    "MCD", "MCS", "MCSV", "MAG", "MCLM",
+    # Added . Every one of these is confirmed real by an actual
+    # call site in samples/local/ (the production files) -- they
+    # were missing here only because no generator had ever emitted them,
+    # not because they are not real Logix instructions. The corpus call
+    # site is recorded in gen_unweighted_instructions.py per instruction.
+    "MSF", "MAW", "MAR", "MDR", "MAG", "MCD", "MCS", "MCSV", "MCLM",
+    # SCP removed: it is not a built-in that can appear in RLL.
+    # The real corpus occurrences are calls to a user-defined AOI named SCP,
+    # which the AOI-name path already resolves; the built-in of that name is
+    # FBD/ST only. See _NON_LAD_INSTRUCTIONS.
+    "AND", "OR", "DTR", "UPPER", "RTOS", "SFR", "LFU", "FOR",
+    "BRK", "NXT", "EVENT", "SBR", "RET",
+}
+
+# REAL BUG FOUND self-audit while adding the aoi_call_arg_
+# count_mismatch check below: this pattern required EVERY character after
+# the first to be uppercase/digit/underscore -- fine for native
+# instructions (XIC, OTE, CPT, all genuinely all-caps in real Logix), but
+# it silently never matched ANY mixed-case AOI instance call, which is
+# the norm for AOI naming across this entire project's own generators
+# (e.g. "Comp02Aoi0(...)", "ReqVisAllhidden(...)", real corpus "PTimer(
+# ...)"). The unrecognized_instruction check (T_ADD bug) and this new
+# arg-count check were BOTH silently blind to every AOI call in every
+# file this project has ever generated -- confirmed by testing the old
+# pattern directly: `re.findall(r"\b([A-Z][A-Z0-9_]*)\(", "Comp02Aoi0(
+# Inst,0,OutBit);")` returns [] (should return the call). Fixed to match
+# any valid Logix identifier (starts with a letter/underscore, not
+# case-restricted) immediately followed by "(" -- still correctly
+# excludes non-identifier parens (a CPT expression's grouping "(" is
+# never immediately preceded by a bare identifier without an operator).
+_INSTRUCTION_CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\(")
+
+
+@dataclass(frozen=True)
+class LintFinding:
+    kind: str  # "missing_array_subscript" | "unrecognized_instruction" |
+    # "duplicate_module_slot" | "chassis_size_exceeded" |
+    # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
+    # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction" |
+    # "non_sequential_module_slots"
+    detail: str
+
+
+def _array_tag_names(root: ET.Element) -> set[str]:
+    names = set()
+    for tags_el in root.iter("Tags"):
+        for tag_el in tags_el.findall("Tag"):
+            if tag_el.get("Dimensions"):
+                name = tag_el.get("Name")
+                if name:
+                    names.add(name)
+    return names
+
+
+def _declared_aoi_names(root: ET.Element) -> set[str]:
+    names = set()
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        name = aoi_el.get("Name")
+        if name:
+            names.add(name)
+    return names
+
+
+def _aoi_call_arg_count(root: ET.Element) -> dict[str, int]:
+    """aoi_name -> the exact number of parameter arguments its call sites
+    must supply (after the leading instance tag).
+
+    A call slot is created by Required="true", and by nothing else. InOut
+    parameters are always required and always present, so they count too.
+    EnableIn/EnableOut never count.
+
+    Visible="true" without Required="true" does NOT create a call slot: it
+    controls whether the parameter is shown on the ladder line, not whether
+    it is passed. Neither flag set hides the parameter from the ladder line
+    altogether, leaving it reachable only through the tag browser.
+
+    The evidence, because this was believed backwards once and cost a
+    1,000-rung batch:
+
+    * Across the real exports there are 917 AOI call sites. At every one of
+      them the argument count after the instance tag equals the Required
+      count exactly -- 917 of 917, no exceptions.
+    * Those same exports declare 120 Required="false" Visible="true"
+      parameters (59 Input, 61 Output), so the unanimity is not an artifact
+      of the real AOIs having no optional parameters to pass. One AOI
+      declares three Required and four Visible-only parameters, and every
+      one of its call sites passes three arguments.
+    * A generated family whose AOI declared three Required="false"
+      Visible="true" Input parameters and passed three arguments drew
+      "Invalid number of arguments for instruction" on all 1,000 of its
+      rungs, in all four variants, including the variant that passed only
+      tags. The rungs contributed no memory at all.
+    * Required is not a prefix of the parameter list in real AOIs (13 of 48
+      definitions interleave optional parameters between required ones), so
+      the omitted parameters are not merely trailing ones. Position in the
+      declaration is irrelevant; the Required flag is the whole rule.
+    """
+    counts = {}
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        name = aoi_el.get("Name")
+        if not name:
+            continue
+        n_args = 0
+        params_el = aoi_el.find("Parameters")
+        if params_el is not None:
+            for p_el in params_el.findall("Parameter"):
+                usage = p_el.get("Usage")
+                if usage not in ("Input", "Output", "InOut"):
+                    continue
+                if p_el.get("Name") in ("EnableIn", "EnableOut"):
+                    continue
+                if usage == "InOut" or p_el.get("Required") == "true":
+                    n_args += 1
+        counts[name] = n_args
+    return counts
+
+
+# Operand counts for native instructions whose arity a generator has got wrong,
+# each taken from a real export. Added one instruction at a time, on evidence,
+# never from a manual's faceplate reading.
+#
+#   ALMD  5  ALMD(AlarmTag, ProgAck, ProgReset, ProgDisable, ProgEnable), the one
+#            real call in the eighteen real exports. A 7-operand form with
+#            MinDurationPRE/ACC, read off a faceplate, failed both almd_*_r2
+#            captures with "Rung 0, ALMD: Invalid number of arguments for
+#            instruction".
+_NATIVE_ARG_COUNTS = {"ALMD": 5}
+
+
+def _split_top_level_args(s: str) -> list[str]:
+    """Splits a comma-separated argument list, respecting nested ()/[]
+    (e.g. an array-index or bit-subscript operand shouldn't fracture the
+    split). Returns [] for an empty/whitespace-only string."""
+    s = s.strip()
+    if not s:
+        return []
+    parts = []
+    depth = 0
+    current = []
+    for ch in s:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    parts.append("".join(current))
+    return parts
+
+
+def _call_sites(text: str) -> list[tuple[str, str]]:
+    """Finds every "NAME(...)" call in rung text and returns (name,
+    args_string) pairs, args_string being everything between the matching
+    parens (balanced against nested brackets/parens inside, e.g. an
+    array-index operand)."""
+    sites = []
+    for m in _INSTRUCTION_CALL.finditer(text):
+        name = m.group(1)
+        start = m.end()  # just past the opening "("
+        depth = 1
+        i = start
+        while i < len(text) and depth > 0:
+            if text[i] in "([":
+                depth += 1
+            elif text[i] in ")]":
+                depth -= 1
+            i += 1
+        if depth == 0:
+            sites.append((name, text[start:i - 1]))
+    return sites
+
+
+def _all_rung_texts(root: ET.Element) -> list[str]:
+    texts = []
+    for text_el in root.iter("Text"):
+        if text_el.text:
+            texts.append(text_el.text)
+    return texts
+
+
+# Two real rules, each caught twice -- the second time on the re-conversion
+# after the first occurrence had been fixed. SINT, INT and DINT cannot be used
+# for bit-level instructions (XIO, XIC, OTE, OTU, OTL, ONS): only BOOLs and the
+# .Bit members of SINT/INT/DINT. And a conditional instruction such as EQU needs
+# an output or a NOP() at the end of its rung.
+# Both fixed by hand in the specific generators that hit them (3 files),
+# but hand-fixing individual generators is exactly what already failed
+# once -- a FUTURE generator can make the identical mistake and nothing
+# catches it before it ships. These two checks are the real,
+# structural fix: enforced automatically on every generated file, same as
+# every other lint check here.
+_BIT_LEVEL_INSTRUCTIONS = {"XIC", "XIO", "OTE", "OTU", "OTL", "ONS"}
+# Instructions that only TEST a condition, with no side effect of their
+# own -- if every instruction call in a rung belongs to this set, the rung
+# has no real output/effect and real Studio 5000 rejects it outright.
+_PURE_CONDITION_INSTRUCTIONS = {
+    "XIC", "XIO", "EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP",
+    # SBR added (real Studio 5000 failure on
+    # jsr_paramtype_udt_n*_r00100): an SBR rung with no output instruction
+    # fails to build. SBR behaves like a comparison and needs an output
+    # after it. SBR only RECEIVES the
+    # caller's parameters -- it has no effect of its own, so a rung
+    # containing nothing but SBR() has no terminating output and Studio
+    # rejects it, exactly like a bare EQU. The fix is the same: SBR(args)NOP();
+    #
+    # Note this check already existed and already had the right shape --
+    # SBR simply was not in the set, so 8 of this project's 9 generators
+    # got the NOP right by convention and the 9th silently did not. That is
+    # why it belongs HERE rather than as another comment in one generator.
+    "SBR",
+    # DTR added, the same story a second time: DTR is a comparison rather than
+    # an output, so it needs a NOP after it.
+    # DTR (data transitional) compares a source against
+    # a reference bit pattern and conditions the rung on the result -- it
+    # writes nothing, so a rung of nothing but DTR() has no terminating
+    # output and Studio 5000 rejects it, exactly like a bare EQU or SBR.
+    # DTR was already in the known-mnemonic set below, so it parsed and
+    # sized fine; it just never reached THIS check. That is twice now that
+    # a conditional was known to the linter as a valid instruction while
+    # being absent from the set that decides whether a rung terminates --
+    # worth remembering when adding any future compare-like mnemonic.
+    "DTR",
+}
+# Instructions that exist in Logix but CANNOT appear in a ladder (RLL)
+# routine -- they are Function Block / Structured Text only. Emitting one
+# into a rung produces a file Studio 5000 rejects, and no operand fiddling
+# fixes it.
+#
+# Deliberately small and evidence-backed rather than transcribed from a
+# reference table: each entry is here because a real rejection or an
+# explicit confirmation put it there.
+#
+# SCP: confirmed FBD/ST only. The trap that motivated this
+# check is that SCP calls DO appear in ladder across 5 real corpus files --
+# but every one is a call to a user-defined AOI named SCP, not the built-in.
+# Two projects define different AOIs under that name (a 3-argument and a
+# 7-argument form), which is exactly why the built-in's documented
+# 6-argument signature never matched the corpus and why this project spent
+# a cycle treating that as an unresolved argument-count mystery. An AOI
+# call is therefore NOT flagged: the check skips any name the file declares
+# as an AddOnInstructionDefinition, the same precedence the sizing engine
+# already applies.
+# A structure-typed tag must carry <Structure>/<DataValueMember>, never a
+# scalar <DataValue>, and must not carry a Radix at all.
+#
+# Real Studio 5000 rejection: "Format of data element is invalid
+# for a structure . Use Structure." plus "Invalid display style." -- both from
+# the same cause. builders.tag_xml decided structure-vs-atomic from whether
+# the CALLER passed udt_members rather than from the type, so any UDT or
+# predefined-structure tag built without an explicit member list came out as
+# a scalar zero with a Radix. That is what failed the predefprobe_* FBD/SFC
+# probes, and the identical defect then reappeared in the alarm-definition
+# batch: 94 tags across 22 files from one silent fallback.
+#
+# tag_xml no longer allows it, but a generator can always hand-build a Tag
+# element, so this is the net underneath.
+_ATOMIC_TAG_TYPES = frozenset({
+    "BOOL", "SINT", "INT", "DINT", "LINT", "REAL", "LREAL",
+    "USINT", "UINT", "UDINT", "ULINT", "BIT", "STRING",
+})
+
+
+def _structure_tag_data_findings(root: ET.Element) -> list[LintFinding]:
+    findings: list[LintFinding] = []
+    for tag_el in root.iter("Tag"):
+        data_type = (tag_el.get("DataType") or "").split("[")[0]
+        if not data_type or data_type in _ATOMIC_TAG_TYPES:
+            continue
+        name = tag_el.get("Name") or "?"
+        if tag_el.get("Radix"):
+            findings.append(LintFinding(
+                "structure_tag_has_radix",
+                f"Tag '{name}' is type '{data_type}', which is a structure, but carries "
+                f"Radix=\"{tag_el.get('Radix')}\". Studio 5000 rejects that with "
+                f"\"Invalid display style.\" -- only atomic-rooted tags take a Radix.",
+            ))
+        for data_el in tag_el.findall("Data"):
+            if data_el.get("Format") != "Decorated":
+                continue
+            if data_el.find("DataValue") is not None:
+                findings.append(LintFinding(
+                    "structure_tag_scalar_data",
+                    f"Tag '{name}' is type '{data_type}', which is a structure, but its "
+                    f"Decorated data is a scalar <DataValue>. Studio 5000 rejects that with "
+                    f"\"Format of data element is invalid for a structure. Use Structure.\"",
+                ))
+    return findings
+
+
+
+_NON_LAD_INSTRUCTIONS = {"SCP"}
+
+
+def _non_lad_instruction_findings(root: ET.Element) -> list[LintFinding]:
+    """An FBD/ST-only instruction used in a ladder rung, where the file does
+    not declare an AOI of that name to shadow it."""
+    findings: list[LintFinding] = []
+    declared = {
+        el.get("Name") for el in root.iter("AddOnInstructionDefinition") if el.get("Name")
+    }
+    suspect = sorted(_NON_LAD_INSTRUCTIONS - declared)
+    if not suspect:
+        return findings
+    for routine_el in root.iter("Routine"):
+        if routine_el.get("Type") != "RLL":
+            continue
+        for rung_el in routine_el.iter("Rung"):
+            text_el = rung_el.find("Text")
+            if text_el is None or not text_el.text:
+                continue
+            for mnemonic in suspect:
+                if re.search(r"(?:^|[\s,\[\]])" + mnemonic + r"\(", text_el.text):
+                    findings.append(LintFinding(
+                        "non_lad_instruction_in_ladder",
+                        f"Routine '{routine_el.get('Name')}' rung "
+                        f"{rung_el.get('Number')} calls {mnemonic}(), a Function "
+                        f"Block/Structured Text instruction that cannot be used in "
+                        f"ladder. No AddOnInstructionDefinition named '{mnemonic}' "
+                        f"is declared in this file to shadow it.",
+                    ))
+    return findings
+
+
+_BIT_SUBSCRIPT_RE = re.compile(r"\.\d+$")
+_BASE_TAG_NAME_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)")
+
+
+def _tag_types_from(container_el: ET.Element, tag_element_name: str = "Tag") -> dict[str, str]:
+    """bare tag/param/localtag name -> DataType, from every <Tag>/
+    <Parameter>/<LocalTag> element found anywhere under container_el.
+    Deliberately the same "last one wins on a bare-name collision"
+    simplification already used by sizing/logic.py's own tag_types dict
+    (report.py) -- not scope-correct in the face of a genuine same-name
+    collision across programs, but no real calibration data in this
+    project exercises that collision, and being conservative (a false
+    negative) is safer here than a false positive on a file that's
+    actually fine."""
+    types: dict[str, str] = {}
+    for el in container_el.iter(tag_element_name):
+        name = el.get("Name")
+        data_type = el.get("DataType")
+        if name and data_type:
+            types[name] = data_type
+    return types
+
+
+def _udt_member_types(root: ET.Element) -> dict[str, dict[str, str]]:
+    """UDT name -> {member name -> DataType}, from every <DataType> in the file."""
+    result: dict[str, dict[str, str]] = {}
+    for dt in root.iter("DataType"):
+        name = dt.get("Name")
+        if name:
+            result[name] = {
+                m.get("Name", ""): m.get("DataType", "")
+                for m in dt.iter("Member") if m.get("Hidden") != "true"
+            }
+    return result
+
+
+def _resolve_operand_type(operand: str, tag_types: dict[str, str],
+                          udt_members: dict[str, dict[str, str]] | None = None) -> str | None:
+    """Best-effort DataType for a rung operand: the base tag's type, then each
+    `.Member` step followed through the file's own UDT definitions. A step
+    that cannot be followed -- a predefined structure's member such as
+    TIMER.DN, an indirect index -- leaves the operand unresolved (None) rather
+    than guessed at.
+
+    This used to return the BASE tag's type for any operand, so `U.Bit` on a
+    UDT tag `U` resolved to the UDT and was refused as a non-BOOL operand of
+    XIC. That false positive is why no generated file carried a member-path
+    operand, while half of all real operands are member paths.
+    """
+    operand = re.sub(r"\[[^\]]*\]", "", operand.strip())
+    m = _BASE_TAG_NAME_RE.match(operand)
+    if not m:
+        return None
+    current = tag_types.get(m.group(1))
+    steps = operand.split(".")[1:]
+    for step in steps:
+        if current is None:
+            return None
+        if step.isdigit():
+            return "BOOL"
+        members = (udt_members or {}).get(current)
+        if members is None:
+            return None
+        current = members.get(step)
+    # A BOOL member of a UDT is declared as DataType="BIT" backed by a hidden
+    # SINT; as an operand it is a BOOL.
+    return "BOOL" if current == "BIT" else current
+
+
+def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
+                        udt_members: dict[str, dict[str, str]] | None = None) -> list[LintFinding]:
+    """: "SINT/INT/DINT cannot be used for bit level
+    instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
+    SINT/INT/DINT." Flags a bit-level instruction call whose single
+    operand (a) does NOT already end in a ".N" bit subscript, AND (b)
+    resolves (via _resolve_operand_type) to a non-BOOL atomic type. An
+    operand that can't be resolved (AOI-internal member access, an
+    indirect index, etc.) is silently skipped -- not flagged -- same
+    conservative bias as every other type-sensitive check in this
+    project."""
+    findings = []
+    for text in rung_texts:
+        for mnemonic, args_str in _call_sites(text):
+            if mnemonic not in _BIT_LEVEL_INSTRUCTIONS:
+                continue
+            args = _split_top_level_args(args_str)
+            if len(args) != 1:
+                continue
+            operand = args[0].strip()
+            if _BIT_SUBSCRIPT_RE.search(operand):
+                continue  # already bit-subscripted, valid regardless of type
+            resolved_type = _resolve_operand_type(operand, tag_types, udt_members)
+            if resolved_type and resolved_type != "BOOL":
+                findings.append(LintFinding(
+                    "bit_level_instruction_on_non_bool_operand",
+                    f"'{mnemonic}({operand})' -- operand resolves to {resolved_type}, not BOOL, and "
+                    f"has no '.N' bit subscript. XIC/XIO/OTE/OTU/OTL/ONS require a BOOL operand or a "
+                    f"bit-subscripted SINT/INT/DINT reference: {text.strip()!r}",
+                ))
+    return findings
+
+
+def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
+    """: "conditional instructions like EQU with no
+    operand at the end of the rung or a NOP() instruction. this is basic
+    ladder logic." Flags a rung where every instruction call found is a
+    pure condition/test instruction (_PURE_CONDITION_INSTRUCTIONS) with no
+    real output/effect instruction anywhere in the rung -- real Studio
+    5000 rejects a rung with no terminating output. A rung with ZERO
+    instruction calls (blank/comment-only) is not flagged -- that's a
+    different, already-confirmed-real shape (comments cost 0 blocks at
+    any length), not this bug."""
+    findings = []
+    for text in rung_texts:
+        mnemonics = [name for name, _args in _call_sites(text)]
+        if mnemonics and all(m in _PURE_CONDITION_INSTRUCTIONS for m in mnemonics):
+            findings.append(LintFinding(
+                "rung_missing_output_instruction",
+                f"every instruction in this rung is a pure condition/test ({', '.join(sorted(set(mnemonics)))}) "
+                f"with no real output instruction (or NOP()) terminating the rung: {text.strip()!r}",
+            ))
+    return findings
+
+
+def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[LintFinding]:
+    """: (gen_logic_sweep.py's group_lbl_jmp, found
+    confirming the OQ-LBLJMP-STALE batch failure was real, not a stale-ACD-
+    cache artifact): "lbl needs something after it, LBL(thisLabel); will
+    fail - LBL(thisLabel)NOP(); will pass." A bare LBL with nothing else on
+    its rung is invalid, the same general "rung needs a real terminating
+    instruction" class as rung_missing_output_instruction above -- but LBL
+    isn't a condition/test instruction (it's a label marker), so it was
+    never caught by that check's _PURE_CONDITION_INSTRUCTIONS logic. Found
+    while sweeping every "real bug" comment in this
+    project for rules that were documented but never actually enforced
+    -- found by re-reading the existing comments for rules that were
+    documented but never enforced. Already fixed by hand in gen_logic_sweep.py
+    itself, but nothing stopped a NEW generator from reintroducing it
+    until now."""
+    findings = []
+    for text in rung_texts:
+        mnemonics = [name for name, _args in _call_sites(text)]
+        if mnemonics == ["LBL"]:
+            findings.append(LintFinding(
+                "lbl_missing_trailing_instruction",
+                f"LBL with nothing else on its rung -- real Studio 5000 requires a trailing "
+                f"instruction (e.g. NOP()) after LBL: {text.strip()!r}",
+            ))
+    return findings
+
+
+def _module_slot_findings(root: ET.Element) -> list[LintFinding]:
+    """: chassis size and duplicated slots both need validating,
+    and were supposed to have been checked while the 50 tests were being
+    generated. A real gap, not a false alarm: this project's own lint pre-flight NEVER actually checked
+    either one before this. A prior commit (e57fe42) claimed a "self-audit
+    against every real failure class... (chassis size...)" came back clean
+    on all 50 composite files; that claim was wrong -- it missed the exact
+    slot-collision bug real Studio 5000 later caught in composite_
+    realistic_07 (see gen_composite_realistic.py's _remap_local_icp_slot).
+    This is the real, automated check that should have existed from the
+    start, run against every generated file from now on (write_sample's
+    lint_or_raise), not a one-off manual read-through.
+
+    Two things, both fully derivable from the XML alone with no external
+    Rockwell catalog knowledge needed:
+
+    1. duplicate_module_slot -- two different Modules both claiming the
+       identical (ParentModule, ParentModPortId, Address) connection
+       point. Real Studio 5000 rejects this outright ("Slot number in use
+       by another module") -- confirmed via a real error on
+       composite_realistic_07. Covers both a physical backplane slot
+       collision (numeric Address) and a duplicate network address
+       collision (Address as an IP string) -- either way, two devices
+       can't occupy the same connection point on the same parent port.
+
+    2. chassis_size_exceeded -- a Module's own upstream Port declares a
+       numeric Address that is >= the Bus Size its parent module declared
+       on the matching port. Real Studio 5000 rejects this too ("Chassis
+       size exceeds the allowable size for a chassis") -- confirmed via
+       a real error on both fwmatrix_v31_1769_l30erm (RESOLVED_
+       QUESTIONS.md) and eventtask_instronly (bare 5069-L306ER, OPEN_
+       QUESTIONS.md OQ item 10). This only catches an INTERNALLY
+       inconsistent file -- a declared Bus Size of 9 with something plugged
+       into slot 12. It cannot independently verify that a declared Bus Size
+       is Rockwell's real per-catalog limit, which still needs real corpus or
+       capture confirmation.
+    """
+    findings: list[LintFinding] = []
+    modules_by_name: dict[str, ET.Element] = {}
+    name_counts: dict[str, int] = {}
+    for mod_el in root.iter("Module"):
+        name = mod_el.get("Name")
+        if name:
+            modules_by_name[name] = mod_el
+            name_counts[name] = name_counts.get(name, 0) + 1
+
+    # 3. duplicate_module_name -- two Module elements sharing one Name.
+    #
+    # Real gap, found: asmclose_1756_ob32_rackaliased_n02 and
+    # _n04 each ship the SAME child module name twice, because the copier
+    # that multiplies a module block renames only the FIRST <Module> in it,
+    # and the 1756-OB32 block is a 2-deep chain (1756-EN2T adapter + the
+    # OB32 behind it). Every copy after the first therefore carries an
+    # identically-named OB32 still pointing at ParentModule="<the first
+    # adapter>" and still sitting in the same slot 3.
+    #
+    # duplicate_module_slot below cannot catch it: it de-duplicates its
+    # claimant list by name, so two modules sharing ONE name and claiming
+    # one slot collapse to a single claimant and read as clean. Both files
+    # then captured at zero import errors -- Studio merged the identical
+    # duplicates rather than rejecting them -- so the capture silently
+    # measures n adapters and ONE output card instead of n chains, and any
+    # marginal cost derived from it is measuring the wrong thing. A
+    # duplicate Name is never intentional in a generated file, so it is
+    # flagged on the name alone, independently of slot.
+    for dup_name, seen in sorted(name_counts.items()):
+        if seen > 1:
+            findings.append(LintFinding(
+                "duplicate_module_name",
+                f"Module Name='{dup_name}' appears {seen} times. Studio silently merges identical "
+                f"duplicates instead of rejecting them, so the file measures fewer modules than it "
+                f"appears to contain -- every copy of a multi-module chain needs every one of its "
+                f"members renamed and its internal ParentModule references repointed",
+            ))
+
+    # slot_key -> list of (module_name) claiming it
+    slot_claims: dict[tuple[str, str, str], list[str]] = {}
+
+    for mod_el in root.iter("Module"):
+        # real, found generating the v3 composite batch: a
+        # Module element with NO Name attribute is real and imports fine
+        # (confirmed: 1756-OF8/B's own genericized block has never carried
+        # one, and its standalone modulesweep file converts "ok" every
+        # time in convert_log.csv) -- but bailing out here on `not name`
+        # made such a module invisible to EVERY check in this function,
+        # including non_sequential_module_slots below: its real, already-
+        # remapped slot doesn't get recorded, so the slot it legitimately
+        # occupies reads as a false "gap" in the sequence. A synthetic,
+        # per-element identifier (never collides with a real Name, since
+        # real names can't contain "#") keeps it visible to slot tracking
+        # without needing a fabricated Name in the XML itself.
+        name = mod_el.get("Name") or f"{mod_el.get('CatalogNumber', '?')}#{id(mod_el)}"
+        parent_module = mod_el.get("ParentModule")
+        parent_port_id = mod_el.get("ParentModPortId")
+        if not parent_module or parent_port_id is None:
+            continue
+        # The upstream Port is this module's own connection point INTO its
+        # parent -- its Address is what must be unique among siblings on
+        # the same parent port, and (if numeric) within the parent's own
+        # declared Bus Size for that port.
+        ports_el = mod_el.find("Ports")
+        if ports_el is None:
+            continue
+        upstream_port = None
+        for port_el in ports_el.findall("Port"):
+            if port_el.get("Upstream") == "true":
+                upstream_port = port_el
+                break
+        if upstream_port is None:
+            continue
+        address = upstream_port.get("Address")
+        if address is None:
+            continue
+
+        key = (parent_module, parent_port_id, address)
+        slot_claims.setdefault(key, []).append(name)
+
+        if address.isdigit() and parent_module in modules_by_name:
+            parent_el = modules_by_name[parent_module]
+            parent_ports_el = parent_el.find("Ports")
+            if parent_ports_el is not None:
+                for parent_port_el in parent_ports_el.findall("Port"):
+                    if parent_port_el.get("Id") != parent_port_id:
+                        continue
+                    bus_el = parent_port_el.find("Bus")
+                    bus_size = bus_el.get("Size") if bus_el is not None else None
+                    if bus_size and bus_size.isdigit() and int(address) >= int(bus_size):
+                        findings.append(LintFinding(
+                            "chassis_size_exceeded",
+                            f"Module '{name}' Address={address} on parent '{parent_module}' Port "
+                            f"Id={parent_port_id}, but that parent Port's own Bus Size={bus_size} "
+                            f"(valid Address range is 0..{int(bus_size) - 1})",
+                        ))
+                    break
+
+    for (parent_module, parent_port_id, address), claimants in slot_claims.items():
+        if len(set(claimants)) > 1:
+            findings.append(LintFinding(
+                "duplicate_module_slot",
+                f"{len(claimants)} Modules ({', '.join(claimants)}) all claim ParentModule="
+                f"'{parent_module}' Port Id={parent_port_id} Address='{address}'",
+            ))
+
+    findings.extend(_slot_sequence_findings(slot_claims))
+    return findings
+
+
+def _slot_sequence_findings(
+    slot_claims: dict[tuple[str, str, str], list[str]],
+) -> list[LintFinding]:
+    """Racks whose slot numbers are not used in sequence.
+
+    Real bug this caught in gen_composite_realistic.py's
+    _modules_xml_unique_ips: it keyed the assigned backplane slot off a
+    catalog's raw index in the file's module list, so an Ethernet-only
+    catalog (no real ICP-backplane root module) between two ICP-backplane
+    catalogs silently consumed an index without consuming a slot, leaving
+    a real gap (e.g. composite_realistic_v2_16: slots 2 and 4 present, 3
+    never used). Real Rockwell backplanes don't leave a slot number
+    unassigned in the middle of a populated run the way this project's own
+    generation was doing it -- not because a physical gap is illegal (an
+    empty physical slot is fine), but because THIS project always
+    generates a fully-populated virtual chassis with no genuinely empty
+    slots in between, so a numeric gap here is always a generation
+    artifact, not an intentional empty slot.
+
+    Heuristic, not authoritative: only flags a purely-NUMERIC-address
+    sibling group (2+ Modules sharing the same (ParentModule,
+    ParentModPortId)) whose sorted addresses skip a value -- an
+    Ethernet-addressed group (dotted-IP Address strings) is never numeric
+    and never flagged. A single module in a group can't have a gap by
+    definition and is never flagged either; whether ITS OWN address is a
+    sensible starting point is a generator-level concern (see
+    gen_composite_realistic.py), not something a single data point can
+    validate.
+    """
+    findings: list[LintFinding] = []
+    by_port: dict[tuple[str, str], list[int]] = {}
+    for (parent_module, parent_port_id, address), claimants in slot_claims.items():
+        if not address.isdigit():
+            continue
+        by_port.setdefault((parent_module, parent_port_id), []).append(int(address))
+
+    for (parent_module, parent_port_id), addresses in by_port.items():
+        if len(addresses) < 2:
+            continue
+        addresses.sort()
+        missing = [n for n in range(addresses[0], addresses[-1] + 1) if n not in addresses]
+        if missing:
+            findings.append(LintFinding(
+                "non_sequential_module_slots",
+                f"ParentModule='{parent_module}' Port Id={parent_port_id} has modules at "
+                f"slots {addresses} -- missing {missing} in between",
+            ))
+
+    return findings
+
+
+# A backplane is either FIXED or DYNAMIC, and only the dynamic kind can be
+# wrong here (stated directly):
+#
+#   FIXED -- 1756 ICP. The slot count is a property of the physical chassis
+#     catalog (4, 10, 13, 17 slots). A 13-slot chassis holding two cards is
+#     completely normal and is NOT a defect, so ICP is deliberately absent
+#     from the set below and never flagged.
+#
+#   DYNAMIC -- Point I/O ("PointIO"), Flex, and 5069 Compact I/O. There is no
+#     physical chassis: the bus is exactly as long as what is plugged into
+#     it. The bus coupler itself occupies one position and every card
+#     occupies one more, so a correctly generated rack declares
+#     Size = 1 + number of cards -- the SMALLEST size that fits. Anything
+#     larger is a leftover, not a design choice.
+#
+# Where the leftovers come from is worth recording, because it is a
+# generation trap rather than a one-off: this project's module blocks are
+# copied verbatim from real exports, and a real module carries the bus size
+# AND the slot address it happened to have in the application it came from.
+# An OB8E found at slot 8 in one plant is not an OB8E that must live at slot
+# 8 -- next application it may be slot 2. Bus size and slot address are
+# properties of the rack being BUILT, not of the donor module, so a generator
+# must recompute both rather than inherit them. See chassis_bus_size() and
+# renumber_rack_slots() in builders.py.
+_DYNAMIC_BACKPLANE_PORT_TYPES = ("PointIO", "Flex", "5069")
+
+
+def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
+    """: real issue found reviewing the v4 Studio 5000
+    I/O tree: a PointIO/Flex adapter's declared Bus Size can be stale even
+    when its child sits at a sequential, in-bounds slot number --
+    chassis_size_exceeded (in _module_slot_findings) only flags an address
+    >= Size, so a lone real child at slot 1 under a Bus Size="12" (12
+    inherited verbatim from whatever real, larger rack this catalog was
+    originally captured from) never trips it. "Bus Coupler + 1 IO module =
+    Chassis Size 2" -- Size must equal the real module count actually
+    present on that bus, the adapter itself plus its children, not merely
+    be large enough that no address happens to exceed it. Scoped to
+    PointIO/Flex Port types only, matching gen_composite_realistic.py's
+    own _normalize_chain_bus_sizes -- a ControlNet/Ethernet/ICP `<Bus />`
+    placeholder has no slot-count semantics. A Bus-bearing adapter with NO
+    children present in this file at all is left unflagged (a bare-
+    adapter reuse is a generator-level choice, not something a single
+    file can validate on its own)."""
+    findings: list[LintFinding] = []
+    modules_by_name: dict[str, ET.Element] = {}
+    for mod_el in root.iter("Module"):
+        name = mod_el.get("Name")
+        if name:
+            modules_by_name[name] = mod_el
+
+    children_count: dict[tuple[str, str], int] = {}
+    for mod_el in root.iter("Module"):
+        parent_module = mod_el.get("ParentModule")
+        parent_port_id = mod_el.get("ParentModPortId")
+        if not parent_module or parent_port_id is None:
+            continue
+        # A controller's own "Local" module is self-parented -- it carries
+        # ParentModule pointing at itself, which is the real Rockwell
+        # convention in every export checked, generated and real alike.
+        # It is the chassis owner, not something occupying a slot on its
+        # own backplane, so counting it as its own child inflated the
+        # expected Bus Size by one. That mis-flagged the real, verbatim
+        # 1769 L16/L18/L19 module blocks (Port Type="PointIO", Bus Size=2
+        # with a single embedded Discrete_IO child) and aborted whole
+        # generator runs on correct data.
+        if mod_el.get("Name") == parent_module:
+            continue
+        key = (parent_module, parent_port_id)
+        children_count[key] = children_count.get(key, 0) + 1
+
+    for name, mod_el in modules_by_name.items():
+        ports_el = mod_el.find("Ports")
+        if ports_el is None:
+            continue
+        for port_el in ports_el.findall("Port"):
+            if port_el.get("Type") not in _DYNAMIC_BACKPLANE_PORT_TYPES:
+                continue
+            bus_el = port_el.find("Bus")
+            if bus_el is None:
+                continue
+            bus_size = bus_el.get("Size")
+            if not bus_size or not bus_size.isdigit():
+                continue
+            port_id = port_el.get("Id")
+            n_children = children_count.get((name, port_id), 0)
+            if n_children == 0:
+                continue
+            expected = n_children + 1
+            if int(bus_size) != expected:
+                findings.append(LintFinding(
+                    "chassis_size_mismatch",
+                    f"Module '{name}' Port Id={port_id} declares Bus Size={bus_size}, but "
+                    f"{n_children} real child module(s) are present on it (expected "
+                    f"Size={expected}: the adapter itself plus its children)",
+                ))
+    return findings
+
+
+# Element tags whose "Name" attribute is NOT a Logix identifier and so is
+# not subject to the identifier rules. Derived empirically rather than
+# guessed: scanning every Name attribute across all 80 real exports in
+# samples/local/ (3.6M of them) turns up exactly one kind of name that
+# breaks the rules and is nonetheless accepted by Studio 5000 --
+# <Version Name="1.1"> on an AOI revision, which is a version string, not
+# an identifier. Everything else, on every element, obeys them.
+_NON_IDENTIFIER_NAME_ELEMENTS = frozenset({"Version"})
+
+
+# The generated-corpus platform standard. Every generated test file is
+# built on this exact controller and firmware so that any batch
+# differences cleanly against the ~2,500 existing captures -- a file built
+# on a different processor or firmware cannot be compared against them
+# without first subtracting a baseline difference that is itself only
+# approximately known, which defeats the point of an isolation test.
+#
+# This is enforced here, as a lint rule, rather than left to each
+# generator's own defaults. It has been violated twice: the alarm batch
+# was built at v38, and the L9 arm of that same batch swapped the
+# processor as well. Both times the deviation was justified at the time
+# and both times it cost comparability, which is exactly the failure mode
+# a default cannot prevent and a check can.
+#
+# 1756-L7x and 1769 are dead architecture and 1756-L9x is out of scope, so
+# there is no legitimate generated-test reason to emit any of them.
+STANDARD_PROCESSOR_TYPE = "1756-L81E"
+STANDARD_MAJOR_REV = "35"
+
+# Exemptions are named one at a time, each with the reason it cannot meet
+# the standard. A general opt-out would make the rule advisory, which is
+# exactly what failed before it existed -- the deviation always looks
+# justified from inside the generator making it.
+#
+#   FwMatrix / FwBaseline -- sweeping processor and firmware IS the
+#     variable under test, so the rule would forbid the test itself.
+#
+#   KinetixFullBus -- three dual-axis Kinetix 5700 drives plus two power
+#     supplies do not fit a 1756-L81E's 3 MB; Studio rejects the import
+#     for capacity before it reads anything else. 1756-L83E is the
+#     smallest standard catalog with the headroom, and is what the real
+#     donor file this rack was built from (export 04)
+#     actually runs. Non-safety, matching that donor.
+_PLATFORM_EXEMPT_NAME_PREFIXES = (
+    "FwMatrix", "FwBaseline", "KinetixFullBus",
+    # gen_platform_equivalence.py: the processor IS the variable under
+    # test, the same stated reason the firmware/catalog matrices are
+    # exempt. Its 1756-L81E arm is the control and stays on the
+    # standard, so the batch still anchors to the rest of the corpus.
+    "PlatEqL",
+)
+
+
+def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
+    """Generated test files must be 1756-L81E at MajorRev 35.
+
+    Deviating silently produces numbers that cannot be differenced
+    against the existing corpus. The exemption is narrow and explicit:
+    only the firmware/catalog matrix generators, whose whole purpose is
+    to vary these two fields.
+    """
+    findings: list[LintFinding] = []
+    controller = root.find("Controller")
+    if controller is None:
+        return findings
+    name = controller.get("Name") or ""
+    if name.startswith(_PLATFORM_EXEMPT_NAME_PREFIXES):
+        return findings
+
+    # Absent is not the same as wrong. A fragment that declares neither
+    # field is not making a platform claim to check -- only a file that
+    # states a processor or firmware can state the wrong one.
+    processor = controller.get("ProcessorType")
+    major = controller.get("MajorRev")
+    if processor is not None and processor != STANDARD_PROCESSOR_TYPE:
+        findings.append(LintFinding(
+            kind="non_standard_processor",
+            detail=(
+                f"controller {name!r} is {processor}, but every generated test file "
+                f"must be {STANDARD_PROCESSOR_TYPE} so the batch differences cleanly "
+                f"against the existing captures"
+            ),
+        ))
+    if major is not None and major != STANDARD_MAJOR_REV:
+        findings.append(LintFinding(
+            kind="non_standard_firmware",
+            detail=(
+                f"controller {name!r} is MajorRev {major}, but every generated test "
+                f"file must be MajorRev {STANDARD_MAJOR_REV}"
+            ),
+        ))
+    return findings
+
+
+def _name_rule_violation(name: str) -> str | None:
+    """Which identifier rule `name` breaks, if any.
+
+    Real Logix identifier rules, each confirmed by a real Studio 5000
+    import failure on this project's own generated files:
+
+      - no TRAILING underscore   -- "Error creating 'Parameter' (Invalid
+        name.)" on `InParam00___` which broke 52 of the 56
+        files in one batch from a single padding helper
+      - no SEQUENTIAL underscores -- the earlier `stringoverhead_namelen32`
+        failure, where name-length filler abutted a numeric suffix
+      - no LEADING digit
+    """
+    if not name:
+        return None
+    if name.endswith("_"):
+        return "ends with an underscore"
+    if "__" in name:
+        return "contains sequential underscores"
+    if name[0].isdigit():
+        return "starts with a digit"
+    return None
+
+
+def _invalid_logix_name_findings(root: ET.Element) -> list[LintFinding]:
+    """Enforce the identifier rules on EVERY name in the file.
+
+    This used to walk a hand-maintained list of ten element tags, which
+    meant the rule was only as good as that list. It was not good enough:
+    `daxis_axis_cip_drive` shipped with a controller called `DaxAxCIP_`,
+    a trailing underscore that failed the real import, because
+    <Controller> was not one of the ten -- nor was the export's own
+    TargetName, which carries the same name a second time.
+
+    So the rule is now universal, which is what it always should have
+    been: no trailing underscore, no sequential underscores and no leading
+    digit anywhere -- tags, programs, routines, tasks, modules, UDT
+    members, AOI parameters, the controller itself. The one empirically
+    confirmed exemption is in _NON_IDENTIFIER_NAME_ELEMENTS.
+    """
+    findings: list[LintFinding] = []
+    seen: set[tuple[str, str]] = set()
+
+    def record(tag: str, attr: str, name: str) -> None:
+        reason = _name_rule_violation(name)
+        if reason is None or (tag, name) in seen:
+            return
+        seen.add((tag, name))
+        findings.append(LintFinding(
+            "invalid_logix_name",
+            f"<{tag} {attr}=\"{name}\"> is not a valid Logix identifier: it {reason}. "
+            f"Real Studio 5000 rejects it with \"Invalid name.\"",
+        ))
+
+    # The export header names the target a second time, in its own
+    # attribute. A controller renamed to a legal name but left with a bad
+    # TargetName is still a failed import.
+    target_name = root.get("TargetName")
+    if target_name:
+        record(root.tag, "TargetName", target_name)
+
+    for el in root.iter():
+        if el.tag in _NON_IDENTIFIER_NAME_ELEMENTS:
+            continue
+        name = el.get("Name")
+        if name:
+            record(el.tag, "Name", name)
+    return findings
+
+
+def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
+    """A safety module on a non-safety controller.
+
+    Real Studio 5000 error, caught combining several real 5069 Compact I/O
+    catalogs into a scratch sample: "Failed to set the 'SafetyEnabled'
+    property (The Controller is not a Safety Controller.)" on 2 of the 6 --
+    5069-IB8S/A and 5069-OBV8S/A are real
+    safety modules (SafetyEnabled="true"), and this project's own
+    build_l5x defaults to a plain non-safety controller unless
+    safety_level is explicitly passed. This exact combination (this
+    project's own gen_module_sweep.py already fully diagnosed it,
+    "5069-L306ERMS2" is the confirmed-real safety-capable 5069
+    processor) was rebuilt from scratch by hand without checking for the
+    existing fix first. The requirement: read each module and verify that
+    safety-rated hardware cannot be placed on a non-safety processor. A
+    Module's own SafetyEnabled="true" is a REAL, unambiguous signal
+    (not a heuristic) that this file's Controller needs a safety-capable
+    build. Self-caught before this check ever shipped: wrapper.py's
+    build_l5x emits a bare `<SafetyInfo/>` element UNCONDITIONALLY (even
+    for the default non-safety controller, `safety_level=None`) -- only
+    the `SafetyLevel` ATTRIBUTE on it is conditional on `safety_level`
+    being passed. Checking for the element alone is a false negative
+    (confirmed: silently passed 0 findings on a rebuilt copy of the exact
+    file that produced the real Studio error). Checking the attribute is
+    the reliable, zero-false-positive signal."""
+    safety_info_el = root.find(".//SafetyInfo")
+    has_safety_controller = safety_info_el is not None and safety_info_el.get("SafetyLevel") is not None
+    if has_safety_controller:
+        return []
+    findings: list[LintFinding] = []
+    for mod_el in root.iter("Module"):
+        catalog = mod_el.get("CatalogNumber") or ""
+        name = mod_el.get("Name") or catalog or "?"
+        if mod_el.get("SafetyEnabled") == "true":
+            findings.append(LintFinding(
+                "safety_module_on_non_safety_controller",
+                f"Module '{name}' (CatalogNumber={catalog}) has "
+                f"SafetyEnabled=\"true\" but this file's <SafetyInfo> has no SafetyLevel "
+                f"attribute (non-safety controller) -- real Studio 5000 rejects this with "
+                f"\"The Controller is not a Safety Controller.\" Build with a safety_level "
+                f"(build_l5x) or exclude this catalog.",
+            ))
+    return findings
+
+
+def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
+    """: real controller testing: "the issue is BOOL/
+    SINT/INT/DINT cannot be arrays for Inputs. Arrays require InOut" --
+    root cause of the `aoi_array_param_def_only.L5X` import failure that
+    two prior "fixes" (Required/Visible, then DefaultData shape) chased
+    without success. An array-dimensioned atomic AOI Parameter is only
+    legal with Usage="InOut"; Input/Output cannot be arrays at all.
+    builders.py's _aoi_parameter_xml now hard-fails on this shape at
+    generation time, so this check is a defense-in-depth net for any
+    L5X that reaches lint by another path (hand-edited, older generator
+    version, etc.) -- same purpose as _chassis_size_findings/
+    _safety_module_findings, catching a real found bug mechanically
+    forever after instead of trusting it never recurs."""
+    findings: list[LintFinding] = []
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        aoi_name = aoi_el.get("Name", "?")
+        params_el = aoi_el.find("Parameters")
+        if params_el is None:
+            continue
+        for param_el in params_el.findall("Parameter"):
+            usage = param_el.get("Usage")
+            dims = param_el.get("Dimensions")
+            if dims and usage in ("Input", "Output"):
+                findings.append(LintFinding(
+                    "aoi_array_param_wrong_usage",
+                    f"AOI '{aoi_name}' Parameter '{param_el.get('Name')}' has "
+                    f"Dimensions=\"{dims}\" and Usage=\"{usage}\" -- Logix does not allow an "
+                    f"array Input/Output Parameter, only InOut. Real Studio 5000 rejects this "
+                    f"with XMLSrv_E_IMPORT_ABORTED_NO_CHANGES.",
+                ))
+    return findings
+
+
+# ---------------------------------------------------------------------------
+# 2198 Kinetix rules . Both exist because the same class of fault
+# shipped in 550+ files and was diagnosed wrong twice from inference.
+# ---------------------------------------------------------------------------
+_KINETIX_SUPPLY = re.compile(r"^2198-(P\d+|RP\d+)")
+_KINETIX_DRIVE = re.compile(r"^2198-(?:[DSH]\d+|C\d+)")
+
+
+def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
+    """A 2198 drive needs a 2198 bus power supply in the project.
+
+    Stated as a hard requirement: a drive added to the I/O tree with no bus
+    supply fails Build with the drive not having bus power in its group. The
+    file still CONVERTS, which is what made this invisible -- 52 committed
+    files carry a drive with no supply anywhere, including the whole
+    asmclose_2198_* sweep that was used to derive the drive overhead.
+
+    Presence only. The power GROUP number is not an attribute of <Module> --
+    it appears nowhere in the real corpus either, including a real file with
+    two supplies and sixteen drives -- so same-group checking needs the group's
+    real representation first and is deliberately not guessed at here.
+    """
+    catalogs = [m.get("CatalogNumber") or "" for m in root.iter("Module")]
+    drives = [c for c in catalogs if _KINETIX_DRIVE.match(c) and not _KINETIX_SUPPLY.match(c)]
+    if not drives:
+        return []
+    if any(_KINETIX_SUPPLY.match(c) for c in catalogs):
+        return []
+    return [LintFinding(
+        "kinetix_drive_without_bus_supply",
+        f"{len(drives)} Kinetix drive(s) ({', '.join(sorted(set(drives)))}) and NO 2198 bus "
+        f"power supply in the project. Studio converts this file and then fails Build with "
+        f"the drives having no bus power in their group. Add a 2198-P or 2198-RP supply.",
+    )]
+
+
+_CONVERTER_AXIS_CONFIG = "Non-Regenerative AC/DC Converter"
+_REAL_DRIVE_CHANNELS = ("Ch1", "Ch3")
+
+
+def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
+    """2198 servo axes need a CONVERTER AXIS, not just a supply module.
+
+    This is the rule _kinetix_bus_supply_findings above said it could not write.
+    That one checks only that a 2198-P/RP supply module exists, noting the power
+    GROUP "is not an attribute of <Module> -- it appears nowhere in the real
+    corpus either". It is on the AXIS_CIP_DRIVE TAG. Real Kinetix exports pair
+    their servo axes with a converter axis whose AxisParameters read
+    AxisConfiguration="Non-Regenerative AC/DC Converter" and
+    MotionModule="<the supply>:Ch1" -- 25 servo axes and 2 converters in
+    Export 04, 27 and 2 in export 21.
+
+    Without one Studio converts the file and then fails Build once PER DRIVE
+    MODULE with "Primary Bus Sharing Group 1 contains a module configured as
+    Shared DC ... with no module configured as Shared AC/DC". The file still
+    CAPTURES, so actual_bytes is filled in from a project whose drives never got
+    bus power, and the row reads as the model over-predicting.
+    """
+    configs = [el.get("AxisConfiguration") or "" for el in root.iter("AxisParameters")]
+    servo = [c for c in configs if c and c != _CONVERTER_AXIS_CONFIG]
+    if not servo or _CONVERTER_AXIS_CONFIG in configs:
+        return []
+    drives = sorted({
+        c for m in root.iter("Module")
+        if _KINETIX_DRIVE.match(c := m.get("CatalogNumber") or "")
+        and not _KINETIX_SUPPLY.match(c)
+    })
+    if not drives:
+        return []
+    return [LintFinding(
+        "kinetix_axis_without_converter",
+        "%d servo axis tag(s) on %s and NO converter axis (an AXIS_CIP_DRIVE whose "
+        "AxisConfiguration is '%s', pointed at the bus supply's Ch1). Studio converts this "
+        "and then fails Build once per drive module on bus sharing, so the capture measures "
+        "a project whose drives never got bus power."
+        % (len(servo), ", ".join(drives), _CONVERTER_AXIS_CONFIG),
+    )]
+
+
+_KINETIX_SAFETY_DRIVE = re.compile(r"^2198-[DS]\d+-ERS\d")
+
+
+def _kinetix_drive_configid_findings(root: ET.Element) -> list[LintFinding]:
+    """A 2198 -ERS drive needs its <ExtendedProperties> ConfigID.
+
+    Every real 2198 drive in the eighteen real exports -- about 250 of them --
+    carries <ExtendedProperties><public>...<ConfigID>...</ConfigID>, and every
+    one has SafetyEnabled="false". The ConfigID selects the add-on profile's
+    configuration. Without it the -ERS drive falls back to its networked-safety
+    default: Studio creates a module-defined `<drive>:SI` safety tag, and a
+    non-safety controller rejects the project with, once per drive,
+
+        Tag 'Bus1_Drive_D032:SI': Invalid data type for safety tag.
+
+    plus "Project size exceeds controller capacity" (no safety partition). That
+    is the recorded error log of modulerack_kinetix_full_bus, built from the
+    `2conn` blocks in gen_module_sweep_variants.py, which lack the block. The
+    same blocks failed every `modulesweep_2198_*_variant_2conn` capture.
+    SafetyEnabled="false" on the <Module> does not prevent it, which is why
+    _safety_module_findings passed these files.
+
+    gen_module_motion._drive_module_xml emits the block from real data and is
+    the only builder a 2198 drive should come from.
+    """
+    findings: list[LintFinding] = []
+    for mod in root.iter("Module"):
+        catalog = mod.get("CatalogNumber") or ""
+        if not _KINETIX_SAFETY_DRIVE.match(catalog):
+            continue
+        if mod.find("./ExtendedProperties//ConfigID") is None:
+            findings.append(LintFinding(
+                "kinetix_drive_missing_configid",
+                f"Module '{mod.get('Name')}' ({catalog}) has no <ExtendedProperties> ConfigID. "
+                f"Every real 2198 drive carries one; without it Studio configures the drive for "
+                f"networked safety, creates a '{mod.get('Name')}:SI' safety tag and fails Build on "
+                f"a non-safety controller ('Invalid data type for safety tag'). Build the drive "
+                f"with gen_module_motion._drive_module_xml.",
+            ))
+    return findings
+
+
+def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
+    """Which channel an axis may sit on is a property of ITS CATALOG.
+
+    REPLACING A CATALOG-BLIND RULE THAT DID NOT CATCH THE BUG IT
+    EXISTED FOR. This used to check the channel string against one global set
+    {Ch1, Ch3} taken from three D-series exports, with the docstring asserting
+    "never Ch2". Both halves were wrong:
+
+      * It PASSED 2198-S086-ERS3 axes on Ch3 -- Ch3 is in the global set, just
+        not for that catalog -- which is the exact shape Studio rejected in six
+        axmarg_* files with "Invalid channel/node for motion module".
+      * It would have FLAGGED a correct S086 on Ch2, the one real Ch2 in the
+        whole corpus.
+
+    Now keyed on catalog from DRIVE_CHANNELS (sample_gen/data/kinetix.py), which
+    also carries the maximum axis count per module, so riding three axes on a
+    two-axis drive is caught as well. An unknown 2198 catalog is reported rather
+    than passed, because passing is how the last gap stayed open.
+    """
+    findings: list[LintFinding] = []
+    catalog_of = {
+        m.get("Name"): (m.get("CatalogNumber") or "") for m in root.iter("Module")
+    }
+    per_module: dict[str, list[str]] = {}
+    for el in root.iter("AxisParameters"):
+        ref = el.get("MotionModule") or ""
+        if ":" not in ref:
+            continue
+        module, _, channel = ref.rpartition(":")
+        per_module.setdefault(module, []).append(channel)
+
+    for module, channels in sorted(per_module.items()):
+        catalog = catalog_of.get(module, "")
+        if not catalog.startswith("2198"):
+            continue
+        known = DRIVE_CHANNELS.get(catalog)
+        if known is None:
+            findings.append(LintFinding(
+                "drive_axis_unknown_catalog",
+                f"Module {module} ({catalog}) carries axes but has no entry in "
+                f"DRIVE_CHANNELS. Add it from a real export -- do not assume it "
+                f"shares another catalog's channel scheme.",
+            ))
+            continue
+        allowed, max_axes = known
+        for channel in sorted(set(channels) - allowed):
+            findings.append(LintFinding(
+                "drive_axis_unreal_channel",
+                f"Module {module} ({catalog}) has an axis on {channel}. Every real "
+                f"{catalog} in the corpus uses {sorted(allowed)} and nothing else. "
+                f"Channels are per-catalog: the D-series second axis is Ch3, but "
+                f"2198-S086-ERS3's is Ch2.",
+            ))
+        if len(channels) > max_axes:
+            findings.append(LintFinding(
+                "drive_axis_too_many",
+                f"Module {module} ({catalog}) carries {len(channels)} axes. The most "
+                f"any real {catalog} carries is {max_axes}.",
+            ))
+    return findings
+
+
+# Major revision -> ConfigSize, for 2198 DRIVES only (supplies are 376 at every
+# Major, and 2198-RP200 is 452). Read out of every 2198 drive in the real corpus
+# Major 7 -> 376, Major 9 and 11 -> 448, Major 13 and 14 -> 468.
+_DRIVE_MAJOR_CONFIGSIZE = {"7": 376, "9": 448, "11": 448, "13": 468, "14": 468}
+_DRIVE_CATALOG_RE = re.compile(r"^2198-[DS]\d+-ERS3?$")
+
+
+def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
+    """A module's ConfigSize must match its own payload, and its ProductCode
+    must match its catalog.
+
+    Checked against values read out of real exports (sample_gen/data/kinetix.py)
+    rather than against anything this project composed. The real
+    (ConfigSize, value_count) pairs for 2198 modules are 376/96, 448/114,
+    452/115 and 468/119; a payload of 118 values under ConfigSize=468 -- which
+    is what every generated drive carried -- exists in no real export.
+    """
+    findings: list[LintFinding] = []
+    for module in root.iter("Module"):
+        catalog = module.get("CatalogNumber") or ""
+        name = module.get("Name") or "(unnamed)"
+        identity = MODULE_IDENTITY.get(catalog)
+        if identity is not None:
+            _vendor, product_type, product_code, major, _minor = identity
+            for attr, expected in (("ProductType", product_type), ("ProductCode", product_code),
+                                   ("Major", major)):
+                actual = module.get(attr)
+                if actual is not None and actual != expected:
+                    findings.append(LintFinding(
+                        "module_identity_mismatch",
+                        f"Module {name} ({catalog}): {attr}=\"{actual}\" but every real "
+                        f"{catalog} in the corpus uses \"{expected}\". A wrong ProductCode "
+                        f"gives the module another catalog's identity.",
+                    ))
+        # The Major revision decides ConfigSize on a 2198 drive, not the catalog.
+        # D020/D032/D057 shipped at Major 11 carrying their Major-14
+        # payload and S130 at Major 11 carrying its Major-13 payload -- pairings
+        # that exist in no real export, and Studio rejected every one of them
+        # with "Data type mismatch". D012, correctly paired at Major 14, imported.
+        if _DRIVE_CATALOG_RE.match(catalog):
+            major_attr = module.get("Major")
+            expected_size = _DRIVE_MAJOR_CONFIGSIZE.get(major_attr)
+            for config in module.iter("ConfigData"):
+                size_attr = config.get("ConfigSize")
+                if expected_size is None or size_attr is None:
+                    continue
+                if int(size_attr) != expected_size:
+                    findings.append(LintFinding(
+                        "module_major_configsize_mismatch",
+                        f"Module {name} ({catalog}): Major {major_attr} with "
+                        f"ConfigSize={size_attr}. Every real 2198 drive at Major "
+                        f"{major_attr} carries ConfigSize={expected_size} "
+                        f"({_DRIVE_MAJOR_CONFIGSIZE}). Change the Major to match the "
+                        f"payload's own donor revision, not the payload to match a Major.",
+                    ))
+        for config in module.iter("ConfigData"):
+            size_attr = config.get("ConfigSize")
+            if size_attr is None:
+                continue
+            for data in config.iter("Data"):
+                if data.get("Format") != "L5K" or not data.text:
+                    continue
+                count = len([v for v in re.split(r"[,\s\[\]]+", data.text) if v != ""])
+                pair = (int(size_attr), count)
+                known = CONFIG_DATA.get(catalog)
+                if known is not None and pair not in known:
+                    findings.append(LintFinding(
+                        "module_configdata_size_mismatch",
+                        f"Module {name} ({catalog}): ConfigSize={pair[0]} with {pair[1]} L5K "
+                        f"value(s). No real {catalog} export has that combination -- the real "
+                        f"pairs for this catalog are {sorted(known)}. "
+                        f"Take the payload from sample_gen/data/kinetix.py rather than editing "
+                        f"a value count to make a size fit.",
+                    ))
+                elif known is None and catalog.startswith("2198") and pair not in REAL_CONFIG_PAIRS:
+                    findings.append(LintFinding(
+                        "module_configdata_size_mismatch",
+                        f"Module {name} ({catalog}): ConfigSize={pair[0]} with {pair[1]} L5K "
+                        f"value(s), which matches no real 2198 pair "
+                        f"{sorted(REAL_CONFIG_PAIRS)}.",
+                    ))
+    return findings
+
+
+def lint_l5x(l5x_text: str) -> list[LintFinding]:
+    root = ET.fromstring(l5x_text)
+    findings: list[LintFinding] = []
+
+    findings.extend(_platform_standard_findings(root))
+    findings.extend(_module_slot_findings(root))
+    findings.extend(_chassis_size_findings(root))
+    findings.extend(_kinetix_bus_supply_findings(root))
+    findings.extend(_kinetix_converter_axis_findings(root))
+    findings.extend(_kinetix_drive_configid_findings(root))
+    findings.extend(_drive_axis_channel_findings(root))
+    findings.extend(_module_configdata_findings(root))
+    findings.extend(_invalid_logix_name_findings(root))
+    findings.extend(_safety_module_findings(root))
+    findings.extend(_aoi_array_param_usage_findings(root))
+    findings.extend(_non_lad_instruction_findings(root))
+    findings.extend(_structure_tag_data_findings(root))
+
+    array_tags = _array_tag_names(root)
+    aoi_names = _declared_aoi_names(root)
+    aoi_call_arg_counts = _aoi_call_arg_count(root)
+    rung_texts = _all_rung_texts(root)
+
+    # bit_level_instruction_on_non_bool_operand / rung_missing_output_
+    # instruction need to know each rung's OWN scope's tag types -- an
+    # AOI-internal routine's operands are its own Parameters/LocalTags,
+    # not the file-wide Tags table, and vice versa. Checked per-scope
+    # rather than globally so a Program rung is never resolved against an
+    # AOI's internal-only names or vice versa.
+    global_tag_types = _tag_types_from(root, "Tag")
+    udt_members = _udt_member_types(root)
+    findings.extend(_rung_missing_output_findings(rung_texts))
+    findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
+    for program_el in root.iter("Program"):
+        findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
+    for aoi_el in root.iter("AddOnInstructionDefinition"):
+        aoi_tag_types = _tag_types_from(aoi_el, "Parameter")
+        aoi_tag_types.update(_tag_types_from(aoi_el, "LocalTag"))
+        findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types, udt_members))
+
+    for text in rung_texts:
+        # An AOI InOut Parameter declared with Dimensions takes the WHOLE
+        # array as its argument, bare, with no [index] -- real corpus:
+        # LOG_HMIDisplay Dimensions="25" and BitArray Dimensions="1024"
+        # are both passed that way. Same class of exception as SIZE/MCSV
+        # below, but it cannot be a mnemonic lookbehind because the array
+        # can sit at any argument position of any AOI call, so the whole
+        # call site is exempted instead (found generating
+        # aoistr_real_* -- the first files this project ever built with an
+        # array InOut param actually wired to a caller).
+        aoi_call_spans = [
+            m.span() for m in _INSTRUCTION_CALL.finditer(text)
+            if m.group(1) in aoi_names
+        ]
+        aoi_arg_regions = []
+        for start, _ in aoi_call_spans:
+            close = text.find(")", start)
+            aoi_arg_regions.append((start, len(text) if close < 0 else close))
+
+        for tag in array_tags:
+            # SIZE is a confirmed exception to the bracket rule ('s
+            # own Studio-5000-verified COP_Samples.L5X:
+            # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
+            # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
+            # FLL/BTD, SIZE's first operand is the whole array, not one
+            # element of it, so a bare tag immediately after "SIZE(" is
+            # not a missing-subscript bug.
+            # MCSV is the second confirmed whole-array exception, same
+            # class as SIZE and on the same evidence standard: the
+            # build-clean export writes
+            # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
+            # CAM_PROFILE[10] with NO subscript. A cam profile is passed as
+            # the whole profile array, never one element of it, so a bare
+            # array tag after "MCSV(" is correct, not a missing-subscript
+            # bug. Kept as a mnemonic-specific lookbehind rather than a
+            # blanket CAM_PROFILE exemption, because MAPC/MCCP DO take a
+            # subscripted element and must still be caught.
+            pattern = re.compile(r"(?<!SIZE\()(?<!MCSV\(MCSV,)\b" + re.escape(tag) + r"\b(?!\s*\[)")
+            hits = [
+                m for m in pattern.finditer(text)
+                if not any(lo <= m.start() < hi for lo, hi in aoi_arg_regions)
+            ]
+            if hits:
+                findings.append(LintFinding(
+                    "missing_array_subscript",
+                    f"array-typed tag '{tag}' referenced without a [index] subscript in rung text: {text.strip()!r}",
+                ))
+
+        for mnemonic, args_str in _call_sites(text):
+            if mnemonic in aoi_names:
+                # First arg is always the instance tag, not a Parameter --
+                # everything after it maps 1:1 to the REQUIRED parameters in
+                # declaration order. See _aoi_call_arg_count's docstring.
+                args = _split_top_level_args(args_str)
+                param_arg_count = max(len(args) - 1, 0)
+                expected = aoi_call_arg_counts.get(mnemonic, 0)
+                if param_arg_count != expected:
+                    findings.append(LintFinding(
+                        "aoi_call_arg_count_mismatch",
+                        f"'{mnemonic}(' called with {param_arg_count} parameter argument(s) (plus the "
+                        f"instance tag), but its declaration has {expected} required Input/Output/InOut "
+                        f"parameter(s), and a call site must supply exactly those. Visible=\"true\" "
+                        f"without Required=\"true\" is not a call slot: {text.strip()!r}",
+                    ))
+                continue
+            if mnemonic in _NATIVE_ARG_COUNTS:
+                n_args = len(_split_top_level_args(args_str))
+                if n_args != _NATIVE_ARG_COUNTS[mnemonic]:
+                    findings.append(LintFinding(
+                        "native_instruction_arg_count",
+                        f"'{mnemonic}(' called with {n_args} operand(s); the real form takes "
+                        f"{_NATIVE_ARG_COUNTS[mnemonic]}. Studio fails Build with 'Invalid number of "
+                        f"arguments for instruction': {text.strip()!r}",
+                    ))
+            if mnemonic in _KNOWN_NATIVE_INSTRUCTIONS:
+                continue
+            findings.append(LintFinding(
+                "unrecognized_instruction",
+                f"'{mnemonic}(' called in rung text but it's neither a known native instruction nor a "
+                f"declared AddOnInstructionDefinition in this file: {text.strip()!r}",
+            ))
+
+    return findings
+
+
+def lint_or_raise(l5x_text: str, context: str = "") -> None:
+    """Convenience wrapper for generator scripts: raise loudly instead of
+    silently shipping a file with one of these two known error classes."""
+    findings = lint_l5x(l5x_text)
+    if findings:
+        lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
+        prefix = f"{context}: " if context else ""
+        raise ValueError(f"{prefix}lint found {len(findings)} issue(s):\n{lines}")
+
+
+# --- The realism floor ------------------------------------------------------
+#
+# Every file generated from here on must look like a real program in the three
+# ways the calibration corpus did not: at least five Ethernet I/O nodes, at
+# least a quarter of the controller filled, and no output bit written in more
+# than one place. See sample_gen/realism.py, which builds a baseline that meets
+# all three. Separate from lint_l5x() because it needs the file's prediction,
+# and because a unit test's four-line file is not a sample; write_sample()
+# enforces it on every file handed over, and tests/test_build_guards.py on
+# every file waiting for capture.
+
+MIN_IO_NODES = 5
+MIN_FILL = 0.25
+
+_OUTPUT_BIT_CALL = re.compile(r"\b(OTE|ONS|OTL|OTU)\(([^()]*)\)")
+
+
+def io_node_count(root: ET.Element) -> int:
+    """Modules on the controller's own Ethernet network: an upstream Ethernet
+    port and the controller as parent. A rack counts once, as its adapter; its
+    cards sit on the adapter's backplane, not on the network."""
+    n = 0
+    for mod in root.iter("Module"):
+        if mod.get("Name") == "Local" or mod.get("ParentModule") != "Local":
+            continue
+        if any(p.get("Type") == "Ethernet" and p.get("Upstream") == "true" for p in mod.iter("Port")):
+            n += 1
+    return n
+
+
+def output_bit_duplicates(root: ET.Element) -> list[str]:
+    """Bits written by more than one OTE or ONS, and OTL/OTU targets that are
+    also OTE'd. Program ladder only: an AOI's internal logic runs per instance
+    against that instance's own parameters, so it is not a duplicate."""
+    writes: dict[str, int] = {}
+    latched: set[str] = set()
+    for program in root.iter("Program"):
+        for text_el in program.iter("Text"):
+            for m in _OUTPUT_BIT_CALL.finditer(text_el.text or ""):
+                op = m.group(2).strip()
+                if m.group(1) in ("OTE", "ONS"):
+                    writes[op] = writes.get(op, 0) + 1
+                else:
+                    latched.add(op)
+    dup = [f"{op} written by {n} OTE/ONS" for op, n in sorted(writes.items()) if n > 1]
+    dup += [f"{op} is both OTE'd and latched" for op in sorted(latched & writes.keys())]
+    return dup
+
+
+def realism_findings(l5x_text: str, predicted: int | None) -> list[LintFinding]:
+    """The realism floor. `predicted` None skips the fill check (a file the
+    engine cannot price, e.g. one carrying an unmodeled AXIS structure)."""
+    from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
+
+    root = ET.fromstring(l5x_text)
+    findings = []
+    nodes = io_node_count(root)
+    if nodes < MIN_IO_NODES:
+        findings.append(LintFinding(
+            "realism_io_nodes",
+            f"{nodes} Ethernet I/O node(s); the floor is {MIN_IO_NODES}. Build on "
+            f"sample_gen.realism.with_baseline(), which adds RACK_1..RACK_5."))
+    if predicted is not None:
+        ctl = root.find("Controller")
+        budget = load_controller_budgets().lookup(ctl.get("ProcessorType") if ctl is not None else None)
+        if budget is not None:
+            floor = int(budget.display_total_bytes * MIN_FILL)
+            if predicted < floor:
+                findings.append(LintFinding(
+                    "realism_fill",
+                    f"predicted {predicted:,} bytes is under {MIN_FILL:.0%} of the controller "
+                    f"({floor:,}). Build on sample_gen.realism.with_baseline()."))
+    dups = output_bit_duplicates(root)
+    if dups:
+        findings.append(LintFinding(
+            "realism_duplicate_output_bit",
+            f"{len(dups)} output bit(s) written in more than one place, e.g. "
+            f"{'; '.join(dups[:5])}. Real ladder writes each output bit once."))
+    return findings
+
+
+def realism_or_raise(l5x_text: str, predicted: int | None, context: str = "") -> None:
+    findings = realism_findings(l5x_text, predicted)
+    if findings:
+        lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
+        prefix = f"{context}: " if context else ""
+        raise ValueError(f"{prefix}below the realism floor:\n{lines}")

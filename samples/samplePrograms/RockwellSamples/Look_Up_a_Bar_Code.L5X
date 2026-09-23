@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Look_Up_a_Bar_Code" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:35:03 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Look_Up_a_Bar_Code" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="10" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:34:51 2018" LastModifiedDate="Fri Jan 19 07:34:51 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="PRODUCT_INFO" Family="NoFamily" Class="User">
+<Description>
+<![CDATA[Identifies the destination for an item based on an ASCII string of characters that identiy the item]]>
+</Description>
+<Members>
+<Member Name="Product_ID" DataType="STRING" Dimension="0" Radix="NullType" Hidden="false">
+<Description>
+<![CDATA[ASCII characters that identify the item]]>
+</Description>
+</Member>
+<Member Name="Lane" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false">
+<Description>
+<![CDATA[Destination for the item, based on its ID]]>
+</Description>
+</Member>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags/>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="lane" TagType="Base" DataType="DINT" Radix="Decimal">
+<Description>
+<![CDATA[location to which to divert the product]]>
+</Description>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="product_id" TagType="Base" DataType="STRING">
+<Description>
+<![CDATA[bar code characters that identify the product]]>
+</Description>
+<Data>03 00 00 00 41 42 43 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="String" Length="3">
+<![CDATA['ABC']]>
+</Data>
+</Tag>
+<Tag Name="sort_table" TagType="Base" DataType="PRODUCT_INFO" Dimensions="3">
+<Description>
+<![CDATA[array that identifies the lane for a corresponding product]]>
+</Description>
+<Comments>
+<Comment Operand="[0]">
+<![CDATA[The SIZE instruction counts the number of elements in the sort_table array. This array contains the product ID for each]]>
+</Comment>
+</Comments>
+<Data>03 00 00 00 41 42 43 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 03 00 00 00 
+44 45 46 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 03 00 00 00 47 48 49 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="PRODUCT_INFO" Dimensions="3">
+<Element Index="[0]">
+<Structure DataType="PRODUCT_INFO">
+<StructureMember Name="Product_ID" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['ABC']]>
+</DataValueMember>
+</StructureMember>
+<DataValueMember Name="Lane" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="PRODUCT_INFO">
+<StructureMember Name="Product_ID" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['DEF']]>
+</DataValueMember>
+</StructureMember>
+<DataValueMember Name="Lane" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="PRODUCT_INFO">
+<StructureMember Name="Product_ID" DataType="STRING">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="3"/>
+<DataValueMember Name="DATA" DataType="STRING" Radix="ASCII">
+<![CDATA['GHI']]>
+</DataValueMember>
+</StructureMember>
+<DataValueMember Name="Lane" DataType="DINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="sort_table_search" TagType="Base" DataType="CONTROL">
+<Description>
+<![CDATA[searches the sort table for a specific product ID and returns the position of the product ID within the sort table]]>
+</Description>
+<Data>00 00 00 00 01 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="CONTROL">
+<DataValueMember Name="LEN" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="POS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EU" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EM" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="UL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FD" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Use the following logic to return specific information about an item based on its bar code.
+
+For example, in a sorting operation, an array of a user-defined data type creates a table that shows the lane number for each type of product. To determine which lane to route a product, the controller searches the table for the product ID (characters of the bar code that identify the product).]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[This project uses a user-defined data type, PRODUCT_INFO, to identify the destination for an item based on an ASCII string of characters that identify the item. To view the data type, in the controller organizer, under the Data Types folder, under the User-Defined folder, double-click the PRODUCT_INFO data type.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[The sort_table array stores the lane number (destination) for each item in the system. The array uses the PRODUCT_INFO data type. It contains one element for each type of item. Into the sort_table array, enter the ASCII characters that identify each item and the corresponding lane number for the item.]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[The SIZE instruction counts the number of elements in the sort_table array. This array contains the product ID for each item and the corresponding lane number for the item. The SIZE instruction counts the number of elements in Dimension 0 of the array. In this case, that is the only dimension.
+
+The SIZE instruction sets the Length of the subsequent FSC instruction equal to the size of the sort_table array. This ensures that the FSC instruction searches the exact size of the array.
+
+The sort_table_search tag controls the FSC instruction, which looks through the sort_table array for the bar code characters. Although the previous instruction sets the Length of this instruction, the software requires an initial value to verify the project.
+
+The product_id tag contains the bar code characters that identify the item. The FSC instruction searches each Product_ID member in the sort_table array until the instruction finds a match to the product_id tag.]]>
+</Comment>
+<Text>
+<![CDATA[SIZE(sort_table[0],0,sort_table_search.LEN)FSC(sort_table_search,?,?,ALL,product_id=sort_table[sort_table_search.POS].Product_ID);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[When the FSC instruction finds the product ID within the sort_table array, the instruction sets the FD bit.  The POS member indicates the element number within the sort_table array of the match. The corresponding LANE member indicates the lane number of the match.
+
+Based on the POS value, the MOV instruction moves the corresponding lane number into the lane tag. The controller uses the value of this tag to route the item.
+
+After the MOV instruction sets the value of the lane tag, the RES instruction resets the FSC instruction so it can search for the next product ID.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(sort_table_search.FD)MOV(sort_table[sort_table_search.POS].Lane,lane)RES(sort_table_search);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[If the FSC instruction does not find the product ID within the sort_table array, the instruction sets the DN bit. When no match is found, the MOV instruction moves 999 into the lane tag. This tells the controller to reject or reroute the item.
+
+After the MOV instruction sets the value of the lane tag, the RES instruction resets the FSC instruction so it can search for the next product ID.]]>
+</Comment>
+<Text>
+<![CDATA[XIC(sort_table_search.DN)MOV(999,lane)RES(sort_table_search);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

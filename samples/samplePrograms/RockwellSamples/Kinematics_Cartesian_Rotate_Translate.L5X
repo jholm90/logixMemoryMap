@@ -1,0 +1,2779 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Kinematics_Cartesian_Rotate_Translate" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:30:46 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Kinematics_Cartesian_Rotate_Translate" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:30:35 2018" LastModifiedDate="Fri Jan 19 07:30:35 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#002e_dc65" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<Description>
+<![CDATA[Sample for Rotation & Translation of Cartesian axes(frame) using MCT instruction.]]>
+</Description>
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Begin_Application" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="CS_Cartesian_Base_Frame" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Description>
+<![CDATA[BASE Cartesian Reference Frame]]>
+</Description>
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="Motion_Group" SystemType="Cartesian" Dimension="3" Axes="X Y Z" MaximumPendingMoves="1" CoordinationMode="Primary Primary Primary" CoordinationUnits="Inches" ConversionRatioNumerator="1.0 1.0 1.0" ConversionRatioDenominator="1 1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="10.0"
+ MaximumAcceleration="100.0" MaximumDeceleration="100.0" ActualPositionTolerance="0.1" CommandPositionTolerance="0.1" TransformDimension="3" JointRatioNumerator="1.0 1.0 1.0" JointRatioDenominator="1 1 1" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0"
+ ZeroAngleOffset3="0.0" BaseOffset1="0.0" BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="1000.0" MaximumDecelerationJerk="1000.0"/>
+</Data>
+</Tag>
+<Tag Name="CS_Cartesian_Transformed_Frame" TagType="Base" DataType="COORDINATE_SYSTEM">
+<Description>
+<![CDATA[TRANSFORMED Cartesian Reference Frame
+Translate & Rotate]]>
+</Description>
+<Data Format="CoordinateSystem">
+<CoordinateSystemParameters MotionGroupInstance="Motion_Group" SystemType="Cartesian" Dimension="3" Axes="X_tr_physical Y_tr_physical Z_tr_physical" MaximumPendingMoves="1" CoordinationMode="Primary Primary Primary" CoordinationUnits="Inches" ConversionRatioNumerator="1.0 1.0 1.0" ConversionRatioDenominator="1 1 1" CoordinateSystemAutoTagUpdate="Enabled" MaximumSpeed="10.0"
+ MaximumAcceleration="100.0" MaximumDeceleration="100.0" ActualPositionTolerance="0.1" CommandPositionTolerance="0.1" TransformDimension="3" JointRatioNumerator="1.0 1.0 1.0" JointRatioDenominator="1 1 1" LinkLength1="0.0" LinkLength2="0.0" ZeroAngleOffset1="0.0" ZeroAngleOffset2="0.0"
+ ZeroAngleOffset3="0.0" BaseOffset1="0.0" BaseOffset2="0.0" BaseOffset3="0.0" EndEffectorOffset1="0.0" EndEffectorOffset2="0.0" EndEffectorOffset3="0.0" DynamicsConfigurationBits="7" MaximumAccelerationJerk="1000.0" MaximumDecelerationJerk="1000.0"/>
+</Data>
+</Tag>
+<Tag Name="cs_Source" TagType="Alias" AliasFor="CS_Cartesian_Base_Frame"/>
+<Tag Name="cs_Target" TagType="Alias" AliasFor="CS_Cartesian_Transformed_Frame"/>
+<Tag Name="Go_ToStartPosition" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="mct1" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mc_initialposition" TagType="Base" DataType="MOTION_INSTRUCTION" Dimensions="3">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_INSTRUCTION" Dimensions="3">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="mc_transformStop" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="mc_transformStop2" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Motion_Group" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="5000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+<Tag Name="orient" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Description>
+<![CDATA[Rotation Angle a-round [x,y,z]]]>
+</Description>
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="save_Orient" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Start" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Start_with_Orientation" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Transform_Stop2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="trs" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="X" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3000.0" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="X_tr_physical" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3000.0" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Y" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3081.6326" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Y_tr_physical" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="3081.6326" MaximumDecelerationJerk="3878.0488"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Z" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="2921.5686" MaximumDecelerationJerk="2921.5686"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+<Tag Name="Z_tr_physical" TagType="Base" DataType="AXIS_VIRTUAL">
+<Data Format="Axis">
+<AxisParameters MotionGroup="Motion_Group" ConversionConstant="100000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="8000" HomeMode="Active" HomeDirection="Bi-directional Forward" HomeSequence="Immediate"
+ HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" MaximumSpeed="10.0" MaximumAcceleration="100.0" MaximumDeceleration="100.0" ProgrammedStopMode="Fast Stop" MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" MaximumAccelerationJerk="2921.5686" MaximumDecelerationJerk="2921.5686"
+ DynamicsConfigurationBits="3"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="a" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="AccdecRate" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="Active_motion" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="at_StartPosition" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="c" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="cant" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Cart_Zero_XYZ" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="data_is_Setup" TagType="Alias" Radix="Decimal" AliasFor="first_time"/>
+<Tag Name="done_Pass" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="done_StartPos" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="do_via_Auto" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="first_time" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="heigth" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Len" TagType="Base" DataType="INT" Radix="Decimal">
+<Data>00 00</Data>
+<Data Format="Decorated"><DataValue DataType="INT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="mclm_initialposition_Zero" TagType="Base" DataType="MOTION_INSTRUCTION">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MCT_oFF" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="mc_shape_Inc" TagType="Base" DataType="MOTION_INSTRUCTION" Dimensions="20">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="MOTION_INSTRUCTION" Dimensions="20">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[2]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[3]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[4]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[5]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[6]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[7]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[8]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[9]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[10]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[11]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[12]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[13]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[14]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[15]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[16]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[17]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[18]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[19]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</Array>
+</Data>
+</Tag>
+<Tag Name="myBit" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="next_angle" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Over" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="pass" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="pass_count" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Pos_XYZ" TagType="Base" DataType="REAL" Dimensions="20 3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="20,3" Radix="Float">
+<Element Index="[0,0]" Value="0.0"/>
+<Element Index="[0,1]" Value="0.0"/>
+<Element Index="[0,2]" Value="0.0"/>
+<Element Index="[1,0]" Value="0.0"/>
+<Element Index="[1,1]" Value="0.0"/>
+<Element Index="[1,2]" Value="0.0"/>
+<Element Index="[2,0]" Value="0.0"/>
+<Element Index="[2,1]" Value="0.0"/>
+<Element Index="[2,2]" Value="0.0"/>
+<Element Index="[3,0]" Value="0.0"/>
+<Element Index="[3,1]" Value="0.0"/>
+<Element Index="[3,2]" Value="0.0"/>
+<Element Index="[4,0]" Value="0.0"/>
+<Element Index="[4,1]" Value="0.0"/>
+<Element Index="[4,2]" Value="0.0"/>
+<Element Index="[5,0]" Value="0.0"/>
+<Element Index="[5,1]" Value="0.0"/>
+<Element Index="[5,2]" Value="0.0"/>
+<Element Index="[6,0]" Value="0.0"/>
+<Element Index="[6,1]" Value="0.0"/>
+<Element Index="[6,2]" Value="0.0"/>
+<Element Index="[7,0]" Value="0.0"/>
+<Element Index="[7,1]" Value="0.0"/>
+<Element Index="[7,2]" Value="0.0"/>
+<Element Index="[8,0]" Value="0.0"/>
+<Element Index="[8,1]" Value="0.0"/>
+<Element Index="[8,2]" Value="0.0"/>
+<Element Index="[9,0]" Value="0.0"/>
+<Element Index="[9,1]" Value="0.0"/>
+<Element Index="[9,2]" Value="0.0"/>
+<Element Index="[10,0]" Value="0.0"/>
+<Element Index="[10,1]" Value="0.0"/>
+<Element Index="[10,2]" Value="0.0"/>
+<Element Index="[11,0]" Value="0.0"/>
+<Element Index="[11,1]" Value="0.0"/>
+<Element Index="[11,2]" Value="0.0"/>
+<Element Index="[12,0]" Value="0.0"/>
+<Element Index="[12,1]" Value="0.0"/>
+<Element Index="[12,2]" Value="0.0"/>
+<Element Index="[13,0]" Value="0.0"/>
+<Element Index="[13,1]" Value="0.0"/>
+<Element Index="[13,2]" Value="0.0"/>
+<Element Index="[14,0]" Value="0.0"/>
+<Element Index="[14,1]" Value="0.0"/>
+<Element Index="[14,2]" Value="0.0"/>
+<Element Index="[15,0]" Value="0.0"/>
+<Element Index="[15,1]" Value="0.0"/>
+<Element Index="[15,2]" Value="0.0"/>
+<Element Index="[16,0]" Value="0.0"/>
+<Element Index="[16,1]" Value="0.0"/>
+<Element Index="[16,2]" Value="0.0"/>
+<Element Index="[17,0]" Value="0.0"/>
+<Element Index="[17,1]" Value="0.0"/>
+<Element Index="[17,2]" Value="0.0"/>
+<Element Index="[18,0]" Value="0.0"/>
+<Element Index="[18,1]" Value="0.0"/>
+<Element Index="[18,2]" Value="0.0"/>
+<Element Index="[19,0]" Value="0.0"/>
+<Element Index="[19,1]" Value="0.0"/>
+<Element Index="[19,2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="Rotation_Angle_aroundZ" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 B4 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="90.0"/>
+</Data>
+</Tag>
+<Tag Name="run_automatically" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>01</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="1"/>
+</Data>
+</Tag>
+<Tag Name="s7" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq1" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq2" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq3" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq4" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq5" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq5_done" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq6" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq6a" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq7" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq8" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="seq9" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Shape_active" TagType="Base" DataType="BOOL" Radix="Decimal">
+<Data>00</Data>
+<Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Speed" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="speed_Inpo" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="step" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="step2" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="Termtype" TagType="Base" DataType="DINT" Radix="Decimal">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="trans" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="t_org" TagType="Base" DataType="REAL" Dimensions="3" Radix="Float">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="3" Radix="Float">
+<Element Index="[0]" Value="0.0"/>
+<Element Index="[1]" Value="0.0"/>
+<Element Index="[2]" Value="0.0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="xPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="xtr_Pos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="yPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="ytr_Pos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+<Tag Name="zPos" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="0.0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Auto_Sequence" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+Automatically Sequence thru Example steps
+for Rotation of X,Y(tr) about the Z-axis via MCT with Rotation 
+[see writeup in the a_ReadMe ST routine] 
+(1) Move to StartPosition,  (2) Active the MCT
+(3) Activate Draw Profile  (4) see Trend Xtr, Ytr
+(5) Verify the Active_Motion completes
+***************************************************************
+to Make it in an Automatic Loop added:
+(6) Turn Off Transformation MCS,  (7) verify MCT Source status=Off
+(8) Add 90deg to Rotation {around Z}      ( 9) set to Do another Pass
+**********************************************************************************
+]]>
+</Comment>
+<Text>
+<![CDATA[SBR(run_automatically)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[from Manual steps [listed in a_ReadMe]
+(1) Move to StartPosition
+================================]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(do_via_Auto) ONS(seq1) ,XIC(next_angle) ONS(seq6a) ]OTL(Go_ToStartPosition);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[(2) Activate the MCT
+{and Activate MCT with Proper Orient [0,0,angle]}
+=========================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(at_StartPosition)ONS(seq2)OTL(Transform_Start_with_Orientation);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[(3) Activate (Call to), Draw the Profile/Shape
+Prerequisite: at Start Position & Transform Status=True 
+=============================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(mct1.IP)XIC(at_StartPosition)ONS(seq3)XIC(cs_Source.TransformSourceStatus)OTL(Begin_Application);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[(4) Use Trend to verify  Plot of  X(tr),Y(tr)  with Orientation (paralleogram)
+============================================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Active_motion)ONS(seq4)OTU(next_angle)OTU(Begin_Application)OTL(Shape_active);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[(5) Check for  falling-edge of  Active_motion,
+ to signal Motion=Complete
+==========================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Shape_active)XIO(Active_motion)OSF(seq5,seq5_done)XIC(seq5)OTL(done_Pass);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[(6) De-Activate the MCT, via MCS of Source Coord_System
+{Required to ReActive MCT for each NEW ORIENTATION Angle}
+====================================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(done_Pass)ONS(seq6)OTL(Transform_Stop1);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[(7) Verify the  MCT =Off,  and
+ Transform_Status of Source =Off
+=========================================]]>
+</Comment>
+<Text>
+<![CDATA[XIO(cs_Source.TransformSourceStatus)XIO(mct1.IP)XIC(mc_transformStop.PC)ONS(seq7)OTL(MCT_oFF);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[(8) Set Up a NEW ORIENTATION Angle  (for next MCT activation)
+{to Orient XY plane about Z, fill in Proper Orient [0,0,angle]}
+====================================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(done_Pass)XIC(MCT_oFF)ONS(seq8)OTL(next_angle)ADD(90.0,Rotation_Angle_aroundZ,Rotation_Angle_aroundZ)GRT(Rotation_Angle_aroundZ,360.0)MOV(0.0,Rotation_Angle_aroundZ)OTU(next_angle);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[Monitor the  Source systems Positions]]>
+</Comment>
+<Text>
+<![CDATA[MOV(X.ActualPosition,xPos)MOV(Y.ActualPosition,yPos)MOV(Z.ActualPosition,zPos);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[(9) Set to do Another full PASS 
+       will stop when Angle=360deg
+=============================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(done_Pass)XIC(MCT_oFF)ONS(seq9)ADD(pass_count,1,pass_count)[OTU(Go_ToStartPosition) OTU(at_StartPosition) ,OTU(Transform_Start_with_Orientation) ,OTU(Begin_Application) ,OTU(Shape_active) ,OTU(Transform_Stop1) OTU(MCT_oFF) ,OTU(done_Pass) ];]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[Monitor Status [via an AFI rung]
+===========================]]>
+</Comment>
+<Text>
+<![CDATA[AFI()XIC(Go_ToStartPosition)XIC(at_StartPosition)XIC(mct1.IP)XIC(Active_motion)MOV(orient[2],save_Orient)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Text>
+<![CDATA[OTU(do_via_Auto);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Text>
+<![CDATA[XIC(run_automatically)OTL(do_via_Auto);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="a_ReadMe" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[]]>
+</Line>
+<Line Number="1">
+<![CDATA[/* All information provided "AS IS" -- No warranty or implied merchantability.]]>
+</Line>
+<Line Number="2">
+<![CDATA[Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes. */]]>
+</Line>
+<Line Number="3">
+<![CDATA[]]>
+</Line>
+<Line Number="4">
+<![CDATA[]]>
+</Line>
+<Line Number="5">
+<![CDATA[/* This Routine describes how to run the sample project */]]>
+</Line>
+<Line Number="6">
+<![CDATA[/* this Sample is for Cartesian to Cartesian   			*/]]>
+</Line>
+<Line Number="7">
+<![CDATA[/*						with Translation [in X & Y]		*/]]>
+</Line>
+<Line Number="8">
+<![CDATA[/*						and  Orientation [XY around Z]	*/]]>
+</Line>
+<Line Number="9">
+<![CDATA[/*							{Rotation}					*/]]>
+</Line>
+<Line Number="10">
+<![CDATA[/*														*/]]>
+</Line>
+<Line Number="11">
+<![CDATA[/* See SLIDE #10    Translation & Rotation				*/]]>
+</Line>
+<Line Number="12">
+<![CDATA[/*					[from Start-Page, Learning Center  	*/]]>
+</Line>
+<Line Number="13">
+<![CDATA[/*						  What's New: Kinematics slides]*/ ]]>
+</Line>
+<Line Number="14">
+<![CDATA[/* =====================================================*/]]>
+</Line>
+<Line Number="15">
+<![CDATA[]]>
+</Line>
+<Line Number="16">
+<![CDATA[/* Define  MCT  Source= the Virtual Programming space 	*/]]>
+</Line>
+<Line Number="17">
+<![CDATA[/*				Target= actual Axes [with any Applied Translation & Rotation] */]]>
+</Line>
+<Line Number="18">
+<![CDATA[/*														*/]]>
+</Line>
+<Line Number="19">
+<![CDATA[/* NOTE:	Conversion Constant- Resolution of Axes::			*/]]>
+</Line>
+<Line Number="20">
+<![CDATA[/*			also make Sure the Resolution of the 2 systems 		*/]]>
+</Line>
+<Line Number="21">
+<![CDATA[/*			that are to be Transformed are Equal.				*/]]>
+</Line>
+<Line Number="22">
+<![CDATA[/*			Since Normally Source=Virtual-axes, 				*/]]>
+</Line>
+<Line Number="23">
+<![CDATA[/*			their conversion constant can be made = to Physical axes*/  ]]>
+</Line>
+<Line Number="24">
+<![CDATA[]]>
+</Line>
+<Line Number="25">
+<![CDATA[(*]]>
+</Line>
+<Line Number="26">
+<![CDATA[do STEPS  1->4  with  with Translation]]>
+</Line>
+<Line Number="27">
+<![CDATA[=======================================]]>
+</Line>
+<Line Number="28">
+<![CDATA[Step1 -	Move physical axes to start position]]>
+</Line>
+<Line Number="29">
+<![CDATA[		{this is needed to place (Xtr,Ytr) at Translation[X,Y] when MCT activated]]>
+</Line>
+<Line Number="30">
+<![CDATA[		 and thus allows the Profile to be Programmed in Incrimental mode} ]]>
+</Line>
+<Line Number="31">
+<![CDATA[		*see routine -  "Cartesian_StartPosition"]]>
+</Line>
+<Line Number="32">
+<![CDATA[		                -------------------------]]>
+</Line>
+<Line Number="33">
+<![CDATA[Step2 -  Start the Transform  & set Transform_Start=T]]>
+</Line>
+<Line Number="34">
+<![CDATA[		 and an Translation Vector of [11.0, 14.0, 0.0] & no Rotation.]]>
+</Line>
+<Line Number="35">
+<![CDATA[		**see routine  - "Transform_Routine"]]>
+</Line>
+<Line Number="36">
+<![CDATA[						 -------------------]]>
+</Line>
+<Line Number="37">
+<![CDATA[Step3 -  Begin Application]]>
+</Line>
+<Line Number="38">
+<![CDATA[		***see Routine - "Draw Profile"]]>
+</Line>
+<Line Number="39">
+<![CDATA[						  -------------]]>
+</Line>
+<Line Number="40">
+<![CDATA[Step4 -  Run Trend]]>
+</Line>
+<Line Number="41">
+<![CDATA[		 ****see Routine - "Plot_Ytr_Against_Xtr"]]>
+</Line>
+<Line Number="42">
+<![CDATA[]]>
+</Line>
+<Line Number="43">
+<![CDATA[=====================================================]]>
+</Line>
+<Line Number="44">
+<![CDATA[then to Run with the Profile Rotated (ie Orientation)]]>
+</Line>
+<Line Number="45">
+<![CDATA[Step5 -  Stop the Transform]]>
+</Line>
+<Line Number="46">
+<![CDATA[		*****ee routine  - "Transform_Routine"  & set Transform_Stop1=T]]>
+</Line>
+<Line Number="47">
+<![CDATA[]]>
+</Line>
+<Line Number="48">
+<![CDATA[then Repeat STEPS  1->4  with  Rotation]]>
+</Line>
+<Line Number="49">
+<![CDATA[Step1	-same]]>
+</Line>
+<Line Number="50">
+<![CDATA[Step2 -  Start the Transform  & set Transform_Start_with_Orientation=T]]>
+</Line>
+<Line Number="51">
+<![CDATA[								and an Rotation Angle  in ori[2]]]>
+</Line>
+<Line Number="52">
+<![CDATA[		**see routine  - "Transform_Routine"]]>
+</Line>
+<Line Number="53">
+<![CDATA[Step3,4	-same]]>
+</Line>
+<Line Number="54">
+<![CDATA[]]>
+</Line>
+<Line Number="55">
+<![CDATA[=====================================================]]>
+</Line>
+<Line Number="56">
+<![CDATA[then to Run with the various Rotations of Profile Tag="Rotation_Angle_Around_Z"]]>
+</Line>
+<Line Number="57">
+<![CDATA[Repeat:]]>
+</Line>
+<Line Number="58">
+<![CDATA[Step 5  & Step 1]]>
+</Line>
+<Line Number="59">
+<![CDATA[then ]]>
+</Line>
+<Line Number="60">
+<![CDATA[Step 2 	-with New Orientation angle]]>
+</Line>
+<Line Number="61">
+<![CDATA[Step 3,4]]>
+</Line>
+<Line Number="62">
+<![CDATA[REPEAT  . . . ]]>
+</Line>
+<Line Number="63">
+<![CDATA[]]>
+</Line>
+<Line Number="64">
+<![CDATA[*)]]>
+</Line>
+<Line Number="65">
+<![CDATA[ ]]>
+</Line>
+</STContent>
+</Routine>
+<Routine Name="Cartesian_StartPosition" Type="RLL">
+<Description>
+<![CDATA[to allow Incrimental programming,
+must move to X.translated_point
+               and Y.translated_point
+Before MCT activat]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIC(Go_ToStartPosition)EQU(step2,0)XIO(at_StartPosition)[MCLM(cs_Target,mclm_initialposition_Zero,0,Cart_Zero_XYZ[0],speed_Inpo,Units per sec,100.0,Units per sec2,100.0,Units per sec2,Trapezoidal,100.0,100.0,% of Time,2,Disabled,Programmed,0,0,None,0,0) ,XIC(mclm_initialposition_Zero.PC) ADD(1,step2,step2) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[Do MAM  X,Y  to Starting Position
+for ABSOLUTE End_pt Rectangle moves After MCT,
+        * do not need X(t0), Y(t1)  before activate MCT
+for INCRIMENTAL End_pt Rectangle moves After MCT,
+       *     Yes need X(t0), Y(t1)  before activate MCT
+==========================================
+also need to check .IP bit to see Rung Transition (per call MAM as JSR)]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step2,1)[MAM(X_tr_physical,mc_initialposition[0],0,trans[0],speed_Inpo,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ,MAM(Y_tr_physical,mc_initialposition[1],0,trans[1],speed_Inpo,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ,MAM(Z_tr_physical,mc_initialposition[2],0,trans[2],speed_Inpo,Units per sec,100,Units per sec2,100,Units per sec2,Trapezoidal,1000,1000,Units per sec3,Disabled,Programmed,0,None,0,0) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[EQU(step2,1)XIC(mc_initialposition[0].PC)XIC(mc_initialposition[1].PC)XIC(mc_initialposition[2].PC)ADD(1,step2,step2);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[EQU(step2,2)ONS(done_StartPos)OTL(at_StartPosition)OTU(Go_ToStartPosition)MOV(0,step2);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Draw_Profile" Type="RLL">
+<Description>
+<![CDATA[for 2D only:  X,Y  EndPt[x,y]
+ Draw a Parallelogram (Incrimental)
+]]>
+</Description>
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Draw a Canted Rectangle (ie Parallelogram)  7    with a Cross inside the Border(X)
+see ST routine ,  as it set's-up EndPoints
+{Note this is ALL INCREMENTAL moves !!}]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Begin_Application)EQU(step,0)[MCLM(cs_Source,mc_shape_Inc[0],1,Pos_XYZ[0,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[0].PC) ADD(1,step,step) OTL(Active_motion) ];]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[the 1st Move is would be Over any Starting incriment in X]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,1)[MCLM(cs_Source,mc_shape_Inc[1],1,Pos_XYZ[1,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[1].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[EQU(step,2)[MCLM(cs_Source,mc_shape_Inc[2],1,Pos_XYZ[2,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[2].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[EQU(step,3)[MCLM(cs_Source,mc_shape_Inc[3],1,Pos_XYZ[3,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[3].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[EQU(step,4)[MCLM(cs_Source,mc_shape_Inc[4],1,Pos_XYZ[4,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[4].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[EQU(step,5)[MCLM(cs_Source,mc_shape_Inc[5],1,Pos_XYZ[5,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[5].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[-- Points  6,7,8  = Cross in the corner
+6=Top right corner, 7=neg (over in X), 8=to Bottom corner  ]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,6)[MCLM(cs_Source,mc_shape_Inc[6],1,Pos_XYZ[6,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[6].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[EQU(step,7)[MCLM(cs_Source,mc_shape_Inc[7],1,Pos_XYZ[7,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[7].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[-- Points  6,7,8  = Cross in the corner
+6=Top right corner, 7=neg (over in X), 8=to Bottom corner  ]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,8)[MCLM(cs_Source,mc_shape_Inc[8],1,Pos_XYZ[8,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[8].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[--   back  at  (0.0, 0.0)  [Relative]]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,9)[MCLM(cs_Source,mc_shape_Inc[9],1,Pos_XYZ[9,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[9].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[-- this Will leave position  back  to  (0.0, 0.0)  [Relative]]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,10)[MCLM(cs_Source,mc_shape_Inc[10],1,Pos_XYZ[10,0],Speed,Units per sec,AccdecRate,Units per sec2,AccdecRate,Units per sec2,Trapezoidal,100.0,100.0,% of Time,Termtype,Disabled,Programmed,0,0,None,0,0) ,XIC(mc_shape_Inc[10].PC) ADD(1,step,step) ];]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[COMPLETE::  set DONE flag &  set StepI=0  for next time thru.]]>
+</Comment>
+<Text>
+<![CDATA[EQU(step,11)OTU(Active_motion)MOV(0,step);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Error_Codes" Type="ST">
+<STContent>
+<Line Number="0">
+<![CDATA[(*]]>
+</Line>
+<Line Number="1">
+<![CDATA[]]>
+</Line>
+<Line Number="2">
+<![CDATA[/*****************************************	*/]]>
+</Line>
+<Line Number="3">
+<![CDATA[/*  Error Codes for the MCT Instruction 	*/]]>
+</Line>
+<Line Number="4">
+<![CDATA[/*****************************************	*/]]>
+</Line>
+<Line Number="5">
+<![CDATA[]]>
+</Line>
+<Line Number="6">
+<![CDATA[/* ]]>
+</Line>
+<Line Number="7">
+<![CDATA[	Error#	Meaning]]>
+</Line>
+<Line Number="8">
+<![CDATA[	======	=======]]>
+</Line>
+<Line Number="9">
+<![CDATA[	#61	Connection Conflict.  (and extended Error codes)]]>
+</Line>
+<Line Number="10">
+<![CDATA[	#62	Transform in Progress.]]>
+</Line>
+<Line Number="11">
+<![CDATA[	#63	Axis in Transform Motion]]>
+</Line>
+<Line Number="12">
+<![CDATA[	#64	Ancillary Not Supported]]>
+</Line>
+<Line Number="13">
+<![CDATA[	#65	Axis Position Overflow]]>
+</Line>
+<Line Number="14">
+<![CDATA[	#66	Transform Computation Error]]>
+</Line>
+<Line Number="15">
+<![CDATA[	#67	Invalid Transform Position]]>
+</Line>
+<Line Number="16">
+<![CDATA[	#68	Transform at Origin]]>
+</Line>
+<Line Number="17">
+<![CDATA[	#69	Maximum Joint Velocity Exceeded]]>
+</Line>
+<Line Number="18">
+<![CDATA[	#70	Axis in Transform Must be Linear]]>
+</Line>
+<Line Number="19">
+<![CDATA[	#71 Transform Turning Off]]>
+</Line>
+<Line Number="20">
+<![CDATA[	#72 Max Joint Angle Exceeded]]>
+</Line>
+<Line Number="21">
+<![CDATA[	#73 Coordinate System Chaining Error]]>
+</Line>
+<Line Number="22">
+<![CDATA[	#74 Invalid Orientation Angle]]>
+</Line>
+<Line Number="23">
+<![CDATA[	#75 Instruction Not Supported]]>
+</Line>
+<Line Number="24">
+<![CDATA[	#76 Zero Max Decel Jerk]]>
+</Line>
+<Line Number="25">
+<![CDATA[	#77 Transform Direction Not Supported]]>
+</Line>
+<Line Number="26">
+<![CDATA[	#78 Invalid Rotary Configuration]]>
+</Line>
+<Line Number="27">
+<![CDATA[*/]]>
+</Line>
+<Line Number="28">
+<![CDATA[]]>
+</Line>
+<Line Number="29">
+<![CDATA[/************************************]]>
+</Line>
+<Line Number="30">
+<![CDATA[	Error#	Details of Meaning]]>
+</Line>
+<Line Number="31">
+<![CDATA[	======	==================]]>
+</Line>
+<Line Number="32">
+<![CDATA[	#61	Connection Conflict.]]>
+</Line>
+<Line Number="33">
+<![CDATA[]]>
+</Line>
+<Line Number="34">
+<![CDATA[#61	Connection Conflict.]]>
+</Line>
+<Line Number="35">
+<![CDATA[		The connection of the source and target systems is invalid.]]>
+</Line>
+<Line Number="36">
+<![CDATA[   		The extended error code will indicate the reason]]>
+</Line>
+<Line Number="37">
+<![CDATA[		.EXERR]]>
+</Line>
+<Line Number="38">
+<![CDATA[		1)	Source and Target systems must be in same motion group.]]>
+</Line>
+<Line Number="39">
+<![CDATA[		2)	Source and Target systems may not be the same.]]>
+</Line>
+<Line Number="40">
+<![CDATA[		3)	Source system has transform dimension of zero.]]>
+</Line>
+<Line Number="41">
+<![CDATA[		4)	Target system has transform dimension of zero.]]>
+</Line>
+<Line Number="42">
+<![CDATA[		5)	Source system being re-used as a source in multiple transforms.]]>
+</Line>
+<Line Number="43">
+<![CDATA[		6)	Target system being re-used as a target in multiple transforms.]]>
+</Line>
+<Line Number="44">
+<![CDATA[		7)	Axes in Source or Target system already in use in a transform.]]>
+</Line>
+<Line Number="45">
+<![CDATA[		8)	Circular definition in Source and Target system connections.]]>
+</Line>
+<Line Number="46">
+<![CDATA[		9)	Axes being used on both Source and Target sides of the transform.]]>
+</Line>
+<Line Number="47">
+<![CDATA[		10)	Axes moving or Locked by another operation when MCT was initiated.]]>
+</Line>
+<Line Number="48">
+<![CDATA[		11)	Internal error in connection of transform]]>
+</Line>
+<Line Number="49">
+<![CDATA[		12)	Link lengths configured to 0.0]]>
+</Line>
+<Line Number="50">
+<![CDATA[		13)	Transform Axis is in a shut-down state.]]>
+</Line>
+<Line Number="51">
+<![CDATA[		14)	Transform Axis is Inhibited.]]>
+</Line>
+<Line Number="52">
+<![CDATA[		15)	Transform Invalid Offset Length,]]>
+</Line>
+<Line Number="53">
+<![CDATA[			(Invalid Offset also result from negative Base-offset, or X1b-X1e<0.0).]]>
+</Line>
+<Line Number="54">
+<![CDATA[		16)	Transform Invalid SCARA Configuration.]]>
+</Line>
+<Line Number="55">
+<![CDATA[]]>
+</Line>
+<Line Number="56">
+<![CDATA[#62	Transform in Progress.]]>
+</Line>
+<Line Number="57">
+<![CDATA[		1. 	Attempt to perform an operation that is not allowed while a transform is active.]]>
+</Line>
+<Line Number="58">
+<![CDATA[ 		(examples,]]>
+</Line>
+<Line Number="59">
+<![CDATA[			a. Homing an axis,]]>
+</Line>
+<Line Number="60">
+<![CDATA[			b. Tuning an axis.]]>
+</Line>
+<Line Number="61">
+<![CDATA[	 		c. Redefine position of an axis in the transform)]]>
+</Line>
+<Line Number="62">
+<![CDATA[		2. 	Attempt to execute MCT while MCT already active . A second MCT on the same]]>
+</Line>
+<Line Number="63">
+<![CDATA[			Source And Target is not allowed.perform an operation that is not allowed.]]>
+</Line>
+<Line Number="64">
+<![CDATA[]]>
+</Line>
+<Line Number="65">
+<![CDATA[#63	Axis in Transform Motion]]>
+</Line>
+<Line Number="66">
+<![CDATA[	 	1. 	Attempt to move an axis (MAM, JOG, MCLM etc) which is ]]>
+</Line>
+<Line Number="67">
+<![CDATA[			currently being moved by a transformation operation.]]>
+</Line>
+<Line Number="68">
+<![CDATA[	 	2. 	Attempt to execute MCT while a Source or Target axis is being moved]]>
+</Line>
+<Line Number="69">
+<![CDATA[			by a transformed motion of some kind.]]>
+</Line>
+<Line Number="70">
+<![CDATA[		3. 	If the Target axes are off (MSF) while transform is active, the Source]]>
+</Line>
+<Line Number="71">
+<![CDATA[			is then assumed to bne under Transform control, and ControlledByTransform ]]>
+</Line>
+<Line Number="72">
+<![CDATA[			flag is set. At this point any moves on the source will result in Error#63.]]>
+</Line>
+<Line Number="73">
+<![CDATA[		4. 	The MCT activation need to be given enough time to be processed. Use the ]]>
+</Line>
+<Line Number="74">
+<![CDATA[			ControlledByTransform status bit to validate that MCT process is complete.]]>
+</Line>
+<Line Number="75">
+<![CDATA[]]>
+</Line>
+<Line Number="76">
+<![CDATA[#64	Ancillary Not Supported]]>
+</Line>
+<Line Number="77">
+<![CDATA[	 	MCLM or MCCM attempted on ancillary axis]]>
+</Line>
+<Line Number="78">
+<![CDATA[]]>
+</Line>
+<Line Number="79">
+<![CDATA[#65	Axis Position Overflow]]>
+</Line>
+<Line Number="80">
+<![CDATA[		Examples:]]>
+</Line>
+<Line Number="81">
+<![CDATA[		1. 	Mathematical error in computations such as a trying ]]>
+</Line>
+<Line Number="82">
+<![CDATA[		   	to take square root of a negative number. ]]>
+</Line>
+<Line Number="83">
+<![CDATA[	 	2. 	Axes Position overflow or a master offset that has exceeded travel limits ]]>
+</Line>
+<Line Number="84">
+<![CDATA[]]>
+</Line>
+<Line Number="85">
+<![CDATA[#66	Transform Computation Error]]>
+</Line>
+<Line Number="86">
+<![CDATA[		Some kind of mathematical error in computations.]]>
+</Line>
+<Line Number="87">
+<![CDATA[		Such as trying to take square root of negative number.]]>
+</Line>
+<Line Number="88">
+<![CDATA[]]>
+</Line>
+<Line Number="89">
+<![CDATA[#67	Invalid Transform Position]]>
+</Line>
+<Line Number="90">
+<![CDATA[		1. 	Attempt to move to an invalid position for transformation.]]>
+</Line>
+<Line Number="91">
+<![CDATA[		   	Example move to origin  or moving beyond the limits of the robots arm lengths]]>
+</Line>
+<Line Number="92">
+<![CDATA[		2. 	Attempt to move beyond machine’s link length limits. ]]>
+</Line>
+<Line Number="93">
+<![CDATA[		3.	One of Kinematics equations tried to perform an invalid operation,]]>
+</Line>
+<Line Number="94">
+<![CDATA[			such as taking square toot of negative number]]>
+</Line>
+<Line Number="95">
+<![CDATA[		4. 	MCT attempted when sitting at the origin.]]>
+</Line>
+<Line Number="96">
+<![CDATA[]]>
+</Line>
+<Line Number="97">
+<![CDATA[#68	Transform at Origin]]>
+</Line>
+<Line Number="98">
+<![CDATA[		1.	Transform attempting to move to a singularity point, such as the origin]]>
+</Line>
+<Line Number="99">
+<![CDATA[		2.	Joint starting positions result in X1=0, X2=0. for MCT.]]>
+</Line>
+<Line Number="100">
+<![CDATA[]]>
+</Line>
+<Line Number="101">
+<![CDATA[#69	Maximum Joint Velocity Exceeded]]>
+</Line>
+<Line Number="102">
+<![CDATA[		1. 	Joint Velocity exceeds:  2-times the configured Maximum joint velocity.]]>
+</Line>
+<Line Number="103">
+<![CDATA[		2. 	Trying to move from a right to left handed solution]]>
+</Line>
+<Line Number="104">
+<![CDATA[		3. 	Moving away from X0 Y0 at a different angle than it]]>
+</Line>
+<Line Number="105">
+<![CDATA[			was approached.]]>
+</Line>
+<Line Number="106">
+<![CDATA[		4. 	Large joint move was attempted around a singularity position.]]>
+</Line>
+<Line Number="107">
+<![CDATA[]]>
+</Line>
+<Line Number="108">
+<![CDATA[#70	Axis in Transform Must be Linear]]>
+</Line>
+<Line Number="109">
+<![CDATA[		Axes involved in transform must be configured as a Linear Axis]]>
+</Line>
+<Line Number="110">
+<![CDATA[]]>
+</Line>
+<Line Number="111">
+<![CDATA[#71 Transform Turning Off]]>
+</Line>
+<Line Number="112">
+<![CDATA[		MCT executed while MCT is truning off from preceeding MCT error.]]>
+</Line>
+<Line Number="113">
+<![CDATA[]]>
+</Line>
+<Line Number="114">
+<![CDATA[#72 Max Joint Angle Exceeded]]>
+</Line>
+<Line Number="115">
+<![CDATA[		Attempt to move Joint axes beyond +/- 360 degrees.]]>
+</Line>
+<Line Number="116">
+<![CDATA[]]>
+</Line>
+<Line Number="117">
+<![CDATA[#73 Coordinate System Chaining Error]]>
+</Line>
+<Line Number="118">
+<![CDATA[]]>
+</Line>
+<Line Number="119">
+<![CDATA[#74 Invalid Orientation Angle]]>
+</Line>
+<Line Number="120">
+<![CDATA[		Transform attempted to move Joint axes beyond +/- 360 degrees,]]>
+</Line>
+<Line Number="121">
+<![CDATA[		as a result of a transfrom computation. ]]>
+</Line>
+<Line Number="122">
+<![CDATA[]]>
+</Line>
+<Line Number="123">
+<![CDATA[#75 Instruction Not Supported]]>
+</Line>
+<Line Number="124">
+<![CDATA[		MCT and MCTP instructions only supported on the L6x processor family.]]>
+</Line>
+<Line Number="125">
+<![CDATA[]]>
+</Line>
+<Line Number="126">
+<![CDATA[]]>
+</Line>
+<Line Number="127">
+<![CDATA[#77 Transform Direction Not Supported]]>
+</Line>
+<Line Number="128">
+<![CDATA[		1. 	MCTP instruction with 2 axes in the Coord_system only supports]]>
+</Line>
+<Line Number="129">
+<![CDATA[			enumerations of Inverse_Right & Inverse_left.]]>
+</Line>
+<Line Number="130">
+<![CDATA[		2.	Base Offsets and End_Effector Offsets for axes #2 on a 3 axis]]>
+</Line>
+<Line Number="131">
+<![CDATA[			coordiante system must be 0 if an MCTP Inverse_RightArm or Inverse_LeftArm]]>
+</Line>
+<Line Number="132">
+<![CDATA[			is executed.]]>
+</Line>
+<Line Number="133">
+<![CDATA[]]>
+</Line>
+<Line Number="134">
+<![CDATA[#78 Invalid Rotary Configuration]]>
+</Line>
+<Line Number="135">
+<![CDATA[		If the unwind of the axis is not 360, generate this error.]]>
+</Line>
+<Line Number="136">
+<![CDATA[		(Position Unwind / Conversion Constant) should equal 360. ]]>
+</Line>
+<Line Number="137">
+<![CDATA[]]>
+</Line>
+<Line Number="138">
+<![CDATA[Error#	Details of Meaning]]>
+</Line>
+<Line Number="139">
+<![CDATA[======	==================]]>
+</Line>
+<Line Number="140">
+<![CDATA[************************************/]]>
+</Line>
+<Line Number="141">
+<![CDATA[]]>
+</Line>
+<Line Number="142">
+<![CDATA[*)]]>
+</Line>
+<Line Number="143">
+<![CDATA[]]>
+</Line>
+<Line Number="144">
+<![CDATA[]]>
+</Line>
+<Line Number="145">
+<![CDATA[/*****************************************	*/]]>
+</Line>
+<Line Number="146">
+<![CDATA[/*  Motion Instruction,  Error List			*/]]>
+</Line>
+<Line Number="147">
+<![CDATA[/*****************************************	*/]]>
+</Line>
+<Line Number="148">
+<![CDATA[/*]]>
+</Line>
+<Line Number="149">
+<![CDATA[	Error#	Meaning]]>
+</Line>
+<Line Number="150">
+<![CDATA[	======	=======]]>
+</Line>
+<Line Number="151">
+<![CDATA[	#01	Reserved Error Code]]>
+</Line>
+<Line Number="152">
+<![CDATA[	#02	Reserved Error Code]]>
+</Line>
+<Line Number="153">
+<![CDATA[	#03	Execution Collision]]>
+</Line>
+<Line Number="154">
+<![CDATA[	#04	Servo_On State error]]>
+</Line>
+<Line Number="155">
+<![CDATA[	#05	Servo_Off State error]]>
+</Line>
+<Line Number="156">
+<![CDATA[	#06	Drive_On State error]]>
+</Line>
+<Line Number="157">
+<![CDATA[	#07	Shutdown State error]]>
+</Line>
+<Line Number="158">
+<![CDATA[	#08 Axis_type is Not Servo error]]>
+</Line>
+<Line Number="159">
+<![CDATA[	#09	Overtravel Condition]]>
+</Line>
+<Line Number="160">
+<![CDATA[	#10	Master axis Conflict]]>
+</Line>
+<Line Number="161">
+<![CDATA[	#11	Axis Not Configured]]>
+</Line>
+<Line Number="162">
+<![CDATA[	#12	Servo Message Failure]]>
+</Line>
+<Line Number="163">
+<![CDATA[	#13	Parameter Out-of-Range]]>
+</Line>
+<Line Number="164">
+<![CDATA[	#14	Tune Process error]]>
+</Line>
+<Line Number="165">
+<![CDATA[	#15	Test Process error]]>
+</Line>
+<Line Number="166">
+<![CDATA[	#16	Home In_Process error]]>
+</Line>
+<Line Number="167">
+<![CDATA[	#17	Axis_mode Not Rotary]]>
+</Line>
+<Line Number="168">
+<![CDATA[	#18	Axis_type Unused]]>
+</Line>
+<Line Number="169">
+<![CDATA[	#19	Group Not Synchronized]]>
+</Line>
+<Line Number="170">
+<![CDATA[	#20	Axis in Faulted State]]>
+</Line>
+<Line Number="171">
+<![CDATA[	#21	Group in Faulted State]]>
+</Line>
+<Line Number="172">
+<![CDATA[	#22	Axis In Motion]]>
+</Line>
+<Line Number="173">
+<![CDATA[	#23	Illegal Dynamic change]]>
+</Line>
+<Line Number="174">
+<![CDATA[	#24	Illegal AC Mode Operation]]>
+</Line>
+<Line Number="175">
+<![CDATA[	#25	Illegal Instruction]]>
+</Line>
+<Line Number="176">
+<![CDATA[	#26	Illegal CAM Length]]>
+</Line>
+<Line Number="177">
+<![CDATA[	#27	Illegal CAM Profile Length]]>
+</Line>
+<Line Number="178">
+<![CDATA[	#28	Illegal CAm Type]]>
+</Line>
+<Line Number="179">
+<![CDATA[	#29	Illegal CAM Order]]>
+</Line>
+<Line Number="180">
+<![CDATA[	#30	CAM Profile Being Calculated]]>
+</Line>
+<Line Number="181">
+<![CDATA[	#31	CAM Profile Being Used]]>
+</Line>
+<Line Number="182">
+<![CDATA[	#32	CAM Profile Not Calculated]]>
+</Line>
+<Line Number="183">
+<![CDATA[	#33	Position CAM Not Enabled]]>
+</Line>
+<Line Number="184">
+<![CDATA[	#34	Registration In Process error]]>
+</Line>
+<Line Number="185">
+<![CDATA[	#35	Illegal Execution Target]]>
+</Line>
+<Line Number="186">
+<![CDATA[	#36	Illegal Output CAM]]>
+</Line>
+<Line Number="187">
+<![CDATA[	#37	Illegal Output Compensation]]>
+</Line>
+<Line Number="188">
+<![CDATA[	#38	Illegal Axis Data_type]]>
+</Line>
+<Line Number="189">
+<![CDATA[	#39	Process Conflict]]>
+</Line>
+<Line Number="190">
+<![CDATA[	#40	Drive Locally Disabled]]>
+</Line>
+<Line Number="191">
+<![CDATA[	#41	Illegal Homing configuration]]>
+</Line>
+<Line Number="192">
+<![CDATA[	#42	Shutdown Status Timeout]]>
+</Line>
+<Line Number="193">
+<![CDATA[	#43	Coordiante Motion Que is Full]]>
+</Line>
+<Line Number="194">
+<![CDATA[	#44	Circular CoLinearity error]]>
+</Line>
+<Line Number="195">
+<![CDATA[	#45	Circular Start-pt, End-pt error]]>
+</Line>
+<Line Number="196">
+<![CDATA[	#46	Circular R1 R2 Mismatch error]]>
+</Line>
+<Line Number="197">
+<![CDATA[	#47	Circular Infinite Solutions error]]>
+</Line>
+<Line Number="198">
+<![CDATA[	#48	Circular No Solutions error]]>
+</Line>
+<Line Number="199">
+<![CDATA[	#49	Circualr Small Radius(R) error]]>
+</Line>
+<Line Number="200">
+<![CDATA[	#50	Coordiante_System Not in Group]]>
+</Line>
+<Line Number="201">
+<![CDATA[	#51	Invalid Actual Tolerance]]>
+</Line>
+<Line Number="202">
+<![CDATA[	#52	Coordiante_Motion In Process error]]>
+</Line>
+<Line Number="203">
+<![CDATA[	#53	Axis is Inhibited]]>
+</Line>
+<Line Number="204">
+<![CDATA[	#54	Zero Maximum Deceleration]]>
+</Line>
+<Line Number="205">
+<![CDATA[	#55 Reserved....]]>
+</Line>
+<Line Number="206">
+<![CDATA[	...	...]]>
+</Line>
+<Line Number="207">
+<![CDATA[	#60 Reserved....]]>
+</Line>
+<Line Number="208">
+<![CDATA[	#61 thru #77  Kinematics errors (defined in section above)]]>
+</Line>
+<Line Number="209">
+<![CDATA[		]]>
+</Line>
+<Line Number="210">
+<![CDATA[*/]]>
+</Line>
+<Line Number="211">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[setup the Intial Parameters on First_Scan]]>
+</Comment>
+<Text>
+<![CDATA[XIC(s:fs)JSR(Setup_XYZ_Positions,0);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Example Project for Motion Kinematics, using MCT for Rotation & Translation
+of Source & Target Cartesian Coordinate_Systems.
+See ST Routine  for Manual steps for running the Application   
+          See LD Routine  for Automatic steps in  running the Application 
+(1) Move to StartPosition,  (2) Active the MCT
+(3) Activate Draw Profile  (4) see Trend Plot of Xtr, Ytr
+***************************************************************]]>
+</Comment>
+<Text>
+<![CDATA[JSR(Transform_Routine,0);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[JSR(Cartesian_StartPosition,0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[JSR(Draw_Profile,0);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[see   for Plot of Rotated (X,Y) around Z
+ using Transformation:  MCT with Rotation. 
+Set here to Run Automatically:  else  see steps in ST routine a_ReadMe 
+==========================================================]]>
+</Comment>
+<Text>
+<![CDATA[XIC(run_automatically)XIC(data_is_Setup)JSR(Auto_Sequence,1,run_automatically);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Monitor Status [via an AFI rung]
+===========================]]>
+</Comment>
+<Text>
+<![CDATA[AFI()XIC(Go_ToStartPosition)XIC(at_StartPosition)XIC(mct1.IP)XIC(Active_motion)MOV(orient[2],save_Orient)NOP();]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[MOV(X.ActualPosition,xPos)MOV(Y.ActualPosition,yPos)MOV(Z.ActualPosition,zPos);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Text>
+<![CDATA[MOV(X_tr_physical.ActualPosition,xtr_Pos)MOV(Y_tr_physical.ActualPosition,ytr_Pos);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="Setup_XYZ_Positions" Type="ST">
+<Description>
+<![CDATA[define the Motion Endpoints (ie Shape)]]>
+</Description>
+<STContent>
+<Line Number="0">
+<![CDATA[/* Initialize needed Variables */]]>
+</Line>
+<Line Number="1">
+<![CDATA[]]>
+</Line>
+<Line Number="2">
+<![CDATA[/* these get set ONLY the very 1st Scan thru the Program */]]>
+</Line>
+<Line Number="3">
+<![CDATA[/*               --------------------------------------- */]]>
+</Line>
+<Line Number="4">
+<![CDATA[if NOT(first_time) then]]>
+</Line>
+<Line Number="5">
+<![CDATA[pass := 1;]]>
+</Line>
+<Line Number="6">
+<![CDATA[]]>
+</Line>
+<Line Number="7">
+<![CDATA[orient[0]   := 0;	/* MCT Rotation "Orientation" */]]>
+</Line>
+<Line Number="8">
+<![CDATA[orient[1]   := 0;]]>
+</Line>
+<Line Number="9">
+<![CDATA[orient[2]   := 0;	/* [2] will Vary to all  Rotate  X&Y  around Z */]]>
+</Line>
+<Line Number="10">
+<![CDATA[]]>
+</Line>
+<Line Number="11">
+<![CDATA[/* [Absolute Reference for Cartesian_BAse 	*/]]>
+</Line>
+<Line Number="12">
+<![CDATA[/* to allow re-use in all 4-Quadrants 		*/]]>
+</Line>
+<Line Number="13">
+<![CDATA[Cart_Zero_XYZ[0] := 0;	/* start (0,0) 	*/]]>
+</Line>
+<Line Number="14">
+<![CDATA[Cart_Zero_XYZ[1] := 0;	/* 				*/	]]>
+</Line>
+<Line Number="15">
+<![CDATA[Cart_Zero_XYZ[2] := 0;]]>
+</Line>
+<Line Number="16">
+<![CDATA[]]>
+</Line>
+<Line Number="17">
+<![CDATA[Active_motion :=0;]]>
+</Line>
+<Line Number="18">
+<![CDATA[]]>
+</Line>
+<Line Number="19">
+<![CDATA[/* MCLM instruction Info: Speed, Acc/Dec, termType */]]>
+</Line>
+<Line Number="20">
+<![CDATA[Speed := 7.0 ;]]>
+</Line>
+<Line Number="21">
+<![CDATA[speed_Inpo := 3.0 ;]]>
+</Line>
+<Line Number="22">
+<![CDATA[Termtype := 2;]]>
+</Line>
+<Line Number="23">
+<![CDATA[step := 0;]]>
+</Line>
+<Line Number="24">
+<![CDATA[AccdecRate := 100.0;]]>
+</Line>
+<Line Number="25">
+<![CDATA[]]>
+</Line>
+<Line Number="26">
+<![CDATA[at_StartPosition := 0;]]>
+</Line>
+<Line Number="27">
+<![CDATA[]]>
+</Line>
+<Line Number="28">
+<![CDATA[trans[0] := 11;	/* MCT Translation */]]>
+</Line>
+<Line Number="29">
+<![CDATA[trans[1] := 14;]]>
+</Line>
+<Line Number="30">
+<![CDATA[trans[2] := 0;]]>
+</Line>
+<Line Number="31">
+<![CDATA[]]>
+</Line>
+<Line Number="32">
+<![CDATA[t_org[0] := 0;	/* MCT Translation 	*/]]>
+</Line>
+<Line Number="33">
+<![CDATA[t_org[1] := 0; 	/*  0 Origin		*/]]>
+</Line>
+<Line Number="34">
+<![CDATA[t_org[2] := 0;]]>
+</Line>
+<Line Number="35">
+<![CDATA[]]>
+</Line>
+<Line Number="36">
+<![CDATA[/* ================--======================	*/]]>
+</Line>
+<Line Number="37">
+<![CDATA[/* For  RLL routine: Draw_Profile			*/]]>
+</Line>
+<Line Number="38">
+<![CDATA[/* Draw	Paralleogram  with a Cross-X inside	*/]]>
+</Line>
+<Line Number="39">
+<![CDATA[/* (ie  a canted-RECTANGLE)					*/]]>
+</Line>
+<Line Number="40">
+<![CDATA[/* ========================================	*/]]>
+</Line>
+<Line Number="41">
+<![CDATA[/* a 7" x 3" Rectangle  starting ?" over in X  */]]>
+</Line>
+<Line Number="42">
+<![CDATA[Len := 7;]]>
+</Line>
+<Line Number="43">
+<![CDATA[heigth:= 3;]]>
+</Line>
+<Line Number="44">
+<![CDATA[cant:= (heigth / 2);   /*(1.5) */   /* (ie 1/2 of height) */ ]]>
+</Line>
+<Line Number="45">
+<![CDATA[Over:= 0;]]>
+</Line>
+<Line Number="46">
+<![CDATA[/* ================================ */]]>
+</Line>
+<Line Number="47">
+<![CDATA[/* INCREMENTAL   RECTANGLE & CROSS 	*/]]>
+</Line>
+<Line Number="48">
+<![CDATA[/* ================================ */]]>
+</Line>
+<Line Number="49">
+<![CDATA[/* [Incremental to allow re-use in all 4-Quadrants */]]>
+</Line>
+<Line Number="50">
+<![CDATA[Pos_XYZ[0,0] := 0;		/* start (0,0) */]]>
+</Line>
+<Line Number="51">
+<![CDATA[Pos_XYZ[0,1] := 0;		/* ie:   reference*/]]>
+</Line>
+<Line Number="52">
+<![CDATA[Pos_XYZ[1,0] := Over;	/* ie:  (?,0)  now Rectangle */]]>
+</Line>
+<Line Number="53">
+<![CDATA[Pos_XYZ[1,1] := 0;]]>
+</Line>
+<Line Number="54">
+<![CDATA[Pos_XYZ[2,0] := Len;	/* ie:  (7,0)  now Rectangle */]]>
+</Line>
+<Line Number="55">
+<![CDATA[Pos_XYZ[2,1] := 0;]]>
+</Line>
+<Line Number="56">
+<![CDATA[Pos_XYZ[3,0] := cant;	/* ie:  (7,3  +cant in X) */]]>
+</Line>
+<Line Number="57">
+<![CDATA[Pos_XYZ[3,1] := heigth;]]>
+</Line>
+<Line Number="58">
+<![CDATA[Pos_XYZ[4,0] := -Len; 	/* ie:  (0,3) +cant in X*/]]>
+</Line>
+<Line Number="59">
+<![CDATA[Pos_XYZ[4,1] :=  0;]]>
+</Line>
+<Line Number="60">
+<![CDATA[Pos_XYZ[5,0] := -cant;		/* ie:  (0,0) */]]>
+</Line>
+<Line Number="61">
+<![CDATA[Pos_XYZ[5,1] := -heigth;]]>
+</Line>
+<Line Number="62">
+<![CDATA[/* then do the Cross inside the (Left part of) Rectagle */]]>
+</Line>
+<Line Number="63">
+<![CDATA[Pos_XYZ[6,0] := heigth+cant;/* Diagonal up to the (3,3 corner) */]]>
+</Line>
+<Line Number="64">
+<![CDATA[Pos_XYZ[6,1] := heigth;]]>
+</Line>
+<Line Number="65">
+<![CDATA[Pos_XYZ[7,0] := -heigth;	/* then over to the Y ordinate (0,7)  */]]>
+</Line>
+<Line Number="66">
+<![CDATA[Pos_XYZ[7,1] := 0;]]>
+</Line>
+<Line Number="67">
+<![CDATA[Pos_XYZ[8,0] :=  heigth-cant; 	/* Diagonal along X to (3,0) 	*/]]>
+</Line>
+<Line Number="68">
+<![CDATA[Pos_XYZ[8,1] := -heigth;]]>
+</Line>
+<Line Number="69">
+<![CDATA[Pos_XYZ[9,0] := -heigth;	/* then back to Original Reference (0,0) */]]>
+</Line>
+<Line Number="70">
+<![CDATA[Pos_XYZ[9,1] := 0;]]>
+</Line>
+<Line Number="71">
+<![CDATA[Pos_XYZ[10,0] := 0;		/* end (0,0) */]]>
+</Line>
+<Line Number="72">
+<![CDATA[Pos_XYZ[10,1] := 0;		/* ie:   reference*/]]>
+</Line>
+<Line Number="73">
+<![CDATA[/* Moving in X-Y  so All Z-moves = 0!! */ ]]>
+</Line>
+<Line Number="74">
+<![CDATA[Pos_XYZ[0,2] := 0;]]>
+</Line>
+<Line Number="75">
+<![CDATA[Pos_XYZ[1,2] := 0;]]>
+</Line>
+<Line Number="76">
+<![CDATA[Pos_XYZ[2,2] := 0;]]>
+</Line>
+<Line Number="77">
+<![CDATA[Pos_XYZ[3,2] := 0;]]>
+</Line>
+<Line Number="78">
+<![CDATA[Pos_XYZ[4,2] := 0;]]>
+</Line>
+<Line Number="79">
+<![CDATA[Pos_XYZ[5,2] := 0;]]>
+</Line>
+<Line Number="80">
+<![CDATA[Pos_XYZ[6,2] := 0;]]>
+</Line>
+<Line Number="81">
+<![CDATA[Pos_XYZ[7,2] := 0;]]>
+</Line>
+<Line Number="82">
+<![CDATA[Pos_XYZ[8,2] := 0;]]>
+</Line>
+<Line Number="83">
+<![CDATA[Pos_XYZ[9,2] := 0;]]>
+</Line>
+<Line Number="84">
+<![CDATA[Pos_XYZ[10,2] := 0;]]>
+</Line>
+<Line Number="85">
+<![CDATA[]]>
+</Line>
+<Line Number="86">
+<![CDATA[]]>
+</Line>
+<Line Number="87">
+<![CDATA[/*  when  DONE  !!!! */]]>
+</Line>
+<Line Number="88">
+<![CDATA[first_time :=1;]]>
+</Line>
+<Line Number="89">
+<![CDATA[end_if;]]>
+</Line>
+<Line Number="90">
+<![CDATA[]]>
+</Line>
+<Line Number="91">
+<![CDATA[]]>
+</Line>
+</STContent>
+</Routine>
+<Routine Name="Transform_Routine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[Enable transform WITh a Orientation Angle (-ie Rotate the Profile)
+NOTE must do MCT=STOP, then ReTrigger MCT with the Orientation Angle to take Affect
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Start_with_Orientation)XIO(Active_motion)MOV(Rotation_Angle_aroundZ,orient[2])OTL(Transform_Start);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Comment>
+<![CDATA[+++++++++++++++++++++++++
+Transform MCT Activate 
++++++++++++++++++++++++++
+Enable transform and once enabled as indicated by the  status,
+  the trigger bit  is disabled
+==========================================================
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Start)XIO(Active_motion)[MCT(CS_Cartesian_Base_Frame,CS_Cartesian_Transformed_Frame,mct1,orient[0],trans[0]) ,XIC(mct1.IP) OTU(Transform_Start_with_Orientation) OTU(Transform_Start) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[Verify the Status of the Tansfomeation-Active status of the
+Source & Target  Coord_System's]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(cs_Source.TransformSourceStatus) ,XIC(cs_Target.TransformTargetStatus) ]NOP();]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[++++++++++++++++++++++++++++++
+Transform Stop Rung
+++++++++++++++++++++++++++++++
+also Set Application flags:  to DISABLE:
+Begin_Application=False  & at_StartPosition=FALSE
+and Set Orient[2]=0 deg
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Stop1)[MCS(cs_Source,mc_transformStop,Coordinated Transform,No,100,Units per sec2,Yes,100.0,% of Time) ,XIC(mc_transformStop.PC) OTU(Transform_Stop1) OTU(at_StartPosition) OTU(Begin_Application) CLR(orient[2]) ];]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Please Note:  a Motion Axis stop  will also
+stop the transform
+]]>
+</Comment>
+<Text>
+<![CDATA[XIC(Transform_Stop2)[MAS(X_tr_physical,mc_transformStop2,All,No,100,Units per sec2,No,1000,Units per sec3) ,XIC(mc_transformStop2.PC) OTU(Transform_Stop2) OTU(at_StartPosition) OTU(Begin_Application) CLR(orient[2]) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="1"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends>
+<Trend Name="Plot_Ytr_against_Xtr" SamplePeriod="10" NumberOfCaptures="1" CaptureSizeType="Time Period" CaptureSize="180000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 5 0 0 0 6 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 14 52 81 191 9 48 205 65 159 190 222 136 174 167 50 40
+ 0 0 0 0 0 0 0 0 0 0 0 0 16 195 243 201 202 53 199 1 3 0 0 0 192 6 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 185 6 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 12 0 0 0 13 0 0 0 14 0 0 0 15 0 0 0 16 0 0 0
+ 17 0 0 0 18 0 0 0 19 0 0 0 20 0 0 0 21 0 0 0 22 0 0 0 23 0 0 0 24 0 0 0 25 0 0 0 26 0 0 0
+ 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 4 0 0 0 231 67 0 0 137 19 0 0 0 0 0 0 13 0 0 0 255 254 255 20 80 0 108 0 111 0 116 0
+ 95 0 89 0 116 0 114 0 95 0 97 0 103 0 97 0 105 0 110 0 115 0 116 0 95 0 88 0 116 0 114 0 0 0 0 0 1 0 0 0
+ 2 0 0 0 200 0 0 0 255 157 3 0 255 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 1 96 234
+ 0 0 0 0 0 0 255 255 255 0 0 0 0 0 0 0 0 0 0 46 6 0 0 4 0 255 255 1 0 13 0 67 86 105 101 119 76 105 110 101
+ 73 110 102 111 3 0 0 0 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0
+ 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 16 88 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0
+ 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 160 192 0
+ 0 112 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255
+ 254 255 16 89 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0
+ 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 255 254 255 0 255 254 255 0 0 0 0 0 0 0
+ 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 28 88 0 95 0 116 0 114 0 95 0 112 0 104 0
+ 121 0 115 0 105 0 99 0 97 0 108 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0
+ 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 0 0 0 0 200 66 255 254 255 0 255 254 255
+ 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 28 89 0 95 0 116 0 114
+ 0 95 0 112 0 104 0 121 0 115 0 105 0 99 0 97 0 108 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105
+ 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 9 0 0 0 2 0 0 0 3 0 0 0 1 0 0 0 1 0
+ 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0
+ 0 0 1 0 0 0 4 0 255 128 128 0 0 0 255 0 255 0 0 0 0 128 0 0 255 255 255 0 2 0 0 0 4 0 0 0 4 0 0 0
+ 0 0 0 0 0 0 200 193 0 0 200 65 0 0 0 0 0 0 0 0 148 116 166 0 0 0 0 0 1 0 0 0 0 0 0 0 4 0 1 0
+ 0 0 1 0 0 0 1 0 0 0 1 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 1 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 0 0 0 0 44 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 128 128 128 0 128 128 128 0 255 239 255 254 255 191 255 247 174 174 166 69 1 0 0 0 124 2 0 0 218 175 166 69 1 0 0 0 124 2 0 0
+ 255 254 255 0 1 0 0 0 1 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 40 0 0 0 50 0
+ 0 0 0 0 0 0 0 0 0 0 92 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 255 254 255 5 65 0 114 0 105 0 97 0 108 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 0
+ 32 1 0 0 0 255 254 255 0 255 254 255 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 0 32 1 0
+ 0 0 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 255 255 255 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 8 0
+ 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 4 0 255 255 1 0 9 0 67 76 105 110 101 73 110 102 111 3 0 0 0 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255
+ 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 16 88 0 46 0 65
+ 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0
+ 6 128 3 0 0 0 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0
+ 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 16 89 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0
+ 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 6 128 3 0 0 0 1 0 0 0 0 0 0 0 0 0 200
+ 66 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255
+ 28 88 0 95 0 116 0 114 0 95 0 112 0 104 0 121 0 115 0 105 0 99 0 97 0 108 0 46 0 65 0 99 0 116 0 117 0 97 0 108
+ 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 6 128 3 0 0 0 1 0 0 0
+ 0 0 0 0 0 0 200 66 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0
+ 255 254 255 0 255 254 255 28 89 0 95 0 116 0 114 0 95 0 112 0 104 0 121 0 115 0 105 0 99 0 97 0 108 0 46 0 65 0 99 0
+ 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 0 0 0
+ 0 46 0 83 0 1 0 0 0 0 111 0 86 0 49 0 54 0 95 0 66 0 50 0 49 0 46 0 65 0 67 0 68 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 228 121 93 13 53 199 1 176 154 109 124 102 53 199 1 240 182 169 234 25 38 199 1 240 182 169 234 25 38 199 1
+ 1 96 1 0 0 0 0 0 0 112 1 0 0 0 0 0 32 0 0 0 68 0 0 0 0 0 0 0 24 0 83 0 67 0 65 0 82 0 65 0
+ 95 0 126 0 50 0 46 0 76 0 53 0 75 0 83 0 67 0 65 0 82 0 65 0 95 0 105 0 110 0 100 0 101 0 112 0 101 0 110 0
+ 100 0 101 0 110 0 116 0 95 0 67 0 68 0 95 0 116 0 111 0 86 0 49 0 54 0 95 0 66 0 50 0 49 0 46 0 76 0 53 0
+ 75 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 105 3 0</Template>
+<Pens>
+<Pen Name="X.ActualPosition" Color="16#0080_80ff" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="-5.0" Max="15.0"/>
+<Pen Name="Y.ActualPosition" Color="16#00ff_0000" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="-5.0" Max="15.0"/>
+<Pen Name="X_tr_physical.ActualPosition" Color="16#0000_00ff" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+<Pen Name="Y_tr_physical.ActualPosition" Color="16#0000_8000" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="0.0" Max="100.0"/>
+</Pens>
+</Trend>
+<Trend Name="Plot_Y_against_X" SamplePeriod="10" NumberOfCaptures="1" CaptureSizeType="Time Period" CaptureSize="180000" StartTriggerType="No Trigger" StopTriggerType="No Trigger" TrendxVersion="5.2">
+<Template>208 207 17 224 161 177 26 225 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 62 0 3 0 254 255 9 0 6 0 0 0 0 0 0 0
+ 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 16 0 0 2 0 0 0 1 0 0 0 254 255 255 255 0 0 0 0 0 0 0 0
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253 255 255 255 254 255 255 255
+ 254 255 255 255 4 0 0 0 5 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 82 0 111 0 111 0 116 0 32 0 69 0 110 0 116 0
+ 114 0 121 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 22 0 5 0 255 255 255 255 255 255 255 255 1 0 0 0 14 52 81 191 9 48 205 65 159 190 222 136 174 167 50 40
+ 0 0 0 0 0 0 0 0 0 0 0 0 96 120 159 60 82 54 198 1 3 0 0 0 128 4 0 0 0 0 0 0 67 0 111 0 110 0 116 0
+ 101 0 110 0 116 0 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 0 2 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 117 4 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255 255 255 255 255 255 255 255 255
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 255 255 255
+ 255 255 255 255 255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 2 0 0 0 3 0 0 0 4 0 0 0 5 0 0 0 6 0 0 0
+ 7 0 0 0 8 0 0 0 9 0 0 0 10 0 0 0 11 0 0 0 12 0 0 0 13 0 0 0 14 0 0 0 15 0 0 0 16 0 0 0
+ 17 0 0 0 254 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+ 255 255 255 255 255 255 255 255 4 0 0 0 17 76 0 0 107 34 0 0 0 0 0 0 13 0 0 0 255 254 255 16 80 0 108 0 111 0 116 0
+ 95 0 89 0 95 0 97 0 103 0 97 0 105 0 110 0 115 0 116 0 95 0 88 0 0 0 0 0 1 0 0 0 0 0 0 0 200 0 0 0
+ 255 157 3 0 255 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 1 96 234 0 0 0 0 0 0 255 255
+ 255 0 0 0 0 0 0 0 0 0 0 242 3 0 0 2 0 255 255 1 0 13 0 67 86 105 101 119 76 105 110 101 73 110 102 111 3 0 0 0
+ 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0
+ 255 254 255 0 255 254 255 0 255 254 255 16 88 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0
+ 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 1 128 3 0 0 0 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255
+ 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 16 89 0 46 0 65
+ 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0
+ 9 0 0 0 2 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0
+ 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 2 0 128 64 0 0 0 0 255 0 255 255 255 0 2 0
+ 0 0 4 0 0 0 4 0 0 0 0 0 0 0 0 0 200 193 0 0 200 65 0 0 0 0 0 0 0 0 148 116 166 0 0 0 0 0 1 0
+ 0 0 0 0 0 0 2 0 1 0 0 0 1 0 0 0 2 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 1 0 0 0 2 0 0 0
+ 0 0 0 0 0 0 255 255 255 255 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 128 128 0 128 128 128 0 255 239 255 254 255 191 255 247 234 20 250 67 1 0
+ 0 0 156 0 0 0 158 21 250 67 1 0 0 0 156 0 0 0 255 254 255 0 1 0 0 0 1 0 0 0 2 0 0 0 0 0 0 0 0 0
+ 2 0 0 0 40 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 92 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 254 255 5 65 0 114 0 105 0 97 0 108 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254
+ 255 0 255 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255
+ 254 255 0 255 254 255 0 32 1 0 0 0 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 255 255 255 0 0 0 0 0 4 0 0 0
+ 0 0 0 0 0 0 0 0 8 0 0 0 2 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 255 255
+ 1 0 9 0 67 76 105 110 101 73 110 102 111 3 0 0 0 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255 254 255 0 0 0 0
+ 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0 255 254 255 0 255 254 255 0 255 254 255 16 88 0 46 0 65 0 99 0 116 0 117
+ 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 4 128 3 0 0 0
+ 1 0 0 0 0 0 160 192 0 0 112 65 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 255 254 255 0
+ 255 254 255 0 255 254 255 0 255 254 255 16 89 0 46 0 65 0 99 0 116 0 117 0 97 0 108 0 80 0 111 0 115 0 105 0 116 0 105 0
+ 111 0 110 0 32 1 0 0 0 255 254 255 0 255 254 255 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 102 77 3 0</Template>
+<Pens>
+<Pen Name="X.ActualPosition" Color="16#0000_4080" Visible="false" Width="1" Type="Analog" Style="0" Marker="0" Min="-5.0" Max="15.0"/>
+<Pen Name="Y.ActualPosition" Color="16#00ff_0000" Visible="true" Width="1" Type="Analog" Style="0" Marker="0" Min="-5.0" Max="15.0"/>
+</Pens>
+</Trend>
+</Trends>
+</Controller>
+</RSLogix5000Content>

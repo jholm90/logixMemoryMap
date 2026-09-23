@@ -1,0 +1,819 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="Kinetix6000_Home_Basic" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:33:54 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="Kinetix6000_Home_Basic" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:33:40 2018" LastModifiedDate="Fri Jan 19 07:33:40 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes>
+<DataType Name="AB_Home" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Basic_Index" DataType="AB_Index_Base" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Read_Back_Active_Home_Values" DataType="AB_Homing_Properties" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Active_Home_Set" DataType="AB_Homing_Properties" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Read_Back_Absolute_Home_Values" DataType="AB_Homing_Properties" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="Absolute_Home_Set" DataType="AB_Homing_Properties" Dimension="0" Radix="NullType" Hidden="false"/>
+<Member Name="MSF" DataType="MOTION_INSTRUCTION" Dimension="2" Radix="NullType" Hidden="false"/>
+<Member Name="MAH" DataType="MOTION_INSTRUCTION" Dimension="2" Radix="NullType" Hidden="false"/>
+<Member Name="MSO" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="AB_Homing_Properties" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Mode" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Position" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Offset" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Sequence" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Direction" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+<Member Name="Return_Speed" DataType="REAL" Dimension="0" Radix="Float" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="AB_Index_Base" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Index" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="Bool" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="ONS" DataType="DINT" Dimension="0" Radix="Decimal" Hidden="false"/>
+<Member Name="TON" DataType="TIMER" Dimension="1" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+<DataType Name="AB_MAH" Family="NoFamily" Class="User">
+<Members>
+<Member Name="Motion" DataType="MOTION_INSTRUCTION" Dimension="0" Radix="NullType" Hidden="false"/>
+</Members>
+</DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="Axis_S5_N1" TagType="Base" DataType="AXIS_SERVO_DRIVE">
+<Data Format="Axis">
+<AxisParameters MotionGroup="MG" MotionModule="&lt;NA&gt;" RotationalPosResolution="200000" ConversionConstant="200000.0" OutputCamExecutionTargets="0" AxisState="Axis-Ready" PositionUnits="Position Units" AverageVelocityTimebase="0.25" RotaryAxis="Linear" PositionUnwind="200000" HomeMode="Active"
+ HomeDirection="Bi-directional Forward" HomeSequence="Switch" HomeConfigurationBits="16#0000_0000" HomePosition="0.0" HomeOffset="0.0" HomeSpeed="1.0" HomeReturnSpeed="0.1" MaximumSpeed="42.500004" MaximumAcceleration="4268.516" MaximumDeceleration="4801.8994" ProgrammedStopMode="Fast Stop"
+ MasterInputConfigurationBits="1" MasterPositionFilterBandwidth="0.1" AxisType="Servo" ServoLoopConfiguration="Position Servo" FaultConfigurationBits="32" VelocityFeedforwardGain="0.0" AccelerationFeedforwardGain="0.0" PositionProportionalGain="151.99413" PositionIntegralGain="0.0" VelocityProportionalGain="389.105" VelocityIntegralGain="37.850677"
+ TorqueScaling="0.054568145" OutputLPFilterBandwidth="0.0" IntegratorHoldEnable="Enabled" MaximumPositiveTravel="0.0" MaximumNegativeTravel="0.0" PositionErrorTolerance="0.5592322" PositionLockTolerance="0.01" VelocityOffset="0.0" TorqueOffset="0.0" FrictionCompensation="0.0" FrictionCompensationWindow="0.0"
+ BacklashStabilizationWindow="0" BacklashReversalOffset="0.0" HardOvertravelFaultAction="Disable Drive" SoftOvertravelFaultAction="Disable Drive" PositionErrorFaultAction="Disable Drive" FeedbackFaultAction="Disable Drive" FeedbackNoiseFaultAction="Disable Drive" TestIncrement="0.0" TuningTravelLimit="20.0" TuningSpeed="40.0" TuningTorque="100.0"
+ DampingFactor="0.8" DriveModelTimeConstant="1.00390625e-003" PositionServoBandwidth="24.202887" VelocityServoBandwidth="61.959396" TuningConfigurationBits="16#0000_0004" TorqueLimitSource="Not Limited" DriveUnit="Motor Rev" PositionDataScaling="10" PositionDataScalingFactor="1" PositionDataScalingExp="0" VelocityDataScaling="2"
+ VelocityDataScalingFactor="1" VelocityDataScalingExp="0" AccelerationDataScaling="2" AccelerationDataScalingFactor="1" AccelerationDataScalingExp="0" TorqueDataScaling="0" TorqueDataScalingFactor="1" TorqueDataScalingExp="0" DrivePolarity="Positive" MotorFeedbackResolution="1024" AuxFeedbackResolution="4000"
+ MotorFeedbackUnit="Rev" AuxFeedbackUnit="Rev" OutputNotchFilterFrequency="0.0" VelocityDroop="0.0" VelocityLimitBipolar="50.000004" AccelerationLimitBipolar="33288.47" TorqueLimitBipolar="291.15045" VelocityLimitPositive="50.000004" VelocityLimitNegative="-50.000004" VelocityThreshold="0.0" VelocityWindow="1.0"
+ VelocityStandstillWindow="1.0" AccelerationLimitPositive="33288.47" AccelerationLimitNegative="-33288.47" TorqueLimitPositive="291.15045" TorqueLimitNegative="-291.15045" TorqueThreshold="0.0" DriveThermalFaultAction="Disable Drive" MotorThermalFaultAction="Disable Drive" DriveEnableInputFaultAction="Disable Drive" StoppingTorque="200.0" StoppingTimeLimit="10.0"
+ BrakeEngageDelayTime="0.0" BrakeReleaseDelayTime="0.0" PWMFrequencySelect="Low Frequency" LoadInertiaRatio="2.1195042" AmplifierCatalogNumber="&lt;none&gt;" MotorCatalogNumber="&lt;none&gt;" AuxFeedbackRatio="1.0" ContinuousTorqueLimit="100.0" ResistiveBrakeContactDelay="0.0" MaximumAccelerationJerk="428711.25" MaximumDecelerationJerk="542546.75"
+ DynamicsConfigurationBits="7" PhaseLossFaultAction="Shutdown" HomeTorqueLevel="0.0" InputPowerPhase="Three-Phase"/>
+</Data>
+</Tag>
+<Tag Name="MG" TagType="Base" DataType="MOTION_GROUP">
+<Data Format="MotionGroup">
+<MotionGroupParameters GroupType="Warning Enabled" CoarseUpdatePeriod="2000" PhaseShift="0" GeneralFaultType="Non Major Fault" AutoTagUpdate="Enabled"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="Axis_S5_N1" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags>
+<Tag Name="Home_Ladder" TagType="Base" DataType="AB_Home">
+<Data>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 02 00 00 00 01 00 00 00 00 00 80 3F 
+CD CC CC 3D 01 00 00 00 00 00 00 00 00 00 00 00 
+02 00 00 00 01 00 00 00 00 00 80 3F CD CC CC 3D 
+02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 20 00 00 02 01 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 28 00 00 00 11 
+00 00 00 00 00 00 00 00 00 00 00 28 00 00 00 11 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="AB_Home">
+<StructureMember Name="Basic_Index" DataType="AB_Index_Base">
+<DataValueMember Name="Index" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Bool" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ONS" DataType="DINT" Radix="Decimal" Value="0"/>
+<ArrayMember Name="TON" DataType="TIMER" Dimensions="1">
+<Element Index="[0]">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Element>
+</ArrayMember>
+</StructureMember>
+<StructureMember Name="Read_Back_Active_Home_Values" DataType="AB_Homing_Properties">
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Position" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Sequence" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Speed" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Return_Speed" DataType="REAL" Radix="Float" Value="0.1"/>
+</StructureMember>
+<StructureMember Name="Active_Home_Set" DataType="AB_Homing_Properties">
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Position" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Sequence" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Direction" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="Speed" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Return_Speed" DataType="REAL" Radix="Float" Value="0.1"/>
+</StructureMember>
+<StructureMember Name="Read_Back_Absolute_Home_Values" DataType="AB_Homing_Properties">
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Position" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Sequence" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Return_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<StructureMember Name="Absolute_Home_Set" DataType="AB_Homing_Properties">
+<DataValueMember Name="Mode" DataType="DINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="Position" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Offset" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Sequence" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Direction" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Return_Speed" DataType="REAL" Radix="Float" Value="0.0"/>
+</StructureMember>
+<ArrayMember Name="MSF" DataType="MOTION_INSTRUCTION" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="536870912"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="2"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</ArrayMember>
+<ArrayMember Name="MAH" DataType="MOTION_INSTRUCTION" Dimensions="2">
+<Element Index="[0]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="671088640"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+<Element Index="[1]">
+<Structure DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="671088640"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="1"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="17"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</Structure>
+</Element>
+</ArrayMember>
+<StructureMember Name="MSO" DataType="MOTION_INSTRUCTION">
+<DataValueMember Name="FLAGS" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ER" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IP" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AC" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ACCEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DECEL" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ERR" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATUS" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="STATE" DataType="SINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="SEGMENT" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EXERR" DataType="SINT" Radix="Decimal" Value="0"/>
+</StructureMember>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="Servo_Drive" TagType="Alias" AliasFor="Axis_S5_N1"/>
+</Tags>
+<Routines>
+<Routine Name="Home" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[This rung is used to lock in the setup varibles for the Active home
+
+(HomeMode)  0 = Passive, 1 = Active, 2 = Absolute
+
+(Position) = Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+(Offset) = Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+
+Sequence = Select the event that will cause the Home Position to be set: Immediate (0), Switch (1), Marker (2), Switch-Marker (3) 
+
+HomeDirection = The homing direction mode for your axis.Value: 0 = Forward Uni-directional, 1 = Forward Bi-directional, 2 = Reverse Uni-directional, 3 = Reverse Bi-directional
+
+Speed = Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+Return Speed = The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,10)MOV(1,Home_Ladder.Active_Home_Set.Mode)MOV(0,Home_Ladder.Active_Home_Set.Position)MOV(0,Home_Ladder.Active_Home_Set.Offset)MOV(2,Home_Ladder.Active_Home_Set.Sequence)MOV(1,Home_Ladder.Active_Home_Set.Direction)MOV(1,Home_Ladder.Active_Home_Set.Speed)MOV(0.1,Home_Ladder.Active_Home_Set.Return_Speed)MOV(15,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,15)[XIC(Servo_Drive.DriveEnableStatus) MSF(Servo_Drive,Home_Ladder.MSF[0]) ,XIO(Servo_Drive.DriveEnableStatus) ]MOV(20,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Comment>
+<![CDATA[(HomeMode)
+The homing mode for your axis.
+
+0 = Passive:
+  In this mode, homing redefines the absolute position of the axis on the occurrence of a home switch or encoder marker event.  Passive homing is most commonly used to calibrate uncontrolled axes, although it can also be used with controlled axes to create a custom homing sequence.  Passive homing, for a given home sequence, works similar to the corresponding active homing sequence, except that no motion is commanded; the controller just waits for the switch and marker events to occur.
+
+1 = Active:
+  In this mode, the desired homing sequence is selected by specifying whether a home limit switch and/or the encoder marker is used for this axis.  Active homing sequences always use the trapezoidal velocity profile.
+
+2 = Absolute:
+  (AXIS_SERVO_DRIVE, and AXIS_SERVO when associated with to a 1756-HYD02 module only)  In this mode, the absolute homing process establishes the true absolute position of the axis by applying the configured Home Position to the reported position of the absolute feedback device.  The only valid Home Sequence for an absolute Homing Mode is immediate.
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,20)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Mode)SSV(AXIS,Servo_Drive,HomeMode,Home_Ladder.Active_Home_Set.Mode)MOV(30,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Comment>
+<![CDATA[(HomeMode)
+The homing mode for your axis.
+
+0 = Passive:
+  In this mode, homing redefines the absolute position of the axis on the occurrence of a home switch or encoder marker event.  Passive homing is most commonly used to calibrate uncontrolled axes, although it can also be used with controlled axes to create a custom homing sequence.  Passive homing, for a given home sequence, works similar to the corresponding active homing sequence, except that no motion is commanded; the controller just waits for the switch and marker events to occur.
+
+1 = Active:
+  In this mode, the desired homing sequence is selected by specifying whether a home limit switch and/or the encoder marker is used for this axis.  Active homing sequences always use the trapezoidal velocity profile.
+
+2 = Absolute:
+  (AXIS_SERVO_DRIVE, and AXIS_SERVO when associated with to a 1756-HYD02 module only)  In this mode, the absolute homing process establishes the true absolute position of the axis by applying the configured Home Position to the reported position of the absolute feedback device.  The only valid Home Sequence for an absolute Homing Mode is immediate.
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,30)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeMode,Home_Ladder.Read_Back_Active_Home_Values.Mode)EQU(Home_Ladder.Active_Home_Set.Mode,Home_Ladder.Read_Back_Active_Home_Values.Mode)MOV(40,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Comment>
+<![CDATA[Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,40)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Position)SSV(AXIS,Servo_Drive,HomePosition,Home_Ladder.Active_Home_Set.Position)MOV(50,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,50)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomePosition,Home_Ladder.Read_Back_Active_Home_Values.Position)EQU(Home_Ladder.Active_Home_Set.Position,Home_Ladder.Read_Back_Active_Home_Values.Position)MOV(60,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Comment>
+<![CDATA[Offset
+
+Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,60)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Offset)SSV(AXIS,Servo_Drive,HomeOffset,Home_Ladder.Active_Home_Set.Offset)MOV(70,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Comment>
+<![CDATA[Offset
+
+Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,70)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeOffset,Home_Ladder.Read_Back_Active_Home_Values.Offset)EQU(Home_Ladder.Active_Home_Set.Offset,Home_Ladder.Read_Back_Active_Home_Values.Offset)MOV(80,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="8" Type="N">
+<Comment>
+<![CDATA[Sequence
+
+Select the event that will cause the Home Position to be set:
+
+Sequence Type	Description
+Immediate (0) = Sets the Home Position to the present actual position, without motion.
+Switch (1) = Sets the Home Position when axis motion encounters a home limit switch.
+Marker (2)  = Sets the Home Position when axis encounters an encoder marker.
+Switch-Marker (3) = Sets the Home Position when axis first encounters a home limit switch, then encounters an encoder marker.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,80)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Sequence)SSV(AXIS,Servo_Drive,HomeSequence,Home_Ladder.Active_Home_Set.Sequence)MOV(90,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="9" Type="N">
+<Comment>
+<![CDATA[Sequence
+
+Select the event that will cause the Home Position to be set:
+
+Sequence Type	Description
+Immediate (0) = Sets the Home Position to the present actual position, without motion.
+Switch (1) = Sets the Home Position when axis motion encounters a home limit switch.
+Marker (2)  = Sets the Home Position when axis encounters an encoder marker.
+Switch-Marker (3) = Sets the Home Position when axis first encounters a home limit switch, then encounters an encoder marker.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,90)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeSequence,Home_Ladder.Read_Back_Active_Home_Values.Sequence)EQU(Home_Ladder.Active_Home_Set.Sequence,Home_Ladder.Read_Back_Active_Home_Values.Sequence)MOV(100,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="10" Type="N">
+<Comment>
+<![CDATA[HomeDirection
+The homing direction mode for your axis.Value:
+ 
+0 = Forward Uni-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+1 = Forward Bi-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+
+2 = Reverse Uni-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+3 = Reverse Bi-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,100)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Direction)SSV(AXIS,Servo_Drive,HomeDirection,Home_Ladder.Active_Home_Set.Direction)MOV(110,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="11" Type="N">
+<Comment>
+<![CDATA[HomeDirection
+The homing direction mode for your axis.Value:
+ 
+0 = Forward Uni-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+1 = Forward Bi-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+
+2 = Reverse Uni-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+3 = Reverse Bi-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,110)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeDirection,Home_Ladder.Read_Back_Active_Home_Values.Direction)EQU(Home_Ladder.Active_Home_Set.Direction,Home_Ladder.Read_Back_Active_Home_Values.Direction)MOV(120,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="12" Type="N">
+<Comment>
+<![CDATA[Speed
+
+Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,120)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Speed)SSV(AXIS,Servo_Drive,HomeSpeed,Home_Ladder.Active_Home_Set.Speed)MOV(130,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="13" Type="N">
+<Comment>
+<![CDATA[Speed
+
+Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,130)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeSpeed,Home_Ladder.Read_Back_Active_Home_Values.Speed)EQU(Home_Ladder.Active_Home_Set.Speed,Home_Ladder.Read_Back_Active_Home_Values.Speed)MOV(140,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="14" Type="N">
+<Comment>
+<![CDATA[Return Speed
+
+The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,140)MOV(0,Home_Ladder.Read_Back_Active_Home_Values.Return_Speed)SSV(AXIS,Servo_Drive,HomeReturnSpeed,Home_Ladder.Active_Home_Set.Return_Speed)MOV(150,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="15" Type="N">
+<Comment>
+<![CDATA[Return Speed
+
+The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,150)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeReturnSpeed,Home_Ladder.Read_Back_Active_Home_Values.Return_Speed)EQU(Home_Ladder.Active_Home_Set.Return_Speed,Home_Ladder.Read_Back_Active_Home_Values.Return_Speed)MOV(160,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="16" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,160)MAH(Servo_Drive,Home_Ladder.MAH[0])XIC(Home_Ladder.MAH[0].IP)MOV(170,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="17" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,170)XIC(Home_Ladder.MAH[0].PC)MOV(180,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="18" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,180)MSF(Servo_Drive,Home_Ladder.MSF[0])MOV(190,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="19" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,190)XIO(Servo_Drive.ServoActionStatus)XIO(Servo_Drive.DriveEnableStatus)MOV(200,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="20" Type="N">
+<Comment>
+<![CDATA[
+Begining of the Absolute home settings
+ 
+(HomeMode)  0 = Passive, 1 = Active, 2 = Absolute
+
+(Position) = Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+(Offset) = Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+
+Sequence = Select the event that will cause the Home Position to be set: Immediate (0), Switch (1), Marker (2), Switch-Marker (3) 
+
+HomeDirection = The homing direction mode for your axis.Value: 0 = Forward Uni-directional, 1 = Forward Bi-directional, 2 = Reverse Uni-directional, 3 = Reverse Bi-directional
+
+Speed = Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+Return Speed = The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,200)MOV(2,Home_Ladder.Absolute_Home_Set.Mode)MOV(0,Home_Ladder.Absolute_Home_Set.Position)MOV(0,Home_Ladder.Absolute_Home_Set.Offset)MOV(0,Home_Ladder.Absolute_Home_Set.Sequence)MOV(0,Home_Ladder.Absolute_Home_Set.Direction)MOV(0,Home_Ladder.Absolute_Home_Set.Speed)MOV(0,Home_Ladder.Absolute_Home_Set.Return_Speed)MOV(210,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="21" Type="N">
+<Comment>
+<![CDATA[(HomeMode)
+The homing mode for your axis.
+
+0 = Passive:
+  In this mode, homing redefines the absolute position of the axis on the occurrence of a home switch or encoder marker event.  Passive homing is most commonly used to calibrate uncontrolled axes, although it can also be used with controlled axes to create a custom homing sequence.  Passive homing, for a given home sequence, works similar to the corresponding active homing sequence, except that no motion is commanded; the controller just waits for the switch and marker events to occur.
+
+1 = Active:
+  In this mode, the desired homing sequence is selected by specifying whether a home limit switch and/or the encoder marker is used for this axis.  Active homing sequences always use the trapezoidal velocity profile.
+
+2 = Absolute:
+  (AXIS_SERVO_DRIVE, and AXIS_SERVO when associated with to a 1756-HYD02 module only)  In this mode, the absolute homing process establishes the true absolute position of the axis by applying the configured Home Position to the reported position of the absolute feedback device.  The only valid Home Sequence for an absolute Homing Mode is immediate.
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,210)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Mode)SSV(AXIS,Servo_Drive,HomeMode,Home_Ladder.Absolute_Home_Set.Mode)MOV(220,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="22" Type="N">
+<Comment>
+<![CDATA[(HomeMode)
+The homing mode for your axis.
+
+0 = Passive:
+  In this mode, homing redefines the absolute position of the axis on the occurrence of a home switch or encoder marker event.  Passive homing is most commonly used to calibrate uncontrolled axes, although it can also be used with controlled axes to create a custom homing sequence.  Passive homing, for a given home sequence, works similar to the corresponding active homing sequence, except that no motion is commanded; the controller just waits for the switch and marker events to occur.
+
+1 = Active:
+  In this mode, the desired homing sequence is selected by specifying whether a home limit switch and/or the encoder marker is used for this axis.  Active homing sequences always use the trapezoidal velocity profile.
+
+2 = Absolute:
+  (AXIS_SERVO_DRIVE, and AXIS_SERVO when associated with to a 1756-HYD02 module only)  In this mode, the absolute homing process establishes the true absolute position of the axis by applying the configured Home Position to the reported position of the absolute feedback device.  The only valid Home Sequence for an absolute Homing Mode is immediate.
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,220)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeMode,Home_Ladder.Read_Back_Absolute_Home_Values.Mode)EQU(Home_Ladder.Absolute_Home_Set.Mode,Home_Ladder.Read_Back_Absolute_Home_Values.Mode)MOV(230,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="23" Type="N">
+<Comment>
+<![CDATA[Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,230)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Position)SSV(AXIS,Servo_Drive,HomePosition,Home_Ladder.Absolute_Home_Set.Position)MOV(240,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="24" Type="N">
+<Comment>
+<![CDATA[Type the desired absolute position, in position units, for the axis after the specified homing sequence has been completed.  In most cases, this position will be set to zero, although any value within the software travel limits can be used.  After the homing sequence is complete, the axis is left in this position.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,240)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomePosition,Home_Ladder.Absolute_Home_Set.Position)EQU(Home_Ladder.Absolute_Home_Set.Position,Home_Ladder.Read_Back_Absolute_Home_Values.Position)MOV(250,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="25" Type="N">
+<Comment>
+<![CDATA[Offset
+
+Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,250)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Offset)SSV(AXIS,Servo_Drive,HomeOffset,Home_Ladder.Absolute_Home_Set.Offset)MOV(260,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="26" Type="N">
+<Comment>
+<![CDATA[Offset
+
+Type the desired offset (if any) in position units the axis is to move, upon completion of the homing sequence, to reach the home position.  In most cases, this value will be zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,260)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeOffset,Home_Ladder.Read_Back_Absolute_Home_Values.Offset)EQU(Home_Ladder.Absolute_Home_Set.Offset,Home_Ladder.Read_Back_Absolute_Home_Values.Offset)MOV(270,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="27" Type="N">
+<Comment>
+<![CDATA[Sequence
+
+Select the event that will cause the Home Position to be set:
+
+Sequence Type	Description
+Immediate (0) = Sets the Home Position to the present actual position, without motion.
+Switch (1) = Sets the Home Position when axis motion encounters a home limit switch.
+Marker (2)  = Sets the Home Position when axis encounters an encoder marker.
+Switch-Marker (3) = Sets the Home Position when axis first encounters a home limit switch, then encounters an encoder marker.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,270)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Sequence)SSV(AXIS,Servo_Drive,HomeSequence,Home_Ladder.Absolute_Home_Set.Sequence)MOV(280,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="28" Type="N">
+<Comment>
+<![CDATA[Sequence
+
+Select the event that will cause the Home Position to be set:
+
+Sequence Type	Description
+Immediate (0) = Sets the Home Position to the present actual position, without motion.
+Switch (1) = Sets the Home Position when axis motion encounters a home limit switch.
+Marker (2)  = Sets the Home Position when axis encounters an encoder marker.
+Switch-Marker (3) = Sets the Home Position when axis first encounters a home limit switch, then encounters an encoder marker.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,280)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeSequence,Home_Ladder.Read_Back_Absolute_Home_Values.Sequence)EQU(Home_Ladder.Absolute_Home_Set.Sequence,Home_Ladder.Read_Back_Absolute_Home_Values.Sequence)MOV(290,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="29" Type="N">
+<Comment>
+<![CDATA[HomeDirection
+The homing direction mode for your axis.Value:
+ 
+0 = Forward Uni-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+1 = Forward Bi-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+
+2 = Reverse Uni-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+3 = Reverse Bi-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,290)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Direction)SSV(AXIS,Servo_Drive,HomeDirection,Home_Ladder.Absolute_Home_Set.Direction)MOV(300,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="30" Type="N">
+<Comment>
+<![CDATA[HomeDirection
+The homing direction mode for your axis.Value:
+ 
+0 = Forward Uni-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+1 = Forward Bi-directional
+The axis jogs in the positive axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+
+2 = Reverse Uni-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then continues in the same direction until axis motion stops (after decelerating or moving the Offset distance).
+
+3 = Reverse Bi-directional
+The axis jogs in the negative axial direction until a homing event (switch or marker) is encountered, then reverses direction until motion stops (after decelerating or moving the Offset distance).
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,300)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeDirection,Home_Ladder.Read_Back_Absolute_Home_Values.Direction)EQU(Home_Ladder.Absolute_Home_Set.Direction,Home_Ladder.Read_Back_Absolute_Home_Values.Direction)MOV(310,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="31" Type="N">
+<Comment>
+<![CDATA[Speed
+
+Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,310)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Speed)SSV(AXIS,Servo_Drive,HomeSpeed,Home_Ladder.Absolute_Home_Set.Speed)MOV(320,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="32" Type="N">
+<Comment>
+<![CDATA[Speed
+
+Type the speed of the jog profile used in the first leg of an active homing sequence.  The homing speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,320)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeSpeed,Home_Ladder.Read_Back_Absolute_Home_Values.Speed)EQU(Home_Ladder.Absolute_Home_Set.Speed,Home_Ladder.Read_Back_Absolute_Home_Values.Speed)MOV(330,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="33" Type="N">
+<Comment>
+<![CDATA[Return Speed
+
+The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,330)MOV(0,Home_Ladder.Read_Back_Absolute_Home_Values.Return_Speed)SSV(AXIS,Servo_Drive,HomeReturnSpeed,Home_Ladder.Absolute_Home_Set.Return_Speed)MOV(340,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="34" Type="N">
+<Comment>
+<![CDATA[Return Speed
+
+The speed of the jog profile used in the return leg(s) of an active homing sequence.  The home return speed specified should be less than the maximum speed and greater than zero.
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,340)XIO(Servo_Drive.ConfigUpdateInProcess)GSV(AXIS,Servo_Drive,HomeReturnSpeed,Home_Ladder.Read_Back_Absolute_Home_Values.Return_Speed)EQU(Home_Ladder.Absolute_Home_Set.Return_Speed,Home_Ladder.Read_Back_Absolute_Home_Values.Return_Speed)MOV(350,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="35" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,350)MAH(Servo_Drive,Home_Ladder.MAH[1])XIC(Home_Ladder.MAH[1].IP)MOV(360,Home_Ladder.Basic_Index.Index);]]>
+</Text>
+</Rung>
+<Rung Number="36" Type="N">
+<Text>
+<![CDATA[EQU(Home_Ladder.Basic_Index.Index,360)XIC(Home_Ladder.MAH[1].PC)XIC(Servo_Drive.AbsoluteReferenceStatus)MOV(0,Home_Ladder.Basic_Index.Index)OTU(Home_Ladder.Basic_Index.Bool.0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[This subroutine call up the  is the trigger bit. 
+ 
+]]>
+</Comment>
+<Text>
+<![CDATA[[XIC(Home_Ladder.Basic_Index.Bool.31) ,XIC(Home_Ladder.Basic_Index.Bool.0) ][ONS(Home_Ladder.Basic_Index.ONS.0) [MOV(10,Home_Ladder.Basic_Index.Index) ,MVM(1,1,Home_Ladder.Basic_Index.Bool) ] ,JSR(Home,0) ];]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false">
+<Tags/>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  -- No warranty or implied merchantability.
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes.
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+<ScheduledProgram Name="Axis_S5_N1"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>

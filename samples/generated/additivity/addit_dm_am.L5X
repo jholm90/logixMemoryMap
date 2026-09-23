@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="AddProbe" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Sep 11 21:28:12 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="AddProbe" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Sep 11 21:28:12 2026" LastModifiedDate="Fri Sep 11 21:28:12 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes>
+    <DataType Name="AddUdtProbe" Family="NoFamily" Class="User">
+      <Members>
+      <Member Name="Mbr00" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr01" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr02" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr03" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr04" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr05" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr06" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr07" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr08" DataType="DINT" Dimension="0" Hidden="false"/>
+      <Member Name="Mbr09" DataType="DINT" Dimension="0" Hidden="false"/>
+      </Members>
+    </DataType>
+</DataTypes>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L81E" Vendor="1" ProductType="14" ProductCode="164" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="Disabled"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+
+</Modules>
+<AddOnInstructionDefinitions>
+    <AddOnInstructionDefinition Name="AddAoiProbe" Revision="1.0" Vendor="LogixMemoryMap" ExecutePrescan="false" ExecutePostscan="false" ExecuteEnableInFalse="false" CreatedDate="2026-08-20T12:00:00.000Z" CreatedBy="Generator" EditedDate="2026-08-20T12:00:00.000Z" EditedBy="Generator" SoftwareRevision="v35.05">
+      <Parameters>
+<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Input" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="EnableOut" TagType="Base" DataType="BOOL" Radix="Decimal" Usage="Output" Required="false" Visible="false" ExternalAccess="Read Only"/>
+<Parameter Name="InA" TagType="Base" DataType="DINT" Usage="Input" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read/Write"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+<Parameter Name="OutA" TagType="Base" DataType="BOOL" Usage="Output" Radix="Decimal" Required="true" Visible="true" ExternalAccess="Read Only"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></DefaultData></Parameter>
+      </Parameters>
+      <LocalTags>
+<LocalTag Name="Wrk" DataType="DINT" Radix="Decimal" ExternalAccess="None"><DefaultData Format="L5K"><![CDATA[0]]></DefaultData><DefaultData Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></DefaultData></LocalTag>
+      </LocalTags>
+      <Routines>
+        <Routine Name="Logic" Type="RLL"><RLLContent>              <Rung Number="0" Type="N">
+                <Text><![CDATA[OTE(OutA);]]></Text>
+              </Rung></RLLContent></Routine>
+      </Routines>
+    </AddOnInstructionDefinition>
+</AddOnInstructionDefinitions>
+<Tags>
+      <Tag Name="DataTag0000" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0001" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0002" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0003" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0004" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0005" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0006" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0007" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0008" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0009" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0010" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0011" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0012" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0013" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0014" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0015" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0016" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0017" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0018" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0019" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0020" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0021" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0022" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0023" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0024" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0025" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0026" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0027" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0028" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0029" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0030" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0031" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0032" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0033" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0034" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0035" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0036" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0037" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0038" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="DataTag0039" TagType="Base" DataType="AddUdtProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddUdtProbe"><DataValueMember Name="Mbr00" DataType="DINT" Value="0" /><DataValueMember Name="Mbr01" DataType="DINT" Value="0" /><DataValueMember Name="Mbr02" DataType="DINT" Value="0" /><DataValueMember Name="Mbr03" DataType="DINT" Value="0" /><DataValueMember Name="Mbr04" DataType="DINT" Value="0" /><DataValueMember Name="Mbr05" DataType="DINT" Value="0" /><DataValueMember Name="Mbr06" DataType="DINT" Value="0" /><DataValueMember Name="Mbr07" DataType="DINT" Value="0" /><DataValueMember Name="Mbr08" DataType="DINT" Value="0" /><DataValueMember Name="Mbr09" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0000" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0001" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0002" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0003" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0004" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0005" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0006" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0007" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0008" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0009" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0010" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0011" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0012" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0013" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0014" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0015" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0016" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0017" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0018" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="AoiInst0019" TagType="Base" DataType="AddAoiProbe" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><Structure DataType="AddAoiProbe"><DataValueMember Name="EnableIn" DataType="BOOL" Value="0" /><DataValueMember Name="EnableOut" DataType="BOOL" Value="0" /><DataValueMember Name="InA" DataType="DINT" Value="0" /><DataValueMember Name="OutA" DataType="BOOL" Value="0" /><DataValueMember Name="Wrk" DataType="DINT" Value="0" /></Structure></Data>
+      </Tag>
+      <Tag Name="Bit0" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Bit1" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="BOOL" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+      <Tag Name="Dst0" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+        <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
+      </Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" UseAsFolder="false">
+<Tags>
+
+</Tags>
+<Routines>
+<Routine Name="MainRoutine" Type="RLL">
+<RLLContent>
+              <Rung Number="0" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0000,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="1" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0001,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="2" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0002,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="3" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0003,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="4" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0004,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="5" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0005,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="6" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0006,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="7" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0007,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="8" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0008,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="9" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0009,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="10" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0010,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="11" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0011,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="12" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0012,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="13" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0013,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="14" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0014,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="15" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0015,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="16" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0016,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="17" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0017,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="18" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0018,0,Bit1);]]></Text>
+              </Rung>
+              <Rung Number="19" Type="N">
+                <Text><![CDATA[AddAoiProbe(AoiInst0019,0,Bit1);]]></Text>
+              </Rung>
+</RLLContent>
+</Routine>
+
+</Routines>
+</Program>
+
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+
+</ScheduledPrograms>
+</Task>
+
+</Tasks>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<DataLogs/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+<EthernetPorts>
+<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+</EthernetPorts>
+</Controller>
+</RSLogix5000Content>

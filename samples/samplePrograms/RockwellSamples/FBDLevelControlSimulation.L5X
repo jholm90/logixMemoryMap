@@ -1,0 +1,692 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="17.00" TargetName="FBDLevelControlSimulation" TargetType="Controller" ContainsContext="false" Owner="Lisa B. Martel, Rockwell Automation" ExportDate="Fri Jan 19 07:25:56 2018" ExportOptions="DecoratedData AllProjDocTrans">
+<Controller Use="Target" Name="FBDLevelControlSimulation" ProcessorType="1756-L63" MajorRev="17" MinorRev="2" TimeSlice="50" ShareUnusedTimeSlice="1" ProjectCreationDate="Fri Jan 19 07:25:41 2018" LastModifiedDate="Fri Jan 19 07:25:41 2018" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent"
+ SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Local" CatalogNumber="1756-L63" Vendor="1" ProductType="14" ProductCode="56" Major="17" Minor="2" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="ICP" Upstream="false">
+<Bus Size="17"/>
+</Port>
+</Ports>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="FlowIntoTank" TagType="Base" DataType="REAL" Radix="Float">
+<Data>00 00 48 42</Data>
+<Data Format="Decorated"><DataValue DataType="REAL" Radix="Float" Value="50.0"/>
+</Data>
+</Tag>
+<Tag Name="TimeFromRSView" TagType="Base" DataType="DINT" Dimensions="7" Radix="Decimal">
+<Data>D0 07 00 00 06 00 00 00 1D 00 00 00 0F 00 00 00 
+21 00 00 00 03 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="7" Radix="Decimal">
+<Element Index="[0]" Value="2000"/>
+<Element Index="[1]" Value="6"/>
+<Element Index="[2]" Value="29"/>
+<Element Index="[3]" Value="15"/>
+<Element Index="[4]" Value="33"/>
+<Element Index="[5]" Value="3"/>
+<Element Index="[6]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="TimeFromRSViewPrevious" TagType="Base" DataType="DINT" Dimensions="7" Radix="Decimal">
+<Data>D0 07 00 00 06 00 00 00 1D 00 00 00 0F 00 00 00 
+21 00 00 00 03 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="7" Radix="Decimal">
+<Element Index="[0]" Value="2000"/>
+<Element Index="[1]" Value="6"/>
+<Element Index="[2]" Value="29"/>
+<Element Index="[3]" Value="15"/>
+<Element Index="[4]" Value="33"/>
+<Element Index="[5]" Value="3"/>
+<Element Index="[6]" Value="0"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="TimeToRSView" TagType="Base" DataType="DINT" Dimensions="7" Radix="Decimal">
+<Data>CE 07 00 00 01 00 00 00 01 00 00 00 02 00 00 00 
+1E 00 00 00 05 00 00 00 BD 92 08 00</Data>
+<Data Format="Decorated"><Array DataType="DINT" Dimensions="7" Radix="Decimal">
+<Element Index="[0]" Value="1998"/>
+<Element Index="[1]" Value="1"/>
+<Element Index="[2]" Value="1"/>
+<Element Index="[3]" Value="2"/>
+<Element Index="[4]" Value="30"/>
+<Element Index="[5]" Value="5"/>
+<Element Index="[6]" Value="561853"/>
+</Array>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="ProcessSimulation" TestEdits="false" MainRoutineName="MainLD" Disabled="false">
+<Tags>
+<Tag Name="ADD_01" TagType="Base" DataType="FBD_MATH">
+<Description>
+<![CDATA[Level in tank]]>
+</Description>
+<Data>03 00 00 00 EA B9 61 3E 08 FE 56 42 C2 DF 57 42</Data>
+<Data Format="Decorated"><Structure DataType="FBD_MATH">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="0.22043577"/>
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="53.748077"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Dest" DataType="REAL" Radix="Float" Value="53.968513"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="DEDT_01" TagType="Base" DataType="DEADTIME">
+<Description>
+<![CDATA[Tank outlet flow deadtime (transportation lag) simulation]]>
+</Description>
+<Data>01 00 00 00 CF 46 DD 41 00 00 00 40 00 00 80 3F 
+00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 
+00 00 00 00 01 00 00 00 CF 46 DD 41 CD CC CC 3D 
+00 00 00 00 00 00 00 00 CF 46 DD 41 00 00 00 40 
+CD CC CC 3D 14 00 00 00 64 00 00 00 64 99 27 00 
+00 00 00 00 00 1E 00 00 CD CC CC 3D 49 00 00 00 
+36 00 00 00 00 00 00 00 FC E0 1F 00 64 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="DEADTIME">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="InFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Deadtime" DataType="REAL" Radix="Float" Value="2.0"/>
+<DataValueMember Name="Gain" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Bias" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="TimingMode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="OversampleDT" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="RTSTime" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="RTSTimeStamp" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="DeltaT" DataType="REAL" Radix="Float" Value="0.1"/>
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="InFaulted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DeadtimeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TimingModeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSMissed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeStampInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DeltaTInv" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="DEDT_01array" TagType="Base" DataType="REAL" Dimensions="100" Radix="Float">
+<Data>CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 
+CF 46 DD 41 CF 46 DD 41 CF 46 DD 41 CF 46 DD 41</Data>
+<Data Format="Decorated"><Array DataType="REAL" Dimensions="100" Radix="Float">
+<Element Index="[0]" Value="27.659575"/>
+<Element Index="[1]" Value="27.659575"/>
+<Element Index="[2]" Value="27.659575"/>
+<Element Index="[3]" Value="27.659575"/>
+<Element Index="[4]" Value="27.659575"/>
+<Element Index="[5]" Value="27.659575"/>
+<Element Index="[6]" Value="27.659575"/>
+<Element Index="[7]" Value="27.659575"/>
+<Element Index="[8]" Value="27.659575"/>
+<Element Index="[9]" Value="27.659575"/>
+<Element Index="[10]" Value="27.659575"/>
+<Element Index="[11]" Value="27.659575"/>
+<Element Index="[12]" Value="27.659575"/>
+<Element Index="[13]" Value="27.659575"/>
+<Element Index="[14]" Value="27.659575"/>
+<Element Index="[15]" Value="27.659575"/>
+<Element Index="[16]" Value="27.659575"/>
+<Element Index="[17]" Value="27.659575"/>
+<Element Index="[18]" Value="27.659575"/>
+<Element Index="[19]" Value="27.659575"/>
+<Element Index="[20]" Value="27.659575"/>
+<Element Index="[21]" Value="27.659575"/>
+<Element Index="[22]" Value="27.659575"/>
+<Element Index="[23]" Value="27.659575"/>
+<Element Index="[24]" Value="27.659575"/>
+<Element Index="[25]" Value="27.659575"/>
+<Element Index="[26]" Value="27.659575"/>
+<Element Index="[27]" Value="27.659575"/>
+<Element Index="[28]" Value="27.659575"/>
+<Element Index="[29]" Value="27.659575"/>
+<Element Index="[30]" Value="27.659575"/>
+<Element Index="[31]" Value="27.659575"/>
+<Element Index="[32]" Value="27.659575"/>
+<Element Index="[33]" Value="27.659575"/>
+<Element Index="[34]" Value="27.659575"/>
+<Element Index="[35]" Value="27.659575"/>
+<Element Index="[36]" Value="27.659575"/>
+<Element Index="[37]" Value="27.659575"/>
+<Element Index="[38]" Value="27.659575"/>
+<Element Index="[39]" Value="27.659575"/>
+<Element Index="[40]" Value="27.659575"/>
+<Element Index="[41]" Value="27.659575"/>
+<Element Index="[42]" Value="27.659575"/>
+<Element Index="[43]" Value="27.659575"/>
+<Element Index="[44]" Value="27.659575"/>
+<Element Index="[45]" Value="27.659575"/>
+<Element Index="[46]" Value="27.659575"/>
+<Element Index="[47]" Value="27.659575"/>
+<Element Index="[48]" Value="27.659575"/>
+<Element Index="[49]" Value="27.659575"/>
+<Element Index="[50]" Value="27.659575"/>
+<Element Index="[51]" Value="27.659575"/>
+<Element Index="[52]" Value="27.659575"/>
+<Element Index="[53]" Value="27.659575"/>
+<Element Index="[54]" Value="27.659575"/>
+<Element Index="[55]" Value="27.659575"/>
+<Element Index="[56]" Value="27.659575"/>
+<Element Index="[57]" Value="27.659575"/>
+<Element Index="[58]" Value="27.659575"/>
+<Element Index="[59]" Value="27.659575"/>
+<Element Index="[60]" Value="27.659575"/>
+<Element Index="[61]" Value="27.659575"/>
+<Element Index="[62]" Value="27.659575"/>
+<Element Index="[63]" Value="27.659575"/>
+<Element Index="[64]" Value="27.659575"/>
+<Element Index="[65]" Value="27.659575"/>
+<Element Index="[66]" Value="27.659575"/>
+<Element Index="[67]" Value="27.659575"/>
+<Element Index="[68]" Value="27.659575"/>
+<Element Index="[69]" Value="27.659575"/>
+<Element Index="[70]" Value="27.659575"/>
+<Element Index="[71]" Value="27.659575"/>
+<Element Index="[72]" Value="27.659575"/>
+<Element Index="[73]" Value="27.659575"/>
+<Element Index="[74]" Value="27.659575"/>
+<Element Index="[75]" Value="27.659575"/>
+<Element Index="[76]" Value="27.659575"/>
+<Element Index="[77]" Value="27.659575"/>
+<Element Index="[78]" Value="27.659575"/>
+<Element Index="[79]" Value="27.659575"/>
+<Element Index="[80]" Value="27.659575"/>
+<Element Index="[81]" Value="27.659575"/>
+<Element Index="[82]" Value="27.659575"/>
+<Element Index="[83]" Value="27.659575"/>
+<Element Index="[84]" Value="27.659575"/>
+<Element Index="[85]" Value="27.659575"/>
+<Element Index="[86]" Value="27.659575"/>
+<Element Index="[87]" Value="27.659575"/>
+<Element Index="[88]" Value="27.659575"/>
+<Element Index="[89]" Value="27.659575"/>
+<Element Index="[90]" Value="27.659575"/>
+<Element Index="[91]" Value="27.659575"/>
+<Element Index="[92]" Value="27.659575"/>
+<Element Index="[93]" Value="27.659575"/>
+<Element Index="[94]" Value="27.659575"/>
+<Element Index="[95]" Value="27.659575"/>
+<Element Index="[96]" Value="27.659575"/>
+<Element Index="[97]" Value="27.659575"/>
+<Element Index="[98]" Value="27.659575"/>
+<Element Index="[99]" Value="27.659575"/>
+</Array>
+</Data>
+</Tag>
+<Tag Name="GRT_01" TagType="Base" DataType="FBD_COMPARE">
+<Description>
+<![CDATA[Check to see if tank level is greater than 20%, and if so, turn on the agitator if it is in Program control.]]>
+</Description>
+<Data>0F 00 00 00 C2 DF 57 42 00 00 A0 41</Data>
+<Data Format="Decorated"><Structure DataType="FBD_COMPARE">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="53.968513"/>
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="20.0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Dest" DataType="BOOL" Value="1"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="HLL_01" TagType="Base" DataType="HL_LIMIT">
+<Description>
+<![CDATA[Limit level to between 0-100%]]>
+</Description>
+<Data>01 00 00 00 C2 DF 57 42 00 00 C8 42 00 00 00 00 
+00 00 00 00 01 00 00 00 C2 DF 57 42 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="HL_LIMIT">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="53.968513"/>
+<DataValueMember Name="HighLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="LowLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SelectLimit" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="53.968513"/>
+<DataValueMember Name="HighAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LowAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SelectLimitInv" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="LDLG_01" TagType="Base" DataType="LEAD_LAG">
+<Description>
+<![CDATA[First order lag tank outlet flow simulation]]>
+</Description>
+<Data>01 00 00 00 CF 46 DD 41 00 00 00 00 00 00 A0 40 
+00 00 80 3F 00 00 00 00 00 00 00 00 00 00 00 00 
+01 00 00 00 00 00 00 00 01 00 00 00 C1 A6 DF 41 
+CD CC CC 3D 00 00 00 00 00 00 00 00 64 00 00 00 
+64 99 27 00 00 00 00 00 00 1E 00 00 CD CC CC 3D 
+00 00 00 00 00 00 A0 40 00 00 00 00 00 00 A0 40 
+CD CC CC 3D C3 37 22 3C 9A 99 21 41 CF 46 DD 41 
+C1 A6 DF 41 C3 37 22 3C 40 EE 7A BF CF 46 DD 41 
+C1 A6 DF 41</Data>
+<Data Format="Decorated"><Structure DataType="LEAD_LAG">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="In" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="Initialize" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Lead" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="Lag" DataType="REAL" Radix="Float" Value="5.0"/>
+<DataValueMember Name="Gain" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="Bias" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="TimingMode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="OversampleDT" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="RTSTime" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="RTSTimeStamp" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Out" DataType="REAL" Radix="Float" Value="27.956423"/>
+<DataValueMember Name="DeltaT" DataType="REAL" Radix="Float" Value="0.1"/>
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LeadInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="LagInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TimingModeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSMissed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeStampInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DeltaTInv" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="LevelController" TagType="Base" DataType="PID_ENHANCED">
+<Data>01 00 00 00 00 24 00 00 C2 DF 57 42 00 00 C8 42 
+00 00 00 00 00 00 00 00 AB AA BA 41 00 00 00 00 
+00 00 C8 42 00 00 00 00 00 00 80 3F 00 00 80 3F 
+00 00 80 3F 00 00 80 3F 00 00 00 00 00 00 00 00 
+CF 46 DD 41 00 00 00 00 00 00 00 00 00 00 C8 42 
+00 00 00 00 00 00 C8 42 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 
+00 00 80 40 CD CC CC 3D 00 00 00 00 FF FF 7F 7F 
+FF FF 7F 7F FF FF 7F FF FF FF 7F FF 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 FF FF 7F 7F 
+FF FF 7F 7F FF FF 7F 7F FF FF 7F 7F 00 00 00 00 
+00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00 01 00 00 00 40 00 00 02 CF 46 DD 41 
+CF 46 DD 41 AB AA BA 41 AB AA BA 41 C2 DF 57 42 
+D9 14 F5 41 D9 14 F5 41 00 00 80 3F CD CC CC 3D 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 
+FA 69 32 42 C2 DF 57 42 D9 14 F5 41 65 51 F3 41 
+C2 DF 57 42 08 FE 56 42 00 00 00 40 0F 74 DA 3B 
+00 00 70 42 CD CC CC 3D 00 00 00 40 00 00 80 40 
+CD CC CC 3D 00 00 00 00 C2 DF 57 42 00 32 20 3D 
+CF 46 DD 41 D9 14 F5 41 00 00 00 00 40 00 00 02 
+D9 14 F5 41 C2 DF 57 42 AB AA BA 41 00 00 00 00 
+00 00 00 00 00 00 00 00 64 00 00 00 64 99 27 00 
+00 00 00 00 00 1E 00 00 CD CC CC 3D 64 00 00 00 
+64 99 27 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+<Data Format="Decorated"><Structure DataType="PID_ENHANCED">
+<DataValueMember Name="EnableIn" DataType="BOOL" Radix="Decimal" Value="1"/>
+<DataValueMember Name="PV" DataType="REAL" Radix="Float" Value="53.968513"/>
+<DataValueMember Name="PVFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVEUMax" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="PVEUMin" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SPProg" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SPOper" DataType="REAL" Radix="Float" Value="23.333334"/>
+<DataValueMember Name="SPCascade" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="SPHLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="SPLLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="UseRatio" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RatioProg" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="RatioOper" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="RatioHLimit" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="RatioLLimit" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="CVFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVInitReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVInitValue" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVProg" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVOper" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="CVOverride" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVPrevious" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVSetPrevious" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVManLimiting" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVEUMax" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="CVEUMin" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVHLimit" DataType="REAL" Radix="Float" Value="100.0"/>
+<DataValueMember Name="CVLLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="CVROCLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FF" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FFPrevious" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FFSetPrevious" DataType="BOOL" Value="0"/>
+<DataValueMember Name="HandFB" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="HandFBFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="WindupHIn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="WindupLIn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ControlAction" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DependIndepend" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PGain" DataType="REAL" Radix="Float" Value="2.0"/>
+<DataValueMember Name="IGain" DataType="REAL" Radix="Float" Value="4.0"/>
+<DataValueMember Name="DGain" DataType="REAL" Radix="Float" Value="0.1"/>
+<DataValueMember Name="PVEProportional" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVEDerivative" DataType="BOOL" Value="1"/>
+<DataValueMember Name="DSmoothing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVTracking" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ZCDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="ZCOff" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVHHLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="PVHLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="PVLLimit" DataType="REAL" Radix="Float" Value="-3.40282347e+038"/>
+<DataValueMember Name="PVLLLimit" DataType="REAL" Radix="Float" Value="-3.40282347e+038"/>
+<DataValueMember Name="PVDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVROCPosLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVROCNegLimit" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="PVROCPeriod" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="DevHHLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="DevHLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="DevLLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="DevLLLimit" DataType="REAL" Radix="Float" Value="3.40282347e+038"/>
+<DataValueMember Name="DevDeadband" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="AllowCasRat" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ManualAfterInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgProgReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOperReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgCasRatReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgAutoReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgManualReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOverrideReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgHandReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperProgReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperOperReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperCasRatReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperAutoReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperManualReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgValueReset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TimingMode" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="OversampleDT" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="RTSTime" DataType="DINT" Radix="Decimal" Value="1"/>
+<DataValueMember Name="RTSTimeStamp" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="AtuneAcquire" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneStart" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneUseGains" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneAbort" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneUnacquire" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Radix="Decimal" Value="1"/>
+<DataValueMember Name="CVEU" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="CV" DataType="REAL" Radix="Float" Value="27.659575"/>
+<DataValueMember Name="CVInitializing" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVROCAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SP" DataType="REAL" Radix="Float" Value="23.333334"/>
+<DataValueMember Name="SPPercent" DataType="REAL" Radix="Float" Value="23.333334"/>
+<DataValueMember Name="SPHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVPercent" DataType="REAL" Radix="Float" Value="53.968513"/>
+<DataValueMember Name="E" DataType="REAL" Radix="Float" Value="30.63518"/>
+<DataValueMember Name="EPercent" DataType="REAL" Radix="Float" Value="30.63518"/>
+<DataValueMember Name="InitPrimary" DataType="BOOL" Value="1"/>
+<DataValueMember Name="WindupHOut" DataType="BOOL" Value="0"/>
+<DataValueMember Name="WindupLOut" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ratio" DataType="REAL" Radix="Float" Value="1.0"/>
+<DataValueMember Name="RatioHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RatioLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ZCDeadbandOn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVHHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVLLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVROCPosAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVROCNegAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevHHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevHAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevLLAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOper" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CasRat" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Auto" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Manual" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Override" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hand" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DeltaT" DataType="REAL" Radix="Float" Value="0.1"/>
+<DataValueMember Name="AtuneReady" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneOn" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneDone" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneAborted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneBusy" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Status1" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="Status2" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVFaulted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVFaulted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="HandFBFaulted" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVSpanInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPProgInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPOperInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPCascadeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="SPLimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RatioProgInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RatioOperInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RatioLimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVProgInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVOperInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVOverrideInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVPreviousInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVEUSpanInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVLimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="CVROCLimitInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FFInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FFPreviousInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="HandFBInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PGainInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="IGainInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DGainInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ZCDeadbandInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVDeadbandInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="PVROCLimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevHLLimitsInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DevDeadbandInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="AtuneDataInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TimingModeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSMissed" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RTSTimeStampInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DeltaTInv" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="MUL_01" TagType="Base" DataType="FBD_MATH">
+<Description>
+<![CDATA[Scale accumulation to tank volume]]>
+</Description>
+<Data>03 00 00 00 3F 59 B0 41 0A D7 23 3C EA B9 61 3E</Data>
+<Data Format="Decorated"><Structure DataType="FBD_MATH">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="22.043577"/>
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="0.01"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Dest" DataType="REAL" Radix="Float" Value="0.22043577"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SUB_01" TagType="Base" DataType="FBD_MATH">
+<Description>
+<![CDATA[Accumulation in tank this scan]]>
+</Description>
+<Data>03 00 00 00 00 00 48 42 C1 A6 DF 41 3F 59 B0 41</Data>
+<Data Format="Decorated"><Structure DataType="FBD_MATH">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="SourceA" DataType="REAL" Radix="Float" Value="50.0"/>
+<DataValueMember Name="SourceB" DataType="REAL" Radix="Float" Value="27.956423"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Dest" DataType="REAL" Radix="Float" Value="22.043577"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="TankAgitator" TagType="Base" DataType="DISCRETE_2STATE">
+<Data>33 00 00 00 00 00 00 00 9B 00 00 00 00 00 00 00 
+00 00 60 B0 00 00 00 00 64 00 00 00 64 99 27 00 
+00 1E 00 00 CD CC CC 3D</Data>
+<Data Format="Decorated"><Structure DataType="DISCRETE_2STATE">
+<DataValueMember Name="EnableIn" DataType="BOOL" Value="1"/>
+<DataValueMember Name="ProgCommand" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Oper0Req" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Oper1Req" DataType="BOOL" Value="0"/>
+<DataValueMember Name="State0Perm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="State1Perm" DataType="BOOL" Value="1"/>
+<DataValueMember Name="FB0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FB1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="HandFB" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultTime" DataType="REAL" Radix="Float" Value="0.0"/>
+<DataValueMember Name="FaultAlarmLatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultAlmUnlatch" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OverrideOnInit" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OverrideOnFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OutReverse" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OverrideState" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FB0State0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FB0State1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FB1State0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FB1State1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgProgReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOperReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOverrideReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgHandReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperProgReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperOperReq" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgValueReset" DataType="BOOL" Value="0"/>
+<DataValueMember Name="EnableOut" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Out" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Device0State" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Device1State" DataType="BOOL" Value="1"/>
+<DataValueMember Name="CommandStatus" DataType="BOOL" Value="1"/>
+<DataValueMember Name="FaultAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ModeAlarm" DataType="BOOL" Value="0"/>
+<DataValueMember Name="ProgOper" DataType="BOOL" Value="1"/>
+<DataValueMember Name="Override" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Hand" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Status" DataType="DINT" Radix="Hex" Value="16#0000_0000"/>
+<DataValueMember Name="InstructFault" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FaultTimeInv" DataType="BOOL" Value="0"/>
+<DataValueMember Name="OperReqInv" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="MainFBD" Type="FBD">
+<FBDContent SheetSize="Tabloid - 11 x 17 in" SheetOrientation="Landscape">
+<Sheet Number="1">
+<Description>
+<![CDATA[Level_control_and_simulation]]>
+</Description>
+<IRef ID="0" X="160" Y="420" Operand="FlowIntoTank" HideDesc="false"/>
+<OCon ID="1" X="520" Y="280" Name="TankLevel"/>
+<Block Type="ADD" ID="2" X="300" Y="100" Operand="ADD_01" VisiblePins="SourceA SourceB Dest" HideDesc="false"/>
+<Block Type="DEDT" ID="3" X="40" Y="100" Operand="DEDT_01" VisiblePins="In Out" HideDesc="false">
+<Array Name="StorageArray" Operand="DEDT_01array"/>
+</Block>
+<Block Type="HLL" ID="4" X="520" Y="100" Operand="HLL_01" VisiblePins="In Out HighAlarm LowAlarm" HideDesc="false"/>
+<Block Type="LDLG" ID="5" X="40" Y="280" Operand="LDLG_01" VisiblePins="In Out" HideDesc="false"/>
+<Block Type="MUL" ID="6" X="480" Y="400" Operand="MUL_01" VisiblePins="SourceA Dest" HideDesc="false"/>
+<Block Type="PIDE" ID="7" X="760" Y="60" Operand="LevelController" VisiblePins="PV SPProg SPCascade RatioProg CVProg FF HandFB ProgProgReq ProgOperReq ProgCasRatReq ProgAutoReq ProgManualReq ProgOverrideReq ProgHandReq CVEU SP PVHHAlarm PVHAlarm PVLAlarm PVLLAlarm PVROCPosAlarm PVROCNegAlarm DevHHAlarm DevHAlarm DevLAlarm DevLLAlarm ProgOper CasRat Auto Manual Override Hand" HideDesc="false"/>
+<Block Type="SUB" ID="8" X="280" Y="380" Operand="SUB_01" VisiblePins="SourceA SourceB Dest" HideDesc="false"/>
+<Wire FromID="0" ToID="8" ToParam="SourceA"/>
+<Wire FromID="2" FromParam="Dest" ToID="4" ToParam="In"/>
+<Wire FromID="3" FromParam="Out" ToID="5" ToParam="In"/>
+<Wire FromID="4" FromParam="Out" ToID="1"/>
+<Wire FromID="4" FromParam="Out" ToID="7" ToParam="PV"/>
+<Wire FromID="5" FromParam="Out" ToID="8" ToParam="SourceB"/>
+<Wire FromID="6" FromParam="Dest" ToID="2" ToParam="SourceA"/>
+<Wire FromID="8" FromParam="Dest" ToID="6" ToParam="SourceA"/>
+<FeedbackWire FromID="4" FromParam="Out" ToID="2" ToParam="SourceB"/>
+<FeedbackWire FromID="7" FromParam="CVEU" ToID="3" ToParam="In"/>
+</Sheet>
+<Sheet Number="2">
+<Description>
+<![CDATA[Agitator_control]]>
+</Description>
+<IRef ID="9" X="140" Y="300" Operand="20" HideDesc="false"/>
+<ICon ID="10" X="160" Y="140" Name="TankLevel"/>
+<Block Type="D2SD" ID="11" X="440" Y="220" Operand="TankAgitator" VisiblePins="ProgCommand State0Perm State1Perm FB0 FB1 HandFB ProgProgReq ProgOperReq ProgOverrideReq ProgHandReq Out Device0State Device1State CommandStatus FaultAlarm ModeAlarm ProgOper Override Hand" HideDesc="false"/>
+<Block Type="GRT" ID="12" X="240" Y="220" Operand="GRT_01" VisiblePins="SourceA SourceB Dest" HideDesc="false"/>
+<Wire FromID="9" ToID="12" ToParam="SourceB"/>
+<Wire FromID="10" ToID="12" ToParam="SourceA"/>
+<Wire FromID="12" FromParam="Dest" ToID="11" ToParam="ProgCommand"/>
+</Sheet>
+</FBDContent>
+</Routine>
+<Routine Name="MainLD" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Comment>
+<![CDATA[
+All information provided  - No Warranty or implied merchantability. 
+Refer to the RSLogix 5000 End User License Agreement (EULA) in the Release Notes
+
+]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(MainFBD,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="Periodic100msec" Type="PERIODIC" Rate="100" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="ProcessSimulation"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+</Controller>
+</RSLogix5000Content>
