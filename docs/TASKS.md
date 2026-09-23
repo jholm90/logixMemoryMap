@@ -51,7 +51,26 @@ constant had been hiding: **mean 2.86%, worst 5.42% on the seventeen standard-pr
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
-### 1. Capture the program-scope batch — OQ-PROGSCOPESTRUCT, 12 files
+### 0. The realism floor — every generated file from here on
+
+At least 5 Ethernet I/O nodes, at least 25% of the controller predicted, no output bit
+written by more than one OTE/ONS and no OTL/OTU target also OTE'd. `sample_gen/realism.py`
+builds a baseline that meets it (RACK_1..RACK_5: 1734-AENTR/C + 4 IB8 + 4 OB8 each; a
+1,280-station plant, 821,698 predicted alone). `write_sample()` refuses a file below it
+(`lint.realism_findings`) and `test_build_guards` refuses a waiting batch below it. An
+older generator re-run without the baseline now fails, deliberately.
+
+### 1. Capture the realism batch and the program-scope batch — 28 files
+
+| family | files | question |
+|---|---:|---|
+| `realism_base_f{25,50}` | 2 | OQ-REALISMFLOOR — is the model exact on a full controller? |
+| `realism_srout_{series,branch,inter}_k*` | 8 | OQ-SERIESREAL — does −12/extra output survive unique bits at real fill? |
+| `realism_pio_{bool,addr,alias}_n{080,160}` | 6 | OQ-PIOADDR — POINT I/O address vs BOOL vs alias |
+
+`samples/generated/realism/`, `gen_realism_batch.py`.
+
+### 1b. The program-scope batch — OQ-PROGSCOPESTRUCT, 12 files (rebuilt on the baseline)
 
 | family | files | what it measures |
 |---|---:|---|
@@ -66,15 +85,12 @@ Every item below is aimed at that.
 The operand-shape batch that held this slot closed negative: member paths cost what
 plain tags cost.
 
-### 1a. Measure real-shape multi-output rungs — the series-output contradiction
+### 1a. Real rung skeletons — held until the realism batch reads
 
-18 of the 25 worst generated files are series outputs: 12 bytes cheaper per extra
-output, exact on 16+ files, rejected by the real set. Real programs carry 1,900–11,800
-extra outputs each. Proposed batch, to be approved before it is built: files whose
-rungs reproduce the most common real rung SKELETONS — instruction sequence, branch
-structure and operand kind (tag / member / literal / array) — with generated tag names
-only, so the real rung mix is priced against a real Capacity reading in isolation. No
-real rung text, tag name or value is carried over.
+The proposed real-rung-skeleton batch (the commonest real instruction sequences with
+generated tag names) waits on OQ-SERIESREAL and OQ-REALISMFLOOR: if the plant reproduces
+the real under-prediction, the skeleton batch is built on the same baseline; if it lands
+exact, fill is eliminated and the skeletons are the next discriminator.
 
 ### 2. Take safety content out of the standard total (engine correctness only)
 

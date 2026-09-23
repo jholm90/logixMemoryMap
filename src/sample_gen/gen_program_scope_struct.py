@@ -14,7 +14,10 @@ differs only in how many:
   progscope_{ctl,prog}_udt_n{010,050,200}   a 7-member UDT (4 DINT, 2 BOOL, REAL)
   progscope_{ctl,prog}_arr_n{010,050,200}   DINT[20] arrays
 
-One MainRoutine rung (NOP) in every file. 1756-L81E at firmware 35.
+One MainRoutine rung (NOP) in every file, on the realism baseline
+(sample_gen/realism.py: RACK_1..RACK_5 and a plant over 25% of the controller),
+which is identical in all twelve and cancels in every difference. 1756-L81E at
+firmware 35.
 
 Run: python -m sample_gen.gen_program_scope_struct
 """
@@ -23,6 +26,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from sample_gen import realism
 from sample_gen.builders import MemberSpec, tag_xml, udt_xml
 from sample_gen.manifest import append_manifest_row, write_sample
 from sample_gen.wrapper import build_l5x
@@ -53,9 +57,11 @@ def main() -> None:
                 name = f"progscope_{scope}_{kind}_n{n:03d}"
                 l5x = build_l5x(
                     target_name=f"ProgScope{scope.title()}{kind.title()}{n}",
-                    tags_xml=tags if scope == "ctl" else "",
-                    extra_program_tags_xml=tags if scope == "prog" else "",
-                    extra_datatypes_xml=datatypes,
+                    **realism.with_baseline(
+                        tags_xml=tags if scope == "ctl" else "",
+                        extra_program_tags_xml=tags if scope == "prog" else "",
+                        extra_datatypes_xml=datatypes,
+                    ),
                 )
                 out = OUT_ROOT / f"{name}.L5X"
                 predicted = write_sample(l5x, out)
@@ -64,7 +70,7 @@ def main() -> None:
                     f"OQ-PROGSCOPESTRUCT: {what} declared at "
                     f"{'CONTROLLER' if scope == 'ctl' else 'PROGRAM (MainProgram)'} scope. "
                     f"Differenced against progscope_{'prog' if scope == 'ctl' else 'ctl'}_{kind}_n{n:03d}, "
-                    f"which holds the identical tags at the other scope.",
+                    f"which holds the identical tags at the other scope. On the realism baseline.",
                     "tags", out, predicted,
                 )
                 written += 1

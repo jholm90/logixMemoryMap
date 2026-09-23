@@ -1,6 +1,6 @@
 # Open Questions
 
-**Two.** Down from forty. OQ-OPERANDSHAPE closed negative in the latest batch. Closed questions and their reasoning trails are in
+**Five.** OQ-OPERANDSHAPE closed negative in the latest batch; three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR). Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -24,7 +24,10 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | question | state |
 |---|---|
 | **OQ-REALUNDER** | The real residual: **2.86% mean, 5.42% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
-| **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, awaiting capture. |
+| **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, rebuilt on the realism baseline, awaiting capture. |
+| **OQ-REALISMFLOOR** | Does the model still hold on a controller that is a quarter full, with I/O, and with every output bit written once? 2 files awaiting capture. |
+| **OQ-SERIESREAL** | The −12-per-extra-series-output law, re-measured with no duplicated bits on a full controller. 8 files awaiting capture. |
+| **OQ-PIOADDR** | A POINT I/O address vs a controller BOOL vs an alias as a rung operand. 6 files awaiting capture. |
 
 ---
 
@@ -191,4 +194,46 @@ three worst-predicted programs — exports 27, 06 and 33 carry 102, 118 and 157.
 |---|---|
 | **Mechanism** | a per-program tag table, or a per-tag cost for structured program tags, the engine does not charge |
 | **Expected movement** | unknown until read; the three worst files carry the most of them |
-| **Batch built** | 12 files, `gen_program_scope_struct.py`: the identical UDT tags (7 members) and DINT[20] arrays at controller scope vs program scope, at 10, 50 and 200 tags. 1756-L81E fw35, lint and confound clean |
+| **Batch built** | 12 files, `gen_program_scope_struct.py`: the identical UDT tags (7 members) and DINT[20] arrays at controller scope vs program scope, at 10, 50 and 200 tags. 1756-L81E fw35, lint and confound clean. Rebuilt on the realism baseline, identical in all twelve |
+
+---
+
+## 3. OQ-REALISMFLOOR — does the model hold on a full controller?
+
+Every instruction weight was fitted on files that are almost empty: typically under 5%
+of the controller, no I/O, and ten BOOLs reused thousands of times
+(`gen_logic_sweep._b(i)` is `B{i % 10}`). Real programs fill 16–94%, every standard one
+has at least 5 Ethernet I/O nodes, and they reference thousands of distinct tags. If
+operand encoding depends on where a tag sits in the data table or how many distinct tags
+a routine touches, no calibration file could have seen it.
+
+| | |
+|---|---|
+| **Mechanism** | an operand or instruction cost that depends on controller fill, data-table offset or distinct-tag count |
+| **Expected movement** | up to the whole residual (~2.9 points) if the plant under-predicts at real fill; zero, and the hypothesis eliminated, if it lands exact |
+| **Batch built** | `realism_base_f25` (baseline alone, 821,698 predicted, 26% of an L81E) and `realism_base_f50` (plant doubled, 1,591,746). Plant = 1,280 stations, each a UDT instance, a TIMER and ten rungs (seal-in branch, TON and its DN, GRT, ONS+ADD, EQU+OTL, OTU, MOV, LES), all isolation-confirmed instructions, every output bit written once. f25→f50 is a count sweep of a composite unit, so the confound gate flags it; it is read as residual per station, not as one cost |
+
+## 4. OQ-SERIESREAL — the series-output law with no duplicated bits
+
+`OQ-SERIESOUTPUT` measured −12 per output after the first, exactly, on 16+ files —
+every one near-empty and, bar the three `srout_oteuniq` files, writing the same bits in
+every rung. Applying it to the real set makes every real file worse. 18 of the 25 worst
+generated files are this one law.
+
+| | |
+|---|---|
+| **Mechanism** | the discount belongs to the calibration shape (empty controller, repeated bits), not to series outputs as real ladder has them |
+| **Expected movement** | none directly — the law is not wired. If it vanishes here, the engine is right to leave it out and the contradiction is closed; if it holds, real programs carry 0.5–1.5% of bytes the model over-charges, and the true residual is that much larger |
+| **Batch built** | 1,600 distinct output BOOLs, each written once, a distinct condition per rung, identical tags in all 8: `realism_srout_series_k{01,02,04,08}` (1600/k rungs of XIC then k OTEs), `_branch_k{02,08}` (parallel legs), `_inter_k{02,08}` (k XIC-OTE pairs per rung — the instruction list of k01 exactly, only rung packing moves) |
+
+## 5. OQ-PIOADDR — POINT I/O address vs controller BOOL vs alias
+
+Real standard programs use 100–1,700 direct module-tag operands each
+(`RACK:slot:I.b` is the commonest POINT I/O form: 1,108 input and 510 output uses), and
+up to 3,350 alias tags onto I/O. No generated file has ever put a module tag in a rung.
+
+| | |
+|---|---|
+| **Mechanism** | a module-tag operand resolves through the adapter's rack-optimized connection image, and an alias adds a level; either could cost more than a plain BOOL reference |
+| **Expected movement** | per-operand delta × real count: at +8 per operand, 1,500 operands is 12 KB, ~0.2–0.5% on a mid-size program |
+| **Batch built** | `realism_pio_{bool,addr,alias}_n{080,160}`: n rungs of `XIC(in)OTE(out)`; controller BOOLs, the RACK_n:slot:I.b / O.b points directly, or alias tags onto them. All 320 BOOLs and 320 aliases declared in all six. 160 is every point the five racks have |

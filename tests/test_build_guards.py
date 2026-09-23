@@ -7,9 +7,9 @@ diagnosed, because the diagnosis lived in a comment instead of a check:
     `:SI` safety tag and fails Build on a standard controller.
   * ALMD with 7 operands -> "Invalid number of arguments for instruction".
 
-The last two tests run over the batch waiting for capture -- every committed
+The last three tests run over the batch waiting for capture -- every committed
 generated file with no conversion record -- so a file that would fail one of
-these checks cannot be handed over.
+these checks -- or below the realism floor -- cannot be handed over.
 """
 
 from __future__ import annotations
@@ -95,6 +95,25 @@ def _waiting_batch() -> list[Path]:
 def test_waiting_batch_is_lint_clean():
     dirty = {p.name: sorted(_kinds(p.read_text(encoding="utf-8-sig"))) for p in _waiting_batch()}
     assert not {n: k for n, k in dirty.items() if k}
+
+
+def test_waiting_batch_meets_the_realism_floor():
+    """Every file waiting for capture: >= 5 I/O nodes, >= 25% fill, no output
+    bit written twice (lint.realism_findings). Fill is read from the engine's
+    entries even where it reports an unsized item, which can only under-count."""
+    import xml.etree.ElementTree as ET
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    from l5x_memory_analyzer.sizing.report import build_report
+    from sample_gen.lint import realism_findings
+    model = load_memory_model()
+    below = {}
+    for p in _waiting_batch():
+        text = p.read_text(encoding="utf-8-sig")
+        entries, _errors = build_report(ET.fromstring(text), model)
+        kinds = sorted(f.kind for f in realism_findings(text, sum(e.bytes for e in entries)))
+        if kinds:
+            below[p.name] = kinds
+    assert not below
 
 
 def test_waiting_batch_kinetix_blocks_are_proven():

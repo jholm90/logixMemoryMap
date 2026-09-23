@@ -13,7 +13,7 @@ from pathlib import Path
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
 
-from sample_gen.lint import lint_or_raise
+from sample_gen.lint import lint_or_raise, realism_or_raise
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 from sample_gen.manifest_store import (  # noqa: E402
@@ -56,9 +56,13 @@ def write_sample(l5x_text: str, out_path: Path) -> int:
     NOT mean the ladder logic would actually verify in Studio 5000
     (confirmed empirically, see lint.py's docstring)."""
     lint_or_raise(l5x_text, context=str(out_path))
+    predicted = predicted_bytes(l5x_text)
+    # The realism floor (lint.realism_findings): >= 5 I/O nodes, >= 25% fill,
+    # no output bit written twice. Every file generated from here on.
+    realism_or_raise(l5x_text, predicted, context=str(out_path))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(l5x_text, encoding="utf-8")
-    return predicted_bytes(l5x_text)
+    return predicted
 
 
 def write_sample_unmodeled(l5x_text: str, out_path: Path) -> None:
@@ -68,8 +72,10 @@ def write_sample_unmodeled(l5x_text: str, out_path: Path) -> None:
     explicit SizeError, not a crash). Still runs the lint pre-flight check;
     just skips the strict predicted_bytes requirement. Caller logs its own
     manifest row (predicted_bytes=0, category, description) since those
-    vary per generator -- this only writes the file."""
+    vary per generator -- this only writes the file. The realism floor applies
+    except for fill, which needs a prediction this file cannot have."""
     lint_or_raise(l5x_text, context=str(out_path))
+    realism_or_raise(l5x_text, None, context=str(out_path))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(l5x_text, encoding="utf-8")
 

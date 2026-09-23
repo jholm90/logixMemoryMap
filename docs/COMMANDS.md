@@ -333,6 +333,12 @@ python -m sample_gen.gen_<name>
 what is held fixed, what each file discriminates, and which question it answers.
 Read that rather than a summary table, which goes stale. There are around 140.
 
+**Every new file goes on the realism floor** — build with
+`build_l5x(target_name=..., **sample_gen.realism.with_baseline(**arm))`. `write_sample()`
+refuses a file with fewer than 5 Ethernet I/O nodes, under 25% of the controller
+predicted, or an output bit written twice. The first batch on it is
+`python -m sample_gen.gen_realism_batch`.
+
 Grouped by area:
 
 **Tags and UDTs** — `batch2`, `mixed_udt`, `arraypack_boolarray`, `tagscope_alias`,

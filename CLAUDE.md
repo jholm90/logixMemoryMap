@@ -88,6 +88,14 @@ and both times the deviation looked justified at the moment it was made.** The
 exemptions are the firmware and catalog matrix generators, for which sweeping those
 fields is the variable under test.
 
+**Every generated test file is built on the realism floor** (`sample_gen/realism.py`):
+**at least 5 Ethernet I/O nodes, at least 25% of the controller predicted, and no
+output bit written in more than one place.** The calibration corpus was near-empty,
+I/O-free and wrote the same ten BOOLs thousands of times; real programs are none of
+those. `realism.with_baseline()` supplies RACK_1..RACK_5 (1734-AENTR/C + 4 IB8 + 4
+OB8) and a plant over 25% of an L81E. `write_sample()` refuses a file below the floor,
+and so does the waiting-batch test.
+
 **1756-L7x and 1769 are dead architecture.** No further test files, no further
 development, and neither may be cited as a reason the model is out of spec. Existing
 wiring and captures stay — they cost nothing to keep — but nothing new is invested

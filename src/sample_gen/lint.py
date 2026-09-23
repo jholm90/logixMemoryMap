@@ -1560,3 +1560,92 @@ def lint_or_raise(l5x_text: str, context: str = "") -> None:
         lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
         prefix = f"{context}: " if context else ""
         raise ValueError(f"{prefix}lint found {len(findings)} issue(s):\n{lines}")
+
+
+# --- The realism floor ------------------------------------------------------
+#
+# Every file generated from here on must look like a real program in the three
+# ways the calibration corpus did not: at least five Ethernet I/O nodes, at
+# least a quarter of the controller filled, and no output bit written in more
+# than one place. See sample_gen/realism.py, which builds a baseline that meets
+# all three. Separate from lint_l5x() because it needs the file's prediction,
+# and because a unit test's four-line file is not a sample; write_sample()
+# enforces it on every file handed over, and tests/test_build_guards.py on
+# every file waiting for capture.
+
+MIN_IO_NODES = 5
+MIN_FILL = 0.25
+
+_OUTPUT_BIT_CALL = re.compile(r"\b(OTE|ONS|OTL|OTU)\(([^()]*)\)")
+
+
+def io_node_count(root: ET.Element) -> int:
+    """Modules on the controller's own Ethernet network: an upstream Ethernet
+    port and the controller as parent. A rack counts once, as its adapter; its
+    cards sit on the adapter's backplane, not on the network."""
+    n = 0
+    for mod in root.iter("Module"):
+        if mod.get("Name") == "Local" or mod.get("ParentModule") != "Local":
+            continue
+        if any(p.get("Type") == "Ethernet" and p.get("Upstream") == "true" for p in mod.iter("Port")):
+            n += 1
+    return n
+
+
+def output_bit_duplicates(root: ET.Element) -> list[str]:
+    """Bits written by more than one OTE or ONS, and OTL/OTU targets that are
+    also OTE'd. Program ladder only: an AOI's internal logic runs per instance
+    against that instance's own parameters, so it is not a duplicate."""
+    writes: dict[str, int] = {}
+    latched: set[str] = set()
+    for program in root.iter("Program"):
+        for text_el in program.iter("Text"):
+            for m in _OUTPUT_BIT_CALL.finditer(text_el.text or ""):
+                op = m.group(2).strip()
+                if m.group(1) in ("OTE", "ONS"):
+                    writes[op] = writes.get(op, 0) + 1
+                else:
+                    latched.add(op)
+    dup = [f"{op} written by {n} OTE/ONS" for op, n in sorted(writes.items()) if n > 1]
+    dup += [f"{op} is both OTE'd and latched" for op in sorted(latched & writes.keys())]
+    return dup
+
+
+def realism_findings(l5x_text: str, predicted: int | None) -> list[LintFinding]:
+    """The realism floor. `predicted` None skips the fill check (a file the
+    engine cannot price, e.g. one carrying an unmodeled AXIS structure)."""
+    from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
+
+    root = ET.fromstring(l5x_text)
+    findings = []
+    nodes = io_node_count(root)
+    if nodes < MIN_IO_NODES:
+        findings.append(LintFinding(
+            "realism_io_nodes",
+            f"{nodes} Ethernet I/O node(s); the floor is {MIN_IO_NODES}. Build on "
+            f"sample_gen.realism.with_baseline(), which adds RACK_1..RACK_5."))
+    if predicted is not None:
+        ctl = root.find("Controller")
+        budget = load_controller_budgets().lookup(ctl.get("ProcessorType") if ctl is not None else None)
+        if budget is not None:
+            floor = int(budget.display_total_bytes * MIN_FILL)
+            if predicted < floor:
+                findings.append(LintFinding(
+                    "realism_fill",
+                    f"predicted {predicted:,} bytes is under {MIN_FILL:.0%} of the controller "
+                    f"({floor:,}). Build on sample_gen.realism.with_baseline()."))
+    dups = output_bit_duplicates(root)
+    if dups:
+        findings.append(LintFinding(
+            "realism_duplicate_output_bit",
+            f"{len(dups)} output bit(s) written in more than one place, e.g. "
+            f"{'; '.join(dups[:5])}. Real ladder writes each output bit once."))
+    return findings
+
+
+def realism_or_raise(l5x_text: str, predicted: int | None, context: str = "") -> None:
+    findings = realism_findings(l5x_text, predicted)
+    if findings:
+        lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
+        prefix = f"{context}: " if context else ""
+        raise ValueError(f"{prefix}below the realism floor:\n{lines}")

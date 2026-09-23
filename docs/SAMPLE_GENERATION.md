@@ -328,7 +328,37 @@ needs an actual regeneration and diff, every time.**
 
 ---
 
-## Current batch: program-scoped structured tags — OQ-PROGSCOPESTRUCT, 12 files
+## The realism floor — every file from here on
+
+`sample_gen/realism.py`, enforced by `write_sample()` (`lint.realism_findings`) and by
+`tests/test_build_guards.py` on the waiting batch:
+
+- **≥ 5 Ethernet I/O nodes.** The baseline adds RACK_1..RACK_5, each a 1734-AENTR/C
+  (from the clean `modulesweep_1734_ib8_c` block, resized to Bus Size 9 as the clean
+  `pioconn_optimized_n08` proves AB:1734_9SLOT) with 1734-IB8/C in slots 1–4 and
+  1734-OB8/C in 5–8, rack-optimized. Points are `RACK_n:slot:I.b` / `RACK_n:slot:O.b`.
+- **≥ 25% of the controller predicted** (786,432 on the 1756-L81E). The baseline plant is
+  1,280 stations in four line programs, ten stations per JSR-called area routine; alone
+  it predicts 821,698.
+- **No output bit written twice.** No OTE/ONS target repeated; no OTL/OTU target also
+  OTE'd. AOI-internal logic is exempt (it runs per instance).
+
+Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
+
+## Current batch: the realism batch — 16 files
+
+`gen_realism_batch.py`, `samples/generated/realism/`. Every file on the baseline; each
+arm declares the same tags in every file.
+
+| family | differenced against | question |
+|---|---|---|
+| `realism_base_f25`, `_f50` | its own prediction; each other per station | OQ-REALISMFLOOR |
+| `realism_srout_series_k{01,02,04,08}` | `_series_k01` | OQ-SERIESREAL |
+| `realism_srout_branch_k{02,08}` | `_series_k` at the same k | OQ-SERIESREAL |
+| `realism_srout_inter_k{02,08}` | `_series_k01` (same instructions, fewer rungs) | OQ-SERIESREAL |
+| `realism_pio_{bool,addr,alias}_n{080,160}` | the other two arms at the same n; own other n | OQ-PIOADDR |
+
+## Also waiting: program-scoped structured tags — OQ-PROGSCOPESTRUCT, 12 files (on the baseline)
 
 `gen_program_scope_struct.py`. The identical tags at controller scope and at program
 scope (MainProgram), at 10, 50 and 200: a 7-member UDT (4 DINT, 2 BOOL, REAL) and a
