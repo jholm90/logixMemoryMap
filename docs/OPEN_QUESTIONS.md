@@ -1,7 +1,7 @@
 # Open Questions
 
-**Seven.** Down from forty, and the thirty-five that went were not abandoned — they
-were **bounded**. Closed questions and their reasoning trails are in
+**Six.** Down from forty, and the thirty-six that went were not abandoned — they
+were **bounded** or answered. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`.
 
 ## The bar for opening a new one
@@ -27,7 +27,6 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
 | **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
-| **OQ-EXPORTSCOPE** | A correctness requirement, not an accuracy question. |
 | **OQ-BUILDFAIL-OPEN** | A defect log. Kept visible on purpose. |
 | **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
@@ -177,7 +176,7 @@ one-directional *on the kind of program users actually bring* — large 1756-L83
 controllers — and that the over-predicting files are the exception. Export 32 is a
 later revision of export 07 and misses by almost the same amount (−2.31% against
 −2.14%): **the residual is a property of the program, stable across revisions.** That
-is what makes it findable by the Studio-deletion method rather than by more constants.
+is what makes a real-program residual model worth trying rather than more constants.
 
 **The residual is no longer one-sided**, which is the most important structural fact
 about it. It used to be — every file under-predicted and the work was to find missing
@@ -204,9 +203,10 @@ Neither counting structural units nor charging every file the same can reach it.
 
 ### What is left
 
-**A term not proportional to any category the engine counts.** That was a hypothesis
-with zero measured support until OQ-LITERALOPERAND supplied some. It is the only
-live lead.
+**A term not proportional to any category the engine counts.** OQ-LITERALOPERAND
+showed such terms exist, then closed on its own real exposure — 1,756 bytes across
+eighteen programs — so it proved the kind of term without being the one. It is still
+the only live lead.
 
 ### The structure that is still unexplained
 
@@ -220,6 +220,19 @@ per rung. **Whatever it is does not scale with any count the engine has.**
 Attribution by subtraction from a real export is **dead** by the read-only rule, not
 merely difficult. And no generated file can carry content that generated files do not
 have, **which is the definition of the gap.**
+
+**The Studio-side substitute is declined as well.** Deleting a category inside Logix
+Designer and reading Capacity twice would attribute the residual at real scale
+without breaking the read-only rule, but each reading is a bench session the owner
+will not spend. It is struck, not pending.
+
+**What remains is a residual model on the real programs themselves, scored only by
+leave-one-out.** One term per feature the engine does not count — distinct tag
+names, program count, data-to-logic ratio — fitted on twenty-three files and
+judged on each file held out in turn. The bar is the 0.007-point result the
+per-category fit managed. A term that does not clear it is dropped, however well it
+fits in-sample. Every new real export is predicted and recorded before its reading
+exists, and each one both tests the current model and widens the fitting base.
 
 That is not a reason to keep trying variations. It is the reason the 1% target may
 not be reachable at all.
@@ -333,48 +346,7 @@ One real program carries both this and such a program.
 
 ---
 
-## 5. OQ-EXPORTSCOPE — what a partial export costs on import
-
-Studio exports at six granularities. **The scope machinery is wired**: a partial
-export gets no project base load, no firmware, catalog or safety baseline delta and
-no task/program shell, and its total is reported split three ways — target, context
-and project. The rules are in `MEMORY_MODEL.md`.
-
-**What remains open is a different question with no data at all: what a partial
-export costs when it is IMPORTED.**
-
-- **A Program export's own shell.** Importing a program creates a program, and the
-  marginal cost of an extra program in a whole project is known — but that constant
-  was fitted across whole-project captures and has never been checked against
-  "import one program into an existing project." **Charging it here would be a guess,
-  so nothing is charged.**
-- **A Routine export's own shell**, same argument.
-- **A Rung export** creates no structural container at all, so arguably zero.
-  Untested.
-- **The context/target boundary in bytes.** Context declarations cost their bytes
-  only if the destination controller does not already have them. Whether Logix
-  charges anything for reconciling an already-present declaration is unknown.
-
-**Test shape needed:** export one program from a known project, import it into a
-second known project, read Capacity before and after. **That is a
-controller-in-the-loop test, not a file-generation one** — it needs a controller at
-the bench, not a generator run.
-
-This is a **correctness** requirement rather than an accuracy one. It does not move
-the real-file number, and it is not bounded by the ceiling because it is not a
-category scale.
-
----
-
-**Why no generated test answers it.** The capture pipeline converts a whole-project
-L5X into an ACD and reads Capacity. A program- or routine-scope export is not a
-project, so it cannot go through that pipeline on its own; what it costs is only
-visible by importing it into an existing project in Studio and reading Capacity
-before and after — a Studio session, not a generated file.
-
----
-
-## 6. OQ-BUILDFAIL-OPEN — the defect log
+## 5. OQ-BUILDFAIL-OPEN — the defect log
 
 Kept visible on purpose. Full diagnostic rules and root-cause reference are in
 `OPEN_BUILD_ERRORS.md`; this entry exists so the errored rows have an owner.
@@ -401,9 +373,10 @@ disk.** Check for that before asking for an error line.
 
 None is worth a new file. `almd_minimal` is the ALMD instruction, parked by
 `CLAUDE.md` (one use across eighteen real programs). `instrfirst_mapc_x10` is the old
-MAPC build whose bug `instrfirst_mapc_v2` / `_v2_x10` fixed — both captured clean.
-`instrfirst_crout_x10` errored on all 80 rungs, and CROUT has **zero** uses in the
-eighteen real programs. `predefprobe_axis_generic`'s file no longer exists. The three
+MAPC build whose bug `instrfirst_mapc_v2` / `_v2_x10` fixed — both captured clean, and MAPC is now wired EXACT from them.
+`instrfirst_crout_x10` errored on all 80 rungs; CROUT is a Safety-family
+instruction, out of scope under OQ-SAFETY and **ignored** — zero uses in the eighteen
+real programs, and no rebuild will be made. `predefprobe_axis_generic`'s file no longer exists. The three
 other `predefprobe_*` files that failed import four times each were retired: their
 types occur in none of the real programs.
 
@@ -419,7 +392,7 @@ than reading a list here, which goes stale.
 
 ---
 
-## 7. OQ-MODULENAMELEN — a module's NAME length costs bytes the engine charges at zero
+## 6. OQ-MODULENAMELEN — a module's NAME length costs bytes the engine charges at zero
 
 **The measurement.** Two committed isolation files, both a 1756-L81E with a single
 2198-P208 under the local rack, no tags and no axes. They differ in exactly one

@@ -848,12 +848,12 @@ after.
 
 The open uncertainty is attached to this line, where it belongs. Whether the
 correction is 280 once per file or 280 per caller routine is what
-`jsr_callerdist_*` settles — see `OPEN_QUESTIONS.md` OQ-JSRCALLERBASE.
+`jsrcallers_k*` settles — see `OPEN_QUESTIONS.md` OQ-JSRCALLERBASE.
 
-### A 0-parameter JSR is EXACT — the one named exception for compiled logic
+### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 
 Compiled ladder size is a fitted heuristic and reads as estimated everywhere
-else. `JSR/0` — a JSR whose target takes no parameters — is the single named
+else. `JSR/0` — a JSR whose target takes no parameters — is the first named
 exception, because its cost is a measured constant rather than a fitted weight.
 
 **One distinct 0-parameter target plus its call costs exactly 368 bytes**, over
@@ -892,6 +892,30 @@ routines carrying a parameterised JSR at 75%.
 > blanket "every logic-size number must be flagged as estimated." The constraint
 > holds for fitted weights; a measured constant with zero residual across eight
 > intervals is not one.
+
+### MAPC is EXACT — the second named exception
+
+**260 bytes per call.** `instrfirst_mapc_v2` (one rung) and `instrfirst_mapc_v2_x10`
+(ten rungs) differ only in call count and capture at 61,948 and 64,288:
+(64,288 − 61,948) / 9 = **260.000**, equal to the wired weight. Both files sit at the
+same flat **+12** of file overhead, so the whole-file residual is the axis and cam
+storage around the instruction, not the instruction. Both captured with zero errors.
+`instrfirst_mapc_v2_x100` is built as a third point: predicted 87,676, so a reading of
+87,688 confirms the step at a hundred.
+
+Listed in `KNOWN_EXACT_CALLS` beside `JSR/0` and pinned by `test_mapc_is_exact`.
+
+### Storage-dominated instructions are measured by their step
+
+Twenty-nine instructions — the motion family (MAFR, MAPC, MASD, MASR, MCCP, MDW,
+MGSD, MGSR), AVE, FAL, FFL, FFU, FSC, SRT, MSG, FIND, INSERT, OSR, OSF, and ATN, DEG,
+NEG, NOT, RAD, SQR, SWPB, TAN, TRN, XOR — have isolation files that are mostly tag,
+axis, cam or message storage. They fail the logic-share floor, so their whole-file
+error was never credited to them and they read *Unverified*. The step between two
+counts of the same family is instruction bytes and nothing else, and all twenty-nine
+step at **0.0000%** of their own bytes. `derive_instruction_accuracy.py` now credits
+that step; the entries land in `instruction_accuracy` in `memory_model.yaml` and read
+*Measured*.
 
 ### Bit-shift instructions — BSR and BSL, measured exactly
 
@@ -992,7 +1016,8 @@ pairing is not required. Its original failure was two generator bugs: an
 undeclared axis tag, and the same axis tag reused for both positions.
 
 **CROUT and DCS are Safety-family instructions** requiring a safety CPU. Out of
-scope, not weight-table gaps.
+scope, not weight-table gaps, and ignored: no file is built for either and the failed
+`instrfirst_crout_x10` build is not pursued.
 
 **CTD is untested deliberately** — zero real usage.
 

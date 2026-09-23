@@ -56,14 +56,16 @@ def test_the_corpus_actually_backs_the_good_bands():
     """Guards against the table being regenerated into meaninglessness."""
     assert TABLE, "instruction_accuracy missing from memory_model.yaml"
     assert instruction_band("MOV", TABLE).key == "MEASURED"
-    # MAPC is the worst-measured instruction in the corpus and must not
-    # claim a bound it has not earned.
-    assert instruction_band("MAPC", TABLE).pct <= 75
+    # A parameterised JSR is the weakest measured instruction -- its files
+    # carry the open per-caller shell question -- and must not claim a bound
+    # it has not earned. (This used to name MAPC, whose only entry came from a
+    # buggy build; its corrected captures measure it exactly.)
+    assert instruction_band("JSR", TABLE).pct <= 75
 
 
 def test_a_rung_is_only_as_good_as_its_worst_instruction():
     good = rung_band(["MOV", "XIC"], TABLE)
-    mixed = rung_band(["MOV", "XIC", "MAPC"], TABLE)
+    mixed = rung_band(["MOV", "XIC", "JSR"], TABLE)
     assert good.pct > mixed.pct
 
 
@@ -135,3 +137,18 @@ def test_a_refined_key_falls_back_to_its_base_mnemonic():
     because the accuracy table is keyed on the bare mnemonic."""
     table = {"MOV": {"samples": 3, "mean_pct": 0.01, "worst_pct": 0.02}}
     assert instruction_band("MOV/0", table).key == "MEASURED"
+
+
+def test_mapc_is_exact():
+    """MAPC's per-call cost is the measured step between 1 and 10 rungs,
+    260.000 exactly; its files are storage-dominated, so the whole-file table
+    alone never priced it."""
+    assert instruction_band("MAPC", TABLE).key == "EXACT"
+
+
+def test_storage_dominated_instructions_are_measured_not_unverified():
+    """The slope arm of derive_instruction_accuracy.py measures instructions
+    whose files are mostly tag storage. Before it, every motion instruction
+    read Unverified despite exact captures."""
+    for op in ("MAFR", "MASD", "MASR", "MDW", "MGSD", "MGSR", "MCCP"):
+        assert instruction_band(op, TABLE).key == "MEASURED", op

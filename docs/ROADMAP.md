@@ -172,6 +172,7 @@ them looks reasonable on first inspection.
 | The AOI population in AOI-dense programs | Real-shape copies over-predict where the real program under-predicts. Per-definition cost confirmed at real scale. |
 | The INT/SINT literal over-charge | 37 real occurrences, 1,756 bytes across eighteen programs. |
 | Attribution by subtraction from a real export | Dead by the read-only rule — the derived files do not import. Not merely difficult. |
+| Attribution by Studio-made deletion on a real project | Declined — every reading costs a bench session. The real residual is modelled from the real programs directly instead. |
 
 ---
 

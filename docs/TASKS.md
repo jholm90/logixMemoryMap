@@ -50,7 +50,7 @@ counted on all eighteen real exports and is worth **1,756 bytes across all of th
 It is closed. The queue is now short, and every item on it either needs a capture or
 needs a real program.
 
-### 1. Capture the waiting batch — 47 files
+### 1. Capture the waiting batch — 48 files
 
 Every open capture was regenerated under a new file name — the conversion and capture
 tooling skip any name they have already seen, so a file attempted once never surfaced
@@ -64,12 +64,13 @@ again — and every open question that a generated file can answer got a family:
 | `alarmcond_realcount_n{000,200,400,600}` | 4 | OQ-ALARMCONDREAL |
 | `composite_realistic_*_r3` | 9 | composite instrument, rebuilt build-valid |
 | `litop_bool_*_n01000_r2` | 4 | OQ-LITERALOPERAND BOOL arm |
+| `instrfirst_mapc_v2_x100` | 1 | third count point for MAPC, already wired EXACT at 260 bytes/call |
 
 All lint clean, all 1756-L81E at firmware 35, and every isolation family passes the
 confound gate. The blind set is done — six readings in, recorded as exports 31–36.
 
-**Not generated, on purpose:** OQ-REALUNDER and OQ-EXPORTSCOPE cannot be answered by a
-generated whole-project file (see each entry), and sixteen stale spec rows were
+**Not generated, on purpose:** OQ-REALUNDER cannot be answered by a generated
+whole-project file (see its entry); OQ-EXPORTSCOPE is closed, accepted in use, and sixteen stale spec rows were
 retired rather than rebuilt because their shape appears in none of the eighteen real
 programs or targets dead architecture — listed in `SAMPLE_GENERATION.md`.
 
@@ -91,12 +92,21 @@ Unverified until this lands, and moves to Exact whichever way it reads.
 
 ### 3. The real residual — OQ-REALUNDER
 
-**Mean 1.66%, worst 3.52% on the twelve real programs present; 1.60% / 3.63% on the
-seventeen on record.** The weighted residual is **+1.45% under-prediction**. The
-stopping rule is not met and a cheating per-category fit shows it cannot be met by
-correcting constants. See `FINAL_REPORT.md` for the proposed attack: a real-program
-residual model built from features the engine does not count, cross-validated, never
-fitted in-sample.
+**All twenty-three real programs: mean 1.67%, worst 3.99%, about +1.72% weighted
+under-prediction (sixteen under, seven over).** The stopping rule is not met and a
+cheating per-category fit shows it cannot be met by correcting constants.
+
+**Studio-made deletions on real programs will not be done** — each reading costs a
+bench session the owner will not spend. That removes the only method that could have
+attributed the residual to a category at real scale, so it is struck from the plan
+rather than left as a pending recommendation.
+
+**What remains is a real-program residual model, judged by leave-one-out only.** One
+term per feature the engine does not count — distinct tag names, program count,
+data-to-logic ratio — fitted on the twenty-three and scored on each file held out in
+turn. It must beat the 0.007-point result the per-category fit managed; most
+candidates will not, and a term that does not is dropped, not kept for its in-sample
+fit. Every new real export is predicted and written down before its reading exists.
 
 ### 4. Resolve the per-rung term — OQ-RUNGSHAPE
 
@@ -119,15 +129,11 @@ mass. See `FUTURE_TESTS.md`.
 
 ### Capture backlog
 
-| family | rows | state |
-|---|---:|---|
-| `jsr_callerdist_*` | 6 | **top priority** — item 2 |
-| `composite_realistic_*_r2` | 9 | never submitted; eight have real lint findings to clear first |
-| `fwmatrix_*` | 6 | awaiting first submission |
-| `alarmcond_*` | 5 | condition-type arm, never captured |
-| `predefprobe_*` | 3 | submitted and refused; needs the Studio error line |
-| `cipmodule_*` | 2 | awaiting first submission |
-| `litop_bool_*` | 4 | regenerated with valid call arity; **optional** — below the noise floor |
+Item 1 is the whole backlog: 48 files, every one under a name the tooling has never
+seen. Nothing older is waiting. The stale rows that were never going to be captured —
+`jsr_callerdist_*`, `composite_realistic_*_r2`, the 1769 `fwmatrix_*`, the alarm
+condition-type arm, `predefprobe_*`, `cipmodule_*` — were either superseded by an item-1
+family or retired; the retired table is in `SAMPLE_GENERATION.md`.
 
 **A row captured but never differenced is work already paid for and thrown away.**
 It happened again: the fifteen `mbshape_*` real-shape AOI files had been captured,
@@ -150,7 +156,7 @@ something. **They are the part that gets skipped, so they are listed as work.**
 | `capture_errors.py` routes every errored row to an owning question and exits non-zero otherwise | done |
 | `confound_check.py` gates a generator before files are built | done |
 | `unreconciled.py` run after every batch | **run it** |
-| One capture roster, not five | one outstanding: item 1 |
+| One capture roster, not five | done: item 1 is the only roster |
 | Comments carry facts, not conversation or dates | done: every comment and docstring |
 | No date in source | done: Python, YAML, JavaScript, PowerShell, AutoHotkey, docs |
 | No customer program name in source | done: replaced by export numbers |
@@ -200,7 +206,7 @@ It is not a per-unit error — coefficient of variation is 1.74 per occurrence, 
 over the top four instructions and 1.73 per rung, so whatever it is does not scale
 with any count the engine has.
 
-Ten files under-predict and seven over-predict. **A candidate that can only add
+Of the original seventeen, ten under-predict and seven over-predict; across all twenty-three, sixteen under and seven over. **A candidate that can only add
 bytes is wrong before it is tested**, which eliminates most of what looks plausible.
 
 ---
@@ -219,3 +225,7 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Literal operands, including the INT/SINT over-charge | **Closed on real exposure**: 37 slots, 1,756 bytes across eighteen real exports. |
 | AOI definition cost | **KNOWN.** 8-byte total alignment wired; 117 of 125 def-only captures inside ±8. |
 | Hiding per-element confidence by default | Done: `?ConfidenceMode=true` shows it; the Errors tab always shows the file-level figure. |
+| Partial exports on import — OQ-EXPORTSCOPE | **Closed, accepted in use.** AOI, UDT and program imports behave as needed; the unmeasured import shell stays uncharged. |
+| Attribute the real residual with Studio-made deletions | **Declined.** Costs a bench session per reading. Struck from the plan; item 3 is what remains. |
+| MAPC | **EXACT.** 260 bytes per call, the measured step between 1 and 10 rungs; `instrfirst_mapc_v2_x100` is its third point. |
+| CROUT and the rest of the Safety family | **Ignored.** Out of scope, zero real uses; `instrfirst_crout_x10` stays in the defect log only as an owned errored row. |

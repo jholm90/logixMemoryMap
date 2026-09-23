@@ -3784,6 +3784,8 @@ instruction_accuracy:
   ADD: {samples: 7, mean_pct: 0.0023, worst_pct: 0.0127}
   AFI: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
   AND: {samples: 1, mean_pct: 0.0067, worst_pct: 0.0067}
+  ATN: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  AVE: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   BRK: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   BSL: {samples: 2, mean_pct: 0.0067, worst_pct: 0.0083}
   BSR: {samples: 3, mean_pct: 0.0052, worst_pct: 0.0083}
@@ -3796,17 +3798,24 @@ instruction_accuracy:
   CPS: {samples: 3, mean_pct: 0.0102, worst_pct: 0.0234}
   CPT: {samples: 164, mean_pct: 3.2725, worst_pct: 119.6078}
   CTU: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
+  DEG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   DELETE: {samples: 3, mean_pct: 0.0108, worst_pct: 0.0243}
   DIV: {samples: 7, mean_pct: 0.0018, worst_pct: 0.0101}
   DTOS: {samples: 2, mean_pct: 0.0053, worst_pct: 0.0084}
   DTR: {samples: 1, mean_pct: 0.0053, worst_pct: 0.0053}
   EQU: {samples: 9, mean_pct: 0.0019, worst_pct: 0.0136}
   EVENT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  FAL: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   FBC: {samples: 2, mean_pct: 0.0291, worst_pct: 0.0456}
+  FFL: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  FFU: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  FIND: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   FLL: {samples: 2, mean_pct: 0.0055, worst_pct: 0.0088}
+  FSC: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   GEQ: {samples: 7, mean_pct: 0.0025, worst_pct: 0.0136}
   GRT: {samples: 7, mean_pct: 0.0025, worst_pct: 0.0136}
   GSV: {samples: 3, mean_pct: 0.0116, worst_pct: 0.0255}
+  INSERT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   JMP: {samples: 3, mean_pct: 0.0099, worst_pct: 0.0229}
   JSR: {samples: 27, mean_pct: 0.9112, worst_pct: 1.4034}
   LBL: {samples: 3, mean_pct: 0.0099, worst_pct: 0.0229}
@@ -3815,41 +3824,61 @@ instruction_accuracy:
   LFU: {samples: 2, mean_pct: 0.0095, worst_pct: 0.0146}
   LIM: {samples: 7, mean_pct: 0.0016, worst_pct: 0.0088}
   LOG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  MAFR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MAG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MAJ: {samples: 1, mean_pct: 0.0240, worst_pct: 0.0240}
   MAM: {samples: 1, mean_pct: 0.0244, worst_pct: 0.0244}
+  MAPC: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MAR: {samples: 1, mean_pct: 0.0255, worst_pct: 0.0255}
+  MASD: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  MASR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  MCCP: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MCD: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   MCR: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   MCS: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   MCSV: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
+  MDW: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MEQ: {samples: 2, mean_pct: 0.0072, worst_pct: 0.0113}
+  MGSD: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  MGSR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MID: {samples: 3, mean_pct: 0.0108, worst_pct: 0.0243}
   MOD: {samples: 7, mean_pct: 0.0018, worst_pct: 0.0101}
   MOV: {samples: 16, mean_pct: 0.0076, worst_pct: 0.0202}
+  MSG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MUL: {samples: 7, mean_pct: 0.0018, worst_pct: 0.0101}
   MVM: {samples: 2, mean_pct: 0.0064, worst_pct: 0.0101}
+  NEG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   NEQ: {samples: 8, mean_pct: 0.0022, worst_pct: 0.0136}
   NOP: {samples: 3, mean_pct: 0.0094, worst_pct: 0.0205}
+  NOT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   ONS: {samples: 2, mean_pct: 0.0064, worst_pct: 0.0101}
   OR: {samples: 1, mean_pct: 0.0067, worst_pct: 0.0067}
+  OSF: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  OSR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   OTE: {samples: 2, mean_pct: 0.0142, worst_pct: 0.0205}
   OTL: {samples: 2, mean_pct: 0.0142, worst_pct: 0.0205}
   OTU: {samples: 2, mean_pct: 0.0142, worst_pct: 0.0205}
   PID: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
+  RAD: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   RES: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
   RTO: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
   RTOS: {samples: 2, mean_pct: 0.0095, worst_pct: 0.0146}
   SIN: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   SIZE: {samples: 3, mean_pct: 0.0096, worst_pct: 0.0224}
+  SQR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  SRT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   SSV: {samples: 3, mean_pct: 0.0116, worst_pct: 0.0255}
   STOD: {samples: 3, mean_pct: 0.0118, worst_pct: 0.0259}
   STOR: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   SUB: {samples: 7, mean_pct: 0.0023, worst_pct: 0.0127}
+  SWPB: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  TAN: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   TND: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   TOF: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
   TON: {samples: 2, mean_pct: 0.0126, worst_pct: 0.0186}
+  TRN: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   UID: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   UIE: {samples: 2, mean_pct: 0.0000, worst_pct: 0.0000}
   UPPER: {samples: 2, mean_pct: 0.0089, worst_pct: 0.0140}
+  XOR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   XPY: {samples: 3, mean_pct: 0.0101, worst_pct: 0.0232}

@@ -77,6 +77,9 @@ def measure() -> tuple[dict[str, list[float]], dict[str, set]]:
     # result never reads as an individually isolated one.
     co: dict[str, set] = collections.defaultdict(set)
     qualifying: list[tuple[tuple[str, ...], float]] = []
+    # (opcode, family stem) -> [(occurrences, actual, predicted)] for files
+    # whose cost is mostly storage; see the slope arm at the end.
+    storage_bound: dict[tuple[str, str], list[tuple[int, int, int]]] = collections.defaultdict(list)
     for row in load_manifest():
         if not is_valid_capture(row):
             continue
@@ -150,8 +153,23 @@ def measure() -> tuple[dict[str, list[float]], dict[str, set]]:
         # belongs to the tags. Without this, NOP picked up 2,057 "samples" and
         # a 94.8% worst case borrowed from whatever those files were really
         # testing, and CPT inherited the cptnar narrowing defect the same way.
-        logic = sum(e.bytes for e in entries if e.category == "routine_logic")
+        # The subroutine shell is billed as its own line but is still compiled
+        # structure: counting it here keeps the JSR files qualifying exactly
+        # as they did before the shell was split out of routine_logic.
+        logic = sum(e.bytes for e in entries
+                    if e.category in ("routine_logic", "subroutine_shell"))
         if predicted <= 0 or logic / predicted < LOGIC_SHARE_FLOOR:
+            # Mostly tag storage, so the whole-file error is not this
+            # instruction's. But a single-instruction family captured at more
+            # than one count still measures it exactly: the DIFFERENCE between
+            # counts is instruction bytes and nothing else. Kept for the slope
+            # arm below instead of being thrown away -- dropping them is why
+            # every motion instruction, whose files are mostly axis and cam
+            # storage, read "Unverified" despite being measured.
+            if len(subject) == 1 and subject[0] not in SCAFFOLD:
+                stem = re.sub(r"_x\d+$", "", row["sample_id"])
+                storage_bound[(subject[0], stem)].append(
+                    (ops[subject[0]], actual, predicted))
             continue
         if sum(ops[o] for o in subject) < MIN_OCCURRENCES:
             continue
@@ -171,6 +189,20 @@ def measure() -> tuple[dict[str, list[float]], dict[str, set]]:
             per[op].append(err)
             if len(subj) > 1:
                 co[op].update(o for o in subj if o != op)
+
+    # SLOPE ARM. For an opcode with no qualifying whole-file measurement, each
+    # step between two counts of the same family gives
+    #     |actual step - predicted step| / actual step
+    # -- the error as a share of the instruction's OWN bytes, which is a
+    # stricter bound than the whole-file figure used above, not a looser one.
+    for (op, _stem), points in storage_bound.items():
+        if op in per:
+            continue
+        points = sorted(set(points))
+        for (n0, a0, p0), (n1, a1, p1) in zip(points, points[1:]):
+            if n1 <= n0 or a1 == a0:
+                continue
+            per[op].append(abs((a1 - a0) - (p1 - p0)) / abs(a1 - a0) * 100)
     return per, co
 
 

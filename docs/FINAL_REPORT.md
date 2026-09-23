@@ -41,7 +41,7 @@ made the confidence display wrong were found and fixed — one of them meant com
 AOI ladder was shown as *exact*, against the project's core rule. Real-program
 evaluation now works in any checkout, and six blind predictions are on record.
 
-**What is left.** Capture the 47 files now waiting (section 6). Then attack the real
+**What is left.** Capture the 48 files now waiting (section 6). Then attack the real
 residual with the method in section 8, which is the only lever that has not been
 exhausted. The six blind readings came back while this report was being written;
 section 3.2 carries them.
@@ -149,34 +149,50 @@ cross-checked to the decimal against an independent Python mirror.
 
 | program | confidence | Exact + Measured | Unverified |
 |---|---:|---:|---:|
-| export 07 | 98.2% | 96.5% | 2.8% |
-| blind_04 | 98.0% | 96.2% | 3.2% |
-| export 01 | 98.0% | 96.3% | 3.5% |
-| blind_02 | 98.0% | 96.2% | 3.0% |
-| export 09 | 98.0% | 96.3% | 3.2% |
-| export 14 | 97.8% | 95.7% | 3.8% |
-| export 17 | 97.6% | 95.7% | 3.9% |
-| blind_05 | 97.5% | 94.2% | 3.1% |
-| blind_03 | 97.0% | 93.7% | 4.6% |
-| export 27 | 96.8% | 93.8% | 5.4% |
-| export 28 | 96.7% | 92.6% | 4.4% |
-| export 16 | 96.6% | 93.4% | 5.7% |
-| export 06 | 96.0% | 91.9% | 6.7% |
-| blind_06 | 95.8% | 89.5% | 4.8% |
-| blind_01 | 95.8% | 89.8% | 5.6% |
-| export 10 | 95.7% | 91.5% | 7.4% |
-| export 18 | 94.3% | 85.7% | 7.1% |
-| export 13 | 92.0% | 84.5% | 14.1% |
+| export 09 | 98.3% | 96.9% | 2.5% |
+| export 07 | 98.3% | 96.8% | 2.4% |
+| blind_02 | 98.3% | 96.7% | 2.5% |
+| export 01 | 98.2% | 96.6% | 3.0% |
+| blind_04 | 98.2% | 96.5% | 2.9% |
+| export 14 | 97.9% | 96.1% | 3.4% |
+| export 17 | 97.8% | 96.1% | 3.4% |
+| blind_05 | 97.7% | 94.6% | 2.7% |
+| blind_03 | 97.2% | 94.0% | 4.2% |
+| export 27 | 97.0% | 94.1% | 5.0% |
+| export 06 | 96.9% | 93.8% | 4.8% |
+| export 28 | 96.9% | 93.0% | 4.1% |
+| export 16 | 96.7% | 93.7% | 5.4% |
+| blind_01 | 96.2% | 90.6% | 4.7% |
+| blind_06 | 96.0% | 90.0% | 4.3% |
+| export 10 | 95.8% | 91.7% | 7.2% |
+| export 18 | 94.4% | 85.9% | 7.0% |
+| export 13 | 93.2% | 86.9% | 11.6% |
 
 **What the Unverified bytes are, on every file:** Subroutine Overhead (the open
 JSR caller-base question, 1–6% of a program), program logic containing instructions
 no isolation file has tested, and a few module catalogs priced by the flat fallback.
 The 5069 safety program (export 13) is the outlier because it is small: its fixed
 per-caller subroutine overhead is 5.6% of it, modules on the flat fallback are
-another 4.0%, and logic with untested instructions 3.0%. Capturing
-`jsr_callerdist_*` alone would lift it by nearly three points.
+another 4.0%, and most of the rest is logic with untested instructions. Capturing
+`jsrcallers_k*` alone would lift it by nearly three points.
 
-**Every element laid out individually** — export 07, every tag, member, array
+**Twenty-nine instructions moved from Unverified to Measured** after the table was
+first drawn, with no new capture. Their isolation files are mostly axis, cam, array
+or message storage, so the whole-file error said nothing about the instruction and
+the files were discarded. A family captured at two or more counts still measures it
+exactly: the step between counts is instruction bytes and nothing else. All
+twenty-nine — the motion family (MAFR, MAPC, MASD, MASR, MCCP, MDW, MGSD, MGSR), the
+file and array family (AVE, FAL, FFL, FFU, FSC, SRT), MSG, the string family (FIND,
+INSERT), OSR/OSF and the math and bit family — step at **0.0000% error**. The table
+above is after that change; every file rose, export 13 most (92.0% → 93.2%).
+
+**MAPC reads Exact**, the second named compiled-logic exception after the
+0-parameter JSR: 260 bytes per call, measured as the step between one rung and ten,
+(64,288 − 61,948) / 9 = 260.000, equal to the wired weight, with both files at the
+same flat +12 of file overhead. `instrfirst_mapc_v2_x100` is built as a third point;
+its prediction, 87,676, puts the reading at 87,688 if the +12 holds.
+
+**Every element laid out individually** (drawn before the twenty-nine were credited, which moves a few logic elements from 50 to 98) — export 07, every tag, member, array
 element, axis, definition row, routine and module the tree can reach:
 
 | band | elements | share of elements | share of bytes |
@@ -239,7 +255,7 @@ with nested depth, a list view with filters, a type summary, cross-reference, ru
 view, CSV/XLSX export, a cached load so browsing is instant, and now a file-level
 confidence figure that sums to the file.
 
-**Honest bookkeeping.** Seven open questions, down from forty; closed ones carry their
+**Honest bookkeeping.** Six open questions, down from forty; closed ones carry their
 reasoning, including the fits that were exact and wrong. The stopping rule and the
 proof that constant-tweaking cannot meet it are written down, so nobody spends a
 month re-deriving either.
@@ -321,15 +337,14 @@ what a user saw:
 
 ## 6. What is open
 
-### Open questions — seven
+### Open questions — six
 
 | question | what it needs |
 |---|---|
-| **OQ-JSRCALLERBASE** | capture `jsr_callerdist_*`; per-file versus per-caller differs by up to ~300 KB on a real program |
+| **OQ-JSRCALLERBASE** | capture `jsrcallers_k*`; per-file versus per-caller differs by up to ~300 KB on a real program |
 | **OQ-REALUNDER** | the real residual itself; see section 8 |
 | **OQ-RUNGSHAPE** | a per-rung term confounded with every instruction weight; a packing sweep with a non-output instruction |
 | **OQ-ALARMCONDREAL** | alarm conditions land 0.16% on one real program and 8.8% short on the other |
-| **OQ-EXPORTSCOPE** | what a partial export really costs on import — a correctness requirement |
 | **OQ-BUILDFAIL-OPEN** | the defect log of files that do not build |
 | **OQ-MODULENAMELEN** | a module's name length costs bytes the engine charges at zero |
 
@@ -343,6 +358,7 @@ what a user saw:
 | `alarmcond_realcount_n*` — OQ-ALARMCONDREAL | 4 | new |
 | `composite_realistic_*_r3` | 9 | rebuilt build-valid |
 | `litop_bool_*_r2` | 4 | rebuilt under new names |
+| `instrfirst_mapc_v2_x100` | 1 | MAPC third point; already Exact |
 
 ### Smaller items recorded, deliberately not worked
 
@@ -356,13 +372,23 @@ what a user saw:
 - **A "Type name length" row can be −8** in the AOI definition drill, a real negative
   term the treemap cannot draw. Cosmetic.
 
+### Closed or struck at the owner's call
+
+- **OQ-EXPORTSCOPE — partial exports.** Closed, accepted in use: AOI, UDT and program
+  imports behave as needed. The import shell stays unmeasured and uncharged.
+- **Studio-made deletions on real programs.** Declined; costs a bench session per
+  reading. Section 8 no longer relies on it.
+- **CROUT and the rest of the Safety family** (DCS, ROUT, ESTOP, RIN). Ignored — out of
+  scope under OQ-SAFETY, zero real uses. `instrfirst_crout_x10` stays in the defect log
+  only because its errored row must have an owner.
+
 ### Decisions only the owner can make
 
 - **Whether to rewrite the repository's history** to remove the real file names that
   are still in it. A history rewrite plus a fresh clone is the only remedy, and it does
   not reach copies already made.
-- **Whether `CLAUDE.md`'s ground-truth wording should name its two exceptions** — a
-  0-parameter JSR reads Exact, and per-element confidence is hidden by default. Both
+- **Whether `CLAUDE.md`'s ground-truth wording should name its exceptions** — a
+  0-parameter JSR and MAPC read Exact, and per-element confidence is hidden by default. Both
   are implemented and documented in `MEMORY_MODEL.md`; the rule text itself still
   says "every".
 
@@ -415,29 +441,25 @@ What is known for certain:
   and produced/consumed tags.
 
 So the missing bytes are an **interaction that only exists at real scale**, not a
-wrong constant. Three ways to find it, in order of value:
+wrong constant. Two ways remain, in order of value:
 
-**1. Attribute the residual on real programs with Studio-made deletions.** This is the
-technique that produced the project's most valuable single measurement: edit a real
-project in Logix Designer, let Studio compile it, read Capacity twice. Rewriting
-exported XML is forbidden and does not build; a deletion made in Studio is neither.
-On the worst program (export 27, 79 KB missing), read Capacity after deleting, one
-at a time and in Studio: all alarm conditions; all AOI definitions and their
-instances; all program logic; all module configuration. Each delta compared with the
-engine's own predicted delta tells which category holds the missing bytes, *at real
-scale, on a real program*. Five or six readings on each of three programs — two
-under-predicted, one over-predicted — would localise the residual more than the last
-thousand generated files did.
+**Not available: Studio-made deletions on real programs.** Deleting one category at a
+time in Logix Designer and reading Capacity twice would have attributed the residual at
+real scale without breaking the read-only rule — it is the technique behind the
+literal-operand finding. Each reading costs a bench session the owner will not spend, so
+it is struck from the plan rather than left pending. That leaves two methods.
 
-**2. Grow the real set, and never fit on it in-sample.** Seventeen points cannot
-support more than one or two fitted terms. The six blind programs take it to
-twenty-three; the owner's own archive may hold more. Any residual model built on real
-programs — for example, one extra term per feature the engine does not count, such as
-distinct tag names, program count or alarm-set count — must be judged by
-leave-one-out only, and must beat the 0.007-point result the per-category fit
-managed. Most candidates will not, and that is the point of the test.
+**1. Grow the real set, and never fit on it in-sample.** Seventeen points cannot
+support more than one or two fitted terms; the six blind programs take it to
+twenty-three, and every future export adds one. Predict each before its reading
+exists and write the number down. A residual model built on real programs — one extra
+term per feature the engine does not count, such as distinct tag names, program count
+or data-to-logic ratio — must be judged by leave-one-out only, and must beat the
+0.007-point result the per-category fit managed. Most candidates will not, and that is
+the point of the test. The direction signal in section 3.3 (data-heavy programs
+under-predict, logic-heavy ones over-predict, r = −0.58) is the first candidate to try.
 
-**3. Close the known structural gaps, which are small but certain.** The JSR caller
+**2. Close the known structural gaps, which are small but certain.** The JSR caller
 base (item 2 in the queue) is worth up to hundreds of kilobytes on a real program in
 one direction or zero in the other — the capture decides. The alarm-condition gap is
 8.8% of a 19–21% category on one program. The per-rung term is confounded with every
@@ -449,10 +471,10 @@ per-instruction constant, another generated composite, or a larger version of th
 isolation sweep. The isolation instrument is finished; it measures what it was built to
 measure, and the remaining error is not in anything it can build.
 
-**A realistic expectation.** With methods 1–3 the worst case can plausibly come in
-under 3% and the mean toward 1.2%. A 1% mean with a 2% worst case has not been shown
-to be reachable by anything, and should stay an aspiration until the Studio-deletion
-attribution shows where the missing bytes are.
+**A realistic expectation.** With methods 1–2 the worst case can plausibly come in
+under 3% and the mean toward 1.3%. Without an attribution at real scale nothing shows
+where the missing bytes are, so a 1% mean with a 2% worst case has not been shown to
+be reachable by anything and should stay an aspiration.
 
 ---
 
@@ -475,8 +497,9 @@ the part to keep if the project continues with anyone else.
 **The generated corpus has done its job.** Its marginal value is now close to zero: the
 last several batches either confirmed what was known or measured something below the
 noise floor. The remaining accuracy lives in real programs at real scale, where the
-generator cannot reach. Future effort should go to real programs — blind readings and
-Studio-made deletions — and not to another generated family.
+generator cannot reach. Future effort should go to real programs — a blind prediction
+recorded for every new export, and a residual model scored by leave-one-out on them —
+and not to another generated family.
 
 **The confidence display should be read for what it is.** It says how well each
 component is known, and it is high because most of every program is exact data space.

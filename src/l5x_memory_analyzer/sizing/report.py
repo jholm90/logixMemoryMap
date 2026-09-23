@@ -617,7 +617,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # for a project that is not in the file. The target's own logic is
         # still sized normally; only the project-level scaffolding is
         # dropped. What a single exported program/routine really costs in
-        # shell terms on import is unmeasured -- see OQ-EXPORTSCOPE.
+        # shell terms on import is unmeasured and accepted as such -- see
+        # OQ-EXPORTSCOPE in RESOLVED_QUESTIONS.md.
         # See memory_model.yaml task_program_overhead for the full
         # derivation (5 real files, exact/near-exact). Untouched when
         # n_plain_routines == 0 -- a file whose only routines are JSR

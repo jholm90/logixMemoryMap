@@ -102,7 +102,14 @@ SCAFFOLD_BAND = {"XIC": "MEASURED", "XIO": "MEASURED",
 # A JSR that CARRIES parameters is not here and does not qualify: its cost is
 # the fitted A(n)/B(n) model, and jsr_paramtype_* still misses by thousands of
 # bytes on UDT and STRING parameters.
-KNOWN_EXACT_CALLS = {"JSR/0": "EXACT"}
+#   MAPC  -- motion axis position cam. 260 bytes per call, measured as the
+#            step between instrfirst_mapc_v2 (1 rung) and _v2_x10 (10 rungs):
+#            (64,288 - 61,948) / 9 = 260.000, equal to the wired weight, with
+#            both files at the same flat +12 of file overhead. The files are
+#            mostly axis and cam storage, which is why the whole-file accuracy
+#            table never measured it; the step is instruction bytes and
+#            nothing else. instrfirst_mapc_v2_x100 is built as a third point.
+KNOWN_EXACT_CALLS = {"JSR/0": "EXACT", "MAPC": "EXACT"}
 
 # How a refined opcode key is spelled. The refinement happens where rung text
 # is available (parser.logic.count_instructions_in_text) so every consumer --

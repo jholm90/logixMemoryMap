@@ -39,9 +39,24 @@ the model**, fixed by the empty-rung sweep and confirmed byte-exact by the
 arrangement sweeps. SBR and RET are likewise scaffolding, measured through the
 `subrtn_*` control rather than in isolation.
 
-**63 of the 101 mnemonics in the table carry a measured accuracy; 38 show a dash.**
-Every one of the 38 is below the noise floor in the real corpus, so none of them
-earns a capture slot on its own.
+**90 of the 107 mnemonics in the table carry a measured accuracy; 17 show a dash.**
+Four of the 17 are scaffolding (XIC, XIO, SBR, RET), three are Safety-family and
+ignored (ESTOP, ROUT, RIN), and the other ten — MAS, MRP, MAW, MAH, MDR, MSO, MSF,
+FOR, LC, SCP — are each below the noise floor in the real corpus, so none earns a
+capture slot on its own.
+
+**An accuracy marked `step`** comes from the slope arm of
+`derive_instruction_accuracy.py`: the instruction's isolation files are mostly axis,
+cam, array or message storage, so the whole-file error says nothing about the
+instruction, but the same family captured at two or more counts measures it exactly —
+the step between counts is instruction bytes and nothing else. The figure is the
+error as a share of the instruction's own bytes, a stricter bound than the whole-file
+one. Twenty-nine instructions were credited this way, all at 0.0000%.
+
+**MAPC is Exact**, a named compiled-logic exception alongside the 0-parameter JSR:
+260 bytes per call, the step between one rung and ten landing on the wired weight
+with both files at the same +12 of file overhead. `instrfirst_mapc_v2_x100` is built
+as its third point.
 
 ## Two caveats that bound every "exact" claim here
 
@@ -146,14 +161,14 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | CPT | 0.27% | 341 | not a flat weight | 3.2725% / 119.6078% (164) |
 | MOD | 0.23% | 289 | 56 | 0.0018% / 0.0101% (7) |
 | RET | 0.20% | 246 | 0 | — |
-| MCCP | 0.16% | 200 | 204 | — |
+| MCCP | 0.16% | 200 | 204 | 0.0000% / 0.0000% (1) step |
 | AFI | 0.15% | 192 | 4 | 0.0126% / 0.0186% (2) |
 | MAS | 0.15% | 186 | 100 | — |
 | GSV | 0.15% | 182 | 84 | 0.0116% / 0.0255% (3) |
 | BTD | 0.12% | 147 | 64 | 0.0058% / 0.0092% (2) |
 | SSV | 0.10% | 128 | 84 | 0.0116% / 0.0255% (3) |
 | MAM | 0.10% | 127 | 224 | 0.0244% / 0.0244% (1) |
-| MAPC | 0.10% | 126 | 260 | — |
+| MAPC | 0.10% | 126 | 260 | **Exact** — 260/call, step 1→10 at 0.0000% |
 | SBR | 0.10% | 121 | 0 | — |
 | DTOS | 0.09% | 114 | 72 | 0.0053% / 0.0084% (2) |
 | TOF | 0.09% | 107 | 20 | 0.0126% / 0.0186% (2) |
@@ -161,7 +176,7 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | CMP | 0.06% | 77 | 76 | 0.0194% / 0.2380% (14) |
 | RTO | 0.06% | 74 | 20 | 0.0126% / 0.0186% (2) |
 | EVENT | 0.05% | 57 | 56 | 0.0000% / 0.0000% (1) |
-| AVE | 0.05% | 57 | 176 | — |
+| AVE | 0.05% | 57 | 176 | 0.0000% / 0.0000% (1) step |
 | ABS | 0.04% | 55 | 120 | 0.0099% / 0.0229% (3) |
 | BSL | 0.03% | 43 | 60 | 0.0067% / 0.0083% (2) |
 | MRP | 0.03% | 42 | 128 | — |
@@ -169,56 +184,56 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | MAG | 0.03% | 37 | 124 | 0.0000% / 0.0000% (1) |
 | MAW | 0.03% | 37 | 128 | — |
 | BSR | 0.03% | 34 | 60 | 0.0052% / 0.0083% (3) |
-| MDW | 0.03% | 34 | 60 | — |
+| MDW | 0.03% | 34 | 60 | 0.0000% / 0.0000% (1) step |
 | MVM | 0.03% | 32 | 56 | 0.0064% / 0.0101% (2) |
 | MAH | 0.02% | 30 | 60 | — |
 | MAJ | 0.02% | 29 | 236 | 0.0240% / 0.0240% (1) |
 | MCSV | 0.02% | 25 | 96 | 0.0000% / 0.0000% (2) |
-| XOR | 0.02% | 23 | 40 | — |
+| XOR | 0.02% | 23 | 40 | 0.0000% / 0.0000% (1) step |
 | AND | 0.02% | 23 | 40 | 0.0067% / 0.0067% (1) |
-| MASR | 0.02% | 21 | 60 | — |
-| MAFR | 0.02% | 21 | 60 | — |
+| MASR | 0.02% | 21 | 60 | 0.0000% / 0.0000% (1) step |
+| MAFR | 0.02% | 21 | 60 | 0.0000% / 0.0000% (1) step |
 | MAR | 0.01% | 17 | 196 | 0.0255% / 0.0255% (1) |
-| MSG | 0.01% | 16 | 48 | — |
-| FFL | 0.01% | 15 | 72 | — |
+| MSG | 0.01% | 16 | 48 | 0.0000% / 0.0000% (1) step |
+| FFL | 0.01% | 15 | 72 | 0.0000% / 0.0000% (1) step |
 | XPY | 0.01% | 14 | 116 | 0.0101% / 0.0232% (3) |
 | MDR | 0.01% | 14 | 68 | — |
-| FFU | 0.01% | 13 | 72 | — |
-| NOT | 0.01% | 12 | 40 | — |
+| FFU | 0.01% | 13 | 72 | 0.0000% / 0.0000% (1) step |
+| NOT | 0.01% | 12 | 40 | 0.0000% / 0.0000% (1) step |
 | MSO | 0.01% | 12 | 60 | — |
 | MSF | 0.01% | 12 | 60 | — |
 | STOD | 0.01% | 10 | 80 | 0.0118% / 0.0259% (3) |
-| ATN | 0.01% | 10 | 60 | — |
-| DEG | 0.01% | 10 | 64 | — |
+| ATN | 0.01% | 10 | 60 | 0.0000% / 0.0000% (1) step |
+| DEG | 0.01% | 10 | 64 | 0.0000% / 0.0000% (1) step |
 | STOR | 0.01% | 10 | 80 | 0.0000% / 0.0000% (2) |
-| NEG | 0.01% | 9 | 40 | — |
+| NEG | 0.01% | 9 | 40 | 0.0000% / 0.0000% (1) step |
 | UID | 0.01% | 8 | 40 | 0.0000% / 0.0000% (2) |
 | UIE | 0.01% | 8 | 40 | 0.0000% / 0.0000% (2) |
 | MID | 0.01% | 8 | 100 | 0.0108% / 0.0243% (3) |
 | DELETE | 0.01% | 8 | 100 | 0.0108% / 0.0243% (3) |
-| TAN | 0.01% | 7 | 60 | — |
-| SRT | 0.01% | 7 | 116 | — |
+| TAN | 0.01% | 7 | 60 | 0.0000% / 0.0000% (1) step |
+| SRT | 0.01% | 7 | 116 | 0.0000% / 0.0000% (1) step |
 | MCD | 0.01% | 7 | 184 | 0.0000% / 0.0000% (2) |
-| RAD | 0.00% | 6 | 116 | — |
-| TRN | 0.00% | 4 | 52 | — |
-| SQR | 0.00% | 4 | 52 | — |
+| RAD | 0.00% | 6 | 116 | 0.0000% / 0.0000% (1) step |
+| TRN | 0.00% | 4 | 52 | 0.0000% / 0.0000% (1) step |
+| SQR | 0.00% | 4 | 52 | 0.0000% / 0.0000% (1) step |
 | OR | 0.00% | 4 | 40 | 0.0067% / 0.0067% (1) |
-| SWPB | 0.00% | 4 | 76 | — |
+| SWPB | 0.00% | 4 | 76 | 0.0000% / 0.0000% (1) step |
 | ESTOP | 0.00% | 4 | **unweighted** | — |
 | ROUT | 0.00% | 4 | **unweighted** | — |
 | FOR | 0.00% | 2 | 80 | — |
 | RTOS | 0.00% | 2 | 72 | 0.0095% / 0.0146% (2) |
-| FIND | 0.00% | 2 | 100 | — |
-| MASD | 0.00% | 2 | 60 | — |
-| MGSD | 0.00% | 2 | 56 | — |
-| MGSR | 0.00% | 2 | 56 | — |
-| FSC | 0.00% | 2 | 104 | — |
+| FIND | 0.00% | 2 | 100 | 0.0000% / 0.0000% (1) step |
+| MASD | 0.00% | 2 | 60 | 0.0000% / 0.0000% (1) step |
+| MGSD | 0.00% | 2 | 56 | 0.0000% / 0.0000% (1) step |
+| MGSR | 0.00% | 2 | 56 | 0.0000% / 0.0000% (1) step |
+| FSC | 0.00% | 2 | 104 | 0.0000% / 0.0000% (1) step |
 | LC | 0.00% | 2 | **unweighted** | — |
 | SCP | 0.00% | 1 | **unweighted** | — |
 | LOG | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
 | COS | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
 | SIN | 0.00% | 1 | 60 | 0.0000% / 0.0000% (1) |
-| INSERT | 0.00% | 1 | 116 | — |
+| INSERT | 0.00% | 1 | 116 | 0.0000% / 0.0000% (1) step |
 | RIN | 0.00% | 1 | **unweighted** | — |
 
 ## The unweighted remainder
@@ -246,7 +261,9 @@ feature is a day not spent on the residual.
 ## Instructions that are out of scope or will not build
 
 **Safety family** — DCS, CROUT, ROUT, ESTOP, RIN. These require a safety CPU. Not
-weight-table gaps; there is nothing to fix on a standard controller.
+weight-table gaps; there is nothing to fix on a standard controller. **Ignored, not
+parked:** no test file is built for any of them, and `instrfirst_crout_x10`'s failed
+build is not pursued.
 
 **ALMD, ALMA, ALARM_DIGITAL and ALARM_ANALOG as instructions** — zero occurrences
 across all real programs. Parked, not closed. This does **not** park tag-based

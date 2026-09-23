@@ -1297,6 +1297,26 @@ undermines its value proposition more than an acknowledged estimate does.**
 
 The project-wide single-measurement noise floor is **±8 bytes**.
 
+## OQ-EXPORTSCOPE — what a partial export costs on import
+
+**CLOSED — accepted in use.** Partial exports of AOIs, UDTs and programs import and
+are sized correctly enough for their purpose; the owner has confirmed the behaviour
+and needs nothing further from it.
+
+The scope machinery stays as wired: a partial export gets no project base load, no
+firmware, catalog or safety baseline delta and no task/program shell, and its total
+is reported split three ways — target, context and project. The rules are in
+`MEMORY_MODEL.md`.
+
+**What was never measured, recorded so it is not mistaken for known:** the shell an
+imported Program or Routine creates in the destination project, and whether
+reconciling an already-present context declaration costs anything. Nothing is charged
+for either. Measuring them needs a Capacity reading before and after an import into
+an existing project in Studio — a bench session, not a generated file, since the
+capture pipeline only converts whole projects. It was a correctness requirement, not
+an accuracy one: it moves no real-program number and is not reopened for accuracy
+work.
+
 ## OQ-L5XVERSION — **CLOSED.** The corpus spans several schema revisions and the parser handles them. Two older revisions have no real sample in hand and are backlogged rather than guessed.
 
 ## OQ-SAFETY — **SOLVED.** A safety project's total is understated, and the UI warns. Safety-family instructions are out of scope.
