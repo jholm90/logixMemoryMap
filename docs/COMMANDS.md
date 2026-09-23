@@ -47,21 +47,28 @@ Run on the Windows machine with Studio 5000. Full procedure in
 
 ### 3a. Convert L5X to ACD
 
-`scripts/batch_l5x_to_acd.ps1` wraps Rockwell's `l5xgit` CLI from the Logix
-Designer SDK. Resumable, with content-hash staleness tracking — safe to re-run
-against the same output directory any time.
+`scripts/batch_l5x_to_acd.ps1` wraps Rockwell's `l5xgit` CLI. **The l5xgit source
+is vendored in `tools/ra-logix-designer-vcs-custom-tools`** (MIT, pinned commit in
+`tools/README.md`) and built on first use by `scripts/build_l5xgit.ps1`, so no
+separate checkout of the Rockwell repository is needed. Resumable, with
+content-hash staleness tracking — safe to re-run against the same output directory
+any time.
 
 ```powershell
-# First run after upgrading the script, to adopt already-converted files
-# instead of paying for a full reconvert:
-./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd -AdoptExisting
+# From the repository root. l5xgit is built from tools/ on first use.
+.\scripts\batch_l5x_to_acd.ps1 -InputDir .\samples\generated -OutputDir C:\l5x_scratch\acd
 
-# Every run after that:
-./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd
+# Build l5xgit on its own, or rebuild after updating the vendored source:
+.\scripts\build_l5xgit.ps1
+.\scripts\build_l5xgit.ps1 -Force
 ```
 
-Parameters: `-InputDir` and `-OutputDir` (both required), `-L5xGitPath` (default
-`l5xgit`), `-UnsafeSkipDependencyCheck`, `-AdoptExisting`.
+Parameters: `-InputDir` and `-OutputDir` (both required), `-L5xGitPath` (optional;
+omit it to use the vendored build), `-UnsafeSkipDependencyCheck`, `-AdoptExisting`.
+
+Machine prerequisites that cannot be vendored: the .NET 10 SDK, and Studio 5000
+Logix Designer with the Logix Designer SDK 2.2+, whose local NuGet folder supplies
+the proprietary `RockwellAutomation.LogixDesigner.CSClient` package the build needs.
 
 Pushes `convert_log.csv` when it finishes.
 

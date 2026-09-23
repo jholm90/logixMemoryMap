@@ -91,3 +91,7 @@ After `pip install -e .` the same subcommands are available as
 ## Licence
 
 Apache-2.0. Python end to end.
+
+`tools/ra-logix-designer-vcs-custom-tools/` is Rockwell Automation's `l5xgit`
+source, vendored under its own MIT licence for the capture pipeline's L5X→ACD
+conversion; see [tools/README.md](tools/README.md).

@@ -40,7 +40,9 @@ physical resource to reset between samples.
 Rockwell publishes a Logix Designer SDK (.NET, `RockwellAutomation.LogixDesigner`)
 plus the `l5xplode` / `l5xgit` CLI tools built on it.
 `l5xgit l5x2acd --l5x <file> --acd <file>` converts headlessly with no UI
-interaction, and `batch_l5x_to_acd.ps1` wraps it over a folder.
+interaction, and `batch_l5x_to_acd.ps1` wraps it over a folder. The l5xgit source is
+vendored in `tools/ra-logix-designer-vcs-custom-tools` and built by
+`scripts/build_l5xgit.ps1`; see `tools/README.md`.
 
 Beyond that the SDK exposes `SaveAsync`, `DownloadAsync`,
 `SetCommunicationsPathAsync` and per-type tag get/set once online, and FactoryTalk

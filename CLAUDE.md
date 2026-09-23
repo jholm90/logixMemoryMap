@@ -420,6 +420,7 @@ than trusted.
 | `samples/captures.csv` | the result: every real controller reading |
 | `src/l5x_memory_analyzer/` | parser, sizing engine, UI |
 | `src/sample_gen/` | test-file generators |
+| `tools/ra-logix-designer-vcs-custom-tools/` | vendored `l5xgit` source (MIT) used by `batch_l5x_to_acd.ps1`; built by `scripts/build_l5xgit.ps1` |
 
 ## Release
 

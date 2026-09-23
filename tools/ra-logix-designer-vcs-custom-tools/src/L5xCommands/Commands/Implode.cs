@@ -1,0 +1,67 @@
+using L5xploderLib;
+using L5xploderLib.Services;
+using System.CommandLine;
+
+namespace L5xCommands.Commands;
+
+public static class Implode
+{
+    public static Command Command
+    {
+        get
+        {
+            var command = new Command("implode", "Reconstitute an equivalent L5X file from the output of the explode command");
+
+            var dirOption = CommandOptions.Directory();
+            dirOption.Required = true;
+            var l5xOption = CommandOptions.L5xOutputFile();
+            l5xOption.Required = true;
+            var forceOption = CommandOptions.Force();
+
+            command.Options.Add(dirOption);
+            command.Options.Add(l5xOption);
+            command.Options.Add(forceOption);
+
+            command.SetAction(parseResult => 
+            {
+                var l5xPath = parseResult.GetValue(l5xOption) ?? throw new ArgumentNullException(nameof(l5xOption));
+                var dirPath = parseResult.GetValue(dirOption) ?? throw new ArgumentNullException(nameof(dirOption));
+                var force = parseResult.GetValue(forceOption);
+
+                try
+                {
+                    Execute(l5xPath, dirPath, force);
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Error: {ex.Message}");
+                    return 1;
+                }
+            });
+
+            return command;
+        }
+    }
+
+    private static void Execute(string l5xFile, string directory, bool force)
+    {
+        bool confirmed = UserPrompts.ConfirmL5xOverwrite(l5xFile, force);
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var config = L5xDefaultConfig.DefaultConfig;
+        var persistenceHandler = PersistenceServiceFactory.Create(
+            explodedDir: directory,
+            options: L5xSerializationOptions.LoadFromFile(Paths.GetOptionsFilePath(directory)) ?? L5xSerializationOptions.DefaultOptions);
+
+        L5xImploder.Implode(
+            outputFilePath: l5xFile,
+            configs: config,
+            persistenceService: persistenceHandler);
+
+        Console.WriteLine($"Reassembled L5X file '{l5xFile}' from '{directory}'.");
+    }
+}

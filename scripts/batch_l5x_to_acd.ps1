@@ -44,10 +44,14 @@
   alone is enough from then on, permanently, since hashes never get
   reset by git.
 
+.PARAMETER L5xGitPath
+  Optional. Path to an l5xgit executable. Omit it: the l5xgit source is vendored
+  in tools/ra-logix-designer-vcs-custom-tools and scripts/build_l5xgit.ps1 builds
+  it on first use, so no separate checkout of the Rockwell repository is needed.
+
 .PREREQS
   - Studio 5000 Logix Designer + Logix Designer SDK 2.2+ installed
-  - l5xgit.exe built from https://github.com/RockwellAutomation/ra-logix-designer-vcs-custom-tools
-    (dotnet build against .NET 10 SDK) and either on PATH or passed via -L5xGitPath
+  - .NET 10 SDK (to build the vendored l5xgit; see tools/README.md)
 
 .NOTES
   samples/known_conversion_failures.csv: files listed there are
@@ -63,16 +67,26 @@
   # converted instead of paying for a full reconvert):
   ./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd -AdoptExisting
 
-  # Every run after that:
-  ./batch_l5x_to_acd.ps1 -InputDir ..\samples\generated -OutputDir C:\l5x_scratch\acd
+  # Every run after that (l5xgit is built from tools/ automatically):
+  .\scripts\batch_l5x_to_acd.ps1 -InputDir .\samples\generated -OutputDir C:\l5x_scratch\acd
 #>
 param(
     [Parameter(Mandatory = $true)][string]$InputDir,
     [Parameter(Mandatory = $true)][string]$OutputDir,
-    [string]$L5xGitPath = "l5xgit",
+    [string]$L5xGitPath = "",
     [switch]$UnsafeSkipDependencyCheck,
     [switch]$AdoptExisting
 )
+
+# l5xgit comes from the vendored source in tools/, built on first use. An
+# explicit -L5xGitPath still wins, for anyone running a different build.
+if (-not $L5xGitPath) {
+    $L5xGitPath = & (Join-Path $PSScriptRoot "build_l5xgit.ps1")
+    if (-not $L5xGitPath -or -not (Test-Path $L5xGitPath)) {
+        throw "Could not build the vendored l5xgit. See tools/README.md for prerequisites."
+    }
+}
+Write-Host "Using l5xgit: $L5xGitPath"
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $logPath = Join-Path $OutputDir "convert_log.csv"
