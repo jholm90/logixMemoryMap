@@ -916,6 +916,22 @@ argument per call** and about **12 once per structured parameter on the target**
 from 1 to 8 parameters. REAL parameters were already exact. A structured RETURN is
 charged the same by the copy-back mechanism; no file isolates one yet.
 
+**What is still not measured, and what it is worth.** Real exposure, standard
+processors only (3,582 JSR calls, 0.9% of real instructions):
+
+| case | real count | status |
+|---|---:|---|
+| no parameters | 3,024 calls (84%) | exact |
+| numeric inputs | most of 1,085 input args | 0.05% mean, 0.19% worst |
+| UDT/STRING inputs, bare tag | 72 args | 0.03% mean |
+| numeric returns | ~480 args | fitted; worst file 296 bytes (0.19%) |
+| UDT/STRING returns | 53 args | not isolated; charged like an input by the copy-back mechanism |
+| member-path or literal args | 604 args | charged at the atomic rate; a member that is itself a UDT would be 8/call short |
+| JSR inside an AOI | 0 | untested, no real exposure |
+
+Everything unmeasured totals a few kilobytes across all seventeen programs, under
+0.01%. JSR is closed on exposure; it cannot carry the ~3% real residual.
+
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 
 Compiled ladder size is a fitted heuristic and reads as estimated everywhere
