@@ -24,10 +24,10 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | question | state |
 |---|---|
 | **OQ-REALUNDER** | The real residual: **1.66% mean, 4.83% worst** on the seventeen standard-processor real programs present (was 2.86% / 5.42% before operand spelling was resolved). |
-| **OQ-TYPEDMEMBER** | Confirm the newly wired rule: a member-path, alias or AOI-parameter operand pays the same type surcharge as a bare tag. Wired on real-set evidence; no generated file carries the shape. |
-| **OQ-INDIRECTUDT** | `UdtArray[Idx].Member` — 16,000 of the ~19,300 real indirect references — priced from one `DINT[20]` bare-MOV calibration. |
-| **OQ-STRINGMOV** | `MOV` of a STRING — 7,626 real uses, priced as a DINT MOV, never measured. |
-| **OQ-MIXEDTYPE** | A typed instruction mixing operand types (`MOV(DINT,REAL)`, `ADD(REAL,DINT,…)`) — 24 to 932 per real file; conversion cost measured only inside CPT. |
+| **OQ-TYPEDMEMBER** | Confirm the newly wired rule: a member-path, alias or AOI-parameter operand pays the same type surcharge as a bare tag. Wired on real-set evidence. 23 files built, awaiting capture. |
+| **OQ-INDIRECTUDT** | `UdtArray[Idx].Member` — 16,000 of the ~19,300 real indirect references — priced from one `DINT[20]` bare-MOV calibration. 14 files built, awaiting capture. |
+| **OQ-STRINGMOV** | `MOV` of a STRING — 7,626 real uses, priced as a DINT MOV, never measured. 5 files built, awaiting capture. |
+| **OQ-MIXEDTYPE** | A typed instruction mixing operand types (`MOV(DINT,REAL)`, `ADD(REAL,DINT,…)`) — 24 to 932 per real file; conversion cost measured only inside CPT. 8 files built, awaiting capture. |
 | **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, rebuilt on the realism baseline, awaiting capture. |
 | **OQ-REALISMFLOOR** | Does the model still hold on a controller that is a quarter full, with I/O, and with every output bit written once? 2 files awaiting capture. |
 | **OQ-SERIESREAL** | The −12-per-extra-series-output law, re-measured with no duplicated bits on a full controller. 8 files awaiting capture. |
@@ -289,7 +289,7 @@ member operand, so the rule itself has never been captured in isolation.
 | **Mechanism** | the surcharge follows the operand's type, however it is spelled |
 | **Expected movement** | none if confirmed (already wired); up to +0.9 points back if a member path does NOT pay it |
 | **Already in the waiting batch** | the realism plant carries 1,280 `LES(Stn.Pv,Stn.PvHi)` on REAL members — 20,480 bytes of this rule in every `realism_*` and `progscope_*` file. `realism_base_f25` against its own prediction reads it before any new file is built |
-| **Spec (not built)** | on the realism baseline, 500 rungs each: `ADD`, `MOV`, `GRT` × REAL, INT × bare tag vs UDT member vs UDT-array element — 18 files; plus an AOI whose internal logic is 100 `ADD`s on REAL vs DINT parameters — 2 files. Each member file differences against its bare twin at the same type |
+| **Batch built** | `opsp_typed_{add,mov,grt}_{real,int}_{bare,member,arrelem}` (18) + `opsp_typed_*_dint_bare` DINT controls (3) + `opsp_aoi_add_{real,dint}` (AOI definition, 100 internal ADDs on REAL vs DINT locals). Each member file against its bare twin |
 
 ## 7. OQ-INDIRECTUDT — indirect addressing into a UDT array
 
@@ -313,7 +313,7 @@ residual from 1.98% to LOO 1.29%.
 |---|---|
 | **Mechanism** | address computation depends on element size, member offset and bit addressing |
 | **Expected movement** | up to ~0.6 points |
-| **Spec (not built)** | 500 rungs `MOV(A[Idx].M,D)` with element sizes 4, 8, 12, 76 bytes (UDTs of 1, 2, 3, 19 DINTs); `XIC(A[Idx].B)OTE(Q…)` on a UDT BOOL member; `XIC(BoolArr[Idx])`; `EQU(A[Idx].M,D)`; each against its literal-index twin `A[5].M` — 14 files |
+| **Batch built** | `opsp_ind_mov_e{04,08,12,76}_{idx,lit}`, `opsp_ind_xicmem_*`, `opsp_ind_xicbool_*`, `opsp_ind_equ_e76_*` — 14 files, each `_idx` against its literal-index `_lit` twin. The engine predicts every element size identically (+84 per indexed rung) |
 
 ## 8. OQ-STRINGMOV — MOV of a STRING
 
@@ -326,7 +326,7 @@ arguments: +8 per copy). Never measured.
 |---|---|
 | **Mechanism** | a structure move compiled as a copy, not a register move |
 | **Expected movement** | 0.2–0.6 points; export 16 (2.6%) carries 1,309 |
-| **Spec (not built)** | 500 rungs each: `MOV(S1,S2)`, `COP(S1,S2,1)`, `MOV(SArr[Idx],S2)`, `MOV(C1,C2)` on a custom 20-char string type, against `MOV(D1,D2)` — 5 files |
+| **Batch built** | `opsp_str_{mov,cop,movidx,movcustom,movdint}` — 5 files. The engine predicts `mov` and `movcustom` identical to the DINT control |
 
 ## 9. OQ-MIXEDTYPE — a typed instruction whose operands differ in type
 
@@ -339,8 +339,9 @@ DINT→REAL conversion measures 40 per operand; outside CPT it has never been me
 |---|---|
 | **Mechanism** | an implicit conversion per mismatched operand |
 | **Expected movement** | 0.1–0.4 points |
-| **Spec (not built)** | 500 rungs each: `MOV(D,R)`, `MOV(R,D)`, `MOV(I,D)`, `MOV(D,I)`, `ADD(D,R,R)`, `ADD(R,D,D)`, `GRT(R,D)`, `GRT(I,D)` against their uniform-type twins — 8 files |
+| **Batch built** | `opsp_mixed_{mov_d2r,mov_r2d,mov_i2d,mov_d2i,add_drr,add_rdd,grt_rd,grt_id}` — 8 files, sharing one tag inventory with `opsp_typed_*` so the uniform twins are the typed `_bare` and `_dint_bare` files |
 
-All four specs are on the realism floor (RACK_1..RACK_5, ≥25% fill, no duplicated
-output bits), 1756-L81E fw35, identical tag inventory within each question. **Not built
-— awaiting approval.**
+All 50 files (`gen_operand_spelling.py`, `samples/generated/opspell/`) are on the
+realism floor (RACK_1..RACK_5, ≥25% fill, no duplicated output bits), 1756-L81E fw35,
+500 added rungs each, identical tag inventory within each question; lint and confound
+clean. Awaiting capture.

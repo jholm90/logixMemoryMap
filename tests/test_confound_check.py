@@ -113,3 +113,12 @@ def test_tag_declaration_order_is_visible(tmp_path):
     a = _write(tmp_path, "a.L5X", tags(["BOOL", "BOOL", "DINT", "DINT"]))
     b = _write(tmp_path, "b.L5X", tags(["BOOL", "DINT", "BOOL", "DINT"]))
     assert differing(a, b) == ["tag declaration order"]
+
+
+def test_array_subscript_is_not_a_branch(tmp_path):
+    """`A[1].B` is an operand spelling, not a branch leg."""
+    a = _write(tmp_path, "a.L5X", _rung("MOV(A.B,D);"))
+    b = _write(tmp_path, "b.L5X", _rung("MOV(A[1].B,D);"))
+    c = _write(tmp_path, "c.L5X", _rung("XIC(X)[OTE(Y),OTE(Z)];"))
+    assert differing(a, b) == ["operand text"]
+    assert a["branched rungs"] == b["branched rungs"] == 0 and c["branched rungs"] == 1

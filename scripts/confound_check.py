@@ -44,6 +44,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]{1,39})\s*\(")
 
 
+
+_BRANCH_OPEN = re.compile(r"(?<![A-Za-z0-9_])\[")
+
 def _split_operands(s: str) -> list[str]:
     """Split on top-level commas only.
 
@@ -106,7 +109,9 @@ def profile(path: str) -> dict[str, object] | None:
     for rung in root.iter("Rung"):
         txt = rung.findtext("Text") or ""
         rungs += 1
-        if "[" in txt:
+        # A branch bracket opens a rung or follows an instruction or another
+        # leg; an array subscript follows a name (`Arr[Idx]`, `A[1].B`).
+        if _BRANCH_OPEN.search(txt):
             branches += 1
         for m in re.finditer(r"\b([A-Za-z_][A-Za-z0-9_]{1,39})\s*\(([^()]*)\)", txt):
             args = _split_operands(m.group(2))

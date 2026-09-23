@@ -345,7 +345,21 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Current batch: the realism batch — 16 files
+## Current batch: operand spelling — 50 files
+
+`gen_operand_spelling.py`, `samples/generated/opspell/`, all on the realism baseline, 500
+added rungs each.
+
+| family | files | question | differenced against |
+|---|---:|---|---|
+| `opsp_typed_{add,mov,grt}_{real,int}_{bare,member,arrelem}` | 18 | OQ-TYPEDMEMBER | the `_bare` file at the same type |
+| `opsp_typed_{add,mov,grt}_dint_bare` | 3 | control | — |
+| `opsp_mixed_*` | 8 | OQ-MIXEDTYPE | the uniform-type `opsp_typed_*_bare` twins (same inventory) |
+| `opsp_aoi_add_{real,dint}` | 2 | OQ-TYPEDMEMBER (AOI logic) | each other |
+| `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
+| `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
+
+## Also waiting: the realism batch — 16 files
 
 `gen_realism_batch.py`, `samples/generated/realism/`. Every file on the baseline; each
 arm declares the same tags in every file.

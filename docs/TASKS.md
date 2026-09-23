@@ -57,10 +57,14 @@ The operand-type surcharge and the tag-driven index cost were charged only on ba
 names. `sizing/operand_types.py` resolves member paths, aliases, program scope and AOI
 parameters; the index regex accepts a member-path index. Real set 2.86% / 5.42% →
 1.66% / 4.83%; zero generated rows moved. Four questions follow from it
-(OQ-TYPEDMEMBER, OQ-INDIRECTUDT, OQ-STRINGMOV, OQ-MIXEDTYPE), each with a written spec
-in OPEN_QUESTIONS.md — **47 files, not built, awaiting approval.** Ranked by expected
+(OQ-TYPEDMEMBER, OQ-INDIRECTUDT, OQ-STRINGMOV, OQ-MIXEDTYPE) — **50 files built**
+(`gen_operand_spelling.py`, `samples/generated/opspell/`), awaiting capture alongside
+the realism and progscope batches (78 files waiting in all). Ranked by expected
 movement: INDIRECTUDT (≤0.6), STRINGMOV (0.2–0.6), MIXEDTYPE (0.1–0.4), TYPEDMEMBER
 (confirmation of what is wired).
+
+The confound gate counted any `[` as a branch, so an array subscript read as a branched
+rung. Fixed (`_BRANCH_OPEN`, pinned in `test_confound_check.py`).
 
 **Next audit of the same kind:** every other rule keyed on operand TEXT — CPT's REAL
 destination (bare `tag_types` lookup), JSR structured-argument detection, CMP operands,
