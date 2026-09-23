@@ -6333,3 +6333,6 @@ samples\generated\modules\modname_p208_len24.L5X,C:\l5x_scratch\acd\modname_p208
 samples\generated\modules\modname_p208_len32.L5X,C:\l5x_scratch\acd\modname_p208_len32.ACD,ok,,43FEDD9CBF93640F88B82372489F844F5B5ED8FAD6AAE621ADDC5163470408A8
 samples\generated\modules\modname_p208_len40.L5X,C:\l5x_scratch\acd\modname_p208_len40.ACD,ok,,C147C1E8A6A48849F9D73C5252B87FACCF375931AB3B9127879519D9A34B29EF
 samples\generated\modules\modulerack_kinetix_full_bus_r2.L5X,C:\l5x_scratch\acd\modulerack_kinetix_full_bus_r2.ACD,ok,,BE46F3C13DC47088F183612D3FB9CB7601E4362516C94827305BDCC7D1F7DECA
+samples\generated\logic\almd_minimal_r3.L5X,C:\l5x_scratch\acd\almd_minimal_r3.ACD,ok,,E084B3D2D80C29E5A3F5C9E44D018A2BB1FD64F6F0D01948EE3B7398030E4C9B
+samples\generated\logic\almd_realtext_r3.L5X,C:\l5x_scratch\acd\almd_realtext_r3.ACD,ok,,B05FB383C2F007D2A24F20CBBA65B028FD19C07AE9C485A43BBF0F161ACED4D6
+samples\generated\modules\modulerack_kinetix_full_bus_r3.L5X,C:\l5x_scratch\acd\modulerack_kinetix_full_bus_r3.ACD,ok,,6CF201A363E6786E4B49601B98E29E8E17B73ACC3056EE9E131515B8ED67695D
