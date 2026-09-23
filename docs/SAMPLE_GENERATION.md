@@ -328,7 +328,60 @@ needs an actual regeneration and diff, every time.**
 
 ---
 
-## Current batch: JSR caller distribution
+## Current batch: every open capture, regenerated, plus the open questions
+
+47 files. The conversion and capture tooling skip any file name they have already
+seen, so an open capture that was attempted once — or never reached the converter —
+never surfaced again. Everything open was rebuilt under a new name, and every open
+question a generated file can answer got a family.
+
+| family | files | generator | question |
+|---|---:|---|---|
+| `jsrcallers_k{01,02,04,05,10,20}` | 6 | `gen_jsr_caller_distribution.py` | OQ-JSRCALLERBASE |
+| `rungpack_{xic,equ}_k{01,02,04,08,16,40}` | 12 | `gen_rung_packing.py` | OQ-RUNGSHAPE |
+| `modname_p208_len{04,06,08,10,12,13,16,17,20,24,32,40}` | 12 | `gen_module_name_length.py` | OQ-MODULENAMELEN |
+| `alarmcond_realcount_n{000,200,400,600}` | 4 | `gen_alarm_real_count.py` | OQ-ALARMCONDREAL |
+| `composite_realistic_{10,11,22,32,34,36,46,47,48}_r3` | 9 | `gen_composite_realistic.py --regenerate-open` | composite instrument |
+| `litop_bool_{alltag,zero,one,dint}_n01000_r2` | 4 | `gen_literaloperand.py` arm F | OQ-LITERALOPERAND |
+
+The nine composites were never sent because lint refused them — a CIP Safety module on
+a non-safety controller, two modules in one slot, a Kinetix drive with no bus supply.
+They are rebuilt from the same profile with the module window slid until nothing
+build-blocking remains.
+
+`confound_check.py` gained two dimensions to check this batch: **module name lengths**
+and **alarm-condition count**. Without them it read the name and alarm families as
+byte-identical, the same class of blind spot its docstring already records six times.
+
+### Retired, not rebuilt
+
+Each of these targets a shape that appears in **none of the eighteen real programs**,
+or dead architecture. Rebuilding them would spend a capture on something no user's
+program contains — and three had already been refused on import four times.
+
+| spec row | why |
+|---|---|
+| `fwmatrix_v31_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+| `fwmatrix_v32_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+| `fwmatrix_v33_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+| `fwmatrix_v34_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+| `fwmatrix_v35_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+| `predefprobe_timer_t` | type appears in none of the 18 real exports; refused on import four times |
+| `predefprobe_ref_to_axis_cip_drive` | type appears in none of the 18 real exports; refused on import four times |
+| `predefprobe_ref_to_axis_virtual` | type appears in none of the 18 real exports; refused on import four times |
+| `alarmcond_type_trip` | all 4,663 real alarm conditions are TRIP at the defaults already measured; orphan spec, no generator |
+| `alarmcond_type_trip_high` | condition type appears in none of the 18 real exports |
+| `alarmcond_type_trip_low` | condition type appears in none of the 18 real exports |
+| `alarmcond_type_deviation` | condition type appears in none of the 18 real exports |
+| `alarmcond_hmigroup_len64` | real HMI groups are at most 15 characters; 4/16/40 already captured |
+| `cipmodule_scale_1024b` | real CIP-MODULE connections top out at 496 bytes |
+| `cipmodule_scale_2048b` | real CIP-MODULE connections top out at 496 bytes |
+| `fwmatrix_v38_1769_l33erm` | 1769 is dead architecture (CLAUDE.md); no further 1769 test files |
+
+`gen_fw_catalog_matrix.py` no longer emits 1756-L7x or 1769 catalogs, so a re-run
+cannot bring those rows back.
+
+## Previous batch: JSR caller distribution
 
 6 files, `src/sample_gen/gen_jsr_caller_distribution.py`, written to
 `samples/generated/logic/` as `jsr_callerdist_k{01,02,04,05,10,20}`.

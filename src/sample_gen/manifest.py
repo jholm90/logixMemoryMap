@@ -85,7 +85,8 @@ def append_manifest_row(sample_id: str, description: str, category: str,
     the split.
     """
     rel_path = str(l5x_path.relative_to(REPO_ROOT))
-    rows = [{k: r[k] for k in SPEC_COLUMNS} for r in load_manifest()]
+    # Raw spec rows: a resolved real-file path must never be written back.
+    rows = [{k: r[k] for k in SPEC_COLUMNS} for r in load_manifest(resolve_local=False)]
     row = {"sample_id": sample_id, "description": description, "category": category,
            "l5x_path": rel_path, "predicted_bytes": str(bytes_predicted)}
     for i, existing in enumerate(rows):

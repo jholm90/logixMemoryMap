@@ -47,6 +47,11 @@ What the slope says:
 Nothing else in the model distinguishes them, and no refit of the existing
 corpus can.
 
+Files are named jsrcallers_k{01..20}. An earlier build of the identical
+family was named jsr_callerdist_k*; it never reached the converter and was
+renamed so the conversion and capture tooling, which skip any name they have
+already seen, treat it as new work.
+
 Run: python -m sample_gen.gen_jsr_caller_distribution
 """
 
@@ -127,7 +132,7 @@ def group_caller_distribution() -> None:
             extra_rungs_xml=main_rungs,
             extra_routines_xml="\n".join(x for x in (extra_callers, targets_xml) if x),
         )
-        out_name = f"jsr_callerdist_k{k:02d}"
+        out_name = f"jsrcallers_k{k:02d}"
         out_path = OUT_ROOT / f"{out_name}.L5X"
         bytes_ = write_sample(l5x, out_path)
         append_manifest_row(

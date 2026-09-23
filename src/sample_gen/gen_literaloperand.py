@@ -399,7 +399,7 @@ def _arm_f() -> int:
     )
     for slug, args, note in cases:
         _write(
-            f"litop_bool_{slug}_n{N:05d}",
+            f"litop_bool_{slug}_n{N:05d}_r2",
             _build(tags, [f"LitSensor(Sensor,{args});"] * N, extra_aoi_xml=aoi),
             f"{N} call sites of one AOI with {note}. Arm F of the literal-operand sweep, "
             f"and the BOOL question: does a boolean input slot price 0 and 1 differently "

@@ -345,7 +345,11 @@ _L8XS_CATALOGS = list(_L8XS_PRODUCT_CODES)
 # exists.
 _L9X_MIN_FIRMWARE_MAJOR = "38"
 
-ALL_CATALOGS = _L8X_CATALOGS + _5069_CATALOGS + _L7X_CATALOGS + _1769_CATALOGS + _L9X_CATALOGS
+# 1756-L7x and 1769 are dead architecture (CLAUDE.md): no further test files.
+# Their catalog lists and existing captures stay; they are not generated.
+_DEAD_ARCHITECTURE = set(_L7X_CATALOGS) | set(_1769_CATALOGS)
+ALL_CATALOGS = [c for c in _L8X_CATALOGS + _5069_CATALOGS + _L9X_CATALOGS
+                if c not in _DEAD_ARCHITECTURE]
 SAFETY_CATALOGS = _L8XS_CATALOGS
 ALL_INFERRED = _L7X_INFERRED | _L8XS_INFERRED
 

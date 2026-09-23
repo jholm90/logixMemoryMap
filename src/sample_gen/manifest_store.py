@@ -122,13 +122,19 @@ def resolve_local_path(recorded: str, _index=None, _aliases=None) -> str:
     return str(hit) if hit else recorded
 
 
-def load_manifest() -> list[dict]:
+def load_manifest(resolve_local: bool = True) -> list[dict]:
     """Every sample, spec joined to its capture, in manifest order.
 
     A sample with no capture yet carries the capture keys as empty strings
     rather than missing them, so `row["actual_bytes"]` is always safe. A real
     export's l5x_path is resolved to wherever it was actually unpacked under
     samples/local/ -- see resolve_local_path.
+
+    WRITERS MUST PASS resolve_local=False. A resolved path is the real file's
+    local location, which carries the customer's file name; written back into
+    the committed manifest it discloses exactly what the neutral
+    realprog_NN.L5X paths exist to hide. That happened once, caught before it
+    left the machine.
     """
     specs = _read(MANIFEST_PATH)
     caps = _dedupe(_read(CAPTURES_PATH))
@@ -141,7 +147,8 @@ def load_manifest() -> list[dict]:
             continue                      # union-merge duplicate; first spec wins
         seen.add(sid)
         row = {k: (spec.get(k) or "") for k in SPEC_COLUMNS}
-        row["l5x_path"] = resolve_local_path(row["l5x_path"], index, aliases)
+        if resolve_local:
+            row["l5x_path"] = resolve_local_path(row["l5x_path"], index, aliases)
         cap = caps.get(sid, {})
         for k in CAPTURE_COLUMNS[1:]:
             row[k] = cap.get(k) or ""

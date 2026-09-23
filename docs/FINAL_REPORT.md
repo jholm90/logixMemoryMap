@@ -22,10 +22,11 @@ download fails.
 
 | measure | value |
 |---|---|
-| Mean absolute error, seventeen real programs | **1.60%** |
-| Worst case | **3.63%** — read it as "up to 4%" |
-| Weighted bias | **+1.49% under-prediction** (ten under, seven over) |
-| The one blind test on record | **+2.15%** low, predicted before its reading was used |
+| Mean absolute error, all twenty-three real programs | **1.67%** |
+| Worst case | **3.99%** — read it as "up to 4%" |
+| Weighted bias | **about +1.72% under-prediction** (sixteen under, seven over) |
+| Blind tests — predicted before the reading existed | **seven**: mean 1.93%, worst 3.99%, every one low |
+| The original seventeen, in-sample | mean 1.60%, worst 3.63% |
 | Re-verified in the final review | twelve of the seventeen, every one within 0.01 pp of its recorded figure |
 | Stopping rule (mean < 1% and max < 2%) | **not met**, and shown unreachable by correcting constants |
 
@@ -40,9 +41,10 @@ made the confidence display wrong were found and fixed — one of them meant com
 AOI ladder was shown as *exact*, against the project's core rule. Real-program
 evaluation now works in any checkout, and six blind predictions are on record.
 
-**What is left.** Capture the six blind programs. Capture the six
-`jsr_callerdist_*` files. Then attack the real residual with the method in
-section 8, which is the only lever that has not been exhausted.
+**What is left.** Capture the 47 files now waiting (section 6). Then attack the real
+residual with the method in section 8, which is the only lever that has not been
+exhausted. The six blind readings came back while this report was being written;
+section 3.2 carries them.
 
 ---
 
@@ -115,6 +117,25 @@ They are predicted, and the numbers written down, before any reading exists:
 | blind_04 | 1756-L83E | 32.04 | **6,418,673** | 6,515,402 | 6,305,704 – 6,660,657 |
 | blind_05 | 1756-L83E | 35.05 | **5,939,350** | 6,028,856 | 5,834,817 – 6,163,263 |
 | blind_06 | 1756-L83E | 35.05 | **3,704,851** | 3,760,683 | 3,639,646 – 3,844,524 |
+
+**Then the readings came in:**
+
+| ID | actual | error | inside the range written in advance |
+|---|---:|---:|:---:|
+| blind_01 (export 31) | 9,262,907 | −1.86% | ✓ |
+| blind_02 (export 32) | 8,159,036 | −2.31% | ✓ |
+| blind_03 (export 33) | 7,707,453 | **−3.99%** | ✗ — missed by 29 KB |
+| blind_04 (export 34) | 6,480,713 | −0.96% | ✓ |
+| blind_05 (export 35) | 6,010,365 | −1.18% | ✓ |
+| blind_06 (export 36) | 3,744,752 | −1.07% | ✓ |
+
+**Mean 1.90%, worst 3.99%, all six low.** That is worse than the in-sample seventeen,
+which is exactly what an honest held-out test should show. It confirms three things at
+once: the model generalises to programs it has never seen; the "up to 4%" worst-case
+wording was right; and the residual is a real, one-directional under-prediction on
+large line controllers, not noise around zero. `blind_02` is a later revision of export
+07 and misses by −2.31% against −2.14% — **the residual belongs to the program and
+survives a revision**, which is what makes it findable.
 
 "Expected" applies the seventeen's +1.49% bias; the range is their spread. `blind_02`
 is a later revision of export 07, so it doubles as the project's first
@@ -316,13 +337,12 @@ what a user saw:
 
 | what | rows | priority |
 |---|---:|---|
-| the six blind programs — read Capacity | 6 | **first** |
-| `jsr_callerdist_*` | 6 | **second** |
-| the five recorded programs missing from this checkout | 5 | drop into `samples/local/` |
-| `composite_realistic_*_r2` | 9 | eight need lint findings cleared |
-| `fwmatrix_*`, `alarmcond_*`, `cipmodule_*` | 13 | first submission |
-| `predefprobe_*` | 3 | needs the Studio error line |
-| `litop_bool_*` | 4 | optional — below the floor |
+| `jsrcallers_k*` — OQ-JSRCALLERBASE | 6 | **first** |
+| `rungpack_{xic,equ}_k*` — OQ-RUNGSHAPE | 12 | new |
+| `modname_p208_len*` — OQ-MODULENAMELEN | 12 | new |
+| `alarmcond_realcount_n*` — OQ-ALARMCONDREAL | 4 | new |
+| `composite_realistic_*_r3` | 9 | rebuilt build-valid |
+| `litop_bool_*_r2` | 4 | rebuilt under new names |
 
 ### Smaller items recorded, deliberately not worked
 

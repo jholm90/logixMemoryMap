@@ -11,8 +11,12 @@ in `OPEN_QUESTIONS.md`.
 Measured on the seventeen real production exports, which are the only accuracy
 evidence that counts.
 
-**Mean absolute error 1.5951%. Worst case 3.6309%. Four files inside 1%, eleven
-inside 2%.** Total residual +822,938 bytes on 55,430,980 = **+1.485%**. Ten files
+**All twenty-three real programs with a reading — the seventeen below plus six blind
+(next section): mean absolute error 1.67%, worst case 3.99%, residual about +1.72%,
+sixteen under and seven over.**
+
+The original seventeen: **mean absolute error 1.5951%. Worst case 3.6309%. Four files
+inside 1%, eleven inside 2%.** Total residual +822,938 bytes on 55,430,980 = **+1.485%**. Ten files
 under-predict, seven over-predict.
 
 | program | actual | error |
@@ -49,7 +53,8 @@ and the work was to find missing bytes. Seven files now over-predict, which mean
 ### How to state the accuracy
 
 **The max always travels with the mean.** The honest one-line claim is *mean
-absolute error 1.60%, worst case 3.63%, read the worst case as up to 4%.* Not
+absolute error 1.67%, worst case 3.99%, read the worst case as up to 4%* — over
+twenty-three real programs, six of them blind. Not
 "about 1.6% accurate" — the worst file is 2.3× the mean and the distribution has
 a long right tail. Any headline number, in the README, in the UI or in a reply,
 carries both figures or it misleads.
@@ -68,7 +73,7 @@ before the controller reading is taken.** That is the only procedure that adds
 auditable evidence. A file reconciled after the fact adds a fitting input, not a
 test.
 
-### Six blind predictions on record
+### Six blind predictions — written down first, then read
 
 Six real exports arrived with **no capacity reading anywhere**. Predicted by the
 final engine and written here before any reading exists. The name-to-ID mapping
@@ -78,18 +83,17 @@ stays in the gitignored `samples/local/blind_predictions.csv`.
 the seventeen's own spread (−3.63% to +1.79%). A reading outside the range is a
 finding, not noise.
 
-| ID | processor | firmware | **predicted** | expected | range | coverage gaps |
-|---|---|---|---:|---:|---:|---|
-| `blind_01` | 1756-L83E | 32.04 | **9,090,346** | 9,227,338 | 8,930,356 – 9,433,052 | 9 unsized items, 1 unpriced instruction use |
-| `blind_02` | 1756-L83E | 35.05 | **7,970,364** | 8,090,477 | 7,830,086 – 8,270,847 | none — a later revision of export 07 |
-| `blind_03` | 1756-L83E | 33.01 | **7,399,658** | 7,511,171 | 7,269,424 – 7,678,625 | 12 unsized items |
-| `blind_04` | 1756-L83E | 32.04 | **6,418,673** | 6,515,402 | 6,305,704 – 6,660,657 | 1 unsized item |
-| `blind_05` | 1756-L83E | 35.05 | **5,939,350** | 6,028,856 | 5,834,817 – 6,163,263 | 7 unsized items |
-| `blind_06` | 1756-L83E | 35.05 | **3,704,851** | 3,760,683 | 3,639,646 – 3,844,524 | 1 unsized item, 2 unpriced instruction uses |
+| ID | recorded as | processor | firmware | predicted | range written in advance | **actual** | **error** |
+|---|---|---|---|---:|---:|---:|---:|
+| `blind_01` | export 31 | 1756-L83E | 32.04 | 9,090,346 | 8,930,356 – 9,433,052 | **9,262,907** | **-1.86%** |
+| `blind_02` | export 32 | 1756-L83E | 35.05 | 7,970,364 | 7,830,086 – 8,270,847 | **8,159,036** | **-2.31%** |
+| `blind_03` | export 33 | 1756-L83E | 33.01 | 7,399,658 | 7,269,424 – 7,678,625 | **7,707,453** | **-3.99%** — outside range |
+| `blind_04` | export 34 | 1756-L83E | 32.04 | 6,418,673 | 6,305,704 – 6,660,657 | **6,480,713** | **-0.96%** |
+| `blind_05` | export 35 | 1756-L83E | 35.05 | 5,939,350 | 5,834,817 – 6,163,263 | **6,010,365** | **-1.18%** |
+| `blind_06` | export 36 | 1756-L83E | 35.05 | 3,704,851 | 3,639,646 – 3,844,524 | **3,744,752** | **-1.07%** |
 
-`blind_02` is a later revision of the program already recorded as export 07
-(predicted +2.15% low). It is the first within-program drift test the project has:
-if the residual is a property of the program, it should land near 8.14 M.
+**Outcome: mean 1.90%, worst 3.99%, all six low.** Five of six inside the range; `blind_03` missed it by 29 KB. Worse than the in-sample seventeen (1.60% / 3.63%), which is what a genuine held-out test is supposed to reveal: the model generalises, with a real systematic under-prediction on large line controllers. `blind_02` (export 32), a later revision of export 07, misses by −2.31% against export 07's −2.14% — the residual is a property of the program and survives a revision.
+
 
 ---
 

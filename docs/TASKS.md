@@ -50,25 +50,30 @@ counted on all eighteen real exports and is worth **1,756 bytes across all of th
 It is closed. The queue is now short, and every item on it either needs a capture or
 needs a real program.
 
-### 1. Capture the blind set
+### 1. Capture the waiting batch — 47 files
 
-**The single most valuable thing left.** Six real exports have been predicted by the
-final engine with **no capacity reading on record**. Their predictions are written
-down in `ROADMAP.md` before any reading exists, which is the only procedure this
-project accepts as evidence that the model generalises. It has been done once;
-this would do it six more times at once.
+Every open capture was regenerated under a new file name — the conversion and capture
+tooling skip any name they have already seen, so a file attempted once never surfaced
+again — and every open question that a generated file can answer got a family:
 
-| | |
-|---|---|
-| **Expected movement** | none on the model — this measures it |
-| **Mechanism** | read Capacity on each of the six, compare with the numbers already on record |
-| **Needs** | the six programs opened in Studio; no files to build |
+| family | files | question |
+|---|---:|---|
+| `jsrcallers_k{01,02,04,05,10,20}` | 6 | OQ-JSRCALLERBASE |
+| `rungpack_{xic,equ}_k{01,02,04,08,16,40}` | 12 | OQ-RUNGSHAPE |
+| `modname_p208_len{04..40}` | 12 | OQ-MODULENAMELEN |
+| `alarmcond_realcount_n{000,200,400,600}` | 4 | OQ-ALARMCONDREAL |
+| `composite_realistic_*_r3` | 9 | composite instrument, rebuilt build-valid |
+| `litop_bool_*_n01000_r2` | 4 | OQ-LITERALOPERAND BOOL arm |
 
-The five recorded real programs missing from this checkout (`realprog_08, 25, 26, 29,
-30`) should be dropped back into `samples/local/` as well, so the full seventeen can be
-re-checked by `quick_eval.py --real-only` rather than twelve of them.
+All lint clean, all 1756-L81E at firmware 35, and every isolation family passes the
+confound gate. The blind set is done — six readings in, recorded as exports 31–36.
 
-### 2. Capture `jsr_callerdist_*` — OQ-JSRCALLERBASE
+**Not generated, on purpose:** OQ-REALUNDER and OQ-EXPORTSCOPE cannot be answered by a
+generated whole-project file (see each entry), and sixteen stale spec rows were
+retired rather than rebuilt because their shape appears in none of the eighteen real
+programs or targets dead architecture — listed in `SAMPLE_GENERATION.md`.
+
+### 2. OQ-JSRCALLERBASE — read `jsrcallers_k*` first
 
 `jsr_fixed_base_per_routine` (5,096) exceeds the ordinary `fixed_base_per_routine`
 (4,816) by 280, which is exactly the residual on every clean 0-parameter JSR capture.

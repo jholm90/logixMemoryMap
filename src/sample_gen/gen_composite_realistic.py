@@ -700,5 +700,49 @@ def main() -> None:
         _write(l5x, f"composite_realistic_{i:02d}_r2", description)
 
 
+# The nine _r2 files that never captured. Eight carried a build-invalid module
+# choice that lint correctly refused -- a CIP Safety module on a non-safety
+# controller, two modules claiming one slot, a Kinetix drive with no bus
+# supply -- and so were never submitted; the ninth was never picked up by the
+# converter. Rebuilt under new names so the conversion and capture tooling,
+# which skip any name they have already seen, treat them as new work.
+_OPEN_R2_INDICES = (10, 11, 22, 32, 34, 36, 46, 47, 48)
+# Only findings that stop a file building. chassis_size_mismatch is a
+# modelling check on adapter bus sizes that 41 captured _r2 files carry
+# without any build error, so it is not a reason to reshuffle modules.
+_BUILD_BLOCKING = frozenset({
+    "safety_module_on_non_safety_controller", "duplicate_module_slot",
+    "non_sequential_module_slots", "kinetix_drive_without_bus_supply",
+    "kinetix_axis_without_converter", "unrecognized_instruction",
+    "aoi_call_arg_count_mismatch", "module_identity_mismatch",
+})
+
+
+def regenerate_open() -> None:
+    """Rebuild the open indices as _r3. Same deterministic profile; if the
+    module window it lands on is build-invalid, slide the window one catalog
+    at a time until lint is clean. Everything but the module choice is
+    unchanged."""
+    from dataclasses import replace
+    from sample_gen.lint import lint_l5x
+    for i in _OPEN_R2_INDICES:
+        profile = _profile_for_index(i)
+        n = len(profile.module_catalogs)
+        start = _MODULE_CATALOGS.index(profile.module_catalogs[0])
+        for shift in range(len(_MODULE_CATALOGS)):
+            cats = [_MODULE_CATALOGS[(start + shift + k) % len(_MODULE_CATALOGS)] for k in range(n)]
+            l5x, description = _build(replace(profile, module_catalogs=cats))
+            if not {f.kind for f in lint_l5x(l5x)} & _BUILD_BLOCKING:
+                break
+        else:
+            raise RuntimeError(f"no build-valid module window for composite {i}")
+        _write(l5x, f"composite_realistic_{i:02d}_r3",
+               description + f" Rebuilt as _r3 with a build-valid module window (shift {shift}).")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--regenerate-open" in sys.argv:
+        regenerate_open()
+    else:
+        main()

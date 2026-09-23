@@ -169,6 +169,13 @@ def profile(path: str) -> dict[str, object] | None:
         ],
         "modules": sorted(
             (m.get("CatalogNumber") or "?") for m in root.findall("Controller/Modules/Module")),
+        # Module NAME lengths. Catalogs alone read a family that renames one
+        # module as byte-identical -- the name-length sweep did exactly that.
+        "module name lengths": sorted(
+            len(m.get("Name") or "") for m in root.findall("Controller/Modules/Module")),
+        # Tag-based alarm conditions hang off a tag's <AlarmConditions>, not
+        # off anything above, so a condition-count family read as identical.
+        "alarm conditions": sum(1 for _ in root.iter("AlarmCondition")),
     }
 
 

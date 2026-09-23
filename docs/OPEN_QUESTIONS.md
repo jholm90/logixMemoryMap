@@ -86,7 +86,8 @@ This is the collinearity failure mode exactly — two constants against points t
 only ever vary one of them. Applying either reading now would be fitting, not
 measuring.
 
-**The discriminating family is built: `jsr_callerdist_k{01,02,04,05,10,20}`.**
+**The discriminating family is built: `jsrcallers_k{01,02,04,05,10,20}`** (first built as
+`jsr_callerdist_k*`, never picked up by the converter, rebuilt under new names).
 
 Total JSR calls held at **20** and distinct 0-parameter targets at **20** in every
 file. Only the distribution moves: with K callers, MainRoutine takes 20/K calls and
@@ -108,12 +109,12 @@ predicts at the identical 25,752, so it is anchored to a capture already in hand
 
 | file | callers | engine predicts | **A** per file | **B** per caller | **C** flat −280 |
 |---|---:|---:|---:|---:|---:|
-| `jsr_callerdist_k01` | 1 | 25,752 | 25,472 | 25,472 | 25,472 |
-| `jsr_callerdist_k02` | 2 | 30,848 | **25,736** | **30,288** | **30,568** |
-| `jsr_callerdist_k04` | 4 | 41,040 | **26,264** | **39,920** | **40,760** |
-| `jsr_callerdist_k05` | 5 | 46,136 | **26,528** | **44,736** | **45,856** |
-| `jsr_callerdist_k10` | 10 | 71,616 | **27,848** | **68,816** | **71,336** |
-| `jsr_callerdist_k20` | 20 | 122,576 | **30,488** | **116,976** | **122,296** |
+| `jsrcallers_k01` | 1 | 25,752 | 25,472 | 25,472 | 25,472 |
+| `jsrcallers_k02` | 2 | 30,848 | **25,736** | **30,288** | **30,568** |
+| `jsrcallers_k04` | 4 | 41,040 | **26,264** | **39,920** | **40,760** |
+| `jsrcallers_k05` | 5 | 46,136 | **26,528** | **44,736** | **45,856** |
+| `jsrcallers_k10` | 10 | 71,616 | **27,848** | **68,816** | **71,336** |
+| `jsrcallers_k20` | 20 | 122,576 | **30,488** | **116,976** | **122,296** |
 
 - **A — the base belongs to the file.** An extra caller routine costs what any
   routine costs, 264 plus its rungs. `actual(K) = 25,472 + 264·(K−1)`.
@@ -164,8 +165,19 @@ it is not 280 bytes at all.
 
 ## 2. OQ-REALUNDER — the residual itself
 
-**+822,938 bytes on 55,430,980 = +1.485%.** Ten files under-predict, seven
-over-predict.
+**+822,938 bytes on 55,430,980 = +1.485%** over the original seventeen. Ten files
+under-predict, seven over-predict.
+
+**Six blind programs, predicted before their readings existed, all under-predict:**
+mean 1.90%, worst 3.99%, every one low (export 31–36). Five of six landed inside the
+range written down in advance; the sixth missed it by 29 KB. Across all twenty-three
+the residual is **about +1.72%, sixteen under and seven over.** The blind set is the
+cleanest evidence the project has that the missing bytes are real, systematic and
+one-directional *on the kind of program users actually bring* — large 1756-L83E line
+controllers — and that the over-predicting files are the exception. Export 32 is a
+later revision of export 07 and misses by almost the same amount (−2.31% against
+−2.14%): **the residual is a property of the program, stable across revisions.** That
+is what makes it findable by the Studio-deletion method rather than by more constants.
 
 **The residual is no longer one-sided**, which is the most important structural fact
 about it. It used to be — every file under-predicted and the work was to find missing
@@ -252,6 +264,18 @@ so the cost cannot be per-distinct-rung.
 **A packing sweep must use a non-output instruction.** That is the one design
 constraint the next attempt has to respect.
 
+### Built: `rungpack_{xic,equ}_k{01,02,04,08,16,40}` — 12 files
+
+4,000 instructions in every file, packed k per rung (4,000 → 100 rungs), every rung
+closed by one `NOP()`. XIC and EQU are both non-output, so no series cascade forms at
+any k. Operand text and tag inventory are identical across each arm; the confound gate
+reports one moving dimension per pair.
+
+**What the slope says.** Bytes per removed rung, against the NOP-plus-rung cost the
+engine already charges. Equal: the instruction weights carry no hidden per-rung share.
+Larger: the excess is the per-rung cost folded into every weight, read directly. Two
+arms so the answer does not rest on one instruction.
+
 ---
 
 ## 4. OQ-ALARMCONDREAL — 107 bytes per condition, on a category worth 9.4% of mass
@@ -286,6 +310,22 @@ unaffected.
 a UDT rather than a BOOL array, and the batch only covers array hosts), and whether
 alarm **sets** carry their own cost — the operator and rollup inclusion flags are true
 on every real condition and no file varies them.
+
+**What the eighteen real exports say, counted in the final review.** 4,655 of their
+4,663 alarm conditions are exactly the shape the generated sweep already prices — TRIP,
+severity 500, array-indexed input on a BOOL array host, three associated tags and an
+HMI group of at most 15 characters. The other 8 are inherited from a type-level
+definition in one program. **No real program uses alarm sets or any other condition
+type**, so neither untested item above has real exposure. And the whole-program
+results argue against the 8.8% figure: export 08, the file it came from, is predicted
+**+0.24%** overall with alarms at 21% of its memory — an 8.8% alarm under-charge would
+put it about 1.8% low.
+
+**Built: `alarmcond_realcount_n{000,200,400,600}`** — the real shape at real counts,
+host and associated arrays fixed at 640 so only the condition count moves. The existing
+real-shape sweep is exact (a flat +16 file residual) but stops at 128 conditions; this
+is the check that the law holds where real programs actually sit. If it does, the
+question closes.
 
 **Do not confuse this with the ALMD instructions**, which are parked with zero
 occurrences in the real set, or with an ordinary scheduled program named for alarms.
@@ -326,6 +366,14 @@ category scale.
 
 ---
 
+**Why no generated test answers it.** The capture pipeline converts a whole-project
+L5X into an ACD and reads Capacity. A program- or routine-scope export is not a
+project, so it cannot go through that pipeline on its own; what it costs is only
+visible by importing it into an existing project in Studio and reading Capacity
+before and after — a Studio session, not a generated file.
+
+---
+
 ## 6. OQ-BUILDFAIL-OPEN — the defect log
 
 Kept visible on purpose. Full diagnostic rules and root-cause reference are in
@@ -349,7 +397,15 @@ no longer exist, and a later sweep superseded them with 18 clean captures coveri
 all six catalogs at three module counts each. **The measurement was already on
 disk.** Check for that before asking for an error line.
 
-**CAPTURE ERRORS: 7 row(s)** flagged here by `scripts/capture_errors.py`.
+**CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py`.
+
+None is worth a new file. `almd_minimal` is the ALMD instruction, parked by
+`CLAUDE.md` (one use across eighteen real programs). `instrfirst_mapc_x10` is the old
+MAPC build whose bug `instrfirst_mapc_v2` / `_v2_x10` fixed — both captured clean.
+`instrfirst_crout_x10` errored on all 80 rungs, and CROUT has **zero** uses in the
+eighteen real programs. `predefprobe_axis_generic`'s file no longer exists. The three
+other `predefprobe_*` files that failed import four times each were retired: their
+types occur in none of the real programs.
 
 Six captured **with** Studio build errors, so their actual figures are **suspect
 rather than wrong** — part of the file may never have reached the controller, which
@@ -397,9 +453,11 @@ name term is priced, a P208 in a real file is predicted exactly only when its na
 happens to be short. The frequency of the catalog in real programs is not evidence
 about the constant -- only an isolation capture is.
 
-**What would settle it.** One sweep, module name length 4/8/12/16/20/24/32 on a
-single fixed catalog, everything else held. Seven files, differences against each
-other, no model involved. It reads the step directly instead of fitting it.
+**Built: `modname_p208_len{04,06,08,10,12,13,16,17,20,24,32,40}`** — one 2198-P208,
+no tags, no axes, only the module name length moving. Lengths include 6, 10, 13 and 17
+because the task-name finding (OQ-TASKNAMEROUND) showed only non-multiples of 8 can
+tell a round-up rule from a round-down one. It reads the step directly instead of
+fitting it.
 
 **Exposure before building anything.** Real programs carry 20-60 modules each. At
 24 bytes for a 13-character name this is on the order of a kilobyte per file against
