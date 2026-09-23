@@ -381,6 +381,20 @@ def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     return calls
 
 
+_RET_CALL = re.compile(r"\bRET\(([^()]*)\)")
+
+
+def ret_operand_counts(rung_texts: list[str]) -> tuple[int, ...]:
+    """Operands of each RET that returns values, in rung order."""
+    counts = []
+    for text in rung_texts:
+        for m in _RET_CALL.finditer(text):
+            args = [a for a in m.group(1).split(",") if a.strip()]
+            if args:
+                counts.append(len(args))
+    return tuple(counts)
+
+
 def jsr_call_args(rung_texts: list[str]) -> list[tuple[str, tuple[str, ...]]]:
     """(target, parameter arguments) for every JSR call -- the same calls
     _jsr_calls counts, with the arguments after the target and count."""
@@ -605,6 +619,9 @@ class RoutineLogic:
     # target and count excluded, so the sizer can tell an atomic argument from
     # a structure or STRING one. See memory_model.yaml jsr_param_cost.
     jsr_call_args: list[tuple[str, tuple[str, ...]]] = field(default_factory=list)
+    # Operand count of every RET in this routine that returns values (a bare
+    # RET() is left out). See memory_model.yaml jsr_param_cost, RET operands.
+    ret_operand_counts: tuple[int, ...] = ()
     # Total real BST/NXB/BND-family branch-bracket instructions across this
     # routine's rungs (OQ-BRANCHDEPTH, wired) -- see
     # _branch_bracket_instruction_count above. A single-level branch with L
@@ -912,6 +929,7 @@ def parse_rll_routines(
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
                 jsr_call_args=jsr_call_args(rung_texts),
+                ret_operand_counts=ret_operand_counts(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
                 series_output_extras=series_output_extra_count(rung_texts),
                 sbr_ret_operands=sbr_ret_operand_count(rung_texts),

@@ -276,4 +276,30 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
             ),
         ))
 
+    # --- source-protected content ---------------------------------------
+    # A source-protected routine or AOI is exported as <EncodedData>: the logic
+    # is encrypted, so neither parser sees a rung and its content is priced at
+    # zero. One real program carries 39 protected routines (~305,000 encrypted
+    # characters) and is the second-worst prediction in the real set. There is
+    # no calibration from ciphertext to compiled size, so this is reported, not
+    # estimated.
+    encoded = root.findall(".//EncodedData")
+    if encoded:
+        kinds: dict[str, int] = {}
+        for el in encoded:
+            kind = el.get("EncodedType") or "unknown"
+            kinds[kind] = kinds.get(kind, 0) + 1
+        chars = sum(len(el.text or "") for el in encoded)
+        gaps.append(CoverageGap(
+            kind="source_protected", detail="EncodedData", count=len(encoded),
+            path="coverage/source_protected",
+            message=(
+                f"{len(encoded)} source-protected item(s) "
+                f"({', '.join(f'{v} {k}' for k, v in sorted(kinds.items()))}; "
+                f"{chars:,} encrypted characters) contribute ZERO to this total -- the "
+                f"logic is encrypted in the export, so it cannot be sized. The total is "
+                f"understated by however much that logic compiles to."
+            ),
+        ))
+
     return gaps

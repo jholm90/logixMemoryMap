@@ -43,17 +43,52 @@ _ATOMIC_TYPES = frozenset({
 })
 
 
-def structured_arg_count(args, tag_types: dict[str, str]) -> int:
-    """How many of these call arguments are a whole structure or STRING: the
-    bare tag (no member path, no index) resolves to a non-atomic type."""
-    n = 0
-    for arg in args:
-        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", arg):
-            continue
-        data_type = tag_types.get(arg)
-        if data_type and data_type not in _ATOMIC_TYPES:
-            n += 1
-    return n
+def resolve_arg_type(arg: str, tag_types: dict[str, str],
+                     udt_members: dict[str, dict[str, str]] | None = None) -> str | None:
+    """DataType of a call argument: the base tag's type, then each `.Member`
+    step followed through the file's UDT definitions. An `[index]` on an array
+    tag selects one element, whose type is the tag's type. None when a step
+    cannot be followed."""
+    arg = re.sub(r"\[[^\]]*\]", "", arg.strip())
+    parts = arg.split(".")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", parts[0]):
+        return None
+    current = tag_types.get(parts[0])
+    for step in parts[1:]:
+        if current is None or step.isdigit():
+            return None
+        current = (udt_members or {}).get(current, {}).get(step)
+    return current
+
+
+def is_structured(arg: str, tag_types: dict[str, str],
+                  udt_members: dict[str, dict[str, str]] | None = None) -> bool:
+    data_type = resolve_arg_type(arg, tag_types, udt_members)
+    return bool(data_type) and data_type not in _ATOMIC_TYPES and data_type != "BIT"
+
+
+def structured_arg_count(args, tag_types: dict[str, str],
+                         udt_members: dict[str, dict[str, str]] | None = None) -> int:
+    """How many of these call arguments are a whole structure or STRING -- a
+    bare tag, an array element, or a member path whose type is non-atomic.
+    `jsredge_in_member_*` measured a UDT member argument (`W.S0`) at exactly
+    the rate of a bare UDT tag."""
+    return sum(1 for arg in args if is_structured(arg, tag_types, udt_members))
+
+
+def jsr_structured_call_bytes(routine, model, tag_types: dict[str, str],
+                              udt_members: dict[str, dict[str, str]] | None = None) -> int:
+    """Per-call cost of structured JSR arguments: each structured INPUT is
+    copied in like COP (structured_arg_call_extra), each structured RETURN is
+    copied back (structured_ret_call_extra). See memory_model.yaml
+    jsr_param_cost."""
+    total = 0
+    for (_t, n_in, _m), (_t2, args) in zip(routine.jsr_calls, routine.jsr_call_args):
+        total += model.structured_arg_call_extra * structured_arg_count(
+            args[:n_in], tag_types, udt_members)
+        total += model.structured_ret_call_extra * structured_arg_count(
+            args[n_in:], tag_types, udt_members)
+    return total
 
 
 def _resolve_call_type(operands: list[str], tag_types: dict[str, str]) -> str | None:
@@ -187,14 +222,9 @@ def compute_routine_logic_bytes(
     for _target, n_in, m_out in routine.jsr_calls:
         total += (model.jsr_param_cost.b_cost(n_in, m_out)
                   + model.jsr_param_cost.output_param_cost * m_out)
-    # A structure or STRING parameter is copied in (and a return copied back)
-    # like COP rather than MOV, and costs structured_arg_call_extra more per
-    # call. Only arguments whose base tag resolves to a non-atomic type count;
-    # an unresolved argument is left at the atomic rate.
-    if model.jsr_param_cost.structured_arg_call_extra and tag_types:
-        for _target, args in routine.jsr_call_args:
-            total += (model.jsr_param_cost.structured_arg_call_extra
-                      * structured_arg_count(args, tag_types))
+    # Structured JSR arguments (COP-style copies) are charged by report.py,
+    # which has the UDT member types needed to resolve a member-path argument;
+    # see jsr_structured_call_bytes.
 
     # Branch-bracket cost (OQ-BRANCHDEPTH) -- additive per real BST/NXB/BND-
     # family instruction the parser found (parser/logic.py

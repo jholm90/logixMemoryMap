@@ -666,6 +666,18 @@ standard total — 6.7 KB to 22.8 KB on the seven safety files with readings. Th
 readings. Excluding the rest is the correct model and moves those files 0.7 to 1.9
 points further under, so it is not the source of the gap.
 
+## Operand shape — measured, free
+
+A member-path operand costs exactly what a plain tag costs: `U.Bit`, `U.Sub.Bit`,
+`UA[2].Bit` and `PD.5` on XIC/OTE, and member source, destination and nested member on
+MOV, all exact at 250 and 1,000 rungs (`opshape_*`, 26 files). No operand-shape term.
+
+## Source-protected content — reported, not priced
+
+A source-protected routine or AOI exports as `<EncodedData>`; its logic is encrypted
+and priced at zero. The engine lists it as a coverage gap with the item count and
+encrypted size. No calibration from ciphertext to compiled size exists.
+
 ## Modules and I/O
 
 **The file is the final decision on module sizing.** A module costs its
@@ -925,13 +937,14 @@ processors only (3,582 JSR calls, 0.9% of real instructions):
 | numeric inputs | most of 1,085 input args | 0.05% mean, 0.19% worst |
 | UDT/STRING inputs, bare tag | 72 args | 0.03% mean |
 | numeric returns | ~480 args | fitted; worst file 296 bytes (0.19%) |
-| UDT/STRING returns | 53 args | not isolated; charged like an input by the copy-back mechanism |
-| member-path or literal args | 604 args | charged at the atomic rate; a member that is itself a UDT would be 8/call short |
+| UDT/STRING returns | 53 args | **measured** (`jsredge_ret_*`): +16/call over a DINT return, +12 on the target |
+| member-path or literal args | 604 args | **measured** (`jsredge_in_member_*`): a UDT member costs what a bare UDT tag costs; resolved through the UDT definitions |
+| RET that returns values | — | **measured**: 48 per RET + 22 per value, less 72 per target |
 | JSR inside an AOI | 0 | untested, no real exposure |
 
 Everything unmeasured totals a few kilobytes across all seventeen programs, under
-0.01%. JSR is closed on exposure; it cannot carry the ~3% real residual. The two
-unmeasured rows are being measured anyway by `jsredge_*` (8 files, awaiting capture).
+0.01%. JSR is closed on exposure; it cannot carry the ~3% real residual. Both formerly
+unmeasured rows are now measured; 79 JSR files sit at 0.02% mean, 0.29% worst.
 
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 

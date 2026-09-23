@@ -354,7 +354,7 @@ what a user saw:
 | question | what it needs |
 |---|---|
 | **OQ-REALUNDER** | the real residual itself, now ~3% once the JSR over-charge was removed; see section 8 |
-| **OQ-OPERANDSHAPE** | capture `opshape_*` (26 files): member-path operands are half of all real operands and have never been measured |
+| **OQ-PROGSCOPESTRUCT** | capture `progscope_*` (12 files): program-scoped UDT and array tags, densest in the three worst programs, never built. (OQ-OPERANDSHAPE closed negative: member paths are free.) |
 
 Closed since the blind test: OQ-JSRCALLERBASE (a caller routine costs what any routine
 costs), OQ-RUNGSHAPE (no per-rung term missing; 12 files exact), OQ-ALARMCONDREAL

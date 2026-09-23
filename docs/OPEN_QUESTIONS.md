@@ -1,6 +1,6 @@
 # Open Questions
 
-**Two.** Down from forty. Closed questions and their reasoning trails are in
+**Two.** Down from forty. OQ-OPERANDSHAPE closed negative in the latest batch. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -24,7 +24,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | question | state |
 |---|---|
 | **OQ-REALUNDER** | The real residual: **3.07% mean, 5.99% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
-| **OQ-OPERANDSHAPE** | The leading explanation for it: member-path operands, half of all real operands and never measured. 26 files built, awaiting capture. |
+| **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, awaiting capture. |
 
 ---
 
@@ -55,6 +55,20 @@ right response is the same: keep the correct term, find the real one.
 rungs (0.86), tags (0.85) — and it is about 20% of the engine's `routine_logic` bytes.
 No single count explains it under leave-one-out (best single term: JSR calls, LOO mean
 1.16%, worst 4.9%), and a term fitted on the real set is not an answer anyway.
+
+**Eliminated in the latest batch:**
+
+- **Operand shape.** Member paths (`U.Bit`, `U.Sub.Bit`, `UA[2].Bit`, `U.Val`) cost
+  exactly what plain tags cost on XIC, OTE and MOV — all 26 `opshape_*` files exact.
+- **Trends.** 92 trend definitions across 11 of the 17 programs, unpriced, but the
+  residual correlates *negatively* with trend and pen count (r = −0.23).
+- **JSR.** Every case now measured and wired; 79 JSR files at 0.02% mean.
+
+**Found and reported, not priceable:** source-protected content. Export 33 carries 39
+protected routines (~305,000 encrypted characters) that the engine cannot see; the
+engine now lists them as an unpriced gap instead of charging zero silently. It is the
+second-worst file, so part of its 5.6% is this, but no calibration from ciphertext to
+compiled size exists.
 
 **What distinguishes real programs from the generated files that fit.** The
 multi-program composites (`composite_realistic_v3/v4`, `v3abl_*`: 7–11 programs,
@@ -124,41 +138,16 @@ programs is judged by leave-one-out only and must beat 0.007 points.
 
 ---
 
-## 2. OQ-OPERANDSHAPE — does a member-path operand cost more than a plain tag?
+## 2. OQ-PROGSCOPESTRUCT — does a UDT or array tag cost the same at program scope?
 
-**Every instruction weight in the model was fitted on plain-tag operands.** Real
-operands, counted over every instruction call in the eighteen real programs:
+Program-scoped DINT tags are exact (`tagscope_*`, 10 to 1,000 tags). A program-scoped
+**UDT or array** tag has never been built: an element sweep over the seventeen
+standard-processor real programs found `Program/Tags/Tag/Data/Structure` and `/Array`
+in 14 of them and in no generated file that captured clean. They are densest in the
+three worst-predicted programs — exports 27, 06 and 33 carry 102, 118 and 157.
 
-| operand | real programs | composites that fit |
-|---|---:|---:|
-| plain tag | 48.7% | ~75% |
-| member path `A.B` | 32.6% | 0% |
-| nested member `A.B.C` | 15.4% | 0% |
-| deeper | 3.2% | 0% |
-| array element, constant index | 22% of operands | ~80% |
-| bit of a word `D.5` | 9% | ~25% |
-
-Array elements and bit-of-word operands are in the composites that fit, so they are
-already covered. **Member paths are half of all real operands and appear in no
-captured generated file at all** — because lint's operand resolver returned the BASE
-tag's type for `U.Bit`, refused it as a non-BOOL operand of XIC, and so blocked every
-member-path rung any generator tried to write. The resolver now follows member paths
-through the file's own UDT definitions.
-
-**Mechanism and expected movement.** If a member reference costs more than a plain
-tag in compiled logic, the under-charge scales with instruction count, which is what
-the residual does. At the ~20% of `routine_logic` the residual represents, it would
-need a few bytes per member operand; the batch measures it directly.
-
-**Batch built — 26 files, `gen_operand_shape.py`, 1756-L81E fw35, lint clean, confound
-gate clean.** One instruction per family, one operand's shape varied, identical tag
-inventory in every file, at 250 and 1,000 rungs:
-
-| family | shapes |
+| | |
 |---|---|
-| `opshape_xic_*` — `XIC(<op>)OTE(Out)` | plain, mem, nest, arrmem, bitword |
-| `opshape_ote_*` — `XIC(In)OTE(<op>)` | plain, mem, nest, arrmem |
-| `opshape_mov_*` — `MOV(<src>,<dst>)` | plain, srcmem, dstmem, nest |
-
-Each shape differences against its family's `plain` file at the same count; the two
-counts give the per-rung slope. `arrmem` and `bitword` are controls.
+| **Mechanism** | a per-program tag table, or a per-tag cost for structured program tags, the engine does not charge |
+| **Expected movement** | unknown until read; the three worst files carry the most of them |
+| **Batch built** | 12 files, `gen_program_scope_struct.py`: the identical UDT tags (7 members) and DINT[20] arrays at controller scope vs program scope, at 10, 50 and 200 tags. 1756-L81E fw35, lint and confound clean |

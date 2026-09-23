@@ -51,19 +51,20 @@ constant had been hiding: **mean 3.07%, worst 5.99% on the seventeen standard-pr
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
-### 1. Capture the operand-shape batch — OQ-OPERANDSHAPE, 26 files
+### 1. Capture the program-scope batch — OQ-PROGSCOPESTRUCT, 12 files
 
 | family | files | what it measures |
 |---|---:|---|
-| `opshape_xic_{plain,mem,nest,arrmem,bitword}_n{0250,1000}` | 10 | a read operand's shape |
-| `opshape_ote_{plain,mem,nest,arrmem}_n{0250,1000}` | 8 | a written operand's shape |
-| `opshape_mov_{plain,srcmem,dstmem,nest}_n{0250,1000}` | 8 | source vs destination member |
+| `progscope_{ctl,prog}_udt_n{010,050,200}` | 6 | a 7-member UDT tag at controller vs program scope |
+| `progscope_{ctl,prog}_arr_n{010,050,200}` | 6 | a DINT[20] array tag at controller vs program scope |
 
 | | |
 |---|---|
-| **Expected movement** | up to the whole ~3% real residual, if member operands cost more than plain tags |
-| **Mechanism** | half of all real operands are member paths (`A.B`, `A.B.C`); no calibration file has ever carried one, because lint refused them until this batch |
+| **Mechanism** | program-scoped structured tags are in 14 of 17 real programs, densest in the three worst, and have never been built |
 | **Needs** | one capture run |
+
+The operand-shape batch that held this slot closed negative: member paths cost what
+plain tags cost.
 
 ### 2. Take safety content out of the standard total (engine correctness only)
 
@@ -99,9 +100,8 @@ law. `module_io` is 2.9% of mass. See `FUTURE_TESTS.md`.
 
 ### Capture backlog
 
-34 files: the 26 `opshape_*` of item 1 and the 8 `jsredge_*` JSR parameter edges
-(structured returns, UDT-member arguments), below the noise floor but built to close
-the last two JSR cases on measurement rather than mechanism.
+12 files, the `progscope_*` of item 1. The `opshape_*` and `jsredge_*` batches are
+captured and closed.
 
 **A row captured but never differenced is work already paid for and thrown away.**
 Run `scripts/unreconciled.py` after every batch.
@@ -187,6 +187,9 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Module name length — OQ-MODULENAMELEN | **Bounded.** Law measured (name stored twice, each rounded to 8), 0.02% real exposure, not wired. |
 | AOI call arguments | **Wired.** An Input argument that is not the literal 0/1 costs 28, not 16; an RLL file with AOI calls carries a one-time 264. |
 | JSR with UDT/STRING parameters | **Wired.** A structured argument is copied like COP: +8 per call, +12 on the target. 8.0% → 0.03% on those files. |
+| Operand shape — OQ-OPERANDSHAPE | **Closed negative.** 26 files exact; member paths cost what plain tags cost. |
+| JSR parameter edges | **Wired.** UDT member args at the structured rate; UDT returns +16/call; RET values 48 + 22 each, less 72 per target. |
+| Source-protected content | **Reported.** Encrypted routines and AOIs are listed as an unpriced gap; not estimable. |
 | Safety processors in accuracy | **Excluded.** Accuracy is measured on standard processors only. |
 | 2198 repeat and unseen catalogs | **Wired.** Family-wide repeat discount of 984; unseen drives and supplies priced from their family. |
 | Verify the top instruction weights against real rung shapes | Worked. The weights hold exactly outside the shape they were fitted on. |

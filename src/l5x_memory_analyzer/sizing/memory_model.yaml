@@ -2687,9 +2687,25 @@ jsr_target_declaration:
 # structured_arg_target_extra, applied to arguments whose bare tag is a UDT,
 # STRING or other non-atomic type. Return arguments are charged the same by the
 # copy-back mechanism; no file isolates a structured RETURN yet.
+#
+# jsredge_* (100 calls each) settled the two remaining edges:
+#   * A UDT MEMBER argument (`W.S0`, type a UDT) costs what a bare UDT tag
+#     costs, within 8 bytes at 1 and 3 arguments -- so the structured check
+#     follows member paths and array elements, not only bare tags.
+#   * A UDT RETURN costs 16 more per call than a DINT return (1,608 and 4,840
+#     over 100 calls at 1 and 3 returns), twice an input's 8, plus 12 on the
+#     target: structured_ret_call_extra.
+# RET instructions that return values are not free on the target. Solving five
+# RLL files together (jsr_mixedio_5in_2out, jsr_multiret_n02/n04,
+# jsredge_ret_dint_n1/n3) gives 48 per such RET + 22 per value, less 72 once per
+# target, all five inside +-4 bytes.
 jsr_param_cost:
   structured_arg_call_extra: 8
   structured_arg_target_extra: 12
+  structured_ret_call_extra: 16
+  ret_instr_bytes: 48
+  ret_operand_bytes: 22
+  ret_target_offset: 72
   a_base: 104
   a_per_param: 20
   b_base: 4

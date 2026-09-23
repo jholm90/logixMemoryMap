@@ -645,6 +645,20 @@ class JsrParamCostModel:
     # more once on the target. See memory_model.yaml jsr_param_cost.
     structured_arg_call_extra: int = 0
     structured_arg_target_extra: int = 0
+    structured_ret_call_extra: int = 0
+    # RET instructions that return values, on the target: each costs
+    # ret_instr_bytes + ret_operand_bytes per value, less ret_target_offset
+    # once per target (floored at zero). See memory_model.yaml jsr_param_cost.
+    ret_instr_bytes: int = 0
+    ret_operand_bytes: int = 0
+    ret_target_offset: int = 0
+
+    def ret_cost(self, operand_counts) -> int:
+        if not operand_counts:
+            return 0
+        raw = (self.ret_instr_bytes * len(operand_counts)
+               + self.ret_operand_bytes * sum(operand_counts) - self.ret_target_offset)
+        return max(raw, 0)
 
     def a_cost(self, n: int) -> int:
         return self.a_base + self.a_per_param * n
@@ -1641,6 +1655,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 b_multiparam_threshold=raw["jsr_param_cost"].get("b_multiparam_threshold", 2),
                 structured_arg_call_extra=raw["jsr_param_cost"].get("structured_arg_call_extra", 0),
                 structured_arg_target_extra=raw["jsr_param_cost"].get("structured_arg_target_extra", 0),
+                structured_ret_call_extra=raw["jsr_param_cost"].get("structured_ret_call_extra", 0),
+                ret_instr_bytes=raw["jsr_param_cost"].get("ret_instr_bytes", 0),
+                ret_operand_bytes=raw["jsr_param_cost"].get("ret_operand_bytes", 0),
+                ret_target_offset=raw["jsr_param_cost"].get("ret_target_offset", 0),
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),

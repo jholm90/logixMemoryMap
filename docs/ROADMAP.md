@@ -229,6 +229,8 @@ them looks reasonable on first inspection.
 | Unpriced literal operands | Integer literals are free; every remaining literal term totals under the noise floor on eighteen real exports. |
 | The AOI population in AOI-dense programs | Real-shape copies over-predict where the real program under-predicts. Per-definition cost confirmed at real scale. |
 | The INT/SINT literal over-charge | 37 real occurrences, 1,756 bytes across eighteen programs. |
+| Operand shape (member paths) | Measured free: 26 files exact. |
+| Trends | Unpriced but anti-correlated with the residual (r = −0.23) across 17 programs. |
 | Attribution by subtraction from a real export | Dead by the read-only rule — the derived files do not import. Not merely difficult. |
 | Attribution by Studio-made deletion on a real project | Declined — every reading costs a bench session. The real residual is modelled from the real programs directly instead. |
 

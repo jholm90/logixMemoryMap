@@ -47,7 +47,7 @@ from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.alarms import size_alarm_conditions
 from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.sizing.constants import MemoryModel
-from l5x_memory_analyzer.sizing.logic import structured_arg_count
+from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
@@ -424,7 +424,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     jsr_target_structured: dict[str, int] = {}
     for routine in all_routines:
         for target, args in routine.jsr_call_args:
-            jsr_target_structured.setdefault(target, structured_arg_count(args, tag_types))
+            jsr_target_structured.setdefault(
+                target, structured_arg_count(args, tag_types, _udt_member_types))
 
     logic_entries: list[tuple[str, str, str, int, str]] = list(aoi_logic_entries)
     n_plain_routines = 0
@@ -462,6 +463,9 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
             a_cost += (model.logic_instructions.jsr_param_cost.structured_arg_target_extra
                        * jsr_target_structured.get(routine.routine_name, 0))
+            # Its RETs that return values (jsr_multiret_*, jsr_mixedio_*,
+            # jsredge_ret_*): 48 per RET + 22 per value, less 72 per target.
+            a_cost += model.logic_instructions.jsr_param_cost.ret_cost(routine.ret_operand_counts)
             a_basis = model.logic_instructions.jsr_param_cost.confidence
             # Declaring a distinct target costs more than its parameter
             # block alone (refit over all 61 captured JSR
@@ -542,6 +546,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         logic_bytes, logic_basis = compute_routine_logic_bytes(
             routine, model.logic_instructions, tag_types, charge_shell=False
         )
+        logic_bytes += jsr_structured_call_bytes(
+            routine, model.logic_instructions.jsr_param_cost, tag_types, _udt_member_types)
         # An RLL file that calls an AOI carries a one-time 264 beyond the
         # call sites themselves: dscale2_aoi_*, defscale_aoiinst and
         # litop_bool_* all read exactly +264 (+252) with the call sites priced.

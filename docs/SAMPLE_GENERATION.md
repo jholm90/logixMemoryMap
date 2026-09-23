@@ -328,7 +328,20 @@ needs an actual regeneration and diff, every time.**
 
 ---
 
-## Current batch: operand shape — OQ-OPERANDSHAPE, 26 files
+## Current batch: program-scoped structured tags — OQ-PROGSCOPESTRUCT, 12 files
+
+`gen_program_scope_struct.py`. The identical tags at controller scope and at program
+scope (MainProgram), at 10, 50 and 200: a 7-member UDT (4 DINT, 2 BOOL, REAL) and a
+DINT[20] array. One NOP rung in every file.
+
+| family | differenced against |
+|---|---|
+| `progscope_ctl_{udt,arr}_n*` | `progscope_prog_*` at the same count |
+| `progscope_prog_{udt,arr}_n*` | `progscope_ctl_*` at the same count, and its own other counts |
+
+## Previous batch: operand shape — OQ-OPERANDSHAPE, 26 files
+
+**Captured: all 26 exact, zero errors.** Closed negative.
 
 `gen_operand_shape.py`. One instruction per family, one operand's shape varied, the
 identical tag inventory (plain BOOL/DINT tags, a UDT `U` with a BOOL, a DINT and a
@@ -344,7 +357,7 @@ Building it required a lint fix: the operand resolver returned the base tag's ty
 `U.Bit` and refused it as a non-BOOL XIC operand, which is why no earlier file carried
 a member-path operand. It now follows member paths through the file's UDTs.
 
-### Added to the current batch: JSR parameter edges, 8 files
+### JSR parameter edges, 8 files — captured, all zero errors, wired
 
 `gen_jsr_param_edges.py`, 100 calls per file, identical tag inventory within each arm.
 

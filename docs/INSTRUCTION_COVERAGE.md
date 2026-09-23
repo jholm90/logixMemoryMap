@@ -60,10 +60,10 @@ with both files at the same +12 of file overhead. The third point,
 
 ## Two caveats that bound every "exact" claim here
 
-**0. Every weight was fitted with plain-tag operands.** Half of all real operands are
-member paths (`A.B` 32.6%, `A.B.C` 15.4%, deeper 3.2%) and no calibration file has
-carried one — lint refused them until OQ-OPERANDSHAPE's batch. Whether a member
-reference costs more is the leading open explanation for the ~3% real residual.
+**0. Operand shape does not change the weights.** Half of all real operands are
+member paths (`A.B` 32.6%, `A.B.C` 15.4%, deeper 3.2%). The `opshape_*` batch put
+member, nested-member, UDT-array-member and bit-of-word operands on XIC, OTE and MOV,
+and every file was exact against the plain-tag weights (OQ-OPERANDSHAPE, closed).
 
 
 **1. Every weight was fitted with DINT, LINT or REAL operands.** Operand type

@@ -1694,6 +1694,71 @@ a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn
 capture slot ahead of the literal-operand batch. It is recorded because it explains a
 specific wrong-looking confidence tier, not because it is worth a session.
 
+## OQ-OPERANDSHAPE — a member-path operand costs what a plain tag costs
+
+**CLOSED NEGATIVE.** All 26 `opshape_*` files are exact against the engine as it
+stood: member paths (`U.Bit`), nested members (`U.Sub.Bit`), UDT-array members
+(`UA[2].Bit`) and bit-of-word (`PD.5`) on XIC and OTE, and member source, member
+destination and nested member on MOV, at 250 and 1,000 rungs. Operand shape does not
+carry the real residual.
+
+What the batch did find: lint's operand resolver refused `U.Bit` as a non-BOOL
+operand, which is why no earlier generated file had ever carried a member path. It
+now follows member paths through the file's UDTs.
+
+## JSR parameter edges — structured returns and UDT-member arguments
+
+**SOLVED and wired** from `jsredge_*` (8 files, 100 calls each):
+
+- A **UDT member argument** (`W.S0`, of UDT type) costs exactly what a bare UDT tag
+  costs; the structured check now follows member paths and array elements.
+- A **UDT return value** costs 16 more per call than a DINT return (twice an input's
+  8), plus 12 on the target.
+- A **RET that returns values** costs 48 plus 22 per value, less 72 once per target —
+  five RLL files solved together, all inside ±4 bytes.
+
+JSR files now 0.02% mean, 0.29% worst across 79 rows.
+
+### The question as it stood before the capture
+
+
+**Every instruction weight in the model was fitted on plain-tag operands.** Real
+operands, counted over every instruction call in the eighteen real programs:
+
+| operand | real programs | composites that fit |
+|---|---:|---:|
+| plain tag | 48.7% | ~75% |
+| member path `A.B` | 32.6% | 0% |
+| nested member `A.B.C` | 15.4% | 0% |
+| deeper | 3.2% | 0% |
+| array element, constant index | 22% of operands | ~80% |
+| bit of a word `D.5` | 9% | ~25% |
+
+Array elements and bit-of-word operands are in the composites that fit, so they are
+already covered. **Member paths are half of all real operands and appear in no
+captured generated file at all** — because lint's operand resolver returned the BASE
+tag's type for `U.Bit`, refused it as a non-BOOL operand of XIC, and so blocked every
+member-path rung any generator tried to write. The resolver now follows member paths
+through the file's own UDT definitions.
+
+**Mechanism and expected movement.** If a member reference costs more than a plain
+tag in compiled logic, the under-charge scales with instruction count, which is what
+the residual does. At the ~20% of `routine_logic` the residual represents, it would
+need a few bytes per member operand; the batch measures it directly.
+
+**Batch built — 26 files, `gen_operand_shape.py`, 1756-L81E fw35, lint clean, confound
+gate clean.** One instruction per family, one operand's shape varied, identical tag
+inventory in every file, at 250 and 1,000 rungs:
+
+| family | shapes |
+|---|---|
+| `opshape_xic_*` — `XIC(<op>)OTE(Out)` | plain, mem, nest, arrmem, bitword |
+| `opshape_ote_*` — `XIC(In)OTE(<op>)` | plain, mem, nest, arrmem |
+| `opshape_mov_*` — `MOV(<src>,<dst>)` | plain, srcmem, dstmem, nest |
+
+Each shape differences against its family's `plain` file at the same count; the two
+counts give the per-rung slope. `arrmem` and `bitword` are controls.
+
 # Process, tooling and scope
 
 ## OQ-GENMETHOD — can hand-built XML be imported
