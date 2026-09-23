@@ -17,7 +17,7 @@ a real finding not modeled anywhere else in this project: a Kinetix power
 supply module gets its OWN AXIS_CIP_DRIVE tag too (a "bus power" axis,
 e.g. real tag `Bus1_GNT_Power`, MotionModule="<power supply name>:Ch1"),
 not just the drive modules. Confirmed real, corpus-verbatim, from
-DnR_Personal/a real export: same exact
+a real export: same exact
 `<Data Format="Axis"><AxisParameters .../></Data>` shape already validated
 by gen_axis_composite.py/OQ-AXISDEEP for a normal drive axis -- a bus
 power tag is not a different or smaller shape, it's the SAME AXIS_CIP_DRIVE
@@ -46,7 +46,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from sample_gen.gen_module_motion import _axis_tag, _MOTION_GROUP_TAG_XML
+from sample_gen.gen_module_motion import _axis_tag, _dcbus_axis_tag, _MOTION_GROUP_TAG_XML
 from sample_gen.gen_module_sweep import _MODULE_CHAINS
 from sample_gen.gen_module_sweep_variants import _MODULE_VARIANTS
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -68,7 +68,7 @@ def _variant_2conn(catalog: str) -> str:
     return next(xml for label, xml, source, chain_len in _MODULE_VARIANTS[catalog] if label == "2conn")
 
 
-def main() -> None:
+def main(suffix: str = "") -> None:
     ps1_xml = _rename(_MODULE_CHAINS["2198-P031"][0], "Bus1_PowerSupply", "192.168.1.201")
     drive1_xml = _rename(_variant_2conn("2198-D032-ERS3"), "Bus1_Drive_D032", "192.168.1.202")
 
@@ -80,59 +80,52 @@ def main() -> None:
 
     tags_xml = "\n".join([
         _MOTION_GROUP_TAG_XML,
-        _axis_tag("Bus1_Power_Axis", "Bus1_PowerSupply:Ch1"),
+        # A bus supply's own axis is a CONVERTER axis, not a servo axis. Built
+        # with the servo template, Studio converts the file and then fails
+        # Build once per drive module on bus sharing -- the diagnosis in
+        # gen_module_motion.bus_supply_with_converter, enforced by lint as
+        # kinetix_axis_without_converter. That is why the original file
+        # never built.
+        _dcbus_axis_tag("Bus1_Power_Axis", "Bus1_PowerSupply:Ch1"),
         _axis_tag("Bus1_Drive_X_Axis", "Bus1_Drive_D032:Ch1"),
         _axis_tag("Bus1_Drive_Z_Axis", "Bus1_Drive_D032:Ch3"),
-        _axis_tag("Bus2_Power_Axis", "Bus2_PowerSupply:Ch1"),
+        _dcbus_axis_tag("Bus2_Power_Axis", "Bus2_PowerSupply:Ch1"),
         _axis_tag("Bus2_Drive057_Trav_Axis", "Bus2_Drive_D057:Ch1"),
         _axis_tag("Bus2_Drive057_Xfer_Axis", "Bus2_Drive_D057:Ch3"),
         _axis_tag("Bus2_Drive020_Chuck_Axis", "Bus2_Drive_D020:Ch1"),
         _axis_tag("Bus2_Drive020_Sf_Axis", "Bus2_Drive_D020:Ch3"),
     ])
 
-    # REBUILT on 1756-L83E, no safety.
+    # Built on the default 1756-L81E at firmware 35, like every generated file.
     #
-    # The previous build used 1756-L85ES + SIL2, and the reasoning behind
-    # that choice was wrong on both halves.
-    #
-    # It failed conversion outright with E_INVALIDARG, because the L85ES
-    # ProductCode this project carries is a guess -- gen_fw_catalog_matrix.py
-    # records that same catalog as "fails on line 1 of the l5x" and refuses
-    # to generate it until a real sample lands. Building anything else on
-    # that catalog inherits the same broken code.
-    #
-    # The note that justified it claimed a non-safety -ERS3 shape "needs
-    # config data captured from a real non-safety module, which this
-    # project does not have". That was false when it was written. The
-    # 2conn variant used here was donated by
-    # a real export -- a 1756-L83E, a plain
-    # non-safety controller -- and every block carries SafetyEnabled=
-    # "false" already. The real non-safety config was in the corpus the
-    # whole time.
-    #
-    # L83E rather than L81E for the one part of the old note that held up:
-    # three dual-axis drives plus two power supplies do not fit an L81E's
-    # 3 MB. L83E is the smallest standard catalog with the headroom, and
-    # it is what the donor file itself runs.
+    # The original was built on 1756-L85ES + SIL2, which failed conversion with
+    # E_INVALIDARG because the L85ES ProductCode this project carries is a
+    # guess. It was then moved to 1756-L83E on the claim that three dual-axis
+    # drives and two power supplies do not fit an L81E's 3 MB. That was wrong:
+    # the file captured at 230,896 bytes, under a tenth of the L81E's memory.
+    # The 2conn variant used here was donated by a plain non-safety 1756-L83E
+    # export and every block already carries SafetyEnabled="false".
     l5x = build_l5x(
         target_name="KinetixFullBus", tags_xml=tags_xml, extra_modules_xml=modules_xml,
-        processor_type="1756-L83E",
     )
-    out_path = OUT_ROOT / "modulerack_kinetix_full_bus.L5X"
+    out_path = OUT_ROOT / f"modulerack_kinetix_full_bus{suffix}.L5X"
     write_sample_unmodeled(l5x, out_path)
     append_manifest_row(
-        "modulerack_kinetix_full_bus",
+        f"modulerack_kinetix_full_bus{suffix}",
         "Full Kinetix 5700 shared-bus test: 2 real DC buses (2198-P031+2198-D032-ERS3 "
         "dual-axis on bus 1, 2198-P070+2198-D057-ERS3+2198-D020-ERS3 dual-axis on bus 2), "
         "5 real module catalogs + 8 real AXIS_CIP_DRIVE tags (6 drive axes + 2 'bus power' "
         "axes, one per power supply) in one real Motion Group, verbatim topology from "
-        "DnR_Personal/a real export. Module XML reused from gen_module_sweep.py/"
+        "a real export. Module XML reused from gen_module_sweep.py/"
         "gen_module_sweep_variants.py, axis tags reused from gen_module_motion.py's "
-        "validated _axis_tag helper. See OQ-MODULEIO.",
+        "validated _axis_tag helper. See OQ-MODULEIO."
+        + (" -- OQ-BUILDFAIL-OPEN re-trigger under a new name on 1756-L81E fw35 so the build's "
+           "Studio error log is recorded" if suffix else ""),
         "modules", out_path, 0,
     )
     print("Done. 1 Kinetix full-bus file written (5 modules, 8 axes).")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[sys.argv.index("--suffix") + 1] if "--suffix" in sys.argv else "")

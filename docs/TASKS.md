@@ -50,7 +50,7 @@ counted on all eighteen real exports and is worth **1,756 bytes across all of th
 It is closed. The queue is now short, and every item on it either needs a capture or
 needs a real program.
 
-### 1. Capture the waiting batch — 48 files
+### 1. Capture the waiting batch — 52 files
 
 Every open capture was regenerated under a new file name — the conversion and capture
 tooling skip any name they have already seen, so a file attempted once never surfaced
@@ -65,6 +65,7 @@ again — and every open question that a generated file can answer got a family:
 | `composite_realistic_*_r3` | 9 | composite instrument, rebuilt build-valid |
 | `litop_bool_*_n01000_r2` | 4 | OQ-LITERALOPERAND BOOL arm |
 | `instrfirst_mapc_v2_x100` | 1 | third count point for MAPC, already wired EXACT at 260 bytes/call |
+| `almd_{minimal,realtext}_r2`, `eventtask_axiswatch_r2`, `modulerack_kinetix_full_bus_r2` | 4 | OQ-BUILDFAIL-OPEN re-triggers, for their Studio error lines |
 
 All lint clean, all 1756-L81E at firmware 35, and every isolation family passes the
 confound gate. The blind set is done — six readings in, recorded as exports 31–36.
@@ -129,7 +130,7 @@ mass. See `FUTURE_TESTS.md`.
 
 ### Capture backlog
 
-Item 1 is the whole backlog: 48 files, every one under a name the tooling has never
+Item 1 is the whole backlog: 52 files, every one under a name the tooling has never
 seen. Nothing older is waiting. The stale rows that were never going to be captured —
 `jsr_callerdist_*`, `composite_realistic_*_r2`, the 1769 `fwmatrix_*`, the alarm
 condition-type arm, `predefprobe_*`, `cipmodule_*` — were either superseded by an item-1
@@ -228,4 +229,4 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Partial exports on import — OQ-EXPORTSCOPE | **Closed, accepted in use.** AOI, UDT and program imports behave as needed; the unmeasured import shell stays uncharged. |
 | Attribute the real residual with Studio-made deletions | **Declined.** Costs a bench session per reading. Struck from the plan; item 3 is what remains. |
 | MAPC | **EXACT.** 260 bytes per call, the measured step between 1 and 10 rungs; `instrfirst_mapc_v2_x100` is its third point. |
-| CROUT and the rest of the Safety family | **Ignored.** Out of scope, zero real uses; `instrfirst_crout_x10` stays in the defect log only as an owned errored row. |
+| CROUT and the rest of the Safety family | **Ignored.** Out of scope, zero real uses; `instrfirst_crout_x10`'s errored row is owned by OQ-SAFETY. |

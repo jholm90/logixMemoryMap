@@ -27,7 +27,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
 | **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
-| **OQ-BUILDFAIL-OPEN** | A defect log. Kept visible on purpose. |
+| **OQ-BUILDFAIL-OPEN** | A defect log. Four files re-triggered for their Studio error lines; closes when they land. |
 | **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
 ---
@@ -348,47 +348,39 @@ One real program carries both this and such a program.
 
 ## 5. OQ-BUILDFAIL-OPEN — the defect log
 
-Kept visible on purpose. Full diagnostic rules and root-cause reference are in
-`OPEN_BUILD_ERRORS.md`; this entry exists so the errored rows have an owner.
+Full diagnostic rules and root-cause reference are in `OPEN_BUILD_ERRORS.md`; this
+entry exists so errored rows have an owner.
 
-**What is genuinely still failing, and what each would buy:**
+### Re-triggered, awaiting the Studio error log
 
-| file | what it measures |
-|---|---|
-| `almd_minimal`, `almd_realtext` | **ALMD instruction cost.** The other alarm mechanism, still completely unmeasured. Parked while ALMD has zero real occurrences, so low priority despite being unmeasured. |
-| `eventtask_axiswatch` | EVENT-task trigger cost. |
-| `modulerack_kinetix_full_bus` | Never captured at all — the recorded error count has no row behind it. |
+The capture tooling now records Studio's error text, but it skips any file name it has
+already seen, so every file below was rebuilt under a new name. **This question closes
+when these four come back** — each either builds clean or returns an error line that
+names its cause.
 
-**What is needed:** the real Studio error line. **Nothing in this repo diagnoses any
-of them** — the generators' own comments are silent, so the cause must come from the
-error log rather than a guess. **Guessing is what produced the invented alarm
-condition types, all four of which failed.**
+| file | original | what it measures | what changed |
+|---|---|---|---|
+| `almd_minimal_r2` | `almd_minimal` | ALMD instruction and ALARM_DIGITAL tag cost | nothing — the 7-operand fix was made after the original's capture, which was cleared as stale and never retried |
+| `almd_realtext_r2` | `almd_realtext` | whether ALMD message/class text costs bytes | same |
+| `eventtask_axiswatch_r2` | `eventtask_axiswatch` | Axis-Watch EVENT task trigger | nothing — the original captured on a 5069-L306ER before the processor override was dropped |
+| `modulerack_kinetix_full_bus_r2` | `modulerack_kinetix_full_bus` | two shared Kinetix 5700 DC buses, 8 axes | **fixed**: both bus supplies now carry a converter axis instead of a servo axis (lint's `kinetix_axis_without_converter`, the known build failure), and the processor is 1756-L81E fw35 instead of an L83E that was justified on a false memory claim — the file measures 230 KB against 3 MB |
 
-The 2198 drive half of this entry **closed without needing an error log**: those files
-no longer exist, and a later sweep superseded them with 18 clean captures covering
-all six catalogs at three module counts each. **The measurement was already on
-disk.** Check for that before asking for an error line.
+The ALMD pair is generated despite the ALMD park because the goal is to close the defect
+log, not to work the instruction: one build, one error line, then both are either priced
+or closed out.
 
-**CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py`.
+### Moved out, because the cause is already known
 
-None is worth a new file. `almd_minimal` is the ALMD instruction, parked by
-`CLAUDE.md` (one use across eighteen real programs). `instrfirst_mapc_x10` is the old
-MAPC build whose bug `instrfirst_mapc_v2` / `_v2_x10` fixed — both captured clean, and MAPC is now wired EXACT from them.
-`instrfirst_crout_x10` errored on all 80 rungs; CROUT is a Safety-family
-instruction, out of scope under OQ-SAFETY and **ignored** — zero uses in the eighteen
-real programs, and no rebuild will be made. `predefprobe_axis_generic`'s file no longer exists. The three
-other `predefprobe_*` files that failed import four times each were retired: their
-types occur in none of the real programs.
+| row | now owned by | why no re-trigger |
+|---|---|---|
+| `instrfirst_mapc_x10` | OQ-MAMFAMILY-BUILDFAIL | the original MAPC generator bugs; `_v2` and `_v2_x10` captured clean and MAPC is EXACT |
+| `instrfirst_crout_x10` | OQ-SAFETY | CROUT needs a safety CPU; Safety family ignored |
+| `predefprobe_axis_generic` | OQ-PREDEFINED | AXIS_GENERIC is in none of the real programs; file gone |
 
-Six captured **with** Studio build errors, so their actual figures are **suspect
-rather than wrong** — part of the file may never have reached the controller, which
-inflates apparent over-prediction. **None carries any error text**: every errored row
-in the manifest predates the error-log reader, so these need **recapture** before
-their numbers are used. Plus committed files attempted and never reached `ok`.
+**CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` —
+`almd_minimal`, until its `_r2` re-trigger lands.
 
-Run `python scripts/capture_errors.py --list` for the current row identities rather
-than reading a list here, which goes stale.
-
+Run `python scripts/capture_errors.py --list` for the current row identities.
 
 ---
 

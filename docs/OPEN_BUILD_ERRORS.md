@@ -17,44 +17,34 @@ later success supersedes an earlier failure:
 
 | | count |
 |---|---:|
-| committed generated L5X | 3,531 |
-| last status `ok` | 3,490 |
-| last status FAILED | **3** |
-| no conversion record at all | **38** |
+| committed generated L5X | 3,580 |
+| last status `ok` | 3,528 |
+| last status FAILED | **0** |
+| no conversion record at all | **52** |
 
-### The three failures
+**No conversion failures.** The three `predefprobe_*` files that failed import four
+times each were retired: their types occur in none of the real programs.
 
-`predefprobe_ref_to_axis_cip_drive`, `predefprobe_ref_to_axis_virtual`,
-`predefprobe_timer_t`.
+### The 52 with no record — the waiting batch
 
-All three lint clean. All three report only
-`XMLSrv_E_IMPORT_ABORTED_NO_CHANGES`, which **names nothing** — it says the
-import was refused and to read Studio's own error log.
+Every one is a file built under a name the tooling has never seen, so it is picked up
+on the next run:
 
-**What is needed:** the raw Studio error-log line for one of them. The generic
-message cannot distinguish a bad slot, an unsupported catalog, a missing XML
-block or a connection-config mismatch, and guessing between those has already
-produced one wrong diagnosis.
+| family | files | question |
+|---|---:|---|
+| `modname_p208_len*` | 12 | OQ-MODULENAMELEN |
+| `rungpack_{xic,equ}_k*` | 12 | OQ-RUNGSHAPE |
+| `composite_realistic_*_r3` | 9 | composite instrument; lint defects of the `_r2` builds cleared |
+| `jsrcallers_k*` | 6 | OQ-JSRCALLERBASE |
+| `alarmcond_realcount_n*` | 4 | OQ-ALARMCONDREAL |
+| `litop_bool_*_n01000_r2` | 4 | OQ-LITERALOPERAND BOOL arm |
+| `almd_minimal_r2`, `almd_realtext_r2` | 2 | OQ-BUILDFAIL-OPEN re-trigger |
+| `eventtask_axiswatch_r2` | 1 | OQ-BUILDFAIL-OPEN re-trigger |
+| `modulerack_kinetix_full_bus_r2` | 1 | OQ-BUILDFAIL-OPEN re-trigger, converter axes fixed |
+| `instrfirst_mapc_v2_x100` | 1 | MAPC third point |
 
-The capture harness records the error-log text into the `error_log` column, so a
-recapture carries the real line without anyone reading it off a screen.
-
-### The 38 with no record
-
-**29 are the `litop_*` batch**, built and awaiting their first submission. Not
-failures.
-
-**9 are `composite_realistic_{10,11,22,32,34,36,46,47,48}_r2`** — committed, never
-submitted even once. Lint flags real defects in eight of them, which must be
-cleared before a first attempt is worth making:
-
-| file | lint findings |
-|---|---|
-| 10, 11, 36, 47, 48 | `safety_module_on_non_safety_controller` |
-| 22 | `duplicate_module_slot`, `non_sequential_module_slots` |
-| 32 | `kinetix_drive_without_bus_supply` |
-| 34 | all three of the above |
-| 46 | clean — submit as-is |
+The four re-triggers exist to have their Studio error log recorded; the capture
+harness writes it into the `error_log` column.
 
 ---
 

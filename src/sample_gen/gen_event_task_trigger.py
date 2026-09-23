@@ -119,6 +119,10 @@ def main() -> None:
         "isolating PERIODIC-vs-EVENT cost. No existing calibration file has ever used Type=\"EVENT\".",
     )
 
+    _axiswatch()
+
+
+def _axiswatch(suffix: str = "", note: str = "") -> None:
     # EventTrigger="Axis Watch" -- needs a real controller-scope
     # AXIS_CIP_DRIVE tag as the EventTag target (confirmed real shape:
     # Export 21's EM108_GradingLC). the "MAW" question maps to this --
@@ -133,16 +137,30 @@ def main() -> None:
         extra_programs_xml=extra_program2, extra_tasks_xml=extra_task2,
     )
     _write_unmodeled(
-        l5x2, "eventtask_axiswatch",
+        l5x2, f"eventtask_axiswatch{suffix}",
         "1 Continuous + 1 EVENT Task (EventTrigger=\"Axis Watch\", EventTag pointing at a real "
         "AXIS_CIP_DRIVE controller-scope tag, real corpus shape confirmed against export 21's "
         "DataMove_GradingLC task/EM108_GradingLC axis) -- identical to eventtask_instronly except "
         "trigger source, isolating whether Axis-Watch-triggered EVENT tasks (what the \"MAW\" "
         "question maps to) cost differently from EVENT()-instruction-triggered ones. The extra "
         "AXIS_CIP_DRIVE tag itself has its own real, separately-modeled cost -- watch for that "
-        "confound when reconciling captures.",
+        "confound when reconciling captures." + note,
     )
 
 
+
+def regenerate_open() -> None:
+    """Rebuild eventtask_axiswatch under a new name.
+
+    The capture tooling skips any file name it has already seen. The original
+    was captured once on a 5069-L306ER before the processor override was
+    dropped, with one build error and no error text, so the current file never
+    reached a controller. The `_r2` copy exists to be built once and have its
+    Studio error log recorded.
+    """
+    _axiswatch("_r2", " -- OQ-BUILDFAIL-OPEN re-trigger under a new name so the build's "
+                      "Studio error log is recorded; content identical to the original file")
+
 if __name__ == "__main__":
-    main()
+    import sys
+    regenerate_open() if "--regenerate-open" in sys.argv else main()

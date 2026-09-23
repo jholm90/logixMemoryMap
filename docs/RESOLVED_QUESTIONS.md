@@ -746,6 +746,10 @@ CIP-Drive/Virtual pairing is not required.
 Reclassified OUT OF SCOPE alongside DCS — there is nothing to fix on a standard
 controller.
 
+**CAPTURE ERRORS: 1 row(s)** — `instrfirst_mapc_x10`, the original MAPC build with
+both generator bugs, 20 errors. Cause known and fixed: `instrfirst_mapc_v2` and
+`_v2_x10` captured with zero errors and MAPC is wired EXACT from them. No re-trigger.
+
 ## OQ-BTD — **SOLVED**, along with COP, CPS, FLL and SIZE. All five shared one cause: an array-typed operand emitted without its `[index]`. **Such a file converts cleanly and never compiles at scale**, which is why every one returned an identical byte count regardless of rung count.
 
 ## OQ-EMPTYROUTINE — **SOLVED.** A routine's fixed base is 4,816, confirmed identical across 42 instructions; 5,096 for a routine containing a JSR.
@@ -1172,6 +1176,11 @@ variance, but not capture-confirmed, and two of them rest on a single instance e
 **None is drillable to a per-field breakdown** — only the total is confirmed, field
 counts vary widely, and a fabricated even split would misrepresent that.
 
+
+**CAPTURE ERRORS: 1 row(s)** — `predefprobe_axis_generic`, 1 error, captured with a
+window-title mismatch and its file no longer exists. AXIS_GENERIC occurs in none of the
+eighteen real programs, so it is retired with the other absent predefprobe types rather
+than re-triggered.
 ## OQ-AXISSTRUCT / OQ-AXISDEEP / OQ-AXISCOMBO — axis structures
 
 **SOLVED as empirical constants, with a discrepancy recorded rather than resolved.**
@@ -1320,6 +1329,13 @@ work.
 ## OQ-L5XVERSION — **CLOSED.** The corpus spans several schema revisions and the parser handles them. Two older revisions have no real sample in hand and are backlogged rather than guessed.
 
 ## OQ-SAFETY — **SOLVED.** A safety project's total is understated, and the UI warns. Safety-family instructions are out of scope.
+
+CROUT and the rest of the Safety family (DCS, ROUT, ESTOP, RIN) are **ignored**: no
+test file is built for them and a failed build of one is not pursued.
+
+**CAPTURE ERRORS: 1 row(s)** — `instrfirst_crout_x10`, 80 errors, one per rung-level
+CROUT on a standard controller. The cause is the instruction itself needing a safety
+CPU. No re-trigger.
 
 ## OQ-COMMENTS — **SOLVED.** An RLL rung comment is free. **An ST comment needed testing separately** and is also free — the RLL result does not transfer, because a rung comment is a separate element while an ST comment sits inside compiled source text.
 

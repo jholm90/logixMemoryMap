@@ -24,8 +24,8 @@ the Status word, same aliasing pattern as TIMER's .EN/.TT/.DN and MESSAGE's
 .FLAGS bits -- NOT separate storage), InAlarmTime/AckTime/RetToNormalTime/
 AlarmCountResetTime/ShelveTime/UnshelveTime = 6 LINT) is sourced directly
 from RM018A pages 53-64 and cross-validated exactly against the real
-`Comms_Bus1_ALMD` tag in export 17
-r00.L5X` (every Input-Parameter attribute name matches verbatim). Whether the
+`Comms_Bus1_ALMD` tag in export 17 (every Input-Parameter attribute name
+matches verbatim). Whether the
 31 scalar BOOL members bit-pack (8-per-hidden-SINT, the confirmed convention
 for consecutive BOOL members in ordinary UDTs) or take a full byte/word each
 in this controller-native structure is UNCONFIRMED -- native predefined
@@ -102,7 +102,16 @@ def _write(out_name: str, l5x: str, description: str) -> None:
     print(f"Wrote {out_path} (predicted N/A -- ALARM_DIGITAL unmodeled, see OQ-PREDEFINED)")
 
 
-def main() -> None:
+# Re-trigger note appended to the `_r2` descriptions. The capture tooling skips
+# any file name it has already seen, so the ALMD fix below never reached a
+# controller under the original names; the `_r2` copies exist to be built once
+# and have their Studio error log recorded.
+_RETRIGGER_NOTE = (" -- OQ-BUILDFAIL-OPEN re-trigger under a new name so the build's Studio "
+                   "error log is recorded; content identical to the original file")
+
+
+def main(suffix: str = "") -> None:
+    note = _RETRIGGER_NOTE if suffix else ""
     # ALMD's REAL operand list, read straight off the Studio 5000
     # faceplate after both files failed with "Rung 0, ALMD:
     # Invalid number of arguments for instruction."
@@ -130,9 +139,9 @@ def main() -> None:
     l5x_minimal = build_l5x(target_name="AlmdMinimal",
                              tags_xml=_POOL_TAGS_XML + "\n" + minimal_tag, extra_rungs_xml=rung)
     _write(
-        "almd_minimal", l5x_minimal,
+        f"almd_minimal{suffix}", l5x_minimal,
         "ALMD(Alm1), minimal 1-char AlarmClass/message text -- isolates ALARM_DIGITAL structure's "
-        "own byte cost (OQ-PREDEFINED sibling gap, RM018A pages 53-64 member list wired)",
+        "own byte cost (OQ-PREDEFINED sibling gap, RM018A pages 53-64 member list wired)" + note,
 )
 
     real_message = "Kinetix Bus 1 Communications Fault"
@@ -141,14 +150,15 @@ def main() -> None:
     l5x_real = build_l5x(target_name="AlmdRealtext",
                           tags_xml=_POOL_TAGS_XML + "\n" + real_tag, extra_rungs_xml=rung)
     _write(
-        "almd_realtext", l5x_real,
+        f"almd_realtext{suffix}", l5x_real,
         "ALMD(Alm1), real-length AlarmClass/message text copied verbatim from samples/local/ "
         "Comms_Bus1_ALMD -- tests whether AlarmConfig message/class text adds to the tag's real "
-        "byte cost vs. almd_minimal",
+        "byte cost vs. almd_minimal" + note,
 )
 
     print("\nDone. 2 files.")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[sys.argv.index("--suffix") + 1] if "--suffix" in sys.argv else "")

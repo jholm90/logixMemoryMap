@@ -330,7 +330,7 @@ needs an actual regeneration and diff, every time.**
 
 ## Current batch: every open capture, regenerated, plus the open questions
 
-47 files. The conversion and capture tooling skip any file name they have already
+52 files. The conversion and capture tooling skip any file name they have already
 seen, so an open capture that was attempted once — or never reached the converter —
 never surfaced again. Everything open was rebuilt under a new name, and every open
 question a generated file can answer got a family.
@@ -343,6 +343,10 @@ question a generated file can answer got a family.
 | `alarmcond_realcount_n{000,200,400,600}` | 4 | `gen_alarm_real_count.py` | OQ-ALARMCONDREAL |
 | `composite_realistic_{10,11,22,32,34,36,46,47,48}_r3` | 9 | `gen_composite_realistic.py --regenerate-open` | composite instrument |
 | `litop_bool_{alltag,zero,one,dint}_n01000_r2` | 4 | `gen_literaloperand.py` arm F | OQ-LITERALOPERAND |
+| `instrfirst_mapc_v2_x100` | 1 | `gen_instruction_firstpass.group_mapc_v2(count=100)` | MAPC third point |
+| `almd_{minimal,realtext}_r2` | 2 | `gen_almd_singletag.py --suffix _r2` | OQ-BUILDFAIL-OPEN |
+| `eventtask_axiswatch_r2` | 1 | `gen_event_task_trigger.py --regenerate-open` | OQ-BUILDFAIL-OPEN |
+| `modulerack_kinetix_full_bus_r2` | 1 | `gen_module_kinetix_bus.py --suffix _r2` | OQ-BUILDFAIL-OPEN |
 
 The nine composites were never sent because lint refused them — a CIP Safety module on
 a non-safety controller, two modules in one slot, a Kinetix drive with no bus supply.

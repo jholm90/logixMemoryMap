@@ -41,7 +41,7 @@ made the confidence display wrong were found and fixed — one of them meant com
 AOI ladder was shown as *exact*, against the project's core rule. Real-program
 evaluation now works in any checkout, and six blind predictions are on record.
 
-**What is left.** Capture the 48 files now waiting (section 6). Then attack the real
+**What is left.** Capture the 52 files now waiting (section 6). Then attack the real
 residual with the method in section 8, which is the only lever that has not been
 exhausted. The six blind readings came back while this report was being written;
 section 3.2 carries them.
@@ -345,7 +345,7 @@ what a user saw:
 | **OQ-REALUNDER** | the real residual itself; see section 8 |
 | **OQ-RUNGSHAPE** | a per-rung term confounded with every instruction weight; a packing sweep with a non-output instruction |
 | **OQ-ALARMCONDREAL** | alarm conditions land 0.16% on one real program and 8.8% short on the other |
-| **OQ-BUILDFAIL-OPEN** | the defect log of files that do not build |
+| **OQ-BUILDFAIL-OPEN** | the defect log; four files re-triggered under new names for their Studio error lines, closes when they land |
 | **OQ-MODULENAMELEN** | a module's name length costs bytes the engine charges at zero |
 
 ### Captures waiting
@@ -359,6 +359,7 @@ what a user saw:
 | `composite_realistic_*_r3` | 9 | rebuilt build-valid |
 | `litop_bool_*_r2` | 4 | rebuilt under new names |
 | `instrfirst_mapc_v2_x100` | 1 | MAPC third point; already Exact |
+| `almd_*_r2`, `eventtask_axiswatch_r2`, `modulerack_kinetix_full_bus_r2` | 4 | OQ-BUILDFAIL-OPEN re-triggers |
 
 ### Smaller items recorded, deliberately not worked
 
@@ -379,8 +380,8 @@ what a user saw:
 - **Studio-made deletions on real programs.** Declined; costs a bench session per
   reading. Section 8 no longer relies on it.
 - **CROUT and the rest of the Safety family** (DCS, ROUT, ESTOP, RIN). Ignored — out of
-  scope under OQ-SAFETY, zero real uses. `instrfirst_crout_x10` stays in the defect log
-  only because its errored row must have an owner.
+  scope under OQ-SAFETY, zero real uses. `instrfirst_crout_x10`'s errored row is owned by
+  OQ-SAFETY.
 
 ### Decisions only the owner can make
 
