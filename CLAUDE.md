@@ -25,8 +25,8 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 3.12% on the eighteen real programs present, worst case 6.0%,
-every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
+**Mean absolute error 3.07% on the seventeen standard-processor real programs present,
+worst case 5.99%, every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
 constant was proven wrong (OQ-JSRCALLERBASE); that constant had been cancelling about
 3% of real content that is still unexplained (OQ-REALUNDER, OQ-OPERANDSHAPE).
 
@@ -71,6 +71,13 @@ only when the corpus itself is the subject, never as the project's accuracy.
 
 Active: **1756-L8x** and **5069 / CompactLogix 5380**. Both are represented in the
 real set.
+
+**Accuracy is measured on STANDARD processors only.** A safety processor (catalog
+ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags and safety
+logic in a separate memory partition that standard Capacity does not count, so its
+reading is not the quantity the model predicts. Safety-processor rows, real and
+generated, are excluded from every accuracy figure — enforced in
+`scripts/quick_eval.py` (`--include-safety` to report them).
 
 **Every generated test file is 1756-L81E at firmware 35.** No exceptions. The point
 is comparability: a file on any other processor or firmware cannot be differenced

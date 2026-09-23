@@ -23,15 +23,17 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **3.12% mean, 6.0% worst** on the eighteen real programs present, after a compensating error was removed. |
+| **OQ-REALUNDER** | The real residual: **3.07% mean, 5.99% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
 | **OQ-OPERANDSHAPE** | The leading explanation for it: member-path operands, half of all real operands and never measured. 26 files built, awaiting capture. |
 
 ---
 
 ## 1. OQ-REALUNDER — the residual itself
 
-**Mean 3.12%, worst 6.0%, every one of the eighteen real programs present
-under-predicting** (sum-weighted +3.20%). That is worse than the 1.74% it read before
+**Standard processors only: mean 3.07%, worst 5.99%, every one of the seventeen
+standard-processor real programs present under-predicting.** Safety processors are
+excluded from accuracy (CLAUDE.md, Platform scope). Including export 13, the one
+safety program in the original set: mean 3.12%, worst 6.0% (sum-weighted +3.20%). That is worse than the 1.74% it read before
 this batch, and the difference is a correction, not a regression:
 
 - The per-caller `jsr_fixed_base_per_routine` (5,096) had only ever been measured on
@@ -41,7 +43,9 @@ this batch, and the difference is a correction, not a regression:
 - The AOI argument cost (input references at 28, not 16) moved it back to 3.12%.
 - The 2198 family repeat discount moved it to 3.13% — right on the Kinetix files,
   slightly wrong-way on real programs that carry many drives.
-- The one-time 264 an RLL file with AOI calls carries moved it to **3.12%**.
+- The one-time 264 an RLL file with AOI calls carries moved it to 3.12%.
+- Excluding safety processors from accuracy, and pricing structured JSR arguments as
+  COP-style copies, leave the standard-processor figure at **3.07%**.
 
 So about **3% of every real program is still unexplained**, and the old 1.7% figure was
 that 3% partly cancelled by an error. This is CLAUDE.md failure mode 3 exactly, and the
@@ -70,7 +74,8 @@ see OQ-OPERANDSHAPE.
 | 42 | 1769-L33ERMS | 884,640 | 840,245 | −5.02% | yes — dead architecture, excluded from accuracy |
 
 All six under-predict, by 4.2% to 8.7%; four of six inside the range written down in
-advance. On the five in scope the mean is 5.82%. Five are safety controllers, but their
+advance. **None counts toward accuracy**: five are safety processors and one is a 1769,
+both out of scope. They are recorded as evidence of direction only. On the five in scope the mean is 5.82%. Five are safety controllers, but their
 safety content is small — one safety program, 2–8% of rungs — and does not explain it.
 
 **Safety memory is a separate partition.** A safety controller keeps safety tags and

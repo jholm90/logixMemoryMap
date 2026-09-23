@@ -19,7 +19,8 @@ can find the array, UDT or routine that is about to cause "memory full" before a
 download fails.
 
 **How accurate it is — current.** After the capture batch that followed the blind set,
-the eighteen real programs present read **mean 3.12%, worst 6.0%, all under-predicting.**
+the seventeen standard-processor real programs present read **mean 3.07%, worst 5.99%,
+all under-predicting** (safety processors are excluded from accuracy).
 That batch proved the per-caller JSR shell constant wrong (OQ-JSRCALLERBASE); it had
 been cancelling about 3% of real content that is still unexplained. The figures in the
 table below are the state *before* that correction, kept because the blind test was

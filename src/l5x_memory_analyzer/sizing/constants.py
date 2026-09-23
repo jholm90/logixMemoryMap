@@ -640,6 +640,11 @@ class JsrParamCostModel:
     output_param_cost: int
     b_multiparam_extra: int = 0
     b_multiparam_threshold: int = 2
+    # A structure or STRING argument is copied like COP, not like MOV: it costs
+    # structured_arg_call_extra more per call and structured_arg_target_extra
+    # more once on the target. See memory_model.yaml jsr_param_cost.
+    structured_arg_call_extra: int = 0
+    structured_arg_target_extra: int = 0
 
     def a_cost(self, n: int) -> int:
         return self.a_base + self.a_per_param * n
@@ -1634,6 +1639,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 output_param_cost=raw["jsr_param_cost"]["output_param_cost"],
                 b_multiparam_extra=raw["jsr_param_cost"].get("b_multiparam_extra", 0),
                 b_multiparam_threshold=raw["jsr_param_cost"].get("b_multiparam_threshold", 2),
+                structured_arg_call_extra=raw["jsr_param_cost"].get("structured_arg_call_extra", 0),
+                structured_arg_target_extra=raw["jsr_param_cost"].get("structured_arg_target_extra", 0),
             ),
             branch_bracket_cost_per_instruction=raw["logic_instructions"]["branch_bracket_cost_per_instruction"],
             aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),

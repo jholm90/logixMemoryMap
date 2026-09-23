@@ -47,6 +47,7 @@ from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.alarms import size_alarm_conditions
 from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.sizing.constants import MemoryModel
+from l5x_memory_analyzer.sizing.logic import structured_arg_count
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
@@ -418,6 +419,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     for routine in all_routines:
         for target, n_in, _m_out in routine.jsr_calls:
             jsr_target_param_counts.setdefault(target, n_in)
+    # Structured (UDT/STRING) parameters per distinct target, read off the first
+    # call to it -- the target-side half of the COP-style copy.
+    jsr_target_structured: dict[str, int] = {}
+    for routine in all_routines:
+        for target, args in routine.jsr_call_args:
+            jsr_target_structured.setdefault(target, structured_arg_count(args, tag_types))
 
     logic_entries: list[tuple[str, str, str, int, str]] = list(aoi_logic_entries)
     n_plain_routines = 0
@@ -453,6 +460,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # since it belongs to the callee, not the caller.
             n = jsr_target_param_counts.get(routine.routine_name)
             a_cost = model.logic_instructions.jsr_param_cost.a_cost(n) if n is not None else 0
+            a_cost += (model.logic_instructions.jsr_param_cost.structured_arg_target_extra
+                       * jsr_target_structured.get(routine.routine_name, 0))
             a_basis = model.logic_instructions.jsr_param_cost.confidence
             # Declaring a distinct target costs more than its parameter
             # block alone (refit over all 61 captured JSR

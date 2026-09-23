@@ -47,7 +47,8 @@ are too small to carry the residual.
 Re-ranked after the capture batch that followed the blind set. That batch closed five
 questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
 by correcting the JSR caller base, exposed a larger real residual that a wrong
-constant had been hiding: **real-set mean 3.12%, worst 6.0%**, all under-predicting.
+constant had been hiding: **mean 3.07%, worst 5.99% on the seventeen standard-processor
+real programs**, all under-predicting.
 Every item below is aimed at that.
 
 ### 1. Capture the operand-shape batch — OQ-OPERANDSHAPE, 26 files
@@ -64,7 +65,10 @@ Every item below is aimed at that.
 | **Mechanism** | half of all real operands are member paths (`A.B`, `A.B.C`); no calibration file has ever carried one, because lint refused them until this batch |
 | **Needs** | one capture run |
 
-### 2. Take safety content out of the standard total
+### 2. Take safety content out of the standard total (engine correctness only)
+
+Safety processors are out of scope for accuracy, so this no longer moves any headline
+number; it is about a safety user's report being right.
 
 Safety tags and safety logic live in a separate memory partition. Exclude Class="Safety"
 program logic and Class="Safety" tags from the standard total; keep the measured 296
@@ -85,13 +89,6 @@ wire it and re-measure. If they do not, the next candidates in order are the oth
 things real rungs have and calibration rungs do not: many instructions per rung with
 mixed operand shapes, and program-scoped tags at real density. No term is fitted on
 the real set itself.
-
-### 5. JSR with UDT or STRING parameters
-
-Exact with no parameters (23 files), 0.05% with numeric parameters (20), but **8.0% mean,
-13.1% worst** with UDT or STRING parameters (12). Count how many real JSR calls pass a
-UDT or STRING before building anything; below 0.5% of real instructions it is closed on
-exposure.
 
 ### 4. Structural module model — generalisation
 
@@ -187,6 +184,8 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Build-failure log — OQ-BUILDFAIL-OPEN | **Closed.** Every file builds; causes enforced in lint. |
 | Module name length — OQ-MODULENAMELEN | **Bounded.** Law measured (name stored twice, each rounded to 8), 0.02% real exposure, not wired. |
 | AOI call arguments | **Wired.** An Input argument that is not the literal 0/1 costs 28, not 16; an RLL file with AOI calls carries a one-time 264. |
+| JSR with UDT/STRING parameters | **Wired.** A structured argument is copied like COP: +8 per call, +12 on the target. 8.0% → 0.03% on those files. |
+| Safety processors in accuracy | **Excluded.** Accuracy is measured on standard processors only. |
 | 2198 repeat and unseen catalogs | **Wired.** Family-wide repeat discount of 984; unseen drives and supplies priced from their family. |
 | Verify the top instruction weights against real rung shapes | Worked. The weights hold exactly outside the shape they were fitted on. |
 | Controller tag shapes | Closed negative. The residual is not in tag data space. |

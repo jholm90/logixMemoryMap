@@ -13,7 +13,9 @@ evidence that counts.
 
 ### Current — after the capture batch that followed the blind set
 
-**Eighteen real programs present: mean absolute error 3.12%, worst 5.99%, every one
+**Standard processors only — seventeen real programs present: mean absolute error
+3.07%, worst 5.99%.** Safety processors are excluded from accuracy (CLAUDE.md). With
+export 13, the one safety program: eighteen programs, mean 3.12%, worst 5.99%, every one
 under-predicting (sum-weighted −3.20%).** Stopping rule NOT MET.
 
 This is worse than the 1.67% below, and it is a correction rather than a regression.
@@ -30,7 +32,7 @@ at it.
 | export 27 | -5.99% |
 | blind_03 | -5.60% |
 | export 06 | -5.33% |
-| export 13 | -4.05% |
+| export 13 (safety processor, excluded) | -4.05% |
 | export 16 | -3.66% |
 | blind_02 | -3.38% |
 | export 07 | -3.20% |

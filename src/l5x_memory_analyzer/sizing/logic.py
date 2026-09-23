@@ -37,6 +37,25 @@ _CPT_INTEGER_OPERAND_TYPES = frozenset({"SINT", "INT", "DINT"})
 _CPT_NARROW_OPERAND_TYPES = frozenset({"SINT", "INT"})
 
 
+_ATOMIC_TYPES = frozenset({
+    "BOOL", "SINT", "INT", "DINT", "LINT", "USINT", "UINT", "UDINT", "ULINT",
+    "REAL", "LREAL",
+})
+
+
+def structured_arg_count(args, tag_types: dict[str, str]) -> int:
+    """How many of these call arguments are a whole structure or STRING: the
+    bare tag (no member path, no index) resolves to a non-atomic type."""
+    n = 0
+    for arg in args:
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", arg):
+            continue
+        data_type = tag_types.get(arg)
+        if data_type and data_type not in _ATOMIC_TYPES:
+            n += 1
+    return n
+
+
 def _resolve_call_type(operands: list[str], tag_types: dict[str, str]) -> str | None:
     """The first operand that resolves to a known bare-tag type -- every
     typesweep_* calibration file uses one uniform operand type per call,
@@ -168,6 +187,14 @@ def compute_routine_logic_bytes(
     for _target, n_in, m_out in routine.jsr_calls:
         total += (model.jsr_param_cost.b_cost(n_in, m_out)
                   + model.jsr_param_cost.output_param_cost * m_out)
+    # A structure or STRING parameter is copied in (and a return copied back)
+    # like COP rather than MOV, and costs structured_arg_call_extra more per
+    # call. Only arguments whose base tag resolves to a non-atomic type count;
+    # an unresolved argument is left at the atomic rate.
+    if model.jsr_param_cost.structured_arg_call_extra and tag_types:
+        for _target, args in routine.jsr_call_args:
+            total += (model.jsr_param_cost.structured_arg_call_extra
+                      * structured_arg_count(args, tag_types))
 
     # Branch-bracket cost (OQ-BRANCHDEPTH) -- additive per real BST/NXB/BND-
     # family instruction the parser found (parser/logic.py

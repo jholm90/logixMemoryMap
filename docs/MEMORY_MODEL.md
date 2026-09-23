@@ -652,6 +652,9 @@ content.
 
 ## Safety memory is a separate partition — requirement, not yet wired
 
+Accuracy is measured on standard processors only; safety-processor rows are excluded
+from every accuracy figure (`quick_eval.py`).
+
 **Safety memory is a separate partition.** A safety controller keeps safety tags and
 safety logic in its own memory, which does not count toward the standard memory that
 Capacity reports for standard logic and data. Non-safety tags may not be used in a
@@ -901,10 +904,17 @@ covered it by accident.
 |---|---:|---:|---:|
 | no parameters | 23 | 0.000% | 0.000% |
 | numeric parameters | 20 | 0.049% | 0.190% |
-| UDT or STRING parameters | 12 | **7.98%** | **13.05%** |
+| UDT or STRING parameters | 12 | 7.98% → **0.03%** | 13.05% → **0.09%** |
 
-A UDT or STRING parameter is under-charged by thousands of bytes per file on the
-fitted A(n)/B(n) model; its real exposure has not been counted yet (TASKS item 5).
+**Why: a JSR parameter is copied.** With no parameters a JSR is a plain jump to
+another routine. With parameters, each input argument is copied into the target's
+local parameter on entry and each return value copied back on RET — an atomic value
+like MOV, a structure or STRING like COP. The structure copy costs **8 more per
+argument per call** and about **12 once per structured parameter on the target**
+(`structured_arg_call_extra`, `structured_arg_target_extra`), from
+`jsr_paramtype_{udt,string}_n{01..08}_r00100`: +796 per parameter over 100 calls, linear
+from 1 to 8 parameters. REAL parameters were already exact. A structured RETURN is
+charged the same by the copy-back mechanism; no file isolates one yet.
 
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 

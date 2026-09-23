@@ -381,6 +381,19 @@ def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     return calls
 
 
+def jsr_call_args(rung_texts: list[str]) -> list[tuple[str, tuple[str, ...]]]:
+    """(target, parameter arguments) for every JSR call -- the same calls
+    _jsr_calls counts, with the arguments after the target and count."""
+    calls: list[tuple[str, tuple[str, ...]]] = []
+    for text in rung_texts:
+        for m in _JSR_CALL_START.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None or len(args) < 2 or not args[1].strip().isdigit():
+                continue
+            calls.append((args[0].strip(), tuple(a.strip() for a in args[2:])))
+    return calls
+
+
 # Indirect (tag-driven) array addressing (OQ-INDIRECT, wired).
 # Real data (indirect_tag_index_n*/indirect_tag_offset_index_n*, 4 count
 # points each 10/50/100/1000, ALL exact once the tiny universal +4 flat
@@ -588,6 +601,10 @@ class RoutineLogic:
     # A(n) is NOT yet adjusted for output param count, see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
     jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
+    # The parameter ARGUMENTS of each of those calls (inputs then outputs),
+    # target and count excluded, so the sizer can tell an atomic argument from
+    # a structure or STRING one. See memory_model.yaml jsr_param_cost.
+    jsr_call_args: list[tuple[str, tuple[str, ...]]] = field(default_factory=list)
     # Total real BST/NXB/BND-family branch-bracket instructions across this
     # routine's rungs (OQ-BRANCHDEPTH, wired) -- see
     # _branch_bracket_instruction_count above. A single-level branch with L
@@ -894,6 +911,7 @@ def parse_rll_routines(
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
+                jsr_call_args=jsr_call_args(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
                 series_output_extras=series_output_extra_count(rung_texts),
                 sbr_ret_operands=sbr_ret_operand_count(rung_texts),

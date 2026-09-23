@@ -2671,7 +2671,25 @@ jsr_target_declaration:
   per_target_confidence: KNOWN
   confidence: FITTED
 
+# A JSR PARAMETER IS COPIED. With no parameters a JSR is a plain jump to another
+# routine. With parameters, each input argument is copied into the target's
+# local parameter on entry (SBR) and each return value copied back on RET --
+# an atomic value like MOV, a structure or STRING like COP. The copy of a
+# structure costs more:
+#
+#   jsr_paramtype_{udt,string}_n{01..08}_r00100 (100 calls each)
+#     n params    1     2      3      4      5      6      8
+#     residual  +796 +1,596 +2,432 +3,232 +4,060 +4,864 +6,496
+#   jsr_paramtype_real_n05_r00100: -16 (atomic, already exact)
+#
+# = 8 more per structured argument per call, plus about 12 once per structured
+# parameter on the target. Wired as structured_arg_call_extra /
+# structured_arg_target_extra, applied to arguments whose bare tag is a UDT,
+# STRING or other non-atomic type. Return arguments are charged the same by the
+# copy-back mechanism; no file isolates a structured RETURN yet.
 jsr_param_cost:
+  structured_arg_call_extra: 8
+  structured_arg_target_extra: 12
   a_base: 104
   a_per_param: 20
   b_base: 4

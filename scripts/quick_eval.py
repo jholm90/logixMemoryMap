@@ -69,8 +69,37 @@ STOP_MAX_PCT = 2.0
 _DEAD_PROCESSOR = re.compile(r"1756-L7|^1769-|L1[0-9]ER|L2[0-9]ER|L3[0-9]ER", re.I)
 
 
+# Safety processors -- GuardLogix / Compact GuardLogix, catalog ending S, S2 or
+# S3 (1756-L81ES, 5069-L320ERMS2, 5069-L320ERMS3). Excluded from every accuracy
+# figure, real and generated alike: estimation is measured on STANDARD
+# processors only. A safety controller keeps safety tags and safety logic in a
+# separate memory partition, so its standard Capacity reading is not the same
+# quantity the model is built to predict. --include-safety puts them back.
+_SAFETY_PROCESSOR = re.compile(r"-L\w*S[23]?$", re.I)
+_HEADER_PROCESSOR = re.compile(r'ProcessorType="([^"]+)"')
+
+
+def _processor(row: dict) -> str:
+    """The row's processor catalog: from the capture when it was recorded,
+    otherwise from the L5X header. Real captures often carry no controller
+    field, and the file itself is the authority."""
+    recorded = (row.get("controller_model") or "").strip()
+    if recorded and recorded.upper() not in ("UNKNOWN", "PROCTYPE-UNREAD"):
+        return recorded
+    try:
+        with open(REPO / row["l5x_path"], encoding="utf-8-sig", errors="ignore") as f:
+            match = _HEADER_PROCESSOR.search(f.read(4000))
+    except OSError:
+        return recorded
+    return match.group(1) if match else recorded
+
+
 def _is_dead_architecture(row: dict) -> bool:
-    return bool(_DEAD_PROCESSOR.search(row.get("controller_model") or ""))
+    return bool(_DEAD_PROCESSOR.search(_processor(row)))
+
+
+def _is_safety_processor(row: dict) -> bool:
+    return bool(_SAFETY_PROCESSOR.search(_processor(row)))
 
 
 
@@ -176,6 +205,9 @@ def main() -> int:
     ap.add_argument("--include-dead", action="store_true",
                     help="also report 1756-L7x / 1769 rows, which are dead "
                          "architecture and cannot move the real-set number")
+    ap.add_argument("--include-safety", action="store_true",
+                    help="also report safety-processor rows (catalog ending S/S2/S3); "
+                         "accuracy is measured on standard processors only")
     ap.add_argument("--real-only", action="store_true",
                     help="the real production exports and nothing else -- no "
                          "generated sentinels. The accuracy claim, on its own")
@@ -185,12 +217,18 @@ def main() -> int:
     args = ap.parse_args()
 
     rows = _rows()
-    dead = 0
+    dead = safety = 0
     if not args.include_dead:
-        keep = [r for r in rows
-                if r["category"] == REAL_CATEGORY or not _is_dead_architecture(r)]
+        keep = [r for r in rows if not _is_dead_architecture(r)]
         dead = len(rows) - len(keep)
         rows = keep
+    if not args.include_safety:
+        keep = [r for r in rows if not _is_safety_processor(r)]
+        safety = len(rows) - len(keep)
+        rows = keep
+    if safety:
+        print(f"excluded {safety} safety-processor row(s); estimation is measured on "
+              f"standard processors only (--include-safety to report them)")
     picked = select(rows, args.family, args.full, args.lenient)
     if args.real_only:
         picked = [r for r in picked if r["category"] == REAL_CATEGORY]
