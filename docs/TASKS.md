@@ -47,7 +47,7 @@ are too small to carry the residual.
 Re-ranked after the capture batch that followed the blind set. That batch closed five
 questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
 by correcting the JSR caller base, exposed a larger real residual that a wrong
-constant had been hiding: **mean 3.07%, worst 5.99% on the seventeen standard-processor
+constant had been hiding: **mean 2.86%, worst 5.42% on the seventeen standard-processor
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
@@ -65,6 +65,16 @@ Every item below is aimed at that.
 
 The operand-shape batch that held this slot closed negative: member paths cost what
 plain tags cost.
+
+### 1a. Measure real-shape multi-output rungs — the series-output contradiction
+
+18 of the 25 worst generated files are series outputs: 12 bytes cheaper per extra
+output, exact on 16+ files, rejected by the real set. Real programs carry 1,900–11,800
+extra outputs each. Proposed batch, to be approved before it is built: files whose
+rungs reproduce the most common real rung SKELETONS — instruction sequence, branch
+structure and operand kind (tag / member / literal / array) — with generated tag names
+only, so the real rung mix is priced against a real Capacity reading in isolation. No
+real rung text, tag name or value is carried over.
 
 ### 2. Take safety content out of the standard total (engine correctness only)
 
@@ -190,6 +200,7 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Operand shape — OQ-OPERANDSHAPE | **Closed negative.** 26 files exact; member paths cost what plain tags cost. |
 | JSR parameter edges | **Wired.** UDT member args at the structured rate; UDT returns +16/call; RET values 48 + 22 each, less 72 per target. |
 | Source-protected content | **Reported.** Encrypted routines and AOIs are listed as an unpriced gap; not estimable. |
+| Source-protected AOIs and routines | **Priced at a minimum**: stand-in definition from visible Parameters (instances, calls, interface); routine shells. UI banner says MINIMUM. 3.06% → 2.86%. |
 | Safety processors in accuracy | **Excluded.** Accuracy is measured on standard processors only. |
 | 2198 repeat and unseen catalogs | **Wired.** Family-wide repeat discount of 984; unseen drives and supplies priced from their family. |
 | Verify the top instruction weights against real rung shapes | Worked. The weights hold exactly outside the shape they were fitted on. |

@@ -672,11 +672,16 @@ A member-path operand costs exactly what a plain tag costs: `U.Bit`, `U.Sub.Bit`
 `UA[2].Bit` and `PD.5` on XIC/OTE, and member source, destination and nested member on
 MOV, all exact at 250 and 1,000 rungs (`opshape_*`, 26 files). No operand-shape term.
 
-## Source-protected content — reported, not priced
+## Source-protected content — priced at a minimum
 
-A source-protected routine or AOI exports as `<EncodedData>`; its logic is encrypted
-and priced at zero. The engine lists it as a coverage gap with the item count and
-encrypted size. No calibration from ciphertext to compiled size exists.
+A source-protected AOI exports as `<EncodedData EncodedType="AddOnInstructionDefinition">`
+with its `<Parameters>` in clear text; a protected routine as `<EncodedData
+EncodedType="Routine">` with only its name. `parser/protected.py` gives each protected
+AOI a stand-in definition from its visible parameters, so the definition interface,
+every instance tag and every call site are priced as for any AOI; each protected
+routine pays the ordinary routine shell. Encrypted local tags and logic cannot be
+sized: the coverage audit reports them with counts and encrypted size, and the UI
+banner states the total is a MINIMUM.
 
 ## Modules and I/O
 

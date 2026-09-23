@@ -23,14 +23,14 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **3.07% mean, 5.99% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
+| **OQ-REALUNDER** | The real residual: **2.86% mean, 5.42% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
 | **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, awaiting capture. |
 
 ---
 
 ## 1. OQ-REALUNDER — the residual itself
 
-**Standard processors only: mean 3.07%, worst 5.99%, every one of the seventeen
+**Standard processors only: mean 2.86%, worst 5.42% (after protected-content pricing), every one of the seventeen
 standard-processor real programs present under-predicting.** Safety processors are
 excluded from accuracy (CLAUDE.md, Platform scope). Including export 13, the one
 safety program in the original set: mean 3.12%, worst 6.0% (sum-weighted +3.20%). That is worse than the 1.74% it read before
@@ -45,7 +45,8 @@ this batch, and the difference is a correction, not a regression:
   slightly wrong-way on real programs that carry many drives.
 - The one-time 264 an RLL file with AOI calls carries moved it to 3.12%.
 - Excluding safety processors from accuracy, and pricing structured JSR arguments as
-  COP-style copies, leave the standard-processor figure at **3.07%**.
+  COP-style copies, leave the standard-processor figure at 3.07%.
+- Pricing source-protected AOIs and routines at a minimum brought it to **2.86%**.
 
 So about **3% of every real program is still unexplained**, and the old 1.7% figure was
 that 3% partly cancelled by an error. This is CLAUDE.md failure mode 3 exactly, and the
@@ -56,6 +57,46 @@ rungs (0.86), tags (0.85) — and it is about 20% of the engine's `routine_logic
 No single count explains it under leave-one-out (best single term: JSR calls, LOO mean
 1.16%, worst 4.9%), and a term fitted on the real set is not an answer anyway.
 
+**The worst 25 generated files** — every clean standard-processor capture (3,130
+rows) recomputed against the current engine, worst by |%|:
+
+| # | file | error | what it is |
+|---:|---|---:|---|
+| 1–2 | `srout_ote_k08`, `sroutc_c01_k08` | +126% | 1,000 rungs of one XIC then 8 OTEs in a row |
+| 3, 5 | `sroutc_c02_k08`, `sroutc_c04_k08` | +118%, +106% | the same with 2 or 4 conditions before the outputs |
+| 4, 6, 8 | `srout_ote_k07/k06/k05` | +115% / +102% / +88% | 7, 6, 5 OTEs in a row |
+| 7 | `bridge_placeholder_ten` | +95% | 10 ETHERNET-BRIDGE modules, no connections |
+| 9 | `srout_branch_k08` | +82% | 8 OTEs in parallel branch legs under one condition |
+| 10–14 | `srout_ote_k04`, `srout_same_k04`, `sroutc_*_k04` | +57% to +71% | 4 outputs in a row, same or repeated types |
+| 15 | `pioconn_enhanced_n16` | +53% | POINT I/O adapter + 16 1734-IB8 cards, Enhanced (non-rack) connection |
+| 16 | `srout_ote_k03` | +52% | 3 OTEs in a row |
+| 17 | `srout_branch_k04` | +51% | 4 OTEs in parallel legs |
+| 18 | `litop_form_floatform` | −51% | 1,000 `MOV(5.0, DINT)` — float-written literal into an integer |
+| 19 | `prodcons_produced` | −49% | 20 Produced tags (force-closed below the noise floor) |
+| 20 | `cptnar_j3of6` | −44% | `CPT` into a DINT from REAL operands (known narrowing defect) |
+| 21 | `pioconn_enhdata_n16` | +35% | POINT I/O, one InputData connection per card |
+| 22 | `srout_mixed_k04` | +33% | OTE, MOV, ADD, CLR in a row |
+| 23 | `cptnar_j5of6` | −32% | CPT narrowing again |
+| 24 | `closeout_cptmix_ddintoreal_m1` | −32% | CPT into a DINT mixing REAL and DINT operands |
+| 25 | `addit_dn_lh` (and 5 more `addit_*_lh`) | +31% | 4,000 rungs of `XIC MOV ADD OTE` — three outputs in a row |
+
+(+ is over-prediction.)
+
+**What they say.** 18 of the 25 are one thing: **series outputs.** Every output after
+the first in a rung measures exactly 12 bytes cheaper than its own weight, over 16+
+files, and the engine does not apply it because real programs rejected it. Real
+programs carry 1,900–11,800 such extra outputs each (0.5–1.5% of their bytes), so
+applying the discount would push the real set to ~4% under. The generated corpus and
+the real set therefore disagree about multi-output rungs, and the disagreement is the
+same order as the gap. Restricting the discount to outputs with no condition between
+them still covers ~60% of real extras, so no rewording of the rule fixes it — real
+multi-output rungs need to be measured in a real shape.
+
+Nearly every other large miss is an **over**-prediction too (bridge placeholders,
+POINT I/O Enhanced cards), while the real set is **under**-predicted. Fixing the
+generated corpus's worst rows moves real programs the wrong way: the real gap is
+content the generated corpus does not contain, not a mispriced rule it does.
+
 **Eliminated in the latest batch:**
 
 - **Operand shape.** Member paths (`U.Bit`, `U.Sub.Bit`, `UA[2].Bit`, `U.Val`) cost
@@ -64,7 +105,7 @@ No single count explains it under leave-one-out (best single term: JSR calls, LO
   residual correlates *negatively* with trend and pen count (r = −0.23).
 - **JSR.** Every case now measured and wired; 79 JSR files at 0.02% mean.
 
-**Found and reported, not priceable:** source-protected content. Export 33 carries 39
+**Source-protected content — now priced at a minimum and flagged.** Export 33 carries 39
 protected routines (~305,000 encrypted characters) that the engine cannot see; the
 engine now lists them as an unpriced gap instead of charging zero silently. It is the
 second-worst file, so part of its 5.6% is this, but no calibration from ciphertext to

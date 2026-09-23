@@ -715,3 +715,11 @@ rect.tile-empty-space {
 .type-row-click { cursor: pointer; border-radius: 3px; }
 .type-row-click:hover { background: rgba(255,255,255,.07); }
 .type-row-click:hover .type-name { color: var(--accent); }
+
+/* Source-protected content turns the total into a minimum; the banner says so
+   in the error colour rather than the ordinary notice style. */
+#errors-banner.errors-banner-protected {
+  background: var(--error-bg, #7a1f1f);
+  color: var(--error-fg, #fff);
+  font-weight: 600;
+}

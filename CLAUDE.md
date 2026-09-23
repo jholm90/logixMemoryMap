@@ -25,8 +25,8 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 3.07% on the seventeen standard-processor real programs present,
-worst case 5.99%, every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
+**Mean absolute error 2.86% on the seventeen standard-processor real programs present,
+worst case 5.42%, every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
 constant was proven wrong (OQ-JSRCALLERBASE); that constant had been cancelling about
 3% of real content that is still unexplained (OQ-REALUNDER, OQ-OPERANDSHAPE).
 

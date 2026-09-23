@@ -46,6 +46,7 @@ from l5x_memory_analyzer.parser.tasks import parse_tasks
 from l5x_memory_analyzer.sizing.confidence import weakest
 from l5x_memory_analyzer.sizing.alarms import size_alarm_conditions
 from l5x_memory_analyzer.sizing.coverage import audit_coverage
+from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, protected_routine_elements
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
@@ -86,6 +87,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # exactly like a UDT-typed one (merged dict below), but AOI *definition*
     # cost isn't a confirmed formula yet (see udt.py/report.py comments),
     # so only true UDTs get a definition-cost line item for now.
+    # Protected AOIs get a stand-in definition from their visible interface,
+    # so their instances and call sites are priced at a minimum rather than
+    # zero. See parser/protected.py.
+    add_protected_aoi_standins(root)
     udt_types = parse_data_types(root)
     aoi_types = parse_aoi_definitions(root)
     data_types = {**udt_types, **aoi_types}
@@ -647,6 +652,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             st_bytes + st_instr_bytes,
             weakest(model.structured_text.confidence, st_instr_basis),
         ))
+
+    # A protected routine is still a routine: its shell is priced like any
+    # other, its encrypted content is not (reported by audit_coverage).
+    for program_name, enc in protected_routine_elements(root):
+        n_plain_routines += 1
+        plain_routine_names.append((program_name, enc.get("Name") or ""))
 
     if n_plain_routines > 0 and scope.is_whole_controller:
         # PROJECT-ONLY: this whole decomposition is

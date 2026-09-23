@@ -311,8 +311,14 @@ function renderErrors() {
   }
 
   // Banner stays short on purpose -- a count and an invitation, not detail.
+  // Source-protected content is the one gap that makes the whole total a
+  // floor rather than an estimate, so it is named in the banner itself.
   banner.classList.remove("hidden");
-  banner.textContent =
+  const isProtected = errors.some(e => (e.path || "") === "coverage/source_protected");
+  banner.classList.toggle("errors-banner-protected", isProtected);
+  banner.textContent = (isProtected
+      ? "Source-protected routines or AOIs: this total is a MINIMUM. "
+      : "") +
     `${errors.length} item${errors.length === 1 ? "" : "s"} could not be priced — click for detail`;
 
   // Grouped by the leading path segment, so 40 variations of one underlying

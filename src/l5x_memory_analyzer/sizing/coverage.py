@@ -277,28 +277,34 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
         ))
 
     # --- source-protected content ---------------------------------------
-    # A source-protected routine or AOI is exported as <EncodedData>: the logic
-    # is encrypted, so neither parser sees a rung and its content is priced at
-    # zero. One real program carries 39 protected routines (~305,000 encrypted
-    # characters) and is the second-worst prediction in the real set. There is
-    # no calibration from ciphertext to compiled size, so this is reported, not
-    # estimated.
+    # Priced at a MINIMUM, never silently at zero: a protected AOI's visible
+    # Parameters give it a stand-in definition (instances, call sites and the
+    # definition interface are priced), and a protected routine pays its
+    # routine shell. The encrypted local tags and logic cannot be sized.
     encoded = root.findall(".//EncodedData")
     if encoded:
-        kinds: dict[str, int] = {}
-        for el in encoded:
-            kind = el.get("EncodedType") or "unknown"
-            kinds[kind] = kinds.get(kind, 0) + 1
-        chars = sum(len(el.text or "") for el in encoded)
+        aois = [el for el in encoded if el.get("EncodedType") == "AddOnInstructionDefinition"]
+        routines = [el for el in encoded if el.get("EncodedType") == "Routine"]
+        others = len(encoded) - len(aois) - len(routines)
+        chars = sum(len("".join(el.itertext())) for el in encoded)
+        parts = []
+        if aois:
+            parts.append(f"{len(aois)} protected AOI(s): instances, call sites and "
+                         f"the visible parameter interface are priced; encrypted local "
+                         f"tags and logic are not")
+        if routines:
+            parts.append(f"{len(routines)} protected routine(s): routine shell priced; "
+                         f"encrypted logic is not")
+        if others:
+            parts.append(f"{others} other protected item(s), not priced")
         gaps.append(CoverageGap(
             kind="source_protected", detail="EncodedData", count=len(encoded),
             path="coverage/source_protected",
             message=(
-                f"{len(encoded)} source-protected item(s) "
-                f"({', '.join(f'{v} {k}' for k, v in sorted(kinds.items()))}; "
-                f"{chars:,} encrypted characters) contribute ZERO to this total -- the "
-                f"logic is encrypted in the export, so it cannot be sized. The total is "
-                f"understated by however much that logic compiles to."
+                "SOURCE-PROTECTED CONTENT -- the total is a MINIMUM. "
+                + "; ".join(parts)
+                + f". {chars:,} encrypted characters cannot be sized; the real "
+                  f"figure is higher by however much that content compiles to."
             ),
         ))
 
