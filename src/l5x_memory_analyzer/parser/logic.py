@@ -511,6 +511,11 @@ class RoutineLogic:
     # Parameters passed across those call sites, instance tag excluded. The
     # call-site cost is a base plus a per-parameter rate, so the count matters.
     aoi_call_param_count: int = 0
+    # Of those, the arguments bound to an INPUT parameter that are anything
+    # but the literal 0 or 1 -- a tag, an expression or a larger literal. Each
+    # costs aoi_call_site.input_ref_extra_bytes on top of the per-parameter
+    # rate. See aoi_call_sites.
+    aoi_call_input_ref_count: int = 0
     # True if some OTHER routine in the same program JSRs to this one.
     # confirmed the target's own fixed shell cost (fixed_base_
     # per_routine) is already absorbed into the caller's jsr_fixed_base_
@@ -665,32 +670,65 @@ def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
     return total
 
 
+_CHEAP_LITERAL = re.compile(r"^\s*[+-]?[01](\.0*)?\s*$")
+
+
+def aoi_input_positions(root: ET.Element) -> dict[str, tuple[bool, ...]]:
+    """AOI name -> for each call-site argument slot, whether it binds an Input
+    parameter. Slots are the Required parameters in declaration order,
+    EnableIn/EnableOut excluded -- the same mapping a call site uses."""
+    positions: dict[str, tuple[bool, ...]] = {}
+    for definition in root.iter("AddOnInstructionDefinition"):
+        name = definition.get("Name")
+        if not name:
+            continue
+        positions[name] = tuple(
+            p.get("Usage") == "Input"
+            for p in definition.iter("Parameter")
+            if p.get("Required") == "true" and p.get("Name") not in ("EnableIn", "EnableOut")
+        )
+    return positions
+
+
 def aoi_call_sites(
-    rung_texts: list[str], aoi_names: frozenset[str]
-) -> tuple[int, int]:
-    """(call sites, total parameters passed across them).
+    rung_texts: list[str], aoi_names: frozenset[str],
+    input_positions: dict[str, tuple[bool, ...]] | None = None,
+) -> tuple[int, int, int]:
+    """(call sites, parameters passed, input arguments that are references).
 
     The first argument of an AOI call is its instance tag, not a parameter, so
-    the parameter count for one call is `len(args) - 1`. That distinction is
-    worth the arg-splitting: the call site costs a base plus a per-parameter
-    rate, measured across two independently generated families --
-    see memory_model.yaml aoi_call_site.
+    the parameter count for one call is `len(args) - 1`. The call site costs a
+    base plus a per-parameter rate -- see memory_model.yaml aoi_call_site.
+
+    The third count is the arguments bound to an INPUT parameter that are not
+    the literal 0 or 1. litop_bool_*_n01000_r2 hold one 3-input AOI called
+    1,000 times and vary only what is passed: a tag, the literal 0 or 1, or the
+    literal 12345. A tag and 12345 each cost 12 bytes more than 0/1, on BOOL
+    and DINT parameters alike. Every calibration family before them passed
+    0 to its inputs, so the per-parameter rate was fitted on the cheap case,
+    while real programs pass tags to 90% of their AOI inputs.
 
     Counted against the DECLARED names rather than by a casing pattern (see
     _INSTRUCTION_CALL) and word-bounded, so an AOI named `Scale` does not also
     match `ScaleFactor(`.
     """
     if not aoi_names:
-        return 0, 0
+        return 0, 0, 0
     pattern = re.compile(
         r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
-    calls = params = 0
+    calls = params = input_refs = 0
     for text in rung_texts:
         for match in pattern.finditer(text):
             calls += 1
-            args = _split_call_args(text, match.end() - 1)
-            params += max(0, len(args) - 1)
-    return calls, params
+            args = _split_call_args(text, match.end() - 1)[1:]
+            params += len(args)
+            if input_positions is None:
+                continue
+            slots = input_positions.get(match.group(1), ())
+            for is_input, arg in zip(slots, args):
+                if is_input and not _CHEAP_LITERAL.match(arg):
+                    input_refs += 1
+    return calls, params, input_refs
 
 
 def _split_call_args(text: str, open_paren: int) -> list[str]:
@@ -788,6 +826,7 @@ def parse_rll_routines(
             name for el in root.iter("AddOnInstructionDefinition")
             if (name := el.get("Name"))
         )
+    input_positions = aoi_input_positions(root)
     routines: list[RoutineLogic] = []
     programs_el = root.find("Controller/Programs")
     if programs_el is None:
@@ -837,7 +876,8 @@ def parse_rll_routines(
             program_jsr_targets |= _jsr_targets(rung_texts)
 
         for routine_name, rung_texts in per_routine_rung_texts.items():
-            aoi_calls, aoi_call_params = aoi_call_sites(rung_texts, aoi_names)
+            aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
+                rung_texts, aoi_names, input_positions)
             routines.append(RoutineLogic(
                 program_name=program_name,
                 routine_name=routine_name,
@@ -845,6 +885,7 @@ def parse_rll_routines(
                 instruction_counts=_count_instructions(rung_texts),
                 aoi_call_count=aoi_calls,
                 aoi_call_param_count=aoi_call_params,
+                aoi_call_input_ref_count=aoi_input_refs,
                 is_jsr_target=routine_name in program_jsr_targets,
                 is_safety_program=is_safety_program,
                 cpt_calls=_cpt_calls(rung_texts),
@@ -888,6 +929,7 @@ def parse_aoi_internal_logic(
     declared_aoi_names = aoi_names if aoi_names is not None else frozenset(
         name for el in root.iter("AddOnInstructionDefinition") if (name := el.get("Name"))
     )
+    input_positions = aoi_input_positions(root)
     result: dict[str, RoutineLogic] = {}
     aois_el = root.find("Controller/AddOnInstructionDefinitions")
     if aois_el is None:
@@ -911,7 +953,8 @@ def parse_aoi_internal_logic(
                     rung_texts.append(text_el.text)
         if not rung_texts:
             continue
-        aoi_calls, aoi_call_params = aoi_call_sites(rung_texts, declared_aoi_names)
+        aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
+            rung_texts, declared_aoi_names, input_positions)
         # The AOI's own parameters and local tags ARE its tag table -- nothing
         # outside the definition is addressable from its rungs.
         internal_types = {
@@ -931,6 +974,7 @@ def parse_aoi_internal_logic(
             # call costs the same as one in a Program rung.
             aoi_call_count=aoi_calls,
             aoi_call_param_count=aoi_call_params,
+            aoi_call_input_ref_count=aoi_input_refs,
             cpt_calls=_cpt_calls(rung_texts),
             typed_calls=_typed_instruction_calls(rung_texts),
             indirect_index_kinds=_indirect_index_kinds(rung_texts),

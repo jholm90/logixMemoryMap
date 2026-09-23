@@ -1,8 +1,8 @@
 # Open Questions
 
-**Six.** Down from forty, and the thirty-six that went were not abandoned — they
-were **bounded** or answered. Closed questions and their reasoning trails are in
-`RESOLVED_QUESTIONS.md`.
+**Two.** Down from forty. Closed questions and their reasoning trails are in
+`RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
+(JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
 ## The bar for opening a new one
 
@@ -19,168 +19,50 @@ So **every question whose mechanism was "a cost constant is slightly wrong" has 
 measured maximum payoff of approximately zero**, however cleanly it would answer.
 That is why thirty-four closed at once; a thirty-fifth, literal operands, closed on its real-program exposure.
 
-## What is left, and why each survives the ceiling
+## What is left
 
-| question | why the ceiling does not bound it |
+| question | state |
 |---|---|
-| **OQ-JSRCALLERBASE** | Per-file versus per-caller-routine is untestable on the existing corpus and differs by up to ~300 KB on a real program. Six files built, awaiting capture. |
-| **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
-| **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
-| **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
-| **OQ-BUILDFAIL-OPEN** | A defect log. Error lines are in; three `_r3` rebuilds await capture, and the question closes when they build clean. |
-| **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
+| **OQ-REALUNDER** | The real residual: **3.12% mean, 6.0% worst** on the eighteen real programs present, after a compensating error was removed. |
+| **OQ-OPERANDSHAPE** | The leading explanation for it: member-path operands, half of all real operands and never measured. 26 files built, awaiting capture. |
 
 ---
 
-## 1. OQ-JSRCALLERBASE — is the 280-byte JSR premium per file or per caller routine
+## 1. OQ-REALUNDER — the residual itself
 
-**The marginal cost of a no-parameter JSR is exact and the engine already has it
-right.** One distinct 0-parameter target plus its JSR call costs **368 bytes**,
-measured straight off the captures:
+**Mean 3.12%, worst 6.0%, every one of the eighteen real programs present
+under-predicting** (sum-weighted +3.20%). That is worse than the 1.74% it read before
+this batch, and the difference is a correction, not a regression:
 
-| pair | interval | per unit |
-|---|---:|---:|
-| `jsr_multi_distinct_targets_01` → `_03` → `_05` | 2 | **368** |
-| `..._n05` → `_n10` → `_n15` → `_n20` | 5 | **368** |
-| `..._n20` → `_n50` | 30 | **368** |
-| `jsr_crossed_n20_namelen16` → `_n40_namelen16` | 20 | **368** |
+- The per-caller `jsr_fixed_base_per_routine` (5,096) had only ever been measured on
+  files with ONE caller routine, and was charged to every caller in real programs —
+  10 to 87 of them. `jsrcallers_k*` proved a caller costs what any routine costs
+  (OQ-JSRCALLERBASE). Removing the over-charge took the real set from 1.74% to 3.40%.
+- The AOI argument cost (input references at 28, not 16) moved it back to 3.12%.
+- The 2198 family repeat discount moved it to 3.13% — right on the Kinetix files,
+  slightly wrong-way on real programs that carry many drives.
+- The one-time 264 an RLL file with AOI calls carries moved it to **3.12%**.
 
-Eight independent intervals across two generators, zero residual. `jsr_crossed_n20_namelen16`
-and `jsr_multi_distinct_targets_n20` were built by different generators and capture
-at the identical 25,472. Target name length is separately priced and also exact —
-all five `namelen` rows carry the same residual.
+So about **3% of every real program is still unexplained**, and the old 1.7% figure was
+that 3% partly cancelled by an error. This is CLAUDE.md failure mode 3 exactly, and the
+right response is the same: keep the correct term, find the real one.
 
-**The residual is a single flat constant.** Recomputed live against the current
-engine, all 14 clean 0-parameter rows over-predict by **exactly 280 bytes** — at
-n = 1, 3, 5, 10, 15, 20, 40, 50 and at name lengths 4, 8, 16, 32, 40. The slope is
-perfect; only the intercept is wrong.
+**What it tracks.** Everything size-like — programs (r = 0.92), routines (0.90),
+rungs (0.86), tags (0.85) — and it is about 20% of the engine's `routine_logic` bytes.
+No single count explains it under leave-one-out (best single term: JSR calls, LOO mean
+1.16%, worst 4.9%), and a term fitted on the real set is not an answer anyway.
 
-**It is `jsr_fixed_base_per_routine`, and the arithmetic is not subtle.** The model
-carries two per-routine bases: `fixed_base_per_routine` = **4,816** for an ordinary
-routine, and `jsr_fixed_base_per_routine` = **5,096** for a routine containing a JSR.
+**What distinguishes real programs from the generated files that fit.** The
+multi-program composites (`composite_realistic_v3/v4`, `v3abl_*`: 7–11 programs,
+JSR callers and targets, AOIs, modules) land within ±1% on the corrected engine. The
+largest structural difference between them and real programs is **operand shape** —
+see OQ-OPERANDSHAPE.
 
-    5,096 - 4,816 = 280
-
-That is the residual exactly, and the `subrtn_shell` control — same file shape, no
-JSR — predicts at **0.000%** at 1, 5, 25 and 100 routines, so the 4,816 path is
-right and the 5,096 path carries the whole error. The 280 premium was presumably
-meant to cover the caller declaring a target subroutine, but the per-target cost is
-already charged separately through `jsr_target_declaration`, so it is charged twice.
-
-That also explains the band. `derive_instruction_accuracy.py` divides a whole-file
-error by file size, so a fixed 280 on a 19,952-byte file reads as 1.40% — and the
-recorded JSR worst case is **1.4034%**. The number is a constant divided by a file
-size, not a property of JSR.
-
-**Blocked, and this is the reason it is not being changed.** `jsr_fixed_base_per_routine`
-is charged **once per JSR-caller routine**, not once per file. Every one of the 30
-JSR files in the corpus has **exactly one** caller routine — checked directly, not
-assumed. So "280 once per file" and "280 per caller routine" fit all 30 rows
-identically and the corpus cannot separate them. A real program has tens to hundreds
-of caller routines, so the two readings differ by thousands of bytes there, in the
-direction that would make the real files worse: they currently under-predict, and
-the per-caller reading subtracts more.
-
-This is the collinearity failure mode exactly — two constants against points that
-only ever vary one of them. Applying either reading now would be fitting, not
-measuring.
-
-**The discriminating family is built: `jsrcallers_k{01,02,04,05,10,20}`** (first built as
-`jsr_callerdist_k*`, never picked up by the converter, rebuilt under new names).
-
-Total JSR calls held at **20** and distinct 0-parameter targets at **20** in every
-file. Only the distribution moves: with K callers, MainRoutine takes 20/K calls and
-K−1 extra caller routines take 20/K each. K runs over the divisors of 20 so no file
-carries a remainder routine the others lack.
-
-`confound_check.py` reports **every consecutive pair varies exactly one dimension —
-`routines`**, which is the variable itself. Rung text, instruction inventory, tag
-inventory and the target set are identical across all six. A plain extra routine is
-separately priced at exactly **280 bytes** by `subrtn_shell` (four counts, zero
-residual), so that component subtracts cleanly. All six lint clean on 1756-L81E
-firmware 35.
-
-K=1 reproduces `jsr_multi_distinct_targets_n20`'s shape and target names exactly and
-predicts at the identical 25,752, so it is anchored to a capture already in hand
-(25,472).
-
-**Predictions written down before the capture run, per the blind-test rule:**
-
-| file | callers | engine predicts | **A** per file | **B** per caller | **C** flat −280 |
-|---|---:|---:|---:|---:|---:|
-| `jsrcallers_k01` | 1 | 25,752 | 25,472 | 25,472 | 25,472 |
-| `jsrcallers_k02` | 2 | 30,848 | **25,736** | **30,288** | **30,568** |
-| `jsrcallers_k04` | 4 | 41,040 | **26,264** | **39,920** | **40,760** |
-| `jsrcallers_k05` | 5 | 46,136 | **26,528** | **44,736** | **45,856** |
-| `jsrcallers_k10` | 10 | 71,616 | **27,848** | **68,816** | **71,336** |
-| `jsrcallers_k20` | 20 | 122,576 | **30,488** | **116,976** | **122,296** |
-
-- **A — the base belongs to the file.** An extra caller routine costs what any
-  routine costs, 264 plus its rungs. `actual(K) = 25,472 + 264·(K−1)`.
-- **B — the base belongs to each caller.** The engine's structure is right and only
-  the 280 premium is wrong. `actual(K) = predicted(K) − 280·K`.
-- **C — the engine is right and the 280 is something else.**
-  `actual(K) = predicted(K) − 280`.
-
-All three agree at K=1 by construction and separate by **86,488 bytes** at K=20.
-There is no reading of the result that leaves this open.
-
-**If A holds, this is not a 280-byte item.** The engine charges 5,096 per caller
-routine; a real export has 60 of them, so it would be over-charging roughly 300,000
-bytes there and something else is under-charging by more, since the real files
-currently under-predict. That is the compensating-error failure mode, and it would
-make this the largest single identified defect in the model.
-
-Hold `jsr_fixed_base_per_routine` at 5,096 until the capture reads.
-
-**The 280 is now billed where it belongs and is visible.** The per-caller shell
-is its own `subroutine_shell` entry under a **Subroutine Overhead** tree group,
-labelled with the caller count — 122,304 bytes across 24 caller routines, 1.58%,
-on the real export. It was previously folded into each calling routine's
-instruction total, invisible, and the difference was charged against the JSR
-instruction. Reclassification only: totals byte-identical on all 3,551 corpus
-files. The uncertainty this question tracks now sits on that line item.
-
-**The confidence side is already fixed and does not wait on the capture.** The
-280 is a per-routine shell constant, not a JSR cost, so it was never JSR's band
-to lose. `JSR/0` now reads **Exact ±0**: see `MEMORY_MODEL.md`, "A 0-parameter
-JSR is EXACT". On the real export that moves 13 routines from 75% to 100% while
-the 20 carrying a parameterised JSR stay at 75%. What the capture settles is the
-byte total, not the band.
-
-**A second, smaller band sits underneath it.** The `jsr_paramcount_*` family
-residuals cluster at **−296 / −300** rather than −280, flat across rung counts from
-10 to 1,000 and across parameter counts 1 to 15. That is a further 16–20 bytes
-outside the ±8 floor, constant, and it appears only once SBR/RET carry operands. It
-is the same shape of defect and almost certainly resolves with the same file.
-
-**Why this is worth the time despite being 280 bytes.** It is not the bytes. It is
-that the confidence display points at the wrong instruction, so the one number a
-user judges a dispatch routine by is wrong for every routine that dispatches — and
-the same constant is charged per caller routine across every real program, where
-it is not 280 bytes at all.
-
----
-
-## 2. OQ-REALUNDER — the residual itself
-
-**+822,938 bytes on 55,430,980 = +1.485%** over the original seventeen. Ten files
-under-predict, seven over-predict.
-
-**Six blind programs, predicted before their readings existed, all under-predict:**
-mean 1.90%, worst 3.99%, every one low (export 31–36). Five of six landed inside the
-range written down in advance; the sixth missed it by 29 KB. Across all twenty-three
-the residual is **about +1.72%, sixteen under and seven over.** The blind set is the
-cleanest evidence the project has that the missing bytes are real, systematic and
-one-directional *on the kind of program users actually bring* — large 1756-L83E line
-controllers — and that the over-predicting files are the exception. Export 32 is a
-later revision of export 07 and misses by almost the same amount (−2.31% against
-−2.14%): **the residual is a property of the program, stable across revisions.** That
-is what makes a real-program residual model worth trying rather than more constants.
-
-**The residual is no longer one-sided**, which is the most important structural fact
-about it. It used to be — every file under-predicted and the work was to find missing
-bytes. **Any candidate that can only add bytes is now wrong before it is tested.**
+**Six new real programs arrived with no reading** (exports 37–42) and were predicted
+before any Capacity reading, per the blind rule. Five are safety controllers
+(5069-ERS2/ERMS2, 1756-L81ES), whose safety content the engine understates by
+design; export 42 is a 1769 and is recorded but excluded from every accuracy figure.
+Predictions and expected ranges are in `samples/manifest.csv` (`realprog_37`–`42`).
 
 ### What has been eliminated
 
@@ -201,259 +83,50 @@ load-bearing ones:
 **So both remaining shapes are eliminated: the residual is CONTENT-DEPENDENT.**
 Neither counting structural units nor charging every file the same can reach it.
 
-### What is left
+### Not available
 
-**A term not proportional to any category the engine counts.** OQ-LITERALOPERAND
-showed such terms exist, then closed on its own real exposure — 1,756 bytes across
-eighteen programs — so it proved the kind of term without being the one. It is still
-the only live lead.
-
-### The structure that is still unexplained
-
-The ratio of residual to `routine_logic` bytes is **bimodal** across the real set,
-and nothing explains why. It is not a per-unit error — the coefficient of variation
-is 1.74 per instruction occurrence, 1.72 over the top four instructions, and 1.73
-per rung. **Whatever it is does not scale with any count the engine has.**
-
-### The instrument that could have found the rest is gone
-
-Attribution by subtraction from a real export is **dead** by the read-only rule, not
-merely difficult. And no generated file can carry content that generated files do not
-have, **which is the definition of the gap.**
-
-**The Studio-side substitute is declined as well.** Deleting a category inside Logix
-Designer and reading Capacity twice would attribute the residual at real scale
-without breaking the read-only rule, but each reading is a bench session the owner
-will not spend. It is struck, not pending.
-
-**What remains is a residual model on the real programs themselves, scored only by
-leave-one-out.** One term per feature the engine does not count — distinct tag
-names, program count, data-to-logic ratio — fitted on twenty-three files and
-judged on each file held out in turn. The bar is the 0.007-point result the
-per-category fit managed. A term that does not clear it is dropped, however well it
-fits in-sample. Every new real export is predicted and recorded before its reading
-exists, and each one both tests the current model and widens the fitting base.
-
-That is not a reason to keep trying variations. It is the reason the 1% target may
-not be reachable at all.
+Attribution by subtraction from a real export is dead by the read-only rule. The
+Studio-side substitute — delete a category in Logix Designer, read Capacity twice — is
+declined: each reading costs a bench session. A residual model fitted on the real
+programs is judged by leave-one-out only and must beat 0.007 points.
 
 ---
 
-## 3. OQ-RUNGSHAPE — a per-rung term, confounded with every instruction weight
+## 2. OQ-OPERANDSHAPE — does a member-path operand cost more than a plain tag?
 
-**Every calibration file in the project is one instruction per rung.** So a per-rung
-cost and a per-instruction cost are **perfectly confounded** in every weight in the
-model. `routine_logic` is 18% of predicted mass, so this is not a small exposure.
+**Every instruction weight in the model was fitted on plain-tag operands.** Real
+operands, counted over every instruction call in the eighteen real programs:
 
-### The coverage gap is real but is NOT the error
+| operand | real programs | composites that fit |
+|---|---:|---:|
+| plain tag | 48.7% | ~75% |
+| member path `A.B` | 32.6% | 0% |
+| nested member `A.B.C` | 15.4% | 0% |
+| deeper | 3.2% | 0% |
+| array element, constant index | 22% of operands | ~80% |
+| bit of a word `D.5` | 9% | ~25% |
 
-The weights are fitted on a corpus that is **9.4% branched rungs and 62%
-single-instruction rungs**, against real programs at **68.7% and 7%** — measured over
-41,374 real rungs and 125,275 real instruction occurrences.
+Array elements and bit-of-word operands are in the composites that fit, so they are
+already covered. **Member paths are half of all real operands and appear in no
+captured generated file at all** — because lint's operand resolver returned the BASE
+tag's type for `U.Bit`, refused it as a non-BOOL operand of XIC, and so blocked every
+member-path rung any generator tried to write. The resolver now follows member paths
+through the file's own UDT definitions.
 
-That was the largest suspected error source in compiled logic. **It was measured, and
-the terms hold exactly.** Holding eight XIC conditions and one OTE fixed across 500
-rungs and moving only the arrangement across 1, 2, 4 and 8 parallel legs, the
-predicted steps are correct **to the byte at every leg count**, and a second pair
-confirms it at the real population's composition.
+**Mechanism and expected movement.** If a member reference costs more than a plain
+tag in compiled logic, the under-charge scales with instruction count, which is what
+the residual does. At the ~20% of `routine_logic` the residual represents, it would
+need a few bytes per member operand; the batch measures it directly.
 
-**So the branch-bracket cost extrapolates correctly outside the shape it was fitted
-on.** The coverage gap is a fact about the corpus, not a defect.
+**Batch built — 26 files, `gen_operand_shape.py`, 1756-L81E fw35, lint clean, confound
+gate clean.** One instruction per family, one operand's shape varied, identical tag
+inventory in every file, at 250 and 1,000 rungs:
 
-### The attempt to isolate the per-rung term failed, by design error
-
-A packing sweep held 4,000 instructions fixed and varied how many sat on each rung,
-so rung count moved while instruction count did not — which is the only way to
-separate the two terms.
-
-**It used OTE, which is an output.** Packing outputs onto one rung builds series
-cascades, so extra series outputs and rung count moved together identically in every
-file. **Total confound.**
-
-It was not wasted: it re-measured the series-output law at four new points at exactly
-−12.000, and **killed that law's competing candidate** — the files were all distinct,
-so the cost cannot be per-distinct-rung.
-
-**A packing sweep must use a non-output instruction.** That is the one design
-constraint the next attempt has to respect.
-
-### Built: `rungpack_{xic,equ}_k{01,02,04,08,16,40}` — 12 files
-
-4,000 instructions in every file, packed k per rung (4,000 → 100 rungs), every rung
-closed by one `NOP()`. XIC and EQU are both non-output, so no series cascade forms at
-any k. Operand text and tag inventory are identical across each arm; the confound gate
-reports one moving dimension per pair.
-
-**What the slope says.** Bytes per removed rung, against the NOP-plus-rung cost the
-engine already charges. Equal: the instruction weights carry no hidden per-rung share.
-Larger: the excess is the per-rung cost folded into every weight, read directly. Two
-arms so the answer does not rest on one instruction.
-
----
-
-## 4. OQ-ALARMCONDREAL — 107 bytes per condition, on a category worth 9.4% of mass
-
-**Promoted from the resolved file.** It was filed there because the per-condition
-formula was derived and wired; the disagreement below is unexplained and the exposure
-is large enough that calling it closed understates it.
-
-| program | conditions | actual step | predicted step | actual per condition | predicted |
-|---|---:|---:|---:|---:|---:|
-| `export 14` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
-| `export 08` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
-
-**Within 0.16% on one file and 8.8% short on the other** — and that is **19% and 21%
-of total controller memory** respectively, the second-largest category in both.
-
-**The step is clean.** An exhaustive element-tag diff of each full export against its
-alarm-free sibling shows `AlarmCondition`, `AlarmConfig`, `HMIGroup` and the
-`AlarmConditions` container are the **only** elements that differ. No tags, rungs,
-routines, programs, UDTs or AOIs moved.
-
-**This is not a scale error — the two files disagree with each other**, on the same
-wired formula, with every condition in both hanging off a single BOOL array tag. So
-something differs between them that the formula does not see.
-
-**Two caveats on the numbers.** Both readings came from files derived from real
-exports, which were later found not to import — so **re-derive before citing them
-further.** The per-condition formula itself rests on a 37-file generated batch and is
-unaffected.
-
-**What is untested:** alarms on a UDT-scalar host (a handful of real conditions sit on
-a UDT rather than a BOOL array, and the batch only covers array hosts), and whether
-alarm **sets** carry their own cost — the operator and rollup inclusion flags are true
-on every real condition and no file varies them.
-
-**What the eighteen real exports say, counted in the final review.** 4,655 of their
-4,663 alarm conditions are exactly the shape the generated sweep already prices — TRIP,
-severity 500, array-indexed input on a BOOL array host, three associated tags and an
-HMI group of at most 15 characters. The other 8 are inherited from a type-level
-definition in one program. **No real program uses alarm sets or any other condition
-type**, so neither untested item above has real exposure. And the whole-program
-results argue against the 8.8% figure: export 08, the file it came from, is predicted
-**+0.24%** overall with alarms at 21% of its memory — an 8.8% alarm under-charge would
-put it about 1.8% low.
-
-**Built: `alarmcond_realcount_n{000,200,400,600}`** — the real shape at real counts,
-host and associated arrays fixed at 640 so only the condition count moves. The existing
-real-shape sweep is exact (a flat +16 file residual) but stops at 128 conditions; this
-is the check that the law holds where real programs actually sit. If it does, the
-question closes.
-
-**Do not confuse this with the ALMD instructions**, which are parked with zero
-occurrences in the real set, or with an ordinary scheduled program named for alarms.
-One real program carries both this and such a program.
-
----
-
-## 5. OQ-BUILDFAIL-OPEN — the defect log
-
-Full diagnostic rules and root-cause reference are in `OPEN_BUILD_ERRORS.md`; this
-entry exists so errored rows have an owner.
-
-### What the re-triggers returned
-
-| file | result | cause |
-|---|---|---|
-| `eventtask_axiswatch_r2` | **0 errors**, 6 axis warnings | builds. The original's error was the 5069 processor it was captured on |
-| `almd_minimal_r2`, `almd_realtext_r2` | 1 error each: *"Rung 0, ALMD: Invalid number of arguments for instruction"* | the generator's 7-operand call. The one real ALMD in the eighteen real exports takes **5**: `ALMD(tag,1,1,0,0)` |
-| `modulerack_kinetix_full_bus_r2` | 4 errors, 24 warnings; the error text was cut off | the original's log names it: *"Tag '<drive>:SI': Invalid data type for safety tag"* on all three drives, plus *"Project size exceeds controller capacity"* |
-
-**The Kinetix failure was a known defect shipped again.** `gen_assumed_closeout.py`
-had already recorded that the hand-copied 2198 `-ERS3` blocks in
-`gen_module_sweep_variants.py` / `gen_module_sweep.py` lack the `<ExtendedProperties>`
-ConfigID, that Studio then configures the drive for networked safety, and that drives
-must come from `_drive_module_xml`. That was a comment, not a check: the blocks stayed
-importable, lint did not test for the element, and `gen_module_kinetix_bus.py` kept
-using them. The `_r2` rebuild fixed the converter axis and processor and inherited
-the drives unchanged. Every real 2198 drive — about 250 — carries a ConfigID.
-
-**Now enforced, not advised:**
-
-- `lint.py` `kinetix_drive_missing_configid` refuses any file with a 2198 `-ERS`
-  drive lacking a ConfigID. Every generator writes through lint, so nothing bypasses it.
-- Both module tables replace their `-ERS3` blocks at import with `_drive_module_xml`
-  output. The safety-wired 4conn variants are dropped.
-- `lint.py` `native_instruction_arg_count` checks ALMD's operand count against the
-  real form.
-- `scripts/check_proven_blocks.py` requires every 2198 module and AXIS_CIP_DRIVE block
-  in a file to match a block from a **zero-error capture**. It flags all three drives
-  in both failed Kinetix builds and passes the rebuild.
-- `tests/test_build_guards.py` pins all of this and runs lint and the proven-block
-  check over every file waiting for capture.
-- The capture script kept only the first 300 characters of Studio's log, and Studio
-  lists warnings first, so the `_r2` Kinetix log lost all four errors. It now keeps
-  every Error line first, then the summary, then warnings while room remains.
-
-### Re-triggered again, awaiting capture
-
-| file | what changed |
+| family | shapes |
 |---|---|
-| `almd_minimal_r3`, `almd_realtext_r3` | the real 5-operand call |
-| `modulerack_kinetix_full_bus_r3` | rebuilt only from proven blocks: one 2198-P208 supply with its converter axis, 2198-D032/D057/D020-ERS3 drives from `_drive_module_xml`, six servo axes on Ch1/Ch3. **One bus, not two:** the P031/P070 supplies occur in no real program, and a second bus needs a second bus-sharing group whose ConfigData has never been verified |
+| `opshape_xic_*` — `XIC(<op>)OTE(Out)` | plain, mem, nest, arrmem, bitword |
+| `opshape_ote_*` — `XIC(In)OTE(<op>)` | plain, mem, nest, arrmem |
+| `opshape_mov_*` — `MOV(<src>,<dst>)` | plain, srcmem, dstmem, nest |
 
-The ALMD pair is generated despite the ALMD park because the goal is to close the defect
-log, not to work the instruction.
-
-### Moved out, because the cause is already known
-
-| row | now owned by | why no re-trigger |
-|---|---|---|
-| `instrfirst_mapc_x10` | OQ-MAMFAMILY-BUILDFAIL | the original MAPC generator bugs; `_v2` and `_v2_x10` captured clean and MAPC is EXACT |
-| `instrfirst_crout_x10` | OQ-SAFETY | CROUT needs a safety CPU; Safety family ignored |
-| `predefprobe_axis_generic` | OQ-PREDEFINED | AXIS_GENERIC is in none of the real programs; file gone |
-
-**CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py` —
-`almd_minimal`, `almd_minimal_r2`, `almd_realtext_r2` and
-`modulerack_kinetix_full_bus_r2`, each with its cause diagnosed above. The question
-closes when the three `_r3` files capture clean.
-
-Run `python scripts/capture_errors.py --list` for the current row identities.
-
----
-
-## 6. OQ-MODULENAMELEN — a module's NAME length costs bytes the engine charges at zero
-
-**The measurement.** Two committed isolation files, both a 1756-L81E with a single
-2198-P208 under the local rack, no tags and no axes. They differ in exactly one
-thing: what the module is called.
-
-| file | module name | chars | actual | predicted | delta |
-|---|---|---:|---:|---:|---:|
-| `modulemotion_p208_baseline` | `P208` | 4 | 22,136 | 22,136 | **0** |
-| `modulesweep_2198_p208` | `TestMod1_2198P208` | 17 | 22,160 | 22,136 | **−24** |
-
-Both captured with `error_count = 0`. The controller name is 17 characters in both,
-so it is not that. **+13 characters of module name is worth +24 bytes**, and the
-engine charges nothing for a module name at any length.
-
-**Why this is not already answered.** Identifier name length is priced for tags, for
-UDT type names, for AOI type names and for custom string type names -- four separate
-laws in `memory_model.yaml`, all of them a step of 8 bytes per bucket. None of them
-applies to a `<Module Name=...>`, and no sweep has ever varied one.
-
-**Why it is not wired.** One pair is one equation. A step of 8 bytes per
-`floor(len / 4)` bucket reproduces +24 exactly, and so do several other shapes --
-that is two points against a two-parameter family, which this project has already
-been burned by. The existing name-length laws bucket by 8 characters, not 4, so
-matching them would predict +16, not +24. Something is different here and one pair
-cannot say what.
-
-**Consequence for confidence.** `2198-P208` reads ASSUMED rather than KNOWN, and so
-do the other flat-fitted 2198 supply catalogs. That is correct and should not be
-overridden: its two isolation captures do not agree with each other, and until the
-name term is priced, a P208 in a real file is predicted exactly only when its name
-happens to be short. The frequency of the catalog in real programs is not evidence
-about the constant -- only an isolation capture is.
-
-**Built: `modname_p208_len{04,06,08,10,12,13,16,17,20,24,32,40}`** — one 2198-P208,
-no tags, no axes, only the module name length moving. Lengths include 6, 10, 13 and 17
-because the task-name finding (OQ-TASKNAMEROUND) showed only non-multiples of 8 can
-tell a round-up rule from a round-down one. It reads the step directly instead of
-fitting it.
-
-**Exposure before building anything.** Real programs carry 20-60 modules each. At
-24 bytes for a 13-character name this is on the order of a kilobyte per file against
-a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn a
-capture slot ahead of the literal-operand batch. It is recorded because it explains a
-specific wrong-looking confidence tier, not because it is worth a session.
+Each shape differences against its family's `plain` file at the same count; the two
+counts give the per-rung slope. `arrmem` and `bitword` are controls.

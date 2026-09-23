@@ -78,11 +78,16 @@ def test_almd_operand_count(call, refused):
 
 
 def _waiting_batch() -> list[Path]:
-    """Committed generated L5X files with no conversion record at all."""
+    """Committed generated L5X files with no conversion record and no capture --
+    what the next capture run will pick up. A file made in Studio and read by
+    hand has a capture but never passes through the converter."""
     seen = set()
     with open(REPO_ROOT / "samples" / "convert_log.csv", newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             seen.add(Path((row.get("l5x_path") or "").replace("\\", "/")).name)
+    with open(REPO_ROOT / "samples" / "captures.csv", newline="", encoding="utf-8-sig") as f:
+        seen |= {row["sample_id"] + ".L5X" for row in csv.DictReader(f)
+                 if (row.get("actual_bytes") or "").strip()}
     return sorted(p for p in (REPO_ROOT / "samples" / "generated").rglob("*.L5X")
                   if p.name not in seen)
 

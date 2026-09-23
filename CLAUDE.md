@@ -25,7 +25,10 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.60% on the seventeen real exports, worst case 3.63%.**
+**Mean absolute error 3.12% on the eighteen real programs present, worst case 6.0%,
+every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
+constant was proven wrong (OQ-JSRCALLERBASE); that constant had been cancelling about
+3% of real content that is still unexplained (OQ-REALUNDER, OQ-OPERANDSHAPE).
 
 The stopping rule is mean under 1% **and** max under 2%. It is checked in code —
 `scripts/quick_eval.py` prints `STOPPING RULE ... MET / NOT MET` every run — and it

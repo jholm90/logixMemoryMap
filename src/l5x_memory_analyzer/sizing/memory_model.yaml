@@ -746,6 +746,36 @@ zero_connection_module:
 # they moved the number, and both are recorded at their table entries. A
 # catalog with no repeat_bytes keeps paying the first-instance rate for every
 # instance, which is the safe direction: it over-predicts rather than under.
+# 2198 KINETIX FAMILIES SHARE ONE REPEAT COUNT. Measured, three ways:
+#
+#   * asmclose_2198_*_n{01,02,04,08}: per catalog, every extra drive costs 984
+#     less than the first (S130 included: 4,360 first, 3,376 after).
+#   * axmarg_1cat_n{02..20}: the same with an AXIS_CIP_DRIVE on every channel --
+#     exact at all five counts, so the discount holds with axes.
+#   * modulerack_kinetix_full_bus_r3: one P208 and three DIFFERENT drives
+#     (D032, D057, D020). Charging each drive its first-copy rate over-predicted
+#     by 1,888; the discount on the second and third drive (2 x 984) leaves +80,
+#     which is the module-name law exactly (three 14-character drive names at
+#     +24, one 10-character supply at +8; see MEMORY_MODEL.md, module name).
+#   * modulerack_kinetix_twobus_studio: the same file with a second P208 and one
+#     drive moved to its bus, made and exported in Studio. The second supply
+#     costs 1,000 less than the first -- the same discount to within 16 bytes.
+#
+# So a 2198 module's occurrence counts against its FAMILY -- drives (D/S/C/H)
+# or bus supplies (P/RP) -- not its catalog, and any later occurrence pays its
+# first-copy rate less 984 unless its own repeat_bytes is measured. This is also
+# what makes an UNSEEN 2198 drive or supply estimable: it takes the family's
+# default first-copy rate and the family discount.
+module_family_repeat:
+  confidence: FITTED
+  families:
+    # unseen_first_bytes: the first-copy overhead for a 2198 catalog with no
+    # entry of its own -- the measured D020/D032/D057 rate for drives and the
+    # P208 rate for supplies -- so an unseen 2198 module is priced as the
+    # family it belongs to rather than as the flat 1,672 generic default.
+    - { pattern: "^2198-[DSCH]\\d", discount_bytes: 984, unseen_first_bytes: 4113 }
+    - { pattern: "^2198-R?P\\d", discount_bytes: 984, unseen_first_bytes: 3589 }
+
 module_overhead_repeat_discount:
   apply_repeat_discount: true
   # project | parent -- see ModuleOverheadModel.repeat_scope. Only read when
@@ -2764,9 +2794,35 @@ jsr_param_cost:
 # passing 15,691 parameters -- a mean of 4.0, so the flat 168 was under-charging
 # the parameter-heavy AOIs and over-charging the small ones. Mean absolute error
 # 2.15% -> 2.06%, files within 1% 3 -> 4.
+#
+# WHAT IS PASSED MATTERS (litop_bool_*_n01000_r2). One AOI with three Required
+# Input parameters (BOOL, BOOL, DINT), called 1,000 times, varying only the
+# arguments:
+#
+#   arm      arguments                         actual     old prediction
+#   alltag   tag, tag, tag                     224,028    187,776   +36/call
+#   zero     tag, 0, tag                       212,028    187,776   +24/call
+#   one      tag, 1, tag                       212,028    187,776   +24/call
+#   dint     tag, tag, 12345                   224,028    187,776   +36/call
+#
+# An Input argument costs 28 when it is a tag or the literal 12345 and 16 when
+# it is the literal 0 or 1, on BOOL and DINT parameters alike. Every earlier
+# calibration family (dscale2, addit, defscale) passed 0 to its inputs and a tag
+# to a BOOL Output, which is exactly the 16-byte case, so 16/param was right for
+# what it was fitted on and 12 short for every real input reference. Real
+# programs pass a tag to about 90% of their AOI Input arguments.
+#
+# Charged as input_ref_extra_bytes per Input argument that is not the literal
+# 0 or 1. Output arguments stay at 16 (measured, dscale2/addit). InOut arguments
+# have no isolated measurement and stay at 16. ST call sites are unchanged --
+# only RLL was measured.
+# A FILE that calls an AOI from RLL also carries a one-time 264, charged from
+# structured_text.st_aoi_call_routine_bytes (same constant, same meaning). See
+# MEMORY_MODEL.md, AOI call site.
 aoi_call_site:
   bytes: 120
   per_param_bytes: 16
+  input_ref_extra_bytes: 12
   confidence: FITTED
 
 # Series outputs (OQ-SERIESOUTPUT), SOLVED EXACTLY and wired. It had
@@ -2820,7 +2876,10 @@ logic_instructions:
   # file and on a File|New real project, and the subrtn_shell control that
   # carries it predicts at 0.000% at 1, 5, 25 and 100 routines.
   fixed_base_per_routine_confidence: KNOWN
-  jsr_fixed_base_per_routine: 5096  # JSR's routine also declares the target subroutine
+  # NOT CHARGED by report.py since OQ-JSRCALLERBASE closed: jsrcallers_k* showed a
+  # caller routine costs what any routine costs. Kept only for
+  # compute_routine_logic_bytes(charge_shell=True), which no whole-file path uses.
+  jsr_fixed_base_per_routine: 5096
   confidence: FITTED
   # OQ-BRANCHDEPTH, wired -- real data (branchdepth_legs01/03/05,
   # branchdepthc_legs02/04/06/08/10/15/20/30, branchdepthstag_d01-06, all
@@ -3803,7 +3862,7 @@ instruction_accuracy:
   DIV: {samples: 7, mean_pct: 0.0018, worst_pct: 0.0101}
   DTOS: {samples: 2, mean_pct: 0.0053, worst_pct: 0.0084}
   DTR: {samples: 1, mean_pct: 0.0053, worst_pct: 0.0053}
-  EQU: {samples: 9, mean_pct: 0.0019, worst_pct: 0.0136}
+  EQU: {samples: 15, mean_pct: 0.0012, worst_pct: 0.0136}
   EVENT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   FAL: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   FBC: {samples: 2, mean_pct: 0.0291, worst_pct: 0.0456}
@@ -3817,7 +3876,7 @@ instruction_accuracy:
   GSV: {samples: 3, mean_pct: 0.0116, worst_pct: 0.0255}
   INSERT: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   JMP: {samples: 3, mean_pct: 0.0099, worst_pct: 0.0229}
-  JSR: {samples: 27, mean_pct: 0.9112, worst_pct: 1.4034}
+  JSR: {samples: 19, mean_pct: 0.0162, worst_pct: 0.2886}
   LBL: {samples: 3, mean_pct: 0.0099, worst_pct: 0.0229}
   LEQ: {samples: 7, mean_pct: 0.0025, worst_pct: 0.0136}
   LES: {samples: 7, mean_pct: 0.0025, worst_pct: 0.0136}
@@ -3828,7 +3887,7 @@ instruction_accuracy:
   MAG: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MAJ: {samples: 1, mean_pct: 0.0240, worst_pct: 0.0240}
   MAM: {samples: 1, mean_pct: 0.0244, worst_pct: 0.0244}
-  MAPC: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
+  MAPC: {samples: 1, mean_pct: 0.0137, worst_pct: 0.0137}
   MAR: {samples: 1, mean_pct: 0.0255, worst_pct: 0.0255}
   MASD: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   MASR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}

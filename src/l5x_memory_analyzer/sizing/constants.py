@@ -698,6 +698,7 @@ class LogicInstructionModel:
     # instance tag is not a parameter) -- see memory_model.yaml aoi_call_site.
     aoi_call_site_bytes: int = 0
     aoi_call_site_per_param_bytes: int = 0
+    aoi_call_site_input_ref_extra_bytes: int = 0
 
 
 @dataclass(frozen=True)
@@ -831,12 +832,29 @@ class ModuleOverheadModel:
     # formatting detail. See memory_model.yaml
     # module_overhead_repeat_discount.
     repeat_scope: str = "project"
+    # Catalog FAMILIES that share one repeat count: (regex, discount). A module
+    # whose catalog matches counts its occurrence against the family, not its
+    # own catalog, and a later occurrence with no measured repeat_bytes pays
+    # its first-copy rate less the family discount. See memory_model.yaml
+    # module_family_repeat.
+    family_repeat: tuple[tuple[str, int], ...] = ()
+    # First-copy overhead for an UNSEEN catalog of a family, instead of the
+    # flat cross-catalog default: pattern -> bytes. See module_family_repeat.
+    family_first_bytes: dict[str, int] = field(default_factory=dict)
+
+    def _family(self, catalog: str) -> tuple[str, int] | None:
+        for pattern, discount in self.family_repeat:
+            if re.match(pattern, catalog):
+                return pattern, discount
+        return None
 
     def occurrence_key(self, catalog_number: str | None,
                        parent_module: str = "") -> tuple[str, str]:
         """What report.py counts occurrences against, per `repeat_scope`."""
         catalog = catalog_number or ""
-        return (catalog, parent_module if self.repeat_scope == "parent" else "")
+        family = self._family(catalog)
+        key = family[0] if family else catalog
+        return (key, parent_module if self.repeat_scope == "parent" else "")
 
     def overhead_for(self, catalog_number: str | None,
                      occurrence: int = 1) -> tuple[int, str]:
@@ -846,10 +864,15 @@ class ModuleOverheadModel:
         and the safe direction, since it over-predicts rather than under."""
         if not catalog_number:
             return self.default_bytes, self.default_confidence
-        first, confidence = self.by_catalog.get(
-            catalog_number, (self.default_bytes, self.default_confidence))
+        family = self._family(catalog_number)
+        fallback = (self.default_bytes, self.default_confidence)
+        if family and family[0] in self.family_first_bytes:
+            fallback = (self.family_first_bytes[family[0]], "ASSUMED")
+        first, confidence = self.by_catalog.get(catalog_number, fallback)
         if occurrence > 1 and catalog_number in self.repeat_by_catalog:
             return self.repeat_by_catalog[catalog_number], confidence
+        if occurrence > 1 and family:
+            return first - family[1], confidence
         return first, confidence
 
     def has_real_data_for(self, catalog_number: str | None) -> bool:
@@ -1404,6 +1427,15 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             ),
             repeat_scope=raw.get("module_overhead_repeat_discount", {}).get(
                 "repeat_scope", "project"),
+            family_repeat=tuple(
+                (f["pattern"], f["discount_bytes"])
+                for f in raw.get("module_family_repeat", {}).get("families", [])
+            ),
+            family_first_bytes={
+                f["pattern"]: f["unseen_first_bytes"]
+                for f in raw.get("module_family_repeat", {}).get("families", [])
+                if "unseen_first_bytes" in f
+            },
         ),
         udt_definition_extra=raw.get("definition_scale_correction", {}).get("udt_definition_extra", 0),
         udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),
@@ -1607,6 +1639,8 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             aoi_call_site_bytes=raw.get("aoi_call_site", {}).get("bytes", 0),
             aoi_call_site_per_param_bytes=raw.get(
                 "aoi_call_site", {}).get("per_param_bytes", 0),
+            aoi_call_site_input_ref_extra_bytes=raw.get(
+                "aoi_call_site", {}).get("input_ref_extra_bytes", 0),
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),

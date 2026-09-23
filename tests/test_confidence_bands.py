@@ -56,11 +56,11 @@ def test_the_corpus_actually_backs_the_good_bands():
     """Guards against the table being regenerated into meaninglessness."""
     assert TABLE, "instruction_accuracy missing from memory_model.yaml"
     assert instruction_band("MOV", TABLE).key == "MEASURED"
-    # A parameterised JSR is the weakest measured instruction -- its files
-    # carry the open per-caller shell question -- and must not claim a bound
-    # it has not earned. (This used to name MAPC, whose only entry came from a
-    # buggy build; its corrected captures measure it exactly.)
-    assert instruction_band("JSR", TABLE).pct <= 75
+    # CPT is the weakest measured instruction -- the SINT/INT narrowing defect
+    # is real and unfixed -- and must not claim a bound it has not earned.
+    # (This used to name JSR, whose files carried the per-caller shell error
+    # until OQ-JSRCALLERBASE closed; its worst file is now under 0.3%.)
+    assert instruction_band("CPT", TABLE).pct <= 75
 
 
 def test_a_rung_is_only_as_good_as_its_worst_instruction():

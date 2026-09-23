@@ -211,17 +211,17 @@ def test_jsr_target_routine_not_double_counted():
     # MainRoutine's total, which hid it from the UI and made the difference
     # between jsr_fixed_base_per_routine and fixed_base_per_routine look like
     # a JSR error. The SUM is unchanged, which is what this pins.
-    assert len(logic_entries) == 3
+    # A JSR caller is an ordinary routine for shell purposes
+    # (OQ-JSRCALLERBASE): the one caller shares the file's single
+    # fixed_base_per_routine shell, and there is no separate subroutine line.
     by_path = {e.path: e for e in logic_entries}
     main = by_path["program:MainProgram/MainRoutine"]
     sub = by_path["program:MainProgram/SubTest"]
-    shell = by_path["subroutine_shell"]
-    assert shell.category == "subroutine_shell"
-    assert shell.bytes == MODEL.logic_instructions.jsr_fixed_base_per_routine
-    # The caller's own content: JSR's weight(72)*1 + B(0)=4, shell excluded.
+    assert "subroutine_shell" not in by_path
+    shell = by_path["task_program_shell"]
+    assert shell.bytes == MODEL.logic_instructions.fixed_base_per_routine
+    # The caller's own content: JSR's weight(72)*1 + B(0)=4.
     assert main.bytes == MODEL.logic_instructions.weights['JSR'] + 4
-    # Unchanged from before the split: content + shell is what it always was.
-    assert main.bytes + shell.bytes == 5096 + MODEL.logic_instructions.weights['JSR'] + 4
     # A(0) = a_base(104) + a_per_param(20)*0 = 104, plus SubTest's own
     # content (one NOP rung, weight 16, plus the composite-scale
     # surcharge of 47/instr = 47) -- no fixed_base_per_routine (that stays
@@ -282,9 +282,8 @@ def test_jsr_param_cost_a_charged_once_even_with_two_call_sites():
     # (subroutine_shell), so main.bytes is CONTENT only. Asserted as
     # content + shell so the figure this test has always pinned is
     # unchanged by the split.
-    shell = by_path["subroutine_shell"].bytes
-    assert shell == MODEL.logic_instructions.jsr_fixed_base_per_routine
-    assert main.bytes + shell == 5096 + MODEL.logic_instructions.weights['JSR'] * 2 + b_two * 2
+    assert "subroutine_shell" not in by_path
+    assert main.bytes == MODEL.logic_instructions.weights['JSR'] * 2 + b_two * 2
 
 
 def test_jsr_output_param_cost_charged_per_call_site():
@@ -331,11 +330,8 @@ def test_jsr_output_param_cost_charged_per_call_site():
     b_one_two = MODEL.logic_instructions.jsr_param_cost.b_cost(1, 2)
     assert b_one_two == 28
     # Content only; the caller's fixed shell is billed separately now.
-    shell = by_path["subroutine_shell"].bytes
-    assert shell == MODEL.logic_instructions.jsr_fixed_base_per_routine
-    assert main.bytes + shell == (
-        5096 + MODEL.logic_instructions.weights['JSR'] + b_one_two + 20 * 2
-    )
+    assert "subroutine_shell" not in by_path
+    assert main.bytes == MODEL.logic_instructions.weights['JSR'] + b_one_two + 20 * 2
     sub = by_path["program:MainProgram/SubTest"]
     # A(1) unaffected by output param count (not yet adjusted -- see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST), plus SubTest's own content (one
@@ -985,14 +981,14 @@ def test_dtr_is_weighted_and_its_five_siblings_are_confirmed():
     assert weights["UPPER"] == 84
 
 
-def test_subroutine_shell_is_its_own_billed_line_item():
-    """The fixed per-caller-routine dispatch cost is billed visibly, not
-    buried inside the calling routine's instruction total.
+def test_jsr_caller_routines_pay_the_ordinary_routine_shell():
+    """A routine that calls a subroutine costs what any routine costs.
 
-    Hiding it there is what made a rung of pure 0-parameter dispatch look
-    expensive and put the blame on the JSR instruction, whose cost is
-    measured exactly. It also made the one structural constant a user can act
-    on -- by restructuring routines -- invisible in the UI.
+    jsrcallers_k{01,02,04,05,10,20} hold 20 calls and 20 targets fixed while
+    the caller count runs 1 -> 20, and each extra caller adds exactly the
+    plain-routine increment. The old per-caller jsr_fixed_base_per_routine
+    (5,096 each) over-predicted the 20-caller file by 91,784 bytes, and the
+    separate subroutine line it billed no longer exists.
     """
     xml = """
     <RSLogix5000Content SchemaRevision="1.0">
@@ -1033,21 +1029,14 @@ def test_subroutine_shell_is_its_own_billed_line_item():
     entries, errors = build_report(ET.fromstring(xml), MODEL)
     assert errors == []
     by_path = {e.path: e for e in entries}
-    shell = by_path["subroutine_shell"]
-    # Charged once per CALLER routine, not per call and not per target.
-    assert shell.bytes == 2 * MODEL.logic_instructions.jsr_fixed_base_per_routine
-    assert shell.category == "subroutine_shell"
-    # The caller count travels with the number, so the tile is readable.
-    assert "2 caller routines" in shell.data_type
-    # Its own path, with no "/" -- a "program:X/Y" path would collide with
-    # that routine's own routine_logic entry in every by-path grouping, the
-    # bug already fixed three times for project_baseline, udt_definition and
-    # module_io.
-    assert "/" not in shell.path
-    # Neither caller carries the shell in its own content any more.
-    for name in ("CallerOne", "CallerTwo"):
-        content = by_path[f"program:MainProgram/{name}"].bytes
-        assert content < MODEL.logic_instructions.jsr_fixed_base_per_routine
+    assert "subroutine_shell" not in by_path
+    shell = by_path["task_program_shell"].bytes
+    overhead = MODEL.logic_instructions.task_program_overhead
+    # Two caller routines in one program: one base, one extra routine, and the
+    # second routine's name.
+    assert shell == (MODEL.logic_instructions.fixed_base_per_routine
+                     + overhead.routine_extra
+                     + MODEL.identifier_name_length.bytes_for("CallerTwo"))
 
 
 def test_a_file_with_no_subroutine_call_has_no_shell_line():

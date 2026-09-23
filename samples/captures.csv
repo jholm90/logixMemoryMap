@@ -3671,3 +3671,4 @@
 "almd_minimal_r3","19963","UNKNOWN","UNKNOWN","2026-09-23","PROCTYPE-UNREAD","0","0","0","Logix Designer - AlmdMinimal in almd_minimal_r3.ACD [1756-L81E 35.11]*","Complete - 0 error(s), 0 warning(s) | "
 "almd_realtext_r3","19998","UNKNOWN","UNKNOWN","2026-09-23","PROCTYPE-UNREAD","0","0","0","Logix Designer - AlmdRealtext in almd_realtext_r3.ACD [1756-L81E 35.11]*","Complete - 0 error(s), 0 warning(s) | "
 "modulerack_kinetix_full_bus_r3","194432","UNKNOWN","UNKNOWN","2026-09-23","PROCTYPE-UNREAD","0","24","0","Logix Designer - KinetixFullBus in modulerack_kinetix_full_bus_r3.ACD [1756-L81E 35.11]*","Complete - 0 error(s), 24 warning(s) | "
+"modulerack_kinetix_twobus_studio","220184","1756-L81E","35.11","2026-09-23","Capacity reading supplied with the Studio-made file; built in Studio by hand, not through the capture tooling","0","","","",""

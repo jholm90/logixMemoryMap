@@ -60,6 +60,12 @@ with both files at the same +12 of file overhead. The third point,
 
 ## Two caveats that bound every "exact" claim here
 
+**0. Every weight was fitted with plain-tag operands.** Half of all real operands are
+member paths (`A.B` 32.6%, `A.B.C` 15.4%, deeper 3.2%) and no calibration file has
+carried one — lint refused them until OQ-OPERANDSHAPE's batch. Whether a member
+reference costs more is the leading open explanation for the ~3% real residual.
+
+
 **1. Every weight was fitted with DINT, LINT or REAL operands.** Operand type
 changes the real cost substantially for ADD, SUB, MUL, DIV, MOD, EQU, GEQ, GRT,
 LEQ, LES, NEQ, MOV, LIM and CPT — together a large share of the occurrence count
@@ -143,7 +149,7 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | GRT | 1.93% | 2,421 | 20 | 0.0025% / 0.0136% (7) |
 | CLR | 1.70% | 2,129 | 32 | 0.0095% / 0.0146% (2) |
 | LES | 1.60% | 2,005 | 20 | 0.0025% / 0.0136% (7) |
-| JSR | 1.25% | 1,567 | 68 | 0.9112% / 1.4034% (27) |
+| JSR | 1.25% | 1,567 | 68 | 0.0162% / 0.2886% (19) |
 | SUB | 1.14% | 1,432 | 40 | 0.0023% / 0.0127% (7) |
 | COP | 1.00% | 1,254 | 112 | 0.0102% / 0.0234% (3) |
 | LEQ | 0.99% | 1,246 | 20 | 0.0025% / 0.0136% (7) |

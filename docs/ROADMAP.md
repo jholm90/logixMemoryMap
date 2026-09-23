@@ -11,6 +11,46 @@ in `OPEN_QUESTIONS.md`.
 Measured on the seventeen real production exports, which are the only accuracy
 evidence that counts.
 
+### Current — after the capture batch that followed the blind set
+
+**Eighteen real programs present: mean absolute error 3.12%, worst 5.99%, every one
+under-predicting (sum-weighted −3.20%).** Stopping rule NOT MET.
+
+This is worse than the 1.67% below, and it is a correction rather than a regression.
+The per-caller `jsr_fixed_base_per_routine` (5,096), measured only on one-caller files
+and charged 10–87 times per real program, was an over-charge; `jsrcallers_k*` proved a
+caller routine costs what any routine costs (OQ-JSRCALLERBASE). Removing it took the
+mean from 1.74% to 3.40%; the AOI input-argument cost and the 2198 family rule then
+brought it to 3.12%. **About 3% of every real program is unexplained, and the old
+figure was that 3% partly cancelled by an error.** OQ-OPERANDSHAPE is the batch aimed
+at it.
+
+| program | prediction error |
+|---|---:|
+| export 27 | -5.99% |
+| blind_03 | -5.60% |
+| export 06 | -5.33% |
+| export 13 | -4.05% |
+| export 16 | -3.66% |
+| blind_02 | -3.38% |
+| export 07 | -3.20% |
+| export 17 | -3.01% |
+| blind_06 | -2.95% |
+| blind_01 | -2.86% |
+| export 09 | -2.72% |
+| export 18 | -2.67% |
+| blind_05 | -2.25% |
+| export 01 | -1.96% |
+| export 28 | -1.93% |
+| blind_04 | -1.90% |
+| export 14 | -1.72% |
+| export 10 | -1.01% |
+
+(Error is prediction minus actual; negative is under-prediction. The five programs
+absent from `samples/local/` are not recomputed.)
+
+### Before that batch — kept for the record
+
 **All twenty-three real programs with a reading — the seventeen below plus six blind
 (next section): mean absolute error 1.67%, worst case 3.99%, residual about +1.72%,
 sixteen under and seven over.**

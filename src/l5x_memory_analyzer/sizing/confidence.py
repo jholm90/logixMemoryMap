@@ -91,13 +91,10 @@ SCAFFOLD_BAND = {"XIC": "MEASURED", "XIO": "MEASURED",
 #            generators produce the identical 25,472 at 20 targets. Target
 #            name length is separately priced and exact at 4/8/16/32/40.
 #
-#            The 280-byte whole-file residual on that family is NOT this
-#            instruction: it is jsr_fixed_base_per_routine (5,096) exceeding
-#            fixed_base_per_routine (4,816), a per-routine shell constant that
-#            does not move with call count, target count or name length. It is
-#            charged against the routine, not the rung, and OQ-JSRPARAMCOST
-#            tracks it. Attributing it to JSR is what made a rung of pure
-#            0-parameter dispatch read Approximate +/-5%.
+#            The 280-byte whole-file residual that family used to carry was
+#            NOT this instruction: it was the per-caller
+#            jsr_fixed_base_per_routine, which jsrcallers_k* showed does not
+#            exist (OQ-JSRCALLERBASE). With it removed the family is exact.
 #
 # A JSR that CARRIES parameters is not here and does not qualify: its cost is
 # the fitted A(n)/B(n) model, and jsr_paramtype_* still misses by thousands of

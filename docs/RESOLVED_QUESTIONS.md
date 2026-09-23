@@ -328,6 +328,14 @@ longer exist in that shape. Diagnosis below. The regenerated files await capture
 
 ---
 
+
+**The BOOL arm's recapture (`litop_bool_*_n01000_r2`) answered a different question.**
+Those files pass literals and tags into a Required AOI Input, and the difference is in
+the AOI call, not in any native operand: an Input argument that is anything but the
+literal 0 or 1 costs 28 bytes, not 16 — tag and `12345` alike, BOOL and DINT alike.
+Every earlier AOI calibration passed `0` to its inputs. Wired as
+`aoi_call_site.input_ref_extra_bytes = 12`; real programs pass a tag to ~90% of their
+AOI inputs. See `MEMORY_MODEL.md`, AOI call site.
 ## The batch answered it. The law is per-type, and it is mostly zero.
 
 **Arm G first, as the plan required.** The bench rung rebuilt at 1,000 rungs:
@@ -1266,6 +1274,425 @@ errors. The question is parked; the row outlives it.
 ## OQ-ALARMPROPBYTES — **CLOSED with OQ-ALARMCOND.** The per-property costs are proved free.
 
 ---
+
+# Closed in the capture batch after the blind set
+
+## OQ-JSRCALLERBASE — a JSR caller routine costs what any routine costs
+
+**SOLVED and wired.** The 280-byte premium is not per caller routine and not per
+file: **a routine that calls a subroutine carries no premium at all.**
+`jsrcallers_k{01,02,04,05,10,20}` hold 20 calls and 20 targets fixed while the caller
+count runs 1 → 20:
+
+| callers | 1 | 2 | 4 | 5 | 10 | 20 |
+|---|---:|---:|---:|---:|---:|---:|
+| actual | 25,472 | 25,752 | 26,312 | 26,592 | 27,992 | 30,792 |
+| step per extra caller | | 280 | 280 | 280 | 280 | 280 |
+| old prediction | 25,752 | 30,848 | 41,040 | 46,136 | 71,616 | 122,576 |
+
+280 is the plain-routine increment (`routine_extra` 264 plus the routine's name), so
+every extra caller costs exactly what an extra plain routine costs, and the first
+shares the file's one-time `fixed_base_per_routine`. **Fix:** a JSR caller is counted
+as an ordinary routine in the task/program shell; `jsr_fixed_base_per_routine` is no
+longer charged and the separate "Subroutine Overhead" line is gone. All six files are
+now exact, `jsr_sbr_ret` goes from 10.3% to 1.4% mean, `subroutine_for` to exact, and
+the multi-program composites from 2.8% to 1.3%. JSR's per-instruction accuracy moves
+from 0.91% mean / 1.40% worst to 0.016% / 0.29%.
+
+**An ST routine that is a JSR target now pays the RLL target's declaration**
+(`jsr_target_declaration` + A(n)). It had no charge; the old per-caller constant had
+been covering it, and every `st_*` file read +280 the moment it was removed. 67 of 74
+ST rows are inside ±8 against 26 before.
+
+**It unmasked a compensating error on the real programs.** The per-caller 5,096 had
+only ever been measured on single-caller files, yet it was applied to every caller in
+real programs, 10–87 of them each. Removing it moves the real-set mean from 1.74% to
+3.12%: real programs are missing about 3% that the over-charge had been hiding. That
+is OQ-REALUNDER's problem now, and OQ-OPERANDSHAPE is the first targeted attack on it.
+
+### The derivation as it stood before the capture
+
+
+**The marginal cost of a no-parameter JSR is exact and the engine already has it
+right.** One distinct 0-parameter target plus its JSR call costs **368 bytes**,
+measured straight off the captures:
+
+| pair | interval | per unit |
+|---|---:|---:|
+| `jsr_multi_distinct_targets_01` → `_03` → `_05` | 2 | **368** |
+| `..._n05` → `_n10` → `_n15` → `_n20` | 5 | **368** |
+| `..._n20` → `_n50` | 30 | **368** |
+| `jsr_crossed_n20_namelen16` → `_n40_namelen16` | 20 | **368** |
+
+Eight independent intervals across two generators, zero residual. `jsr_crossed_n20_namelen16`
+and `jsr_multi_distinct_targets_n20` were built by different generators and capture
+at the identical 25,472. Target name length is separately priced and also exact —
+all five `namelen` rows carry the same residual.
+
+**The residual is a single flat constant.** Recomputed live against the current
+engine, all 14 clean 0-parameter rows over-predict by **exactly 280 bytes** — at
+n = 1, 3, 5, 10, 15, 20, 40, 50 and at name lengths 4, 8, 16, 32, 40. The slope is
+perfect; only the intercept is wrong.
+
+**It is `jsr_fixed_base_per_routine`, and the arithmetic is not subtle.** The model
+carries two per-routine bases: `fixed_base_per_routine` = **4,816** for an ordinary
+routine, and `jsr_fixed_base_per_routine` = **5,096** for a routine containing a JSR.
+
+    5,096 - 4,816 = 280
+
+That is the residual exactly, and the `subrtn_shell` control — same file shape, no
+JSR — predicts at **0.000%** at 1, 5, 25 and 100 routines, so the 4,816 path is
+right and the 5,096 path carries the whole error. The 280 premium was presumably
+meant to cover the caller declaring a target subroutine, but the per-target cost is
+already charged separately through `jsr_target_declaration`, so it is charged twice.
+
+That also explains the band. `derive_instruction_accuracy.py` divides a whole-file
+error by file size, so a fixed 280 on a 19,952-byte file reads as 1.40% — and the
+recorded JSR worst case is **1.4034%**. The number is a constant divided by a file
+size, not a property of JSR.
+
+**Blocked, and this is the reason it is not being changed.** `jsr_fixed_base_per_routine`
+is charged **once per JSR-caller routine**, not once per file. Every one of the 30
+JSR files in the corpus has **exactly one** caller routine — checked directly, not
+assumed. So "280 once per file" and "280 per caller routine" fit all 30 rows
+identically and the corpus cannot separate them. A real program has tens to hundreds
+of caller routines, so the two readings differ by thousands of bytes there, in the
+direction that would make the real files worse: they currently under-predict, and
+the per-caller reading subtracts more.
+
+This is the collinearity failure mode exactly — two constants against points that
+only ever vary one of them. Applying either reading now would be fitting, not
+measuring.
+
+**The discriminating family is built: `jsrcallers_k{01,02,04,05,10,20}`** (first built as
+`jsr_callerdist_k*`, never picked up by the converter, rebuilt under new names).
+
+Total JSR calls held at **20** and distinct 0-parameter targets at **20** in every
+file. Only the distribution moves: with K callers, MainRoutine takes 20/K calls and
+K−1 extra caller routines take 20/K each. K runs over the divisors of 20 so no file
+carries a remainder routine the others lack.
+
+`confound_check.py` reports **every consecutive pair varies exactly one dimension —
+`routines`**, which is the variable itself. Rung text, instruction inventory, tag
+inventory and the target set are identical across all six. A plain extra routine is
+separately priced at exactly **280 bytes** by `subrtn_shell` (four counts, zero
+residual), so that component subtracts cleanly. All six lint clean on 1756-L81E
+firmware 35.
+
+K=1 reproduces `jsr_multi_distinct_targets_n20`'s shape and target names exactly and
+predicts at the identical 25,752, so it is anchored to a capture already in hand
+(25,472).
+
+**Predictions written down before the capture run, per the blind-test rule:**
+
+| file | callers | engine predicts | **A** per file | **B** per caller | **C** flat −280 |
+|---|---:|---:|---:|---:|---:|
+| `jsrcallers_k01` | 1 | 25,752 | 25,472 | 25,472 | 25,472 |
+| `jsrcallers_k02` | 2 | 30,848 | **25,736** | **30,288** | **30,568** |
+| `jsrcallers_k04` | 4 | 41,040 | **26,264** | **39,920** | **40,760** |
+| `jsrcallers_k05` | 5 | 46,136 | **26,528** | **44,736** | **45,856** |
+| `jsrcallers_k10` | 10 | 71,616 | **27,848** | **68,816** | **71,336** |
+| `jsrcallers_k20` | 20 | 122,576 | **30,488** | **116,976** | **122,296** |
+
+- **A — the base belongs to the file.** An extra caller routine costs what any
+  routine costs, 264 plus its rungs. `actual(K) = 25,472 + 264·(K−1)`.
+- **B — the base belongs to each caller.** The engine's structure is right and only
+  the 280 premium is wrong. `actual(K) = predicted(K) − 280·K`.
+- **C — the engine is right and the 280 is something else.**
+  `actual(K) = predicted(K) − 280`.
+
+All three agree at K=1 by construction and separate by **86,488 bytes** at K=20.
+There is no reading of the result that leaves this open.
+
+**If A holds, this is not a 280-byte item.** The engine charges 5,096 per caller
+routine; a real export has 60 of them, so it would be over-charging roughly 300,000
+bytes there and something else is under-charging by more, since the real files
+currently under-predict. That is the compensating-error failure mode, and it would
+make this the largest single identified defect in the model.
+
+Hold `jsr_fixed_base_per_routine` at 5,096 until the capture reads.
+
+**The 280 is now billed where it belongs and is visible.** The per-caller shell
+is its own `subroutine_shell` entry under a **Subroutine Overhead** tree group,
+labelled with the caller count — 122,304 bytes across 24 caller routines, 1.58%,
+on the real export. It was previously folded into each calling routine's
+instruction total, invisible, and the difference was charged against the JSR
+instruction. Reclassification only: totals byte-identical on all 3,551 corpus
+files. The uncertainty this question tracks now sits on that line item.
+
+**The confidence side is already fixed and does not wait on the capture.** The
+280 is a per-routine shell constant, not a JSR cost, so it was never JSR's band
+to lose. `JSR/0` now reads **Exact ±0**: see `MEMORY_MODEL.md`, "A 0-parameter
+JSR is EXACT". On the real export that moves 13 routines from 75% to 100% while
+the 20 carrying a parameterised JSR stay at 75%. What the capture settles is the
+byte total, not the band.
+
+**A second, smaller band sits underneath it.** The `jsr_paramcount_*` family
+residuals cluster at **−296 / −300** rather than −280, flat across rung counts from
+10 to 1,000 and across parameter counts 1 to 15. That is a further 16–20 bytes
+outside the ±8 floor, constant, and it appears only once SBR/RET carry operands. It
+is the same shape of defect and almost certainly resolves with the same file.
+
+**Why this is worth the time despite being 280 bytes.** It is not the bytes. It is
+that the confidence display points at the wrong instruction, so the one number a
+user judges a dispatch routine by is wrong for every routine that dispatches — and
+the same constant is charged per caller routine across every real program, where
+it is not 280 bytes at all.
+
+## OQ-RUNGSHAPE — no per-rung term is missing
+
+**CLOSED NEGATIVE.** `rungpack_{xic,equ}_k{01,02,04,08,16,40}` pack 4,000 instructions
+k to a rung, each rung closed by a NOP, using a **non-output** instruction so no series
+output cascade is involved. All twelve files are **exact** — zero residual at every
+packing, XIC and EQU alike. The per-rung base and per-instruction weights already
+separate correctly, so the confound between them costs nothing.
+
+
+**Every calibration file in the project is one instruction per rung.** So a per-rung
+cost and a per-instruction cost are **perfectly confounded** in every weight in the
+model. `routine_logic` is 18% of predicted mass, so this is not a small exposure.
+
+### The coverage gap is real but is NOT the error
+
+The weights are fitted on a corpus that is **9.4% branched rungs and 62%
+single-instruction rungs**, against real programs at **68.7% and 7%** — measured over
+41,374 real rungs and 125,275 real instruction occurrences.
+
+That was the largest suspected error source in compiled logic. **It was measured, and
+the terms hold exactly.** Holding eight XIC conditions and one OTE fixed across 500
+rungs and moving only the arrangement across 1, 2, 4 and 8 parallel legs, the
+predicted steps are correct **to the byte at every leg count**, and a second pair
+confirms it at the real population's composition.
+
+**So the branch-bracket cost extrapolates correctly outside the shape it was fitted
+on.** The coverage gap is a fact about the corpus, not a defect.
+
+### The attempt to isolate the per-rung term failed, by design error
+
+A packing sweep held 4,000 instructions fixed and varied how many sat on each rung,
+so rung count moved while instruction count did not — which is the only way to
+separate the two terms.
+
+**It used OTE, which is an output.** Packing outputs onto one rung builds series
+cascades, so extra series outputs and rung count moved together identically in every
+file. **Total confound.**
+
+It was not wasted: it re-measured the series-output law at four new points at exactly
+−12.000, and **killed that law's competing candidate** — the files were all distinct,
+so the cost cannot be per-distinct-rung.
+
+**A packing sweep must use a non-output instruction.** That is the one design
+constraint the next attempt has to respect.
+
+### Built: `rungpack_{xic,equ}_k{01,02,04,08,16,40}` — 12 files
+
+4,000 instructions in every file, packed k per rung (4,000 → 100 rungs), every rung
+closed by one `NOP()`. XIC and EQU are both non-output, so no series cascade forms at
+any k. Operand text and tag inventory are identical across each arm; the confound gate
+reports one moving dimension per pair.
+
+**What the slope says.** Bytes per removed rung, against the NOP-plus-rung cost the
+engine already charges. Equal: the instruction weights carry no hidden per-rung share.
+Larger: the excess is the per-rung cost folded into every weight, read directly. Two
+arms so the answer does not rest on one instruction.
+
+## OQ-ALARMCONDREAL — 107 bytes per condition, confirmed at real scale
+
+**SOLVED.** `alarmcond_realcount_n{000,200,400,600}` put 0–600 alarm conditions in the
+real production shape (TRIP, three associated tags, HMI group) on arrays held at 640.
+Every file reads the universal **+12** file residual and nothing else: the
+per-condition cost is exact at real counts and real shape. The 8.8% gap on one real
+program is therefore not a per-condition cost; it stays with OQ-REALUNDER. No real
+program carries alarm sets, so that arm has no exposure.
+
+
+**Promoted from the resolved file.** It was filed there because the per-condition
+formula was derived and wired; the disagreement below is unexplained and the exposure
+is large enough that calling it closed understates it.
+
+| program | conditions | actual step | predicted step | actual per condition | predicted |
+|---|---:|---:|---:|---:|---:|
+| `export 14` | 400 | 443,128 | 442,400 | 1,107.8 | 1,106.0 |
+| `export 08` | 200 | 243,040 | 221,600 | **1,215.2** | 1,108.0 |
+
+**Within 0.16% on one file and 8.8% short on the other** — and that is **19% and 21%
+of total controller memory** respectively, the second-largest category in both.
+
+**The step is clean.** An exhaustive element-tag diff of each full export against its
+alarm-free sibling shows `AlarmCondition`, `AlarmConfig`, `HMIGroup` and the
+`AlarmConditions` container are the **only** elements that differ. No tags, rungs,
+routines, programs, UDTs or AOIs moved.
+
+**This is not a scale error — the two files disagree with each other**, on the same
+wired formula, with every condition in both hanging off a single BOOL array tag. So
+something differs between them that the formula does not see.
+
+**Two caveats on the numbers.** Both readings came from files derived from real
+exports, which were later found not to import — so **re-derive before citing them
+further.** The per-condition formula itself rests on a 37-file generated batch and is
+unaffected.
+
+**What is untested:** alarms on a UDT-scalar host (a handful of real conditions sit on
+a UDT rather than a BOOL array, and the batch only covers array hosts), and whether
+alarm **sets** carry their own cost — the operator and rollup inclusion flags are true
+on every real condition and no file varies them.
+
+**What the eighteen real exports say, counted in the final review.** 4,655 of their
+4,663 alarm conditions are exactly the shape the generated sweep already prices — TRIP,
+severity 500, array-indexed input on a BOOL array host, three associated tags and an
+HMI group of at most 15 characters. The other 8 are inherited from a type-level
+definition in one program. **No real program uses alarm sets or any other condition
+type**, so neither untested item above has real exposure. And the whole-program
+results argue against the 8.8% figure: export 08, the file it came from, is predicted
+**+0.24%** overall with alarms at 21% of its memory — an 8.8% alarm under-charge would
+put it about 1.8% low.
+
+**Built: `alarmcond_realcount_n{000,200,400,600}`** — the real shape at real counts,
+host and associated arrays fixed at 640 so only the condition count moves. The existing
+real-shape sweep is exact (a flat +16 file residual) but stops at 128 conditions; this
+is the check that the law holds where real programs actually sit. If it does, the
+question closes.
+
+**Do not confuse this with the ALMD instructions**, which are parked with zero
+occurrences in the real set, or with an ordinary scheduled program named for alarms.
+One real program carries both this and such a program.
+
+## OQ-BUILDFAIL-OPEN — the defect log
+
+**CLOSED.** Every file on it now builds: `almd_minimal_r3`, `almd_realtext_r3` (0
+errors, 0 warnings) and `modulerack_kinetix_full_bus_r3` (0 errors, 24 axis warnings),
+plus `eventtask_axiswatch_r2` (0 errors). The causes are enforced in lint rather than
+remembered: `kinetix_drive_missing_configid`, `native_instruction_arg_count`, and
+`scripts/check_proven_blocks.py` before any Kinetix file is handed over.
+
+ALMD itself stays unpriced (the instruction is parked); its files now build, so its
+cost can be read off them if the park is ever lifted — about 320–360 bytes above the
+engine on these two files.
+
+
+Full diagnostic rules and root-cause reference are in `OPEN_BUILD_ERRORS.md`; this
+entry exists so errored rows have an owner.
+
+### What the re-triggers returned
+
+| file | result | cause |
+|---|---|---|
+| `eventtask_axiswatch_r2` | **0 errors**, 6 axis warnings | builds. The original's error was the 5069 processor it was captured on |
+| `almd_minimal_r2`, `almd_realtext_r2` | 1 error each: *"Rung 0, ALMD: Invalid number of arguments for instruction"* | the generator's 7-operand call. The one real ALMD in the eighteen real exports takes **5**: `ALMD(tag,1,1,0,0)` |
+| `modulerack_kinetix_full_bus_r2` | 4 errors, 24 warnings; the error text was cut off | the original's log names it: *"Tag '<drive>:SI': Invalid data type for safety tag"* on all three drives, plus *"Project size exceeds controller capacity"* |
+
+**The Kinetix failure was a known defect shipped again.** `gen_assumed_closeout.py`
+had already recorded that the hand-copied 2198 `-ERS3` blocks in
+`gen_module_sweep_variants.py` / `gen_module_sweep.py` lack the `<ExtendedProperties>`
+ConfigID, that Studio then configures the drive for networked safety, and that drives
+must come from `_drive_module_xml`. That was a comment, not a check: the blocks stayed
+importable, lint did not test for the element, and `gen_module_kinetix_bus.py` kept
+using them. The `_r2` rebuild fixed the converter axis and processor and inherited
+the drives unchanged. Every real 2198 drive — about 250 — carries a ConfigID.
+
+**Now enforced, not advised:**
+
+- `lint.py` `kinetix_drive_missing_configid` refuses any file with a 2198 `-ERS`
+  drive lacking a ConfigID. Every generator writes through lint, so nothing bypasses it.
+- Both module tables replace their `-ERS3` blocks at import with `_drive_module_xml`
+  output. The safety-wired 4conn variants are dropped.
+- `lint.py` `native_instruction_arg_count` checks ALMD's operand count against the
+  real form.
+- `scripts/check_proven_blocks.py` requires every 2198 module and AXIS_CIP_DRIVE block
+  in a file to match a block from a **zero-error capture**. It flags all three drives
+  in both failed Kinetix builds and passes the rebuild.
+- `tests/test_build_guards.py` pins all of this and runs lint and the proven-block
+  check over every file waiting for capture.
+- The capture script kept only the first 300 characters of Studio's log, and Studio
+  lists warnings first, so the `_r2` Kinetix log lost all four errors. It now keeps
+  every Error line first, then the summary, then warnings while room remains.
+
+### Re-triggered again, awaiting capture
+
+| file | what changed |
+|---|---|
+| `almd_minimal_r3`, `almd_realtext_r3` | the real 5-operand call |
+| `modulerack_kinetix_full_bus_r3` | rebuilt only from proven blocks: one 2198-P208 supply with its converter axis, 2198-D032/D057/D020-ERS3 drives from `_drive_module_xml`, six servo axes on Ch1/Ch3. **One bus, not two:** the P031/P070 supplies occur in no real program, and a second bus needs a second bus-sharing group whose ConfigData has never been verified |
+
+The ALMD pair is generated despite the ALMD park because the goal is to close the defect
+log, not to work the instruction.
+
+### Moved out, because the cause is already known
+
+| row | now owned by | why no re-trigger |
+|---|---|---|
+| `instrfirst_mapc_x10` | OQ-MAMFAMILY-BUILDFAIL | the original MAPC generator bugs; `_v2` and `_v2_x10` captured clean and MAPC is EXACT |
+| `instrfirst_crout_x10` | OQ-SAFETY | CROUT needs a safety CPU; Safety family ignored |
+| `predefprobe_axis_generic` | OQ-PREDEFINED | AXIS_GENERIC is in none of the real programs; file gone |
+
+**CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py` —
+`almd_minimal`, `almd_minimal_r2`, `almd_realtext_r2` and
+`modulerack_kinetix_full_bus_r2`, each with its cause diagnosed above. The question
+closes when the three `_r3` files capture clean.
+
+Run `python scripts/capture_errors.py --list` for the current row identities.
+
+## OQ-MODULENAMELEN — a module's name is stored twice
+
+**BOUNDED — law measured, deliberately not wired.** `modname_p208_len*` (4–40
+characters, twelve files, all clean) fit one law exactly: the name is stored twice,
+each copy rounded up to 8 bytes,
+
+    name_bytes(L) = roundup8(L + 3) + roundup8(L + 5)       (charged relative to L = 4)
+
+It predicted the Kinetix bus files independently: +80 on
+`modulerack_kinetix_full_bus_r3` (three 14-character drive names at +24, one
+10-character supply at +8) and +72 on the Studio-made two-supply file, which are
+exactly their residuals. **Real exposure is 0.02%** — 18 KB across 1,058 real
+modules, median name 9 characters — and wiring it correctly means re-deriving 51
+per-catalog constants that were each measured at a different name length (the sweeps
+used ~18 characters). Below the noise floor, so recorded and closed. The +80/+72 on
+those two files is this term.
+
+
+**The measurement.** Two committed isolation files, both a 1756-L81E with a single
+2198-P208 under the local rack, no tags and no axes. They differ in exactly one
+thing: what the module is called.
+
+| file | module name | chars | actual | predicted | delta |
+|---|---|---:|---:|---:|---:|
+| `modulemotion_p208_baseline` | `P208` | 4 | 22,136 | 22,136 | **0** |
+| `modulesweep_2198_p208` | `TestMod1_2198P208` | 17 | 22,160 | 22,136 | **−24** |
+
+Both captured with `error_count = 0`. The controller name is 17 characters in both,
+so it is not that. **+13 characters of module name is worth +24 bytes**, and the
+engine charges nothing for a module name at any length.
+
+**Why this is not already answered.** Identifier name length is priced for tags, for
+UDT type names, for AOI type names and for custom string type names -- four separate
+laws in `memory_model.yaml`, all of them a step of 8 bytes per bucket. None of them
+applies to a `<Module Name=...>`, and no sweep has ever varied one.
+
+**Why it is not wired.** One pair is one equation. A step of 8 bytes per
+`floor(len / 4)` bucket reproduces +24 exactly, and so do several other shapes --
+that is two points against a two-parameter family, which this project has already
+been burned by. The existing name-length laws bucket by 8 characters, not 4, so
+matching them would predict +16, not +24. Something is different here and one pair
+cannot say what.
+
+**Consequence for confidence.** `2198-P208` reads ASSUMED rather than KNOWN, and so
+do the other flat-fitted 2198 supply catalogs. That is correct and should not be
+overridden: its two isolation captures do not agree with each other, and until the
+name term is priced, a P208 in a real file is predicted exactly only when its name
+happens to be short. The frequency of the catalog in real programs is not evidence
+about the constant -- only an isolation capture is.
+
+**Built: `modname_p208_len{04,06,08,10,12,13,16,17,20,24,32,40}`** — one 2198-P208,
+no tags, no axes, only the module name length moving. Lengths include 6, 10, 13 and 17
+because the task-name finding (OQ-TASKNAMEROUND) showed only non-multiples of 8 can
+tell a round-up rule from a round-down one. It reads the step directly instead of
+fitting it.
+
+**Exposure before building anything.** Real programs carry 20-60 modules each. At
+24 bytes for a 13-character name this is on the order of a kilobyte per file against
+a residual of tens of kilobytes, so by the noise-floor rule it does **not** earn a
+capture slot ahead of the literal-operand batch. It is recorded because it explains a
+specific wrong-looking confidence tier, not because it is worth a session.
 
 # Process, tooling and scope
 

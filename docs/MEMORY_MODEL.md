@@ -417,7 +417,30 @@ counting as a parameter.
 | `AddAoiProbe(AoiInst0000,0,Bit1);` | 2 | 152 |
 
 One parameter, 16 bytes, both exact, from two independently written generators
-with different AOI shapes. The second is a −16.000-per-unit slope over 180 units,
+with different AOI shapes.
+
+**What is passed matters.** Both shapes above pass the literal `0` to their Input
+parameters and a tag to a BOOL Output. `litop_bool_*_n01000_r2` call one 3-input AOI
+1,000 times, varying only the arguments:
+
+| arguments | per call over the old model |
+|---|---:|
+| tag, tag, tag | +36 |
+| tag, `0` or `1`, tag | +24 |
+| tag, tag, `12345` | +36 |
+
+An **Input argument that is anything but the literal 0 or 1 costs 28**, not 16, on BOOL
+and DINT parameters alike; `input_ref_extra_bytes = 12` is charged per such argument.
+Output arguments stay at 16 (measured), InOut at 16 (not isolated). Real programs pass
+a tag to about 90% of their AOI Input arguments. ST call sites are unchanged — only RLL
+was measured.
+
+**A file that calls an AOI from ladder carries a one-time 264** beyond its call sites —
+`dscale2_aoi_*`, `defscale_aoiinst` and `litop_bool_*` all read exactly +264 (+252)
+with every call site priced. It is the ladder twin of `st_aoi_call_routine_bytes`
+(264, per ST routine). Every such file has one calling routine, so it is charged once
+per file, which is what the data proves; the per-routine reading is worth 0.24% of the
+real programs, under the noise floor. The second is a −16.000-per-unit slope over 180 units,
 and a separate no-call arm proved the instance tag is exact at 1, 5, 20 and 60
 tags — so the whole 16 sits on the call, not on the instance.
 
@@ -680,6 +703,24 @@ declared structure).
 > program** that the over-charge had been cancelling. One real program with 12
 > ERS3 drives moved by exactly 12 × 6,384. A compensating error hides a real one.
 
+### 2198 families share one repeat count — FITTED
+
+A 2198 module's occurrence counts against its **family** — drives (`2198-D/S/C/H`) or
+bus supplies (`2198-P/RP`) — not its own catalog. Any later occurrence pays its
+first-copy rate less **984** unless its catalog has its own measured repeat rate.
+Evidence: `axmarg_1cat_n*` exact with axes on every drive; `modulerack_kinetix_full_bus_r3`
+(one P208, three *different* drives) goes from −1,888 to +80 with the discount on the
+second and third drive; the Studio-made two-supply file puts its second P208 at 1,000
+under the first. An **unseen** 2198 catalog is priced from its family — 4,113 first-copy
+for a drive, 3,589 for a supply — rather than the flat 1,672 generic default.
+
+### Module name — measured, not wired
+
+`modname_p208_len*` fit one law exactly: the name is stored twice, each copy rounded up
+to 8 bytes, `roundup8(L+3) + roundup8(L+5)`. It also predicts the Kinetix files' +80 and
++72. Real exposure 0.02%; wiring it means re-deriving every per-catalog constant at its
+own calibration name length, so it is recorded and not charged (OQ-MODULENAMELEN).
+
 ### Repeat-instance discount — KNOWN
 
 From the second module of a catalog onward:
@@ -787,9 +828,10 @@ this wrong.
 
     delta_bytes = fixed_base + weight × rung_count
 
-**Every routine carries a fixed base of 4,816 bytes** — 5,096 for a routine
-containing a JSR, the extra 280 being the target subroutine's own definition
-overhead. Confirmed identical across 42 instructions.
+**The file carries one routine base of 4,816 bytes** (`fixed_base_per_routine`),
+and every extra routine adds `routine_extra` 264 plus its name — a routine that
+contains a JSR included (OQ-JSRCALLERBASE). Confirmed identical across 42
+instructions.
 
 Fitted from a 244-file per-instruction sweep at five rung-count points each
 (10/50/100/1000/5000) with **zero residual against the raw per-file
@@ -821,34 +863,24 @@ identically to DINT. **Every "exact, zero residual" claim in this file and in
 operand-type surcharge is wired; the narrow-integer widening defect it exposes in
 CPT is not fully solved.
 
-### Subroutine dispatch overhead is its own billed line
+### A JSR caller routine is an ordinary routine — KNOWN
 
-A routine that contains a JSR pays `jsr_fixed_base_per_routine` = **5,096** once,
-for the routine existing and being dispatched to. It does not scale with how many
-calls that routine makes, how many distinct targets it reaches, or how long their
-names are — all of which are priced separately and exactly.
+`jsrcallers_k{01,02,04,05,10,20}` hold 20 calls and 20 targets fixed while the caller
+count runs 1 → 20. Each extra caller routine adds exactly **280** — the plain-routine
+increment, `routine_extra` 264 plus a 16-character name — so a caller carries no
+dispatch premium at all. The engine counts callers with the ordinary routines in
+`task_program_shell`; `jsr_fixed_base_per_routine` (5,096, measured only on files with
+one caller) is no longer charged, and the **Subroutine Overhead** tree group it billed
+is gone. All six files exact.
 
-That constant used to be folded into the calling routine's instruction total,
-which had two bad consequences:
+**A JSR target written in Structured Text** pays the same declaration as an RLL target,
+`jsr_target_declaration` + A(n). It had no charge before; the old per-caller constant
+covered it by accident.
 
-- **It was invisible.** The one structural cost a user can actually act on, by
-  restructuring routines, did not appear anywhere in the UI. On the real export it
-  is **122,304 bytes across 24 caller routines, 1.58% of the program.**
-- **It put the blame on the wrong thing.** `jsr_fixed_base_per_routine` (5,096)
-  exceeds the ordinary `fixed_base_per_routine` (4,816) by 280, and that premium
-  is exactly the residual on every clean 0-parameter JSR capture. Divided by file
-  size it reads as 1.40%, which is what demoted the JSR instruction to
-  *Approximate ±5%* despite its cost being measured exactly.
-
-It is now emitted as a `subroutine_shell` entry with its own path and its own
-top-level tree group, **Subroutine Overhead**, labelled with the caller count so
-the number is interpretable. Reclassification only: totals are byte-identical on
-all 3,551 corpus files, verified by differencing the whole corpus before and
-after.
-
-The open uncertainty is attached to this line, where it belongs. Whether the
-correction is 280 once per file or 280 per caller routine is what
-`jsrcallers_k*` settles — see `OPEN_QUESTIONS.md` OQ-JSRCALLERBASE.
+> Removing the per-caller constant raised the real-set mean from 1.74% to 3.40%. It
+> had been charged 10–87 times per real program on the strength of one-caller files,
+> and was cancelling roughly 3% of real content that is still unexplained. See
+> OQ-REALUNDER and OQ-OPERANDSHAPE.
 
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 
@@ -870,11 +902,10 @@ every one:
 Two of those generators produce the identical 25,472 at 20 targets. Target name
 length is separately priced and exact at 4 / 8 / 16 / 32 / 40 characters.
 
-**The 280-byte whole-file residual on that family is not this instruction.** It is
-`jsr_fixed_base_per_routine` (5,096) exceeding `fixed_base_per_routine` (4,816), a
-per-routine shell constant that does not move with call count, target count or
-name length. It belongs to the routine, not the rung. Attributing it to JSR is
-what made a rung of pure 0-parameter dispatch read *Approximate ±5%*.
+**The 280-byte whole-file residual that family used to carry was not this
+instruction.** It was `jsr_fixed_base_per_routine` (5,096) exceeding
+`fixed_base_per_routine` (4,816) — a shell constant that turned out not to exist; see
+the section above. With it removed the family is exact.
 
 **A JSR that carries parameters does not qualify** and stays on the fitted
 A(n)/B(n) model — `jsr_paramtype_*` still misses by thousands of bytes on UDT and

@@ -44,113 +44,54 @@ are too small to carry the residual.
 
 ## The queue
 
-Re-ranked at the close of the final review, on the real programs rather than on the
-generated corpus. The previous first item — the INT/SINT literal over-charge — was
-counted on all eighteen real exports and is worth **1,756 bytes across all of them**.
-It is closed. The queue is now short, and every item on it either needs a capture or
-needs a real program.
+Re-ranked after the capture batch that followed the blind set. That batch closed five
+questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
+by correcting the JSR caller base, exposed a larger real residual that a wrong
+constant had been hiding: **real-set mean 3.12%, worst 6.0%**, all under-predicting.
+Every item below is aimed at that.
 
-### 1. Reconcile the captured batch, then capture the three `_r3` rebuilds
+### 1. Capture the operand-shape batch — OQ-OPERANDSHAPE, 26 files
 
-**Captured: 49 of 52 at zero build errors.** The three that errored are the ones handed
-over broken — both ALMD files and the Kinetix bus file — diagnosed in OQ-BUILDFAIL-OPEN
-and rebuilt as `_r3`. MAPC x100 read exactly the number written down before capture.
-The 49 clean rows still need the full reconcile sequence in `CLAUDE.md` against their
-questions: JSRCALLERBASE, RUNGSHAPE, MODULENAMELEN, ALARMCONDREAL, the composites and
-the BOOL literal arm.
-
-Waiting for capture: `almd_minimal_r3`, `almd_realtext_r3`,
-`modulerack_kinetix_full_bus_r3`.
-
-The batch as built — every open capture was regenerated under a new file name — the conversion and capture
-tooling skip any name they have already seen, so a file attempted once never surfaced
-again — and every open question that a generated file can answer got a family:
-
-| family | files | question |
+| family | files | what it measures |
 |---|---:|---|
-| `jsrcallers_k{01,02,04,05,10,20}` | 6 | OQ-JSRCALLERBASE |
-| `rungpack_{xic,equ}_k{01,02,04,08,16,40}` | 12 | OQ-RUNGSHAPE |
-| `modname_p208_len{04..40}` | 12 | OQ-MODULENAMELEN |
-| `alarmcond_realcount_n{000,200,400,600}` | 4 | OQ-ALARMCONDREAL |
-| `composite_realistic_*_r3` | 9 | composite instrument, rebuilt build-valid |
-| `litop_bool_*_n01000_r2` | 4 | OQ-LITERALOPERAND BOOL arm |
-| `instrfirst_mapc_v2_x100` | 1 | third count point for MAPC, already wired EXACT at 260 bytes/call |
-| `almd_{minimal,realtext}_r2`, `eventtask_axiswatch_r2`, `modulerack_kinetix_full_bus_r2` | 4 | OQ-BUILDFAIL-OPEN re-triggers, for their Studio error lines |
-
-All lint clean, all 1756-L81E at firmware 35, and every isolation family passes the
-confound gate. The blind set is done — six readings in, recorded as exports 31–36.
-
-**Not generated, on purpose:** OQ-REALUNDER cannot be answered by a generated
-whole-project file (see its entry); OQ-EXPORTSCOPE is closed, accepted in use, and sixteen stale spec rows were
-retired rather than rebuilt because their shape appears in none of the eighteen real
-programs or targets dead architecture — listed in `SAMPLE_GENERATION.md`.
-
-### 2. OQ-JSRCALLERBASE — read `jsrcallers_k*` first
-
-`jsr_fixed_base_per_routine` (5,096) exceeds the ordinary `fixed_base_per_routine`
-(4,816) by 280, which is exactly the residual on every clean 0-parameter JSR capture.
-The constant is charged per JSR-caller routine and every JSR file in the corpus has one
-caller, so per-file and per-caller fit identically.
+| `opshape_xic_{plain,mem,nest,arrmem,bitword}_n{0250,1000}` | 10 | a read operand's shape |
+| `opshape_ote_{plain,mem,nest,arrmem}_n{0250,1000}` | 8 | a written operand's shape |
+| `opshape_mov_{plain,srcmem,dstmem,nest}_n{0250,1000}` | 8 | source vs destination member |
 
 | | |
 |---|---|
-| **Expected movement** | between 280 bytes and ~300 KB on a real program, which is the point |
-| **Mechanism** | six built files holding 20 calls and 20 targets fixed while callers run 1 → 20 |
-| **Needs** | one capture run; predictions for all three readings are already on record |
+| **Expected movement** | up to the whole ~3% real residual, if member operands cost more than plain tags |
+| **Mechanism** | half of all real operands are member paths (`A.B`, `A.B.C`); no calibration file has ever carried one, because lint refused them until this batch |
+| **Needs** | one capture run |
 
-It is also the last 50% line on most real programs: **Subroutine Overhead** reads
-Unverified until this lands, and moves to Exact whichever way it reads.
+### 2. Blind readings for exports 37–42
+
+Six new real programs arrived with no Capacity reading; predictions and ranges were
+written into `samples/manifest.csv` before any reading. Five are safety controllers
+and one is a 1769 (dead architecture, excluded from accuracy). A reading for any of
+them is a test, not a fitting input.
 
 ### 3. The real residual — OQ-REALUNDER
 
-**All twenty-three real programs: mean 1.67%, worst 3.99%, about +1.72% weighted
-under-prediction (sixteen under, seven over).** The stopping rule is not met and a
-cheating per-category fit shows it cannot be met by correcting constants.
+Once the operand batch reads, rerun the real set. If member operands carry the cost,
+wire it and re-measure. If they do not, the next candidates in order are the other
+things real rungs have and calibration rungs do not: many instructions per rung with
+mixed operand shapes, and program-scoped tags at real density. No term is fitted on
+the real set itself.
 
-**Studio-made deletions on real programs will not be done** — each reading costs a
-bench session the owner will not spend. That removes the only method that could have
-attributed the residual to a category at real scale, so it is struck from the plan
-rather than left as a pending recommendation.
+### 4. Structural module model — generalisation
 
-**What remains is a real-program residual model, judged by leave-one-out only.** One
-term per feature the engine does not count — distinct tag names, program count,
-data-to-logic ratio — fitted on the twenty-three and scored on each file held out in
-turn. It must beat the 0.007-point result the per-category fit managed; most
-candidates will not, and a term that does not is dropped, not kept for its in-sample
-fit. Every new real export is predicted and written down before its reading exists.
-
-### 4. Resolve the per-rung term — OQ-RUNGSHAPE
-
-`routine_logic` is 18% of the mass. Every calibration file is one instruction per
-rung, so a per-rung cost and a per-instruction cost are perfectly confounded in
-every weight. A packing sweep must use a **non-output** instruction — the last
-attempt used an output and measured series cascades instead.
-
-### 5. Close the alarm-condition gap — OQ-ALARMCONDREAL
-
-Alarm conditions are 9.4% of predicted mass and 19–21% of actual memory on the two
-real programs measured, landing within 0.16% on one and **8.8% short** on the other.
-Missing: alarms on a UDT-scalar host, and whether alarm **sets** carry their own cost.
-
-### 6. Structural module model
-
-A generalisation item, not an accuracy one: module overhead is a per-catalog lookup
-with a flat fallback, which cannot predict an unseen catalog. `module_io` is 2.9% of
-mass. See `FUTURE_TESTS.md`.
+Unseen 2198 drives and supplies are now priced from their family (4,113 / 3,589 first
+copy, 984 repeat discount). An unseen non-2198 catalog still gets the flat 1,672, plus
+its declared connection data; a generic Ethernet node gets the measured 4x connection
+law. `module_io` is 2.9% of mass. See `FUTURE_TESTS.md`.
 
 ### Capture backlog
 
-Item 1 is the whole backlog: 52 files, every one under a name the tooling has never
-seen. Nothing older is waiting. The stale rows that were never going to be captured —
-`jsr_callerdist_*`, `composite_realistic_*_r2`, the 1769 `fwmatrix_*`, the alarm
-condition-type arm, `predefprobe_*`, `cipmodule_*` — were either superseded by an item-1
-family or retired; the retired table is in `SAMPLE_GENERATION.md`.
+Item 1 is the whole backlog: 26 files, no other file is waiting.
 
 **A row captured but never differenced is work already paid for and thrown away.**
-It happened again: the fifteen `mbshape_*` real-shape AOI files had been captured,
-clean, and never differenced. They answered the question they were built for
-(OQ-AOIREALSHAPE) the day someone looked. Run `scripts/unreconciled.py` after every
-batch.
+Run `scripts/unreconciled.py` after every batch.
 
 ---
 
@@ -217,7 +158,7 @@ It is not a per-unit error — coefficient of variation is 1.74 per occurrence, 
 over the top four instructions and 1.73 per rung, so whatever it is does not scale
 with any count the engine has.
 
-Of the original seventeen, ten under-predict and seven over-predict; across all twenty-three, sixteen under and seven over. **A candidate that can only add
+With the JSR caller base corrected, all eighteen real programs present under-predict. **A candidate that can only add
 bytes is wrong before it is tested**, which eliminates most of what looks plausible.
 
 ---
@@ -226,6 +167,13 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 
 | item | outcome |
 |---|---|
+| JSR caller base — OQ-JSRCALLERBASE | **Closed.** A caller routine costs what any routine costs; the per-caller 5,096 was an over-charge on every real program and is gone. |
+| Per-rung term — OQ-RUNGSHAPE | **Closed negative.** 12 packing files, all exact. |
+| Alarm conditions at real scale — OQ-ALARMCONDREAL | **Solved.** 0–600 real-shape conditions, flat +12 only. |
+| Build-failure log — OQ-BUILDFAIL-OPEN | **Closed.** Every file builds; causes enforced in lint. |
+| Module name length — OQ-MODULENAMELEN | **Bounded.** Law measured (name stored twice, each rounded to 8), 0.02% real exposure, not wired. |
+| AOI call arguments | **Wired.** An Input argument that is not the literal 0/1 costs 28, not 16; an RLL file with AOI calls carries a one-time 264. |
+| 2198 repeat and unseen catalogs | **Wired.** Family-wide repeat discount of 984; unseen drives and supplies priced from their family. |
 | Verify the top instruction weights against real rung shapes | Worked. The weights hold exactly outside the shape they were fitted on. |
 | Controller tag shapes | Closed negative. The residual is not in tag data space. |
 | Rank open questions by real bytes × uncertainty | Done. This file is its output. |

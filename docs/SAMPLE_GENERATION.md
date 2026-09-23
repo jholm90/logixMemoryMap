@@ -328,7 +328,26 @@ needs an actual regeneration and diff, every time.**
 
 ---
 
-## Current batch: every open capture, regenerated, plus the open questions
+## Current batch: operand shape — OQ-OPERANDSHAPE, 26 files
+
+`gen_operand_shape.py`. One instruction per family, one operand's shape varied, the
+identical tag inventory (plain BOOL/DINT tags, a UDT `U` with a BOOL, a DINT and a
+nested UDT member, and a 4-element array of it) in every file, at 250 and 1,000 rungs.
+
+| family | shapes | differenced against |
+|---|---|---|
+| `opshape_xic_*` — `XIC(<op>)OTE(Out)` | plain, mem `U.Bit`, nest `U.Sub.Bit`, arrmem `UA[2].Bit`, bitword `PD.5` | `opshape_xic_plain` at the same count |
+| `opshape_ote_*` — `XIC(In)OTE(<op>)` | plain, mem, nest, arrmem | `opshape_ote_plain` |
+| `opshape_mov_*` — `MOV(<src>,<dst>)` | plain, srcmem, dstmem, nest | `opshape_mov_plain` |
+
+Building it required a lint fix: the operand resolver returned the base tag's type for
+`U.Bit` and refused it as a non-BOOL XIC operand, which is why no earlier file carried
+a member-path operand. It now follows member paths through the file's UDTs.
+
+## Previous batch: every open capture, regenerated, plus the open questions
+
+**Captured.** 49 of 52 at zero errors; the three failures were rebuilt as `_r3` and
+captured clean.
 
 52 files. The conversion and capture tooling skip any file name they have already
 seen, so an open capture that was attempted once — or never reached the converter —

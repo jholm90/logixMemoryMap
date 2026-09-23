@@ -171,7 +171,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 (line.text or "") for line in (st.iter("Line") if st is not None else [])
             )
             code = strip_comments(raw)
-            aoi_calls, aoi_call_params = aoi_call_sites([code], declared_aoi_names)
+            aoi_calls, aoi_call_params, _ = aoi_call_sites([code], declared_aoi_names)
             assignments = list(_ASSIGNMENT.finditer(code))
             literal = [a for a in assignments if _BARE_LITERAL_RHS.match(a.group("rhs"))]
             routines.append(StructuredTextRoutine(

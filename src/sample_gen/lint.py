@@ -493,22 +493,54 @@ def _tag_types_from(container_el: ET.Element, tag_element_name: str = "Tag") -> 
     return types
 
 
-def _resolve_operand_type(operand: str, tag_types: dict[str, str]) -> str | None:
-    """Best-effort DataType for a rung operand -- only handles the simple,
-    common shapes this project's generators actually produce (a bare tag,
-    or one level of [index]/.Member off it); anything more complex (a
-    UDT-member chain, an indirect/tag-driven index) is deliberately left
-    unresolved (None) rather than guessed at, matching sizing/logic.py's
-    own _resolve_call_type conservative bias."""
-    operand = operand.strip()
+def _udt_member_types(root: ET.Element) -> dict[str, dict[str, str]]:
+    """UDT name -> {member name -> DataType}, from every <DataType> in the file."""
+    result: dict[str, dict[str, str]] = {}
+    for dt in root.iter("DataType"):
+        name = dt.get("Name")
+        if name:
+            result[name] = {
+                m.get("Name", ""): m.get("DataType", "")
+                for m in dt.iter("Member") if m.get("Hidden") != "true"
+            }
+    return result
+
+
+def _resolve_operand_type(operand: str, tag_types: dict[str, str],
+                          udt_members: dict[str, dict[str, str]] | None = None) -> str | None:
+    """Best-effort DataType for a rung operand: the base tag's type, then each
+    `.Member` step followed through the file's own UDT definitions. A step
+    that cannot be followed -- a predefined structure's member such as
+    TIMER.DN, an indirect index -- leaves the operand unresolved (None) rather
+    than guessed at.
+
+    This used to return the BASE tag's type for any operand, so `U.Bit` on a
+    UDT tag `U` resolved to the UDT and was refused as a non-BOOL operand of
+    XIC. That false positive is why no generated file carried a member-path
+    operand, while half of all real operands are member paths.
+    """
+    operand = re.sub(r"\[[^\]]*\]", "", operand.strip())
     m = _BASE_TAG_NAME_RE.match(operand)
     if not m:
         return None
-    base = m.group(1)
-    return tag_types.get(base)
+    current = tag_types.get(m.group(1))
+    steps = operand.split(".")[1:]
+    for step in steps:
+        if current is None:
+            return None
+        if step.isdigit():
+            return "BOOL"
+        members = (udt_members or {}).get(current)
+        if members is None:
+            return None
+        current = members.get(step)
+    # A BOOL member of a UDT is declared as DataType="BIT" backed by a hidden
+    # SINT; as an operand it is a BOOL.
+    return "BOOL" if current == "BIT" else current
 
 
-def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> list[LintFinding]:
+def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
+                        udt_members: dict[str, dict[str, str]] | None = None) -> list[LintFinding]:
     """: "SINT/INT/DINT cannot be used for bit level
     instructions like XIO,XIC,OTE,OTU,OTL,ONS only bools and .Bits of
     SINT/INT/DINT." Flags a bit-level instruction call whose single
@@ -529,7 +561,7 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str]) -> lis
             operand = args[0].strip()
             if _BIT_SUBSCRIPT_RE.search(operand):
                 continue  # already bit-subscripted, valid regardless of type
-            resolved_type = _resolve_operand_type(operand, tag_types)
+            resolved_type = _resolve_operand_type(operand, tag_types, udt_members)
             if resolved_type and resolved_type != "BOOL":
                 findings.append(LintFinding(
                     "bit_level_instruction_on_non_bool_operand",
@@ -1425,14 +1457,15 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     # rather than globally so a Program rung is never resolved against an
     # AOI's internal-only names or vice versa.
     global_tag_types = _tag_types_from(root, "Tag")
+    udt_members = _udt_member_types(root)
     findings.extend(_rung_missing_output_findings(rung_texts))
     findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
     for program_el in root.iter("Program"):
-        findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types))
+        findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
     for aoi_el in root.iter("AddOnInstructionDefinition"):
         aoi_tag_types = _tag_types_from(aoi_el, "Parameter")
         aoi_tag_types.update(_tag_types_from(aoi_el, "LocalTag"))
-        findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types))
+        findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types, udt_members))
 
     for text in rung_texts:
         # An AOI InOut Parameter declared with Dimensions takes the WHOLE

@@ -18,7 +18,15 @@ controller's memory budget, and draws the result as a drillable treemap, so a us
 can find the array, UDT or routine that is about to cause "memory full" before a
 download fails.
 
-**How accurate it is.**
+**How accurate it is — current.** After the capture batch that followed the blind set,
+the eighteen real programs present read **mean 3.12%, worst 6.0%, all under-predicting.**
+That batch proved the per-caller JSR shell constant wrong (OQ-JSRCALLERBASE); it had
+been cancelling about 3% of real content that is still unexplained. The figures in the
+table below are the state *before* that correction, kept because the blind test was
+scored against them. See `ROADMAP.md` for the current per-program table and
+OQ-OPERANDSHAPE for the batch aimed at the gap.
+
+**How accurate it was at the blind test.**
 
 | measure | value |
 |---|---|
@@ -168,7 +176,10 @@ cross-checked to the decimal against an independent Python mirror.
 | export 18 | 94.4% | 85.9% | 7.0% |
 | export 13 | 93.2% | 86.9% | 11.6% |
 
-**What the Unverified bytes are, on every file:** Subroutine Overhead (the open
+*The table above predates the JSR caller-base correction, which removed the
+Subroutine Overhead line entirely; each file's confidence rises by that line's share.*
+
+**What the Unverified bytes were, on every file:** Subroutine Overhead (the open
 JSR caller-base question, 1–6% of a program), program logic containing instructions
 no isolation file has tested, and a few module catalogs priced by the flat fallback.
 The 5069 safety program (export 13) is the outlier because it is small: its fixed
@@ -337,18 +348,23 @@ what a user saw:
 
 ## 6. What is open
 
-### Open questions — six
+### Open questions — two
 
 | question | what it needs |
 |---|---|
-| **OQ-JSRCALLERBASE** | capture `jsrcallers_k*`; per-file versus per-caller differs by up to ~300 KB on a real program |
-| **OQ-REALUNDER** | the real residual itself; see section 8 |
-| **OQ-RUNGSHAPE** | a per-rung term confounded with every instruction weight; a packing sweep with a non-output instruction |
-| **OQ-ALARMCONDREAL** | alarm conditions land 0.16% on one real program and 8.8% short on the other |
-| **OQ-BUILDFAIL-OPEN** | the defect log; four files re-triggered under new names for their Studio error lines, closes when they land |
-| **OQ-MODULENAMELEN** | a module's name length costs bytes the engine charges at zero |
+| **OQ-REALUNDER** | the real residual itself, now ~3% once the JSR over-charge was removed; see section 8 |
+| **OQ-OPERANDSHAPE** | capture `opshape_*` (26 files): member-path operands are half of all real operands and have never been measured |
+
+Closed since the blind test: OQ-JSRCALLERBASE (a caller routine costs what any routine
+costs), OQ-RUNGSHAPE (no per-rung term missing; 12 files exact), OQ-ALARMCONDREAL
+(exact at real shape and count), OQ-BUILDFAIL-OPEN (every file builds), OQ-MODULENAMELEN
+(law measured, 0.02% exposure). See `RESOLVED_QUESTIONS.md`.
 
 ### Captures waiting
+
+**Current: the 26 `opshape_*` files only.** The batch listed below has been captured —
+49 of 52 at zero errors, the three failures rebuilt as `_r3` and since captured clean.
+
 
 | what | rows | priority |
 |---|---:|---|

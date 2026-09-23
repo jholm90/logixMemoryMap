@@ -17,19 +17,15 @@ later success supersedes an earlier failure:
 
 | | count |
 |---|---:|
-| committed generated L5X | 3,583 |
-| last status `ok` | 3,580 |
+| committed generated L5X | 3,610 |
+| last status `ok` | 3,583 |
 | last status FAILED | **0** |
-| no conversion record at all | **3** |
+| no conversion record, not captured | **26** — the `opshape_*` batch |
 
-**No conversion failures.** The 52-file batch converted in full and captured 49 clean.
-
-### The 3 with no record
-
-| file | question |
-|---|---|
-| `almd_minimal_r3`, `almd_realtext_r3` | OQ-BUILDFAIL-OPEN — the real 5-operand ALMD form |
-| `modulerack_kinetix_full_bus_r3` | OQ-BUILDFAIL-OPEN — rebuilt only from blocks with zero-error captures |
+**No conversion failures and no open build errors.** The three `_r3` rebuilds —
+`almd_minimal_r3`, `almd_realtext_r3`, `modulerack_kinetix_full_bus_r3` — captured with
+zero errors, and OQ-BUILDFAIL-OPEN is closed. `modulerack_kinetix_twobus_studio` was
+built and read in Studio by hand, so it has a capture and no conversion record.
 
 ### Build errors from the last batch
 

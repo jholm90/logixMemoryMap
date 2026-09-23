@@ -184,7 +184,8 @@ def compute_routine_logic_bytes(
     # agree on one intercept, cross-checked against a second sweep over instance
     # count that returns the same number.
     total += (routine.aoi_call_count * model.aoi_call_site_bytes
-              + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes)
+              + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes
+              + routine.aoi_call_input_ref_count * model.aoi_call_site_input_ref_extra_bytes)
 
     # OQ-SERIESOUTPUT, wired: every writing instruction beyond the
     # first in a rung costs 12 LESS than the sum of its own weights. Subtracted
