@@ -25,10 +25,14 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 2.86% on the seventeen standard-processor real programs present,
-worst case 5.42%, every one under-predicting.** It read 1.60% / 3.63% until the per-caller JSR shell
-constant was proven wrong (OQ-JSRCALLERBASE); that constant had been cancelling about
-3% of real content that is still unexplained (OQ-REALUNDER, OQ-OPERANDSHAPE).
+**Mean absolute error 1.66% on the seventeen standard-processor real programs present,
+worst case 4.83%, sixteen of seventeen under-predicting.** It read 2.86% / 5.42% until
+two measured costs were applied to every spelling of the operand they price, not just
+a bare tag name: the operand-type surcharge now follows member paths, aliases,
+program-scope tags and AOI parameters, and the tag-driven index cost now covers an
+index written as a member path (`Arr[Stn.Idx]`). No constant changed; no generated
+row moved. The worst file (export 33) carries 39 source-protected routines the engine
+cannot see. See OQ-REALUNDER.
 
 The stopping rule is mean under 1% **and** max under 2%. It is checked in code —
 `scripts/quick_eval.py` prints `STOPPING RULE ... MET / NOT MET` every run — and it

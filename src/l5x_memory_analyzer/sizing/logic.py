@@ -13,10 +13,9 @@ import re
 from l5x_memory_analyzer.parser.logic import RoutineLogic
 from l5x_memory_analyzer.sizing.constants import LogicInstructionModel
 
-# A bare tag reference -- e.g. "TD0", not "Tag.Member" or "Tag[0]" or a
-# literal. Only this shape resolves against tag_types below (OQ-OPERANDTYPE
-# deliberately doesn't guess member/array-index/literal operand types --
-# see memory_model.yaml operand_type_surcharge for why).
+# A bare tag reference -- e.g. "TD0". The legacy resolution path, used only
+# when a caller passes no operand_types (sizing/operand_types.py resolves every
+# spelling; see memory_model.yaml operand_type_surcharge).
 _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 # Operand types that a REAL-destination CPT has to convert to float before
@@ -91,12 +90,25 @@ def jsr_structured_call_bytes(routine, model, tag_types: dict[str, str],
     return total
 
 
-def _resolve_call_type(operands: list[str], tag_types: dict[str, str]) -> str | None:
+def _resolve_call_type(operands: list[str], tag_types: dict[str, str],
+                       operand_types=None) -> str | None:
     """The first operand that resolves to a known bare-tag type -- every
     typesweep_* calibration file uses one uniform operand type per call,
     so "first resolvable operand" is sufficient to match that data; a call
     mixing genuinely different real operand types is unconfirmed territory
-    (see memory_model.yaml), not something to guess at here."""
+    (see memory_model.yaml), not something to guess at here.
+
+    With `operand_types` (sizing/operand_types.py) every operand spelling is
+    followed to its type -- member paths, array elements, aliases, the routine's
+    own program scope, an AOI's own parameters -- because a member path costs
+    what a plain tag of the same type costs (OQ-OPERANDSHAPE). The first operand
+    that resolves still decides, as before."""
+    if operand_types is not None:
+        for operand in operands:
+            resolved = operand_types.resolve(operand)
+            if resolved is not None:
+                return resolved
+        return None
     for operand in operands:
         if _BARE_TAG.match(operand):
             resolved = tag_types.get(operand)
@@ -110,6 +122,7 @@ def compute_routine_logic_bytes(
     model: LogicInstructionModel,
     tag_types: dict[str, str] | None = None,
     charge_shell: bool = True,
+    operand_types=None,
 ) -> tuple[int, str]:
     """Sum of every recognized instruction's weight × its occurrence count
     in this routine, plus (if charge_shell) the routine's fixed base cost.
@@ -176,9 +189,9 @@ def compute_routine_logic_bytes(
     # base DINT-rate weight already summed above via instruction_counts,
     # not a replacement for it (unlike CPT, every type-sensitive
     # instruction's own base weight is still correct and still applied).
-    if tag_types:
+    if tag_types or operand_types is not None:
         for mnemonic, operands in routine.typed_calls:
-            resolved_type = _resolve_call_type(operands, tag_types)
+            resolved_type = _resolve_call_type(operands, tag_types or {}, operand_types)
             if resolved_type is not None:
                 total += model.operand_type_surcharge.surcharge_for(mnemonic, resolved_type)
 

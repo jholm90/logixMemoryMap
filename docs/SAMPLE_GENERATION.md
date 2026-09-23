@@ -339,7 +339,7 @@ needs an actual regeneration and diff, every time.**
   1734-OB8/C in 5–8, rack-optimized. Points are `RACK_n:slot:I.b` / `RACK_n:slot:O.b`.
 - **≥ 25% of the controller predicted** (786,432 on the 1756-L81E). The baseline plant is
   1,280 stations in four line programs, ten stations per JSR-called area routine; alone
-  it predicts 821,698.
+  it predicts 842,178.
 - **No output bit written twice.** No OTE/ONS target repeated; no OTL/OTU target also
   OTE'd. AOI-internal logic is exempt (it runs per instance).
 

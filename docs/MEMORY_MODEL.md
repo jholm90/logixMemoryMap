@@ -886,6 +886,11 @@ double-counting a shared companion.
 > Caught by cross-checking the engine's own prediction against real data for a
 > 1000-rung XIC file: the engine said 40,816 where the real delta was 24,816.
 
+**The type is the operand's, however it is spelled.** `sizing/operand_types.py`
+follows member paths, array elements, aliases, program scope and AOI parameters to
+the type the surcharge below keys on. It used to resolve bare controller tag names
+only, which left half of all real operands at DINT rate (real set 2.86% → 1.98%).
+
 **Every weight assumes DINT, LINT or REAL operands.** Operand data type changes
 the real cost substantially for ADD, SUB, MUL, DIV, MOD, EQU, GEQ, GRT, LEQ, LES,
 NEQ, MOV, LIM and CPT. SINT and INT operands cost dramatically more (+88 to +164

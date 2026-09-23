@@ -50,6 +50,7 @@ from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, pro
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
+from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
     UnknownDataTypeError,
@@ -114,6 +115,9 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     ctx_names = context_names(root, scope)
 
     aoi_internal_logic = parse_aoi_internal_logic(root)
+    # Operand -> type for every scope (sizing/operand_types.py): the
+    # operand-type surcharge follows the operand's TYPE however it is spelled.
+    file_operand_types = FileOperandTypes(root)
 
     # Composite-scale surcharge cap (OQ-JSRSCALE/OQ-COMPOSITESCALE,
     # see memory_model.yaml composite_surcharge_cap for the full derivation):
@@ -295,7 +299,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 # own fixed_base_per_routine (that's a separate, already-
                 # confirmed cost the aoi_definition base already covers).
                 content_bytes, content_basis = compute_routine_logic_bytes(
-                    internal_routine, model.logic_instructions, charge_shell=False
+                    internal_routine, model.logic_instructions, charge_shell=False,
+                    operand_types=file_operand_types.for_aoi(name),
                 )
                 # real composite-scale regression (memory_model.
                 # yaml aoi_logic_composite_surcharge_per_instr): the per-
@@ -485,7 +490,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 routine.sbr_ret_operands)
             a_basis = weakest(a_basis, model.jsr_target_declaration.confidence)
             content_bytes, content_basis = compute_routine_logic_bytes(
-                routine, model.logic_instructions, tag_types, charge_shell=False
+                routine, model.logic_instructions, tag_types, charge_shell=False,
+                operand_types=file_operand_types.for_program(routine.program_name),
             )
             # real composite-scale regression (memory_model.yaml
             # jsr_target_composite_surcharge_per_instr): the per-instruction
@@ -549,7 +555,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         # against JSR. Content and shell are now separate line items; the sum
         # is unchanged.
         logic_bytes, logic_basis = compute_routine_logic_bytes(
-            routine, model.logic_instructions, tag_types, charge_shell=False
+            routine, model.logic_instructions, tag_types, charge_shell=False,
+            operand_types=file_operand_types.for_program(routine.program_name),
         )
         logic_bytes += jsr_structured_call_bytes(
             routine, model.logic_instructions.jsr_param_cost, tag_types, _udt_member_types)

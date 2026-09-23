@@ -426,8 +426,12 @@ def jsr_call_args(rung_texts: list[str]) -> list[tuple[str, tuple[str, ...]]]:
 # unresolved -- 0 cost, not a guess.
 _ARRAY_INDEX = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\[([^\[\]]+)\]")
 _PURE_LITERAL_INDEX = re.compile(r"^\d+$")
-_TAG_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_TAG_OFFSET_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*[+\-]\d+$")
+# The index tag may be spelled as a member path (`Arr[Stn.Idx]`,
+# `Arr[Stn.Idx+1]`) -- 2,700 of them in the real set. It is the same
+# tag-driven index; a member path costs what a plain tag costs
+# (OQ-OPERANDSHAPE), so it is priced the same.
+_TAG_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$")
+_TAG_OFFSET_INDEX = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*\s*[+\-]\s*\d+$")
 
 
 def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:

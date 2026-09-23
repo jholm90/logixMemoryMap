@@ -20,7 +20,9 @@ download fails.
 
 **How accurate it is — current.** After the capture batch that followed the blind set,
 the seventeen standard-processor real programs present read **mean 2.86%, worst 5.42%,
-all under-predicting** (safety processors are excluded from accuracy).
+all under-predicting** (safety processors are excluded from accuracy). Resolving the
+operand-type surcharge and the tag-driven index cost through every operand spelling
+then took them to **mean 1.66%, worst 4.83%** with no constant changed (OQ-REALUNDER).
 That batch proved the per-caller JSR shell constant wrong (OQ-JSRCALLERBASE); it had
 been cancelling about 3% of real content that is still unexplained. The figures in the
 table below are the state *before* that correction, kept because the blind test was

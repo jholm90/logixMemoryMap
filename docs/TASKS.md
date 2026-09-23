@@ -47,16 +47,31 @@ are too small to carry the residual.
 Re-ranked after the capture batch that followed the blind set. That batch closed five
 questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
 by correcting the JSR caller base, exposed a larger real residual that a wrong
-constant had been hiding: **mean 2.86%, worst 5.42% on the seventeen standard-processor
+constant had been hiding: **mean 2.86%, worst 5.42% (now 1.66% / 4.83% — operand spelling, below) on the seventeen standard-processor
 real programs**, all under-predicting.
 Every item below is aimed at that.
+
+### 0a. Operand spelling — DONE, 2.86% → 1.66%
+
+The operand-type surcharge and the tag-driven index cost were charged only on bare tag
+names. `sizing/operand_types.py` resolves member paths, aliases, program scope and AOI
+parameters; the index regex accepts a member-path index. Real set 2.86% / 5.42% →
+1.66% / 4.83%; zero generated rows moved. Four questions follow from it
+(OQ-TYPEDMEMBER, OQ-INDIRECTUDT, OQ-STRINGMOV, OQ-MIXEDTYPE), each with a written spec
+in OPEN_QUESTIONS.md — **47 files, not built, awaiting approval.** Ranked by expected
+movement: INDIRECTUDT (≤0.6), STRINGMOV (0.2–0.6), MIXEDTYPE (0.1–0.4), TYPEDMEMBER
+(confirmation of what is wired).
+
+**Next audit of the same kind:** every other rule keyed on operand TEXT — CPT's REAL
+destination (bare `tag_types` lookup), JSR structured-argument detection, CMP operands,
+alarm AssocTag resolution — for a spelling it silently skips.
 
 ### 0. The realism floor — every generated file from here on
 
 At least 5 Ethernet I/O nodes, at least 25% of the controller predicted, no output bit
 written by more than one OTE/ONS and no OTL/OTU target also OTE'd. `sample_gen/realism.py`
 builds a baseline that meets it (RACK_1..RACK_5: 1734-AENTR/C + 4 IB8 + 4 OB8 each; a
-1,280-station plant, 821,698 predicted alone). `write_sample()` refuses a file below it
+1,280-station plant, 842,178 predicted alone). `write_sample()` refuses a file below it
 (`lint.realism_findings`) and `test_build_guards` refuses a waiting batch below it. An
 older generator re-run without the baseline now fails, deliberately.
 

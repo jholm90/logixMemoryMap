@@ -2320,7 +2320,15 @@ cpt_expression:
 # CPT's was. Needs a 2nd count point per instruction/type before this
 # earns KNOWN.
 #
-# Application (sizing/logic.py): resolves EACH type-sensitive call's
+# Application, CURRENT (sizing/operand_types.py): every operand spelling is
+# followed to its type -- member paths, array elements, aliases, the routine's
+# own program scope, an AOI's own parameters -- and the first operand that
+# resolves decides. OQ-OPERANDSHAPE measured a member path costing exactly
+# what a plain tag costs, which removed the reason given below for not
+# resolving members; doing so moved all 17 real programs toward zero
+# (2.86% -> 1.98% mean) and no generated row. OQ-TYPEDMEMBER confirms it.
+#
+# Application, ORIGINAL (kept for the reasoning): resolves EACH type-sensitive call's
 # operands against the tag table; if a bare-tag operand resolves to a
 # type with a nonzero entry below, that surcharge is added ONCE per call
 # on top of the call's normal weights[mnemonic] base cost. Deliberately
@@ -2359,6 +2367,10 @@ operand_type_surcharge:
 # residual; tag_offset_index_cost the same way (108/rung, F=4). A direct/
 # literal index ("Arr[5]") costs nothing extra -- confirmed via
 # indirect_direct_index_n01000's own flat +4 (identical noise, no growth).
+# The index tag may be spelled as a member path (`Arr[Stn.Idx]`,
+# `Arr[Stn.Idx+1]`); parser/logic.py prices it as the same tag-driven index.
+# 2,700 real occurrences; real set 1.98% -> 1.66%, no generated row moved.
+# Calibrated on `MOV(Arr[Idx],Dest)` with a DINT[20] only -- OQ-INDIRECTUDT.
 indirect_index:
   confidence: KNOWN
   tag_index_cost: 84

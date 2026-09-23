@@ -1,6 +1,6 @@
 # Open Questions
 
-**Five.** OQ-OPERANDSHAPE closed negative in the latest batch; three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR). Closed questions and their reasoning trails are in
+**Nine.** Three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR); four with the operand-spelling finding (TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE). Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,7 +23,11 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **2.86% mean, 5.42% worst** on the seventeen standard-processor real programs present, after a compensating error was removed. |
+| **OQ-REALUNDER** | The real residual: **1.66% mean, 4.83% worst** on the seventeen standard-processor real programs present (was 2.86% / 5.42% before operand spelling was resolved). |
+| **OQ-TYPEDMEMBER** | Confirm the newly wired rule: a member-path, alias or AOI-parameter operand pays the same type surcharge as a bare tag. Wired on real-set evidence; no generated file carries the shape. |
+| **OQ-INDIRECTUDT** | `UdtArray[Idx].Member` — 16,000 of the ~19,300 real indirect references — priced from one `DINT[20]` bare-MOV calibration. |
+| **OQ-STRINGMOV** | `MOV` of a STRING — 7,626 real uses, priced as a DINT MOV, never measured. |
+| **OQ-MIXEDTYPE** | A typed instruction mixing operand types (`MOV(DINT,REAL)`, `ADD(REAL,DINT,…)`) — 24 to 932 per real file; conversion cost measured only inside CPT. |
 | **OQ-PROGSCOPESTRUCT** | Program-scoped UDT and array tags — in 14 of 17 real programs, densest in the three worst, never built. 12 files built, rebuilt on the realism baseline, awaiting capture. |
 | **OQ-REALISMFLOOR** | Does the model still hold on a controller that is a quarter full, with I/O, and with every output bit written once? 2 files awaiting capture. |
 | **OQ-SERIESREAL** | The −12-per-extra-series-output law, re-measured with no duplicated bits on a full controller. 8 files awaiting capture. |
@@ -32,6 +36,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 ---
 
 ## 1. OQ-REALUNDER — the residual itself
+
+**Now 1.66% mean, 4.83% worst — see "Spelling, not cost" below.** The history that follows is the 2.86% state.
 
 **Standard processors only: mean 2.86%, worst 5.42% (after protected-content pricing), every one of the seventeen
 standard-processor real programs present under-predicting.** Safety processors are
@@ -154,6 +160,39 @@ bands describe how well each *component* is measured on isolation files; they sa
 nothing about the unexplained real residual. Until that residual is explained, the
 file-level figure must carry it.
 
+### Spelling, not cost — 2.86% → 1.66% with no constant changed
+
+Two measured costs were being charged only when the operand was spelled one way.
+
+1. **The operand-type surcharge** (SINT/INT/REAL/STRING, `operand_type_surcharge`)
+   resolved only a BARE controller tag name. A member path (`Stn.Pv`), an array
+   element (`Arr[i].Cnt`), an alias, a program-scope tag and an AOI parameter inside
+   the AOI's own logic all resolved to nothing and paid DINT rate. Half of all real
+   operands are member paths, and OQ-OPERANDSHAPE had already measured a member path
+   costing exactly what a plain tag costs. `sizing/operand_types.py` now follows every
+   spelling to its type. Real set: 2.86% / 5.42% → **1.98% / 4.89%**, 17 of 17 files
+   toward zero, 11–119 KB per file.
+2. **The tag-driven index** (84, or 108 with an offset) matched only a bare index tag,
+   so `Arr[Stn.Idx]` and `Arr[Stn.Idx+1]` — 2,700 real occurrences — were free. Same
+   mechanism, spelled as a member. Real set → **1.66% / 4.83%**, 16 of 17 better;
+   exports 18 and 10 land at +23 and −96 bytes (0.00%).
+
+Full census on both changes: all 3,234 captured generated rows **unchanged** (no
+calibration file uses either spelling), 18 real rows moved, the only one worse is
+export 13, a safety processor excluded from accuracy. Pinned by
+`tests/test_operand_types.py`.
+
+**So the calibration corpus's defining habit — bare tag names — hid the gap, not a
+wrong constant.** The same audit applies to every other rule keyed on operand text;
+the four questions below are the shapes real programs use and no file has measured.
+
+**Leads not yet a mechanism.** After the two fixes, CONCAT count alone fits the
+remaining residual at LOO 0.99% (0.82% without export 33) — but at ~900 bytes per
+CONCAT, ten times CONCAT's own measured weight, and 1,640 of 1,850 real CONCATs are
+plain `STRING` in the calibrated shape. It is a proxy for something string-heavy,
+most likely STRING MOV (OQ-STRINGMOV) or string-typed tag content, not a cost.
+Export 33 (4.83%) is dominated by 39 source-protected routines the engine cannot see.
+
 ### What has been eliminated
 
 Each of these was tested and failed. The full table is in `ROADMAP.md`; the
@@ -211,7 +250,7 @@ a routine touches, no calibration file could have seen it.
 |---|---|
 | **Mechanism** | an operand or instruction cost that depends on controller fill, data-table offset or distinct-tag count |
 | **Expected movement** | up to the whole residual (~2.9 points) if the plant under-predicts at real fill; zero, and the hypothesis eliminated, if it lands exact |
-| **Batch built** | `realism_base_f25` (baseline alone, 821,698 predicted, 26% of an L81E) and `realism_base_f50` (plant doubled, 1,591,746). Plant = 1,280 stations, each a UDT instance, a TIMER and ten rungs (seal-in branch, TON and its DN, GRT, ONS+ADD, EQU+OTL, OTU, MOV, LES), all isolation-confirmed instructions, every output bit written once. f25→f50 is a count sweep of a composite unit, so the confound gate flags it; it is read as residual per station, not as one cost |
+| **Batch built** | `realism_base_f25` (baseline alone, 842,178 predicted, 26% of an L81E) and `realism_base_f50` (plant doubled, 1,632,706). Plant = 1,280 stations, each a UDT instance, a TIMER and ten rungs (seal-in branch, TON and its DN, GRT, ONS+ADD, EQU+OTL, OTU, MOV, LES), all isolation-confirmed instructions, every output bit written once. f25→f50 is a count sweep of a composite unit, so the confound gate flags it; it is read as residual per station, not as one cost |
 
 ## 4. OQ-SERIESREAL — the series-output law with no duplicated bits
 
@@ -237,3 +276,71 @@ up to 3,350 alias tags onto I/O. No generated file has ever put a module tag in 
 | **Mechanism** | a module-tag operand resolves through the adapter's rack-optimized connection image, and an alias adds a level; either could cost more than a plain BOOL reference |
 | **Expected movement** | per-operand delta × real count: at +8 per operand, 1,500 operands is 12 KB, ~0.2–0.5% on a mid-size program |
 | **Batch built** | `realism_pio_{bool,addr,alias}_n{080,160}`: n rungs of `XIC(in)OTE(out)`; controller BOOLs, the RACK_n:slot:I.b / O.b points directly, or alias tags onto them. All 320 BOOLs and 320 aliases declared in all six. 160 is every point the five racks have |
+
+
+## 6. OQ-TYPEDMEMBER — does a member-path operand pay the bare tag's type surcharge?
+
+Wired on real-set evidence (above): resolving member paths, aliases, program scope and
+AOI parameters moved all 17 real files toward zero. No generated file carries a typed
+member operand, so the rule itself has never been captured in isolation.
+
+| | |
+|---|---|
+| **Mechanism** | the surcharge follows the operand's type, however it is spelled |
+| **Expected movement** | none if confirmed (already wired); up to +0.9 points back if a member path does NOT pay it |
+| **Already in the waiting batch** | the realism plant carries 1,280 `LES(Stn.Pv,Stn.PvHi)` on REAL members — 20,480 bytes of this rule in every `realism_*` and `progscope_*` file. `realism_base_f25` against its own prediction reads it before any new file is built |
+| **Spec (not built)** | on the realism baseline, 500 rungs each: `ADD`, `MOV`, `GRT` × REAL, INT × bare tag vs UDT member vs UDT-array element — 18 files; plus an AOI whose internal logic is 100 `ADD`s on REAL vs DINT parameters — 2 files. Each member file differences against its bare twin at the same type |
+
+## 7. OQ-INDIRECTUDT — indirect addressing into a UDT array
+
+The whole indirect-index price rests on `MOV(Arr[Idx],Dest)` with `Arr` a `DINT[20]`:
+a 4-byte element, a power of two, read by one MOV. Real indirect references:
+
+| shape | real uses |
+|---|---:|
+| `UdtArr[Idx].Member` | 15,936 |
+| `UdtArr[Idx]` (whole element, mostly COP) | 1,355 |
+| `StrArr[Idx]` | 1,014 |
+| `DintArr[Idx]` — the calibrated shape | 366 |
+| `BoolArr[Idx]` | 229 |
+
+…inside MOV, EQU, XIC, NEQ, COP, XIO, SUB, ADD, OTL. An element size that is not a
+power of two needs a multiply; a BOOL array needs a bit address; a member adds an
+offset. Before the member-index fix, `UdtArr[Idx].Member` count alone took the
+residual from 1.98% to LOO 1.29%.
+
+| | |
+|---|---|
+| **Mechanism** | address computation depends on element size, member offset and bit addressing |
+| **Expected movement** | up to ~0.6 points |
+| **Spec (not built)** | 500 rungs `MOV(A[Idx].M,D)` with element sizes 4, 8, 12, 76 bytes (UDTs of 1, 2, 3, 19 DINTs); `XIC(A[Idx].B)OTE(Q…)` on a UDT BOOL member; `XIC(BoolArr[Idx])`; `EQU(A[Idx].M,D)`; each against its literal-index twin `A[5].M` — 14 files |
+
+## 8. OQ-STRINGMOV — MOV of a STRING
+
+7,626 real `MOV`s have a STRING operand (6,044 STRING→STRING, 1,001 with an indexed
+source), 53 to 1,309 per file. The engine charges a DINT `MOV` (36). A STRING is an
+88-byte structure; `COP` of a structure costs more than an atomic move (JSR structured
+arguments: +8 per copy). Never measured.
+
+| | |
+|---|---|
+| **Mechanism** | a structure move compiled as a copy, not a register move |
+| **Expected movement** | 0.2–0.6 points; export 16 (2.6%) carries 1,309 |
+| **Spec (not built)** | 500 rungs each: `MOV(S1,S2)`, `COP(S1,S2,1)`, `MOV(SArr[Idx],S2)`, `MOV(C1,C2)` on a custom 20-char string type, against `MOV(D1,D2)` — 5 files |
+
+## 9. OQ-MIXEDTYPE — a typed instruction whose operands differ in type
+
+The surcharge table was fitted on files where every operand of a call has one type;
+the engine charges by the first resolvable operand. Real files carry 24 to 932 mixed
+calls each (`MOV(DINT,REAL)`, `ADD(REAL,DINT,REAL)`, `GRT(INT,DINT)`). Inside CPT a
+DINT→REAL conversion measures 40 per operand; outside CPT it has never been measured.
+
+| | |
+|---|---|
+| **Mechanism** | an implicit conversion per mismatched operand |
+| **Expected movement** | 0.1–0.4 points |
+| **Spec (not built)** | 500 rungs each: `MOV(D,R)`, `MOV(R,D)`, `MOV(I,D)`, `MOV(D,I)`, `ADD(D,R,R)`, `ADD(R,D,D)`, `GRT(R,D)`, `GRT(I,D)` against their uniform-type twins — 8 files |
+
+All four specs are on the realism floor (RACK_1..RACK_5, ≥25% fill, no duplicated
+output bits), 1756-L81E fw35, identical tag inventory within each question. **Not built
+— awaiting approval.**
