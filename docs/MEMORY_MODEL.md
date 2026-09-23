@@ -650,6 +650,19 @@ content.
 
 ---
 
+## Safety memory is a separate partition — requirement, not yet wired
+
+**Safety memory is a separate partition.** A safety controller keeps safety tags and
+safety logic in its own memory, which does not count toward the standard memory that
+Capacity reports for standard logic and data. Non-safety tags may not be used in a
+safety program; safety tags MAY be used in standard programs, where they cost standard
+**logic** (the reference) but not standard **tag** memory. The engine still sizes safety
+routine logic (Class="Safety" programs) and Class="Safety" controller tags into the
+standard total — 6.7 KB to 22.8 KB on the seven safety files with readings. The measured
+296-byte safety task/program shell stays: it was fitted against real standard-memory
+readings. Excluding the rest is the correct model and moves those files 0.7 to 1.9
+points further under, so it is not the source of the gap.
+
 ## Modules and I/O
 
 **The file is the final decision on module sizing.** A module costs its
@@ -881,6 +894,17 @@ covered it by accident.
 > had been charged 10–87 times per real program on the strength of one-caller files,
 > and was cancelling roughly 3% of real content that is still unexplained. See
 > OQ-REALUNDER and OQ-OPERANDSHAPE.
+
+**JSR accuracy by parameter kind** (clean captured JSR files, current engine):
+
+| call shape | files | mean error | worst |
+|---|---:|---:|---:|
+| no parameters | 23 | 0.000% | 0.000% |
+| numeric parameters | 20 | 0.049% | 0.190% |
+| UDT or STRING parameters | 12 | **7.98%** | **13.05%** |
+
+A UDT or STRING parameter is under-charged by thousands of bytes per file on the
+fitted A(n)/B(n) model; its real exposure has not been counted yet (TASKS item 5).
 
 ### A 0-parameter JSR is EXACT — the first named exception for compiled logic
 

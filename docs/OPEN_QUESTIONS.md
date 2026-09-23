@@ -58,11 +58,38 @@ JSR callers and targets, AOIs, modules) land within ±1% on the corrected engine
 largest structural difference between them and real programs is **operand shape** —
 see OQ-OPERANDSHAPE.
 
-**Six new real programs arrived with no reading** (exports 37–42) and were predicted
-before any Capacity reading, per the blind rule. Five are safety controllers
-(5069-ERS2/ERMS2, 1756-L81ES), whose safety content the engine understates by
-design; export 42 is a 1769 and is recorded but excluded from every accuracy figure.
-Predictions and expected ranges are in `samples/manifest.csv` (`realprog_37`–`42`).
+**Second blind set — exports 37–42, predicted before any reading existed:**
+
+| export | controller | actual | predicted before the reading | error | inside the pre-written range |
+|---|---|---:|---:|---:|---|
+| 37 | 5069-L330ERMS2 | 1,572,161 | 1,495,547 | −4.87% | yes |
+| 38 | 1756-L81ES | 2,007,604 | 1,832,104 | −8.74% | no (below) |
+| 39 | 5069-L340ERS2 | 2,935,942 | 2,811,103 | −4.25% | yes |
+| 40 | 5069-L320ERMS2 | 1,279,555 | 1,211,456 | −5.32% | yes |
+| 41 | 5069-L310ERS2 | 511,973 | 481,589 | −5.93% | no (below) |
+| 42 | 1769-L33ERMS | 884,640 | 840,245 | −5.02% | yes — dead architecture, excluded from accuracy |
+
+All six under-predict, by 4.2% to 8.7%; four of six inside the range written down in
+advance. On the five in scope the mean is 5.82%. Five are safety controllers, but their
+safety content is small — one safety program, 2–8% of rungs — and does not explain it.
+
+**Safety memory is a separate partition.** A safety controller keeps safety tags and
+safety logic in its own memory, which does not count toward the standard memory that
+Capacity reports for standard logic and data. Non-safety tags may not be used in a
+safety program; safety tags MAY be used in standard programs, where they cost standard
+**logic** (the reference) but not standard **tag** memory. The engine still sizes safety
+routine logic (Class="Safety" programs) and Class="Safety" controller tags into the
+standard total — 6.7 KB to 22.8 KB on the seven safety files with readings. The measured
+296-byte safety task/program shell stays: it was fitted against real standard-memory
+readings. Excluding the rest is the correct model and moves those files 0.7 to 1.9
+points further under, so it is not the source of the gap.
+
+**The confidence display is not calibrated to real error.** With the Subroutine
+Overhead line gone, file confidence reads 97–99% on most real programs (export 07:
+99.2%), while their real error is 2–6% (export 27: 98.5% confident, 6.0% wrong). The
+bands describe how well each *component* is measured on isolation files; they say
+nothing about the unexplained real residual. Until that residual is explained, the
+file-level figure must carry it.
 
 ### What has been eliminated
 

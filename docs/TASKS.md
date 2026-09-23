@@ -64,12 +64,19 @@ Every item below is aimed at that.
 | **Mechanism** | half of all real operands are member paths (`A.B`, `A.B.C`); no calibration file has ever carried one, because lint refused them until this batch |
 | **Needs** | one capture run |
 
-### 2. Blind readings for exports 37–42
+### 2. Take safety content out of the standard total
 
-Six new real programs arrived with no Capacity reading; predictions and ranges were
-written into `samples/manifest.csv` before any reading. Five are safety controllers
-and one is a 1769 (dead architecture, excluded from accuracy). A reading for any of
-them is a test, not a fitting input.
+Safety tags and safety logic live in a separate memory partition. Exclude Class="Safety"
+program logic and Class="Safety" tags from the standard total; keep the measured 296
+safety shell; keep standard-program references to safety tags as ordinary logic. Worth
+0.7–1.9 points on the seven safety files, in the wrong-looking direction — correct, and
+it removes a compensating error before it hides anything else.
+
+### 2a. Calibrate file confidence to real error
+
+The file-level confidence reads 97–99% on real programs whose error is 2–6%. It must
+carry the unexplained real residual, not only the component bands, until that residual
+is explained.
 
 ### 3. The real residual — OQ-REALUNDER
 
@@ -78,6 +85,13 @@ wire it and re-measure. If they do not, the next candidates in order are the oth
 things real rungs have and calibration rungs do not: many instructions per rung with
 mixed operand shapes, and program-scoped tags at real density. No term is fitted on
 the real set itself.
+
+### 5. JSR with UDT or STRING parameters
+
+Exact with no parameters (23 files), 0.05% with numeric parameters (20), but **8.0% mean,
+13.1% worst** with UDT or STRING parameters (12). Count how many real JSR calls pass a
+UDT or STRING before building anything; below 0.5% of real instructions it is closed on
+exposure.
 
 ### 4. Structural module model — generalisation
 

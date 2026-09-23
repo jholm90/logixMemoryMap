@@ -49,6 +49,22 @@ at it.
 (Error is prediction minus actual; negative is under-prediction. The five programs
 absent from `samples/local/` are not recomputed.)
 
+### Second blind set — exports 37–42
+
+| export | controller | actual | predicted before the reading | error | inside the pre-written range |
+|---|---|---:|---:|---:|---|
+| 37 | 5069-L330ERMS2 | 1,572,161 | 1,495,547 | −4.87% | yes |
+| 38 | 1756-L81ES | 2,007,604 | 1,832,104 | −8.74% | no (below) |
+| 39 | 5069-L340ERS2 | 2,935,942 | 2,811,103 | −4.25% | yes |
+| 40 | 5069-L320ERMS2 | 1,279,555 | 1,211,456 | −5.32% | yes |
+| 41 | 5069-L310ERS2 | 511,973 | 481,589 | −5.93% | no (below) |
+| 42 | 1769-L33ERMS | 884,640 | 840,245 | −5.02% | yes — dead architecture, excluded from accuracy |
+
+Every one under-predicts; four of six inside the pre-written range. Five are safety
+controllers, whose safety content is small and lives in a separate memory partition
+(see OQ-REALUNDER). Together with the eighteen above, **every real program with a
+reading now under-predicts.**
+
 ### Before that batch — kept for the record
 
 **All twenty-three real programs with a reading — the seventeen below plus six blind
