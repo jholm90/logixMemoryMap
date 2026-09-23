@@ -347,6 +347,11 @@ question a generated file can answer got a family.
 | `almd_{minimal,realtext}_r2` | 2 | `gen_almd_singletag.py --suffix _r2` | OQ-BUILDFAIL-OPEN |
 | `eventtask_axiswatch_r2` | 1 | `gen_event_task_trigger.py --regenerate-open` | OQ-BUILDFAIL-OPEN |
 | `modulerack_kinetix_full_bus_r2` | 1 | `gen_module_kinetix_bus.py --suffix _r2` | OQ-BUILDFAIL-OPEN |
+| `almd_{minimal,realtext}_r3` | 2 | `gen_almd_singletag.py --suffix _r3` | OQ-BUILDFAIL-OPEN — real 5-operand ALMD |
+| `modulerack_kinetix_full_bus_r3` | 1 | `gen_module_kinetix_bus.py --suffix _r3` | OQ-BUILDFAIL-OPEN — proven blocks only |
+
+**Captured: 49 of the 52 `_r2`-era files at zero errors.** The `_r3` rows replace the
+three that failed Build; see OQ-BUILDFAIL-OPEN.
 
 The nine composites were never sent because lint refused them — a CIP Safety module on
 a non-safety controller, two modules in one slot, a Kinetix drive with no bus supply.

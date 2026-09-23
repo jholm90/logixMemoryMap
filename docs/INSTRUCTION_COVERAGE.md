@@ -55,8 +55,8 @@ one. Twenty-nine instructions were credited this way, all at 0.0000%.
 
 **MAPC is Exact**, a named compiled-logic exception alongside the 0-parameter JSR:
 260 bytes per call, the step between one rung and ten landing on the wired weight
-with both files at the same +12 of file overhead. `instrfirst_mapc_v2_x100` is built
-as its third point.
+with both files at the same +12 of file overhead. The third point,
+`instrfirst_mapc_v2_x100`, captured at exactly the 87,688 predicted before capture.
 
 ## Two caveats that bound every "exact" claim here
 

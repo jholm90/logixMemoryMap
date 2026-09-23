@@ -50,6 +50,7 @@ Run: python -m sample_gen.gen_module_sweep
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -11013,6 +11014,30 @@ mPo
 </Module>
 """, 'L5X_Samples/a real export', 2),
 }
+
+# ENFORCED, NOT ADVISED. The comment below said anything needing a 2198 -ERS3
+# drive "should build it from _drive_module_xml()", and that advice was ignored:
+# gen_module_kinetix_bus.py kept pulling these blocks, and its file failed every
+# capture with "Tag '...:SI': Invalid data type for safety tag" -- a block with
+# no <ExtendedProperties> ConfigID makes Studio configure the drive for networked
+# safety. So the hand-transcribed -ERS3 blocks are REPLACED here, at import, by
+# _drive_module_xml output under the same module name and address. A consumer
+# indexing this table gets the proven block whatever it asks for, and lint's
+# kinetix_drive_missing_configid refuses to write any file that bypasses it.
+from sample_gen.gen_module_motion import _drive_module_xml  # noqa: E402
+from sample_gen.lint import _KINETIX_SAFETY_DRIVE  # noqa: E402
+
+for _catalog in [c for c in _MODULE_CHAINS if _KINETIX_SAFETY_DRIVE.match(c)]:
+    _xml, _source, _chain_len = _MODULE_CHAINS[_catalog]
+    if _chain_len != 1:
+        raise ValueError(f"{_catalog}: a chained 2198 drive block cannot be replaced safely")
+    _name = re.search(r'<Module Name="([^"]+)"', _xml).group(1)
+    _address = re.search(r'<Port Id="2" Address="([^"]+)"', _xml)
+    _MODULE_CHAINS[_catalog] = (
+        _drive_module_xml(_name, _catalog, "false",
+                          address=_address.group(1) if _address else "192.168.1.2"),
+        _source, _chain_len,
+    )
 
 
 # Real 5069-family (Compact 5000, no separate chassis) catalogs -- these

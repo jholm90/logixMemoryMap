@@ -20,6 +20,7 @@ Run: python -m sample_gen.gen_module_sweep_variants
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
@@ -4202,6 +4203,37 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
     ],
 }
 
+# ENFORCED, NOT ADVISED. The comment below said anything needing a 2198 -ERS3
+# drive "should build it from _drive_module_xml()", and that advice was ignored:
+# gen_module_kinetix_bus.py kept pulling these blocks, and its file failed every
+# capture with "Tag '...:SI': Invalid data type for safety tag" -- a block with
+# no <ExtendedProperties> ConfigID makes Studio configure the drive for networked
+# safety. So the hand-transcribed -ERS3 blocks are REPLACED here, at import, by
+# _drive_module_xml output under the same module name and address. A consumer
+# indexing this table gets the proven block whatever it asks for, and lint's
+# kinetix_drive_missing_configid refuses to write any file that bypasses it.
+#
+# Only the 2conn (motion-only) shape survives. The 4conn shape adds
+# SafetyInputDataDriven/SafetyOutputDataDriven connections, which need a safety
+# controller; the Safety family is out of scope.
+from sample_gen.gen_module_motion import _drive_module_xml  # noqa: E402
+from sample_gen.lint import _KINETIX_SAFETY_DRIVE  # noqa: E402
+
+
+def _proven_drive_block(xml: str, catalog: str) -> str:
+    name = re.search(r'<Module Name="([^"]+)"', xml).group(1)
+    address = re.search(r'<Port Id="2" Address="([^"]+)"', xml)
+    return _drive_module_xml(name, catalog, "false",
+                             address=address.group(1) if address else "192.168.1.2")
+
+
+for _catalog in [c for c in _MODULE_VARIANTS if _KINETIX_SAFETY_DRIVE.match(c)]:
+    _MODULE_VARIANTS[_catalog] = [
+        (label, _proven_drive_block(xml, _catalog), source, chain_len)
+        for label, xml, source, chain_len in _MODULE_VARIANTS[_catalog]
+        if label == "2conn"
+    ]
+
 
 # CORRECTED . The "2conn" blocks below for the 2198 -ERS3 catalogs
 # were the cause of every -ERS3 import failure, and the cause was neither
@@ -4214,7 +4246,8 @@ _MODULE_VARIANTS: dict[str, list[tuple[str, str, str, int]]] = {
 #      gen_module_motion.py's _drive_module_xml() -- see its docstring -- but
 #      this file keeps its own hardcoded copy of the module XML and never
 #      received the fix.
-#   2. A corrupted ConfigData payload: 119 L5K values against the real 118,
+#   2. (Superseded: this diagnosis was backwards -- 119 values IS the real count
+#      for ConfigSize 468; see sample_gen/data/kinetix.py.) Recorded as: 119 L5K values against the real 118,
 #      with a spurious 0 at index 114.
 #
 # A 2198 -ERS3 drive runs on a standard controller. Anything in this project

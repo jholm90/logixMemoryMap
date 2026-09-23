@@ -37,3 +37,6 @@
 "almd_realtext_r2","OQ-BUILDFAIL-OPEN","Re-trigger of almd_realtext under a new name so its Studio error log is recorded."
 "eventtask_axiswatch_r2","OQ-BUILDFAIL-OPEN","Re-trigger of eventtask_axiswatch under a new name so its Studio error log is recorded."
 "modulerack_kinetix_full_bus_r2","OQ-BUILDFAIL-OPEN","Kinetix full-bus rebuild: 1756-L81E fw35 and converter axes on both bus supplies, under a new name so its Studio error log is recorded."
+"almd_minimal_r3","OQ-BUILDFAIL-OPEN","ALMD in its real 5-operand form, after almd_minimal_r2 recorded the 7-operand failure."
+"almd_realtext_r3","OQ-BUILDFAIL-OPEN","ALMD in its real 5-operand form, after almd_realtext_r2 recorded the 7-operand failure."
+"modulerack_kinetix_full_bus_r3","OQ-BUILDFAIL-OPEN","Kinetix bus rebuilt only from blocks with zero-error captures, after _r2 failed on ConfigID-less drives."

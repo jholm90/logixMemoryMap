@@ -189,8 +189,8 @@ above is after that change; every file rose, export 13 most (92.0% → 93.2%).
 **MAPC reads Exact**, the second named compiled-logic exception after the
 0-parameter JSR: 260 bytes per call, measured as the step between one rung and ten,
 (64,288 − 61,948) / 9 = 260.000, equal to the wired weight, with both files at the
-same flat +12 of file overhead. `instrfirst_mapc_v2_x100` is built as a third point;
-its prediction, 87,676, puts the reading at 87,688 if the +12 holds.
+same flat +12 of file overhead. The third point, `instrfirst_mapc_v2_x100`, was
+predicted at a reading of 87,688 before capture and captured at **87,688**.
 
 **Every element laid out individually** (drawn before the twenty-nine were credited, which moves a few logic elements from 50 to 98) — export 07, every tag, member, array
 element, axis, definition row, routine and module the tree can reach:
@@ -360,6 +360,9 @@ what a user saw:
 | `litop_bool_*_r2` | 4 | rebuilt under new names |
 | `instrfirst_mapc_v2_x100` | 1 | MAPC third point; already Exact |
 | `almd_*_r2`, `eventtask_axiswatch_r2`, `modulerack_kinetix_full_bus_r2` | 4 | OQ-BUILDFAIL-OPEN re-triggers |
+
+**That batch has since been captured: 49 of 52 at zero errors.** The three failures
+are rebuilt as `_r3` (OQ-BUILDFAIL-OPEN); the 49 await reconciliation.
 
 ### Smaller items recorded, deliberately not worked
 

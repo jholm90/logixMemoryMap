@@ -102,37 +102,30 @@ def _write(out_name: str, l5x: str, description: str) -> None:
     print(f"Wrote {out_path} (predicted N/A -- ALARM_DIGITAL unmodeled, see OQ-PREDEFINED)")
 
 
-# Re-trigger note appended to the `_r2` descriptions. The capture tooling skips
-# any file name it has already seen, so the ALMD fix below never reached a
-# controller under the original names; the `_r2` copies exist to be built once
-# and have their Studio error log recorded.
-_RETRIGGER_NOTE = (" -- OQ-BUILDFAIL-OPEN re-trigger under a new name so the build's Studio "
-                   "error log is recorded; content identical to the original file")
+# Re-trigger note appended to a suffixed build's description. The capture
+# tooling skips any file name it has already seen, so each fix is built under a
+# new suffix: `_r2` recorded the 7-operand failure, `_r3` carries the real
+# 5-operand form.
+_RETRIGGER_NOTE = (" -- OQ-BUILDFAIL-OPEN re-trigger: the real 5-operand ALMD form, after the "
+                   "7-operand form failed with 'Invalid number of arguments for instruction'")
 
 
 def main(suffix: str = "") -> None:
     note = _RETRIGGER_NOTE if suffix else ""
-    # ALMD's REAL operand list, read straight off the Studio 5000
-    # faceplate after both files failed with "Rung 0, ALMD:
-    # Invalid number of arguments for instruction."
+    # FIVE operands, the form of the one real ALMD call in the eighteen real
+    # exports:
     #
-    #     slot 1  ALMD             <- the ALARM_DIGITAL tag
-    #     slot 2  ProgAck
-    #     slot 3  ProgReset
-    #     slot 4  ProgDisable
-    #     slot 5  ProgEnable
-    #     slot 6  MinDurationPRE
-    #     slot 7  MinDurationACC
+    #     ALMD(AlarmTag, ProgAck, ProgReset, ProgDisable, ProgEnable)
     #
-    # SEVEN operands, and critically there is NO "In" operand -- the alarm
-    # input is the RUNG CONDITION, not an argument. The old 6-argument call
-    # passed AlmIn second, so Studio bound it to ProgAck and every operand
-    # after it landed one slot early, with the last spilling into a slot
-    # that does not exist ("Unknown" on the faceplate). That is what the
-    # error was really saying: not "too few", but "these don't line up".
-    # MinDurationPRE/ACC are v33+ additions and are what the old call was
-    # missing entirely.
-    instr = "ALMD(Alm1,AlmProgAck,AlmProgReset,AlmProgDisable,AlmProgEnable,0,0);"
+    # with the four program commands as the literals 1, 1, 0, 0. The alarm
+    # input is the rung condition, not an operand.
+    #
+    # The 7-operand form previously here, which added MinDurationPRE and
+    # MinDurationACC read off a Studio faceplate, failed both almd_*_r2
+    # captures with "Rung 0, ALMD: Invalid number of arguments for
+    # instruction". Faceplate fields are not operands. lint.py now checks
+    # ALMD's operand count (native_instruction_arg_count).
+    instr = "ALMD(Alm1,1,1,0,0);"
     rung = rung_xml(0, instr)
 
     minimal_tag = _almd_tag_xml("Alm1", "Alarm", "A")

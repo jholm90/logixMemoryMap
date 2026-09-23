@@ -900,8 +900,9 @@ routines carrying a parameterised JSR at 75%.
 (64,288 − 61,948) / 9 = **260.000**, equal to the wired weight. Both files sit at the
 same flat **+12** of file overhead, so the whole-file residual is the axis and cam
 storage around the instruction, not the instruction. Both captured with zero errors.
-`instrfirst_mapc_v2_x100` is built as a third point: predicted 87,676, so a reading of
-87,688 confirms the step at a hundred.
+`instrfirst_mapc_v2_x100` is the third point: predicted 87,676, expected reading
+87,688 written down before capture, **captured at 87,688** with zero errors — the same
++12, so the step holds at 1, 10 and 100 calls.
 
 Listed in `KNOWN_EXACT_CALLS` beside `JSR/0` and pinned by `test_mapc_is_exact`.
 

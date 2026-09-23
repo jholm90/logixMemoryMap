@@ -395,6 +395,12 @@ than trusted.
 8. **Quote a whole-file prediction against a whole-file capture**, never a component
    constant against a total. Comparing the two once manufactured a 7,800-byte hole
    that did not exist.
+9. **A diagnosis in a comment is not a fix.** The 2198 ConfigID defect was found,
+   written up in two generators, and shipped again twice, because the broken blocks
+   stayed importable and lint did not check for the element. A found build defect is
+   closed only when lint refuses it and the broken source is gone. **Before handing
+   over any file with Kinetix content, run `scripts/check_proven_blocks.py` on it** —
+   every 2198 block must match one from a zero-error capture.
 
 ## Repo map
 

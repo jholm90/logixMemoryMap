@@ -45,6 +45,17 @@ python -m pytest -q
 Run on the Windows machine with Studio 5000. Full procedure in
 `TESTING_PLAN.md`. Three pieces, in order.
 
+### Before handing over files: `check_proven_blocks.py`
+
+```powershell
+python scripts/check_proven_blocks.py samples/generated/modules/<file>.L5X
+```
+
+Every 2198 module and AXIS_CIP_DRIVE block in the file must match a block from a
+capture with zero build errors, with names, addresses, MotionModule and AxisID
+normalised. Non-zero exit on any unproven block. `tests/test_build_guards.py` runs it
+over every file waiting for capture.
+
 ### 3a. Convert L5X to ACD
 
 `scripts/batch_l5x_to_acd.ps1` wraps Rockwell's `l5xgit` CLI. **The l5xgit source

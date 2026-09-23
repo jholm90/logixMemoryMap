@@ -261,6 +261,18 @@ def _aoi_call_arg_count(root: ET.Element) -> dict[str, int]:
     return counts
 
 
+# Operand counts for native instructions whose arity a generator has got wrong,
+# each taken from a real export. Added one instruction at a time, on evidence,
+# never from a manual's faceplate reading.
+#
+#   ALMD  5  ALMD(AlarmTag, ProgAck, ProgReset, ProgDisable, ProgEnable), the one
+#            real call in the eighteen real exports. A 7-operand form with
+#            MinDurationPRE/ACC, read off a faceplate, failed both almd_*_r2
+#            captures with "Rung 0, ALMD: Invalid number of arguments for
+#            instruction".
+_NATIVE_ARG_COUNTS = {"ALMD": 5}
+
+
 def _split_top_level_args(s: str) -> list[str]:
     """Splits a comma-separated argument list, respecting nested ()/[]
     (e.g. an array-index or bit-subscript operand shouldn't fracture the
@@ -1153,66 +1165,6 @@ def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
 
 
 _CONVERTER_AXIS_CONFIG = "Non-Regenerative AC/DC Converter"
-
-
-def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
-    """A bus-sharing group of 2198 drives needs a CONVERTER AXIS, not just a
-    supply module.
-
-    This is the rule _kinetix_bus_supply_findings above said it could not write.
-    That one checks only that a 2198-P/RP supply module exists, with the comment
-    that the power GROUP "is not an attribute of <Module> -- it appears nowhere in
-    the real corpus either". It appears on the AXIS_CIP_DRIVE TAG. Real Kinetix
-    exports carry a converter axis whose AxisParameters read
-    AxisConfiguration="Non-Regenerative AC/DC Converter" with
-    MotionModule="<the supply>:Ch1", alongside the servo axes at
-    AxisConfiguration="Position Loop" -- two of them in
-    Export 04 (25 Position Loop, 2 converters) and two in
-    Export 21 (27 Position Loop, 2 converters).
-
-    Without one, Studio converts the file and then fails Build with:
-
-        Primary Bus Sharing Group 1 contains a module configured as Shared DC or
-        Shared DC/DC with no module configured as Shared AC/DC or Shared DC -
-        Non-CIP Converter.
-
-    once PER DRIVE MODULE. That is how this was identified across 33 rows that
-    had no error text: axmarg_1cat_n{02,04,08,12,20} record exactly 2/4/8/12/20
-    errors, and axis_scale_n{02..20}_dual -- same axis counts on half as many
-    modules -- record 2/3/4/5/7/9/11, i.e. n/2 + 1. Per module, not per axis.
-
-    The cost consequence is the reason it matters: the file still captures, so
-    actual_bytes is filled in from a project whose drives never got bus power,
-    and every one of those rows reads as the model over-predicting.
-    """
-    configs = [
-        el.get("AxisConfiguration") or ""
-        for el in root.iter("AxisParameters")
-    ]
-    servo = [c for c in configs if c and c != _CONVERTER_AXIS_CONFIG]
-    if not servo:
-        return []
-    if _CONVERTER_AXIS_CONFIG in configs:
-        return []
-    drives = sorted({
-        c for m in root.iter("Module")
-        if _KINETIX_DRIVE.match(c := m.get("CatalogNumber") or "")
-        and not _KINETIX_SUPPLY.match(c)
-    })
-    if not drives:
-        return []
-    return [LintFinding(
-        "kinetix_axis_without_converter",
-        f"{len(servo)} servo axis tag(s) on {', '.join(drives)} and NO converter axis "
-        f"(an AXIS_CIP_DRIVE whose AxisConfiguration is "
-        f"'{_CONVERTER_AXIS_CONFIG}', pointed at the bus supply's Ch1). Studio converts "
-        f"this and then fails Build once per drive module with 'Primary Bus Sharing Group 1 "
-        f"contains a module configured as Shared DC ... with no module configured as Shared "
-        f"AC/DC', so the capture measures a project whose drives never got bus power.",
-    )]
-
-
-_CONVERTER_AXIS_CONFIG = "Non-Regenerative AC/DC Converter"
 _REAL_DRIVE_CHANNELS = ("Ch1", "Ch3")
 
 
@@ -1253,6 +1205,48 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
         "a project whose drives never got bus power."
         % (len(servo), ", ".join(drives), _CONVERTER_AXIS_CONFIG),
     )]
+
+
+_KINETIX_SAFETY_DRIVE = re.compile(r"^2198-[DS]\d+-ERS\d")
+
+
+def _kinetix_drive_configid_findings(root: ET.Element) -> list[LintFinding]:
+    """A 2198 -ERS drive needs its <ExtendedProperties> ConfigID.
+
+    Every real 2198 drive in the eighteen real exports -- about 250 of them --
+    carries <ExtendedProperties><public>...<ConfigID>...</ConfigID>, and every
+    one has SafetyEnabled="false". The ConfigID selects the add-on profile's
+    configuration. Without it the -ERS drive falls back to its networked-safety
+    default: Studio creates a module-defined `<drive>:SI` safety tag, and a
+    non-safety controller rejects the project with, once per drive,
+
+        Tag 'Bus1_Drive_D032:SI': Invalid data type for safety tag.
+
+    plus "Project size exceeds controller capacity" (no safety partition). That
+    is the recorded error log of modulerack_kinetix_full_bus, built from the
+    `2conn` blocks in gen_module_sweep_variants.py, which lack the block. The
+    same blocks failed every `modulesweep_2198_*_variant_2conn` capture.
+    SafetyEnabled="false" on the <Module> does not prevent it, which is why
+    _safety_module_findings passed these files.
+
+    gen_module_motion._drive_module_xml emits the block from real data and is
+    the only builder a 2198 drive should come from.
+    """
+    findings: list[LintFinding] = []
+    for mod in root.iter("Module"):
+        catalog = mod.get("CatalogNumber") or ""
+        if not _KINETIX_SAFETY_DRIVE.match(catalog):
+            continue
+        if mod.find("./ExtendedProperties//ConfigID") is None:
+            findings.append(LintFinding(
+                "kinetix_drive_missing_configid",
+                f"Module '{mod.get('Name')}' ({catalog}) has no <ExtendedProperties> ConfigID. "
+                f"Every real 2198 drive carries one; without it Studio configures the drive for "
+                f"networked safety, creates a '{mod.get('Name')}:SI' safety tag and fails Build on "
+                f"a non-safety controller ('Invalid data type for safety tag'). Build the drive "
+                f"with gen_module_motion._drive_module_xml.",
+            ))
+    return findings
 
 
 def _drive_axis_channel_findings(root: ET.Element) -> list[LintFinding]:
@@ -1410,8 +1404,8 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_chassis_size_findings(root))
     findings.extend(_kinetix_bus_supply_findings(root))
     findings.extend(_kinetix_converter_axis_findings(root))
+    findings.extend(_kinetix_drive_configid_findings(root))
     findings.extend(_drive_axis_channel_findings(root))
-    findings.extend(_kinetix_converter_axis_findings(root))
     findings.extend(_module_configdata_findings(root))
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
@@ -1505,6 +1499,15 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
                         f"without Required=\"true\" is not a call slot: {text.strip()!r}",
                     ))
                 continue
+            if mnemonic in _NATIVE_ARG_COUNTS:
+                n_args = len(_split_top_level_args(args_str))
+                if n_args != _NATIVE_ARG_COUNTS[mnemonic]:
+                    findings.append(LintFinding(
+                        "native_instruction_arg_count",
+                        f"'{mnemonic}(' called with {n_args} operand(s); the real form takes "
+                        f"{_NATIVE_ARG_COUNTS[mnemonic]}. Studio fails Build with 'Invalid number of "
+                        f"arguments for instruction': {text.strip()!r}",
+                    ))
             if mnemonic in _KNOWN_NATIVE_INSTRUCTIONS:
                 continue
             findings.append(LintFinding(

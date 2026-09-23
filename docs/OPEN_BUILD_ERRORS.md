@@ -17,21 +17,30 @@ later success supersedes an earlier failure:
 
 | | count |
 |---|---:|
-| committed generated L5X | 3,580 |
-| last status `ok` | 3,528 |
+| committed generated L5X | 3,583 |
+| last status `ok` | 3,580 |
 | last status FAILED | **0** |
-| no conversion record at all | **52** |
+| no conversion record at all | **3** |
 
-**No conversion failures.** The three `predefprobe_*` files that failed import four
-times each were retired: their types occur in none of the real programs.
+**No conversion failures.** The 52-file batch converted in full and captured 49 clean.
 
-### The 52 with no record — the waiting batch
+### The 3 with no record
 
-Every one is a file built under a name the tooling has never seen, so it is picked up
-on the next run:
+| file | question |
+|---|---|
+| `almd_minimal_r3`, `almd_realtext_r3` | OQ-BUILDFAIL-OPEN — the real 5-operand ALMD form |
+| `modulerack_kinetix_full_bus_r3` | OQ-BUILDFAIL-OPEN — rebuilt only from blocks with zero-error captures |
 
-| family | files | question |
-|---|---:|---|
+### Build errors from the last batch
+
+Three files converted and then failed Build. Causes, now enforced by lint:
+
+| file | Studio error | enforced by |
+|---|---|---|
+| `almd_minimal_r2`, `almd_realtext_r2` | *Rung 0, ALMD: Invalid number of arguments for instruction* | `native_instruction_arg_count` |
+| `modulerack_kinetix_full_bus_r2` | *Tag '<drive>:SI': Invalid data type for safety tag* (from the original's log; the `_r2` log was truncated) | `kinetix_drive_missing_configid`, `scripts/check_proven_blocks.py` |
+
+---|---:|---|
 | `modname_p208_len*` | 12 | OQ-MODULENAMELEN |
 | `rungpack_{xic,equ}_k*` | 12 | OQ-RUNGSHAPE |
 | `composite_realistic_*_r3` | 9 | composite instrument; lint defects of the `_r2` builds cleared |

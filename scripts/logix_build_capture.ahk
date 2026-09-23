@@ -58,11 +58,16 @@ global WindowTitle := ""
 global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
 global ErrorLog := ""
 ; RICHEDIT50W2 is the build/verify error-log pane. Its full text can run to many
-; KB; only the FIRST MAX_ERROR_LOG_CHARS characters are kept, because the
-; first lines carry the first (and usually root-cause) error. Truncating
-; from the end would keep the summary and throw away the diagnosis.
-; Adjustable -- raise it if real errors are being cut mid-message.
-global MAX_ERROR_LOG_CHARS := 300
+; KB, and Studio lists WARNINGS BEFORE ERRORS. Keeping the first N characters
+; therefore kept warnings and dropped the errors whenever a file had enough of
+; them: a Kinetix bus file with 24 axis warnings recorded 300 characters of
+; "Maximum Deceleration is set to 0" and none of its 4 errors.
+;
+; So the log is rebuilt in priority order: every Error line first (up to
+; MAX_ERROR_LINES_CHARS), then Studio's summary line, then warnings and other
+; lines only while the total stays under MAX_ERROR_LOG_CHARS.
+global MAX_ERROR_LOG_CHARS := 1000
+global MAX_ERROR_LINES_CHARS := 4000
 ; A complete read of that pane always ends with Studio's own summary line,
 ; "Complete - N error(s), M warning(s)". Its presence is the proof that the
 ; whole pane was captured rather than a partial/stale read, so it is checked
@@ -215,11 +220,11 @@ StripCommas(text) {
 ; changes that dialog's control order; if the exact name is not present the
 ; read falls back to scanning every RICHEDIT* control and taking the first
 ; one carrying the completion marker, rather than silently returning blank.
-; Returns the first MAX_ERROR_LOG_CHARS characters on a good read, or a
+; Returns the priority-ordered log (see MAX_ERROR_LOG_CHARS) on a good read, or a
 ; "(...)" marker string on a bad one -- never a silent empty value, because
 ; a blank error_log is indistinguishable from "no errors" downstream.
 ; The raw, untruncated pane text. The retry check needs this rather than
-; ReadErrorLog()'s first-300-characters value: a "Compiler Error" can sit
+; ReadErrorLog()'s shortened value: a "Compiler Error" can sit
 ; well past that cut, and deciding not to retry because the evidence was
 ; truncated away would defeat the whole point of the check.
 ReadErrorLogRaw() {
@@ -245,11 +250,31 @@ ReadErrorLog() {
     ; lands mid-build has everything except this.
     if !InStr(txt, ERROR_LOG_DONE_MARKER)
         return "(incomplete read -- no '" ERROR_LOG_DONE_MARKER "' marker) " SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
-    ; Collapse newlines/tabs so the value stays one CSV field.
-    txt := StrReplace(StrReplace(StrReplace(txt, "`r`n", " | "), "`n", " | "), "`t", " ")
-    if (StrLen(txt) > MAX_ERROR_LOG_CHARS)
-        txt := SubStr(txt, 1, MAX_ERROR_LOG_CHARS)
-    return txt
+    ; Errors first, then the summary, then warnings while room remains. Each
+    ; line is joined with " | " so the value stays one CSV field.
+    errors := ""
+    summary := ""
+    others := []
+    for line in StrSplit(StrReplace(txt, "`r`n", "`n"), "`n") {
+        line := Trim(StrReplace(line, "`t", " "))
+        if (line = "")
+            continue
+        if (InStr(line, ERROR_LOG_DONE_MARKER) = 1)
+            summary := line
+        else if RegExMatch(line, "i)^Error\b")
+            errors .= line " | "
+        else
+            others.Push(line)
+    }
+    if (StrLen(errors) > MAX_ERROR_LINES_CHARS)
+        errors := SubStr(errors, 1, MAX_ERROR_LINES_CHARS) "(errors truncated) | "
+    out := errors summary " | "
+    for line in others {
+        if (StrLen(out) + StrLen(line) + 3 > MAX_ERROR_LOG_CHARS + StrLen(errors))
+            break
+        out .= line " | "
+    }
+    return out
 }
 
 ; Fallback for when ERROR_LOG_CTRL's positional index has shifted: return the

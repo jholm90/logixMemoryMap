@@ -50,9 +50,19 @@ counted on all eighteen real exports and is worth **1,756 bytes across all of th
 It is closed. The queue is now short, and every item on it either needs a capture or
 needs a real program.
 
-### 1. Capture the waiting batch — 52 files
+### 1. Reconcile the captured batch, then capture the three `_r3` rebuilds
 
-Every open capture was regenerated under a new file name — the conversion and capture
+**Captured: 49 of 52 at zero build errors.** The three that errored are the ones handed
+over broken — both ALMD files and the Kinetix bus file — diagnosed in OQ-BUILDFAIL-OPEN
+and rebuilt as `_r3`. MAPC x100 read exactly the number written down before capture.
+The 49 clean rows still need the full reconcile sequence in `CLAUDE.md` against their
+questions: JSRCALLERBASE, RUNGSHAPE, MODULENAMELEN, ALARMCONDREAL, the composites and
+the BOOL literal arm.
+
+Waiting for capture: `almd_minimal_r3`, `almd_realtext_r3`,
+`modulerack_kinetix_full_bus_r3`.
+
+The batch as built — every open capture was regenerated under a new file name — the conversion and capture
 tooling skip any name they have already seen, so a file attempted once never surfaced
 again — and every open question that a generated file can answer got a family:
 
@@ -228,5 +238,5 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Hiding per-element confidence by default | Done: `?ConfidenceMode=true` shows it; the Errors tab always shows the file-level figure. |
 | Partial exports on import — OQ-EXPORTSCOPE | **Closed, accepted in use.** AOI, UDT and program imports behave as needed; the unmeasured import shell stays uncharged. |
 | Attribute the real residual with Studio-made deletions | **Declined.** Costs a bench session per reading. Struck from the plan; item 3 is what remains. |
-| MAPC | **EXACT.** 260 bytes per call, the measured step between 1 and 10 rungs; `instrfirst_mapc_v2_x100` is its third point. |
+| MAPC | **EXACT.** 260 bytes per call; the steps 1→10→100 are exact, the 100-call reading landing on the number written down before capture. |
 | CROUT and the rest of the Safety family | **Ignored.** Out of scope, zero real uses; `instrfirst_crout_x10`'s errored row is owned by OQ-SAFETY. |

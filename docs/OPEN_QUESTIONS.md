@@ -27,7 +27,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-REALUNDER** | It *is* the residual. The ceiling bounds every proposed explanation without closing the gap. |
 | **OQ-RUNGSHAPE** | A per-rung term the model does not have, perfectly confounded with every per-instruction weight. |
 | **OQ-ALARMCONDREAL** | A 9.4%-of-mass category that is 8.8% short on one real file. Not a scale error — the two files disagree with each other. |
-| **OQ-BUILDFAIL-OPEN** | A defect log. Four files re-triggered for their Studio error lines; closes when they land. |
+| **OQ-BUILDFAIL-OPEN** | A defect log. Error lines are in; three `_r3` rebuilds await capture, and the question closes when they build clean. |
 | **OQ-MODULENAMELEN** | A term the engine charges at zero, measured on a clean isolation pair. Not a scale error. |
 
 ---
@@ -351,23 +351,49 @@ One real program carries both this and such a program.
 Full diagnostic rules and root-cause reference are in `OPEN_BUILD_ERRORS.md`; this
 entry exists so errored rows have an owner.
 
-### Re-triggered, awaiting the Studio error log
+### What the re-triggers returned
 
-The capture tooling now records Studio's error text, but it skips any file name it has
-already seen, so every file below was rebuilt under a new name. **This question closes
-when these four come back** — each either builds clean or returns an error line that
-names its cause.
+| file | result | cause |
+|---|---|---|
+| `eventtask_axiswatch_r2` | **0 errors**, 6 axis warnings | builds. The original's error was the 5069 processor it was captured on |
+| `almd_minimal_r2`, `almd_realtext_r2` | 1 error each: *"Rung 0, ALMD: Invalid number of arguments for instruction"* | the generator's 7-operand call. The one real ALMD in the eighteen real exports takes **5**: `ALMD(tag,1,1,0,0)` |
+| `modulerack_kinetix_full_bus_r2` | 4 errors, 24 warnings; the error text was cut off | the original's log names it: *"Tag '<drive>:SI': Invalid data type for safety tag"* on all three drives, plus *"Project size exceeds controller capacity"* |
 
-| file | original | what it measures | what changed |
-|---|---|---|---|
-| `almd_minimal_r2` | `almd_minimal` | ALMD instruction and ALARM_DIGITAL tag cost | nothing — the 7-operand fix was made after the original's capture, which was cleared as stale and never retried |
-| `almd_realtext_r2` | `almd_realtext` | whether ALMD message/class text costs bytes | same |
-| `eventtask_axiswatch_r2` | `eventtask_axiswatch` | Axis-Watch EVENT task trigger | nothing — the original captured on a 5069-L306ER before the processor override was dropped |
-| `modulerack_kinetix_full_bus_r2` | `modulerack_kinetix_full_bus` | two shared Kinetix 5700 DC buses, 8 axes | **fixed**: both bus supplies now carry a converter axis instead of a servo axis (lint's `kinetix_axis_without_converter`, the known build failure), and the processor is 1756-L81E fw35 instead of an L83E that was justified on a false memory claim — the file measures 230 KB against 3 MB |
+**The Kinetix failure was a known defect shipped again.** `gen_assumed_closeout.py`
+had already recorded that the hand-copied 2198 `-ERS3` blocks in
+`gen_module_sweep_variants.py` / `gen_module_sweep.py` lack the `<ExtendedProperties>`
+ConfigID, that Studio then configures the drive for networked safety, and that drives
+must come from `_drive_module_xml`. That was a comment, not a check: the blocks stayed
+importable, lint did not test for the element, and `gen_module_kinetix_bus.py` kept
+using them. The `_r2` rebuild fixed the converter axis and processor and inherited
+the drives unchanged. Every real 2198 drive — about 250 — carries a ConfigID.
+
+**Now enforced, not advised:**
+
+- `lint.py` `kinetix_drive_missing_configid` refuses any file with a 2198 `-ERS`
+  drive lacking a ConfigID. Every generator writes through lint, so nothing bypasses it.
+- Both module tables replace their `-ERS3` blocks at import with `_drive_module_xml`
+  output. The safety-wired 4conn variants are dropped.
+- `lint.py` `native_instruction_arg_count` checks ALMD's operand count against the
+  real form.
+- `scripts/check_proven_blocks.py` requires every 2198 module and AXIS_CIP_DRIVE block
+  in a file to match a block from a **zero-error capture**. It flags all three drives
+  in both failed Kinetix builds and passes the rebuild.
+- `tests/test_build_guards.py` pins all of this and runs lint and the proven-block
+  check over every file waiting for capture.
+- The capture script kept only the first 300 characters of Studio's log, and Studio
+  lists warnings first, so the `_r2` Kinetix log lost all four errors. It now keeps
+  every Error line first, then the summary, then warnings while room remains.
+
+### Re-triggered again, awaiting capture
+
+| file | what changed |
+|---|---|
+| `almd_minimal_r3`, `almd_realtext_r3` | the real 5-operand call |
+| `modulerack_kinetix_full_bus_r3` | rebuilt only from proven blocks: one 2198-P208 supply with its converter axis, 2198-D032/D057/D020-ERS3 drives from `_drive_module_xml`, six servo axes on Ch1/Ch3. **One bus, not two:** the P031/P070 supplies occur in no real program, and a second bus needs a second bus-sharing group whose ConfigData has never been verified |
 
 The ALMD pair is generated despite the ALMD park because the goal is to close the defect
-log, not to work the instruction: one build, one error line, then both are either priced
-or closed out.
+log, not to work the instruction.
 
 ### Moved out, because the cause is already known
 
@@ -377,8 +403,10 @@ or closed out.
 | `instrfirst_crout_x10` | OQ-SAFETY | CROUT needs a safety CPU; Safety family ignored |
 | `predefprobe_axis_generic` | OQ-PREDEFINED | AXIS_GENERIC is in none of the real programs; file gone |
 
-**CAPTURE ERRORS: 1 row(s)** flagged here by `scripts/capture_errors.py` —
-`almd_minimal`, until its `_r2` re-trigger lands.
+**CAPTURE ERRORS: 4 row(s)** flagged here by `scripts/capture_errors.py` —
+`almd_minimal`, `almd_minimal_r2`, `almd_realtext_r2` and
+`modulerack_kinetix_full_bus_r2`, each with its cause diagnosed above. The question
+closes when the three `_r3` files capture clean.
 
 Run `python scripts/capture_errors.py --list` for the current row identities.
 
