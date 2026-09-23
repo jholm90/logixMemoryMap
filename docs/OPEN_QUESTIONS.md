@@ -226,6 +226,30 @@ generated files are this one law.
 | **Expected movement** | none directly — the law is not wired. If it vanishes here, the engine is right to leave it out and the contradiction is closed; if it holds, real programs carry 0.5–1.5% of bytes the model over-charges, and the true residual is that much larger |
 | **Batch built** | 1,600 distinct output BOOLs, each written once, a distinct condition per rung, identical tags in all 8: `realism_srout_series_k{01,02,04,08}` (1600/k rungs of XIC then k OTEs), `_branch_k{02,08}` (parallel legs), `_inter_k{02,08}` (k XIC-OTE pairs per rung — the instruction list of k01 exactly, only rung packing moves) |
 
+**Does the compiler simplify ladder, so that it should be simplified before sizing?**
+No. The corpus says it translates what is written, with small local effects only:
+
+- 5,000 byte-identical rungs cost exactly 5,000 × one rung (`instr_mov_n05000`), and
+  files writing the same ten BOOLs thousands of times are exactly linear. No duplicate
+  or redundant logic is removed.
+- `rungpack_xic_k40` puts 40 XICs in series in front of a NOP, which is logic with no
+  effect at all, and every XIC is charged at full weight. The files are exact. A
+  simplifier would have removed the whole rung.
+- The local effects that do exist are peephole-sized. One is this question's −12 per
+  output that follows another output: the rung condition is already evaluated. The
+  others are the literal-operand differences and CPT's cost following its expression
+  tree rather than its text.
+- The real set is **under**-predicted. Simplifying before sizing lowers every
+  prediction, which is the wrong direction.
+
+**Ten ADDs on one rung vs the same ADDs on separate rungs.** A rung boundary itself
+costs nothing measurable: `OQ-RUNGSHAPE` packed 4,000 non-output instructions 1 to 40
+per rung and all twelve files were exact. On the calibration files, every output
+instruction after the first on a rung is 12 bytes cheaper, whatever its type.
+`srout_mixed_k04` (OTE, MOV, ADD, CLR) and four OTEs both read −36. So ten ADDs in
+series on one rung measured 9 × 12 = 108 bytes less than ten ADDs on ten rungs. The
+real set rejects that rebate, and this question exists to find out why.
+
 ## 5. OQ-PIOADDR — POINT I/O address vs controller BOOL vs alias
 
 Real standard programs use 100–1,700 direct module-tag operands each
