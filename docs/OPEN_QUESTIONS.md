@@ -1,6 +1,6 @@
 # Open Questions
 
-**Ten.** Three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR); four with the operand-spelling finding (TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE); one with the L9 / v38 batch (L9PLATFORM), which is platform scope rather than real-set residual. Closed questions and their reasoning trails are in
+**Eleven.** Three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR); four with the operand-spelling finding (TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE); one with the L9 / v38 batch (L9PLATFORM), which is platform scope rather than real-set residual; one from export 43 (BRIDGEPH). Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,7 +23,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **1.66% mean, 4.83% worst** on the seventeen standard-processor real programs present (was 2.86% / 5.42% before operand spelling was resolved). |
+| **OQ-REALUNDER** | The real residual: **1.79% mean, 4.83% worst** on the eighteen standard-processor real programs present (the original seventeen: 1.74%; 1.66% before OQ-BRIDGEPH removed a compensating over-charge; 2.86% / 5.42% before operand spelling). |
+| **OQ-BRIDGEPH** | An ETHERNET-BRIDGE left in the tree, often inhibited, with nothing beneath it, as an IP-address placeholder. Wired at a measured 320 each (was the flat 2,344), no notice. 7 files built on the realism floor, awaiting capture. |
 | **OQ-TYPEDMEMBER** | Confirm the newly wired rule: a member-path, alias or AOI-parameter operand pays the same type surcharge as a bare tag. Wired on real-set evidence. 23 files built, awaiting capture. |
 | **OQ-INDIRECTUDT** | `UdtArray[Idx].Member` — 16,000 of the ~19,300 real indirect references — priced from one `DINT[20]` bare-MOV calibration. 14 files built, awaiting capture. |
 | **OQ-STRINGMOV** | `MOV` of a STRING — 7,626 real uses, priced as a DINT MOV, never measured. 5 files built, awaiting capture. |
@@ -362,3 +363,19 @@ seen with content in the file.
 | **How to read it** | `l8v38 − l8v35` per item = the firmware move; `l9v38 − l8v38` = the L9. Both flat across the densities → two project constants, and stages 3–4 confirm. Either growing → a rate, and stage 3 says which instruction carries it |
 | **Unproven in the build** | an L9 Ethernet child is parented to Local port 4. The L9 blanks carry no modules; port 4 is where all five real 5069 programs put theirs. The L9 arm's Kinetix blocks are the L8 arm's proven blocks re-parented; `check_proven_blocks.py` now reads a block parented to the controller's own Ethernet port (2 on L8, 4 on L9) as one shape, and still refuses any other port |
 | **Not covered** | the L9 capacity budget (OQ-L9BUDGET, resolved as bounded): a bench reading on an empty project per catalog, not a file |
+
+## 11. OQ-BRIDGEPH — an ETHERNET-BRIDGE placeholder with nothing beneath it
+
+Programmers leave an ETHERNET-BRIDGE in the I/O tree, usually inhibited, with no device
+beneath it and no connection through it, so the plant's IP addresses are visible in the
+project. It carries no data and should cost its own node overhead only. The engine
+charged it the flat `zero_connection_module` rate — 2,344, a median over noisy real
+files — and raised a coverage notice on every one.
+
+| | |
+|---|---|
+| **Evidence already on file** | `bridge_placeholder_single` 18,448 and `_ten` 21,336 against the 18,128 blank: **320 per bridge**, 3,200 + 8 for ten (noise floor). Both were over-predicted by 2,024 per bridge |
+| **Wired** | `zero_connection_module.by_catalog` ETHERNET-BRIDGE 320 FITTED, applied only to a bridge with **no child modules** and with no notice. Both captures now read 0 and −8. A bridge with devices beneath it (4 of the 18 real ones), and any gateway module such as a zero-connection 1756-EN2T, keeps the flat rate and its notice — an EN2T fronting another network is a different case and is not measured here |
+| **Real-set effect** | the original seventeen 1.66% → 1.74%, worst unchanged. The flat rate was over-charging 14 real placeholders by ~2,000 each, which hid that much under-prediction elsewhere; the measured rate is right on the isolation files, so it stays wired |
+| **Batch built** | `gen_bridge_placeholder.py`, `samples/generated/bridgeph/`, 7 files, v35 / 1756-L81E, realism floor: `bridgeph_n00` (control), `bridgeph_ebr_inh_n{01,02,04,08}` (inhibited, the real shape, 6-char names), `bridgeph_ebr_act_n04` (not inhibited), `bridgeph_ebr_long_n04` (16-char names). Flat marginals across n and `_act` = `_inh` close it as KNOWN |
+

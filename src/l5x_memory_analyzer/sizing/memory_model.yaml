@@ -627,6 +627,21 @@ module_overhead:
 zero_connection_module:
   bytes: 2344
   confidence: FITTED
+  # OQ-BRIDGEPH: an ETHERNET-BRIDGE with nothing beneath it is an IP-address
+  # placeholder a programmer leaves in the tree (often inhibited) so the address
+  # plan is visible. No connection runs through it and no device sits under it,
+  # so it costs its own node overhead and nothing else -- far below the flat
+  # rate above, which was a median over noisy real files:
+  #   bridge_placeholder_single 18,448 and _ten 21,336 against the 18,128 blank
+  #   -> 320 per bridge, 3,200 + 8 for ten (the +8 is the single-measurement
+  #   noise floor). No repeat discount.
+  # Only a bridge with NO child modules; one with devices beneath it (4 of the
+  # 18 real ETHERNET-BRIDGE modules) keeps the flat rate. A gateway module such
+  # as a 1756-EN2T is not a placeholder and keeps the flat rate too.
+  # FITTED until the bridgeph_* count sweep (realism floor, v35/L81E, inhibited)
+  # confirms it at several counts.
+  by_catalog:
+    'ETHERNET-BRIDGE': { bytes: 320, confidence: FITTED }
 
 # repeat_bytes (OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
 # later modules of the SAME catalog in one project cost LESS than the first.

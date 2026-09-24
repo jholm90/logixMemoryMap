@@ -51,6 +51,20 @@ constant had been hiding: **mean 2.86%, worst 5.42% (now 1.66% / 4.83% — opera
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
+### 0f. Export 43 — bridge placeholders, POINT I/O notices, indirect-bit usage — DONE, capture pending
+
+Export 43 (1756-L81E v35, reading supplied with the file, so a fitting input) predicted
+2,616,308 on receipt (−2.51%), 2,612,260 now (−2.66%). Its coverage notices were:
+- **ETHERNET-BRIDGE placeholders** (inhibited, nothing beneath): charged the flat 2,344
+  with a notice. Now 320 each, no notice, for a childless ETHERNET-BRIDGE only
+  (OQ-BRIDGEPH). A gateway 1756-EN2T keeps the flat rate and its notice. 7 files
+  built to confirm, awaiting capture.
+- **Rack-aliased 1734 cards**: already priced (488 all-in, OQ-POINTIOCONN); the notice
+  text claiming otherwise was stale and is gone.
+- **Usage**: `Tag[Ptr].[BitNum]` (an indirect bit of an indexed element) failed to
+  parse, so the array, pointer and bit-number tags read unused. 158 such operands
+  across 18 real exports. Fixed and pinned in `tests/test_usage.py`.
+
 ### 0d. Usage counts in the UI — DONE
 
 `l5x_memory_analyzer/usage.py`, built once per file at load. Every tag, member, array

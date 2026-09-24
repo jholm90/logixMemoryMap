@@ -49,10 +49,13 @@ _HEX_LITERAL = re.compile(r"\b\d+#[0-9A-Fa-f_]+")
 _ST_COMMENT = re.compile(r"\(\*.*?\*\)|//[^\n]*|/\*.*?\*/", re.S)
 _ST_STRING = re.compile(r"'[^']*'|\"[^\"]*\"")
 _BRACKET = r"\[(?:[^\[\]]|\[[^\[\]]*\])*\]"
+# A segment is a subscript `[i]`, a member or literal bit `.Name` / `.3`, or an
+# indirect bit `.[BitNum]` (a bit of a DINT chosen at run time).
 _PATH = re.compile(
-    r"(?<![A-Za-z0-9_.:#])([A-Za-z_][A-Za-z0-9_]*)((?:" + _BRACKET + r"|\.[A-Za-z0-9_]+)*)(?![A-Za-z0-9_\[.]|\s*\()"
+    r"(?<![A-Za-z0-9_.:#])([A-Za-z_][A-Za-z0-9_]*)((?:" + _BRACKET + r"|\." + _BRACKET
+    + r"|\.[A-Za-z0-9_]+)*)(?![A-Za-z0-9_\[.]|\s*\()"
 )
-_SEGMENT = re.compile(_BRACKET + r"|\.[A-Za-z0-9_]+")
+_SEGMENT = re.compile(r"\.?" + _BRACKET + r"|\.[A-Za-z0-9_]+")
 _CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(")
 _LITERAL_INDEX = re.compile(r"^\s*\d+(\s*,\s*\d+)*\s*$")
 
@@ -70,7 +73,16 @@ def _segments(tail: str) -> tuple[list[str], list[str]]:
     segs: list[str] = []
     inner: list[str] = []
     for s in _SEGMENT.findall(tail):
-        if s.startswith("["):
+        if s.startswith(".["):
+            # Indirect bit: a literal one is the plain bit `.N`; otherwise any
+            # bit, and the expression's own tags are uses too.
+            body = s[2:-1]
+            if body.strip().isdigit():
+                segs.append("." + body.strip())
+            else:
+                segs.append(".[*]")
+                inner.append(body)
+        elif s.startswith("["):
             body = s[1:-1]
             if _LITERAL_INDEX.match(body):
                 segs.append("[" + ",".join(p.strip() for p in body.split(",")) + "]")

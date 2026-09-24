@@ -24,6 +24,7 @@ def index() -> UsageIndex:
     tags = "\n".join([
         tag_xml("Rec", "Rec_t", dimensions=(10,), udt_members=_REC),
         tag_xml("Idx", "DINT"), tag_xml("Dst", "DINT"), tag_xml("Unused", "DINT"),
+        tag_xml("Words", "DINT", dimensions=(8,)), tag_xml("BitNo", "DINT"), tag_xml("Flag", "BOOL"),
         tag_xml("Buf", "DINT", dimensions=(20,)), tag_xml("Buf2", "DINT", dimensions=(20,)),
         tag_xml("Whole", "Rec_t", udt_members=_REC), tag_xml("Copy", "Rec_t", udt_members=_REC),
         '<Tag Name="Al" TagType="Alias" Radix="Decimal" AliasFor="Dst" ExternalAccess="Read/Write"/>',
@@ -34,6 +35,7 @@ def index() -> UsageIndex:
         "COP(Buf[0],Buf2[0],20);",
         "COP(Whole,Copy,1);",
         "JSR(Helper,0);",
+        "XIC(Words[Idx].[BitNo])OTE(Flag);",
     ]))
     helper = '<Routine Name="Helper" Type="RLL"><RLLContent>' + rung_xml(0, "NOP();") + "</RLLContent></Routine>"
     dead = '<Routine Name="Dead" Type="RLL"><RLLContent>' + rung_xml(0, "NOP();") + "</RLLContent></Routine>"
@@ -76,3 +78,12 @@ def test_routines(index):
     assert index.routine("program:MainProgram/Helper").count == 1
     assert index.routine("program:MainProgram/MainRoutine").implicit == 1
     assert index.routine("program:MainProgram/Dead").unused
+
+
+def test_indirect_bit_of_an_indexed_element_is_a_use(index):
+    """Tag[Ptr].[BitNum]: a run-time bit of a run-time element. The whole
+    operand used to fail to parse, so the array, the pointer and the bit number
+    all read as unused."""
+    assert index.tag("controller/Words").count == 1
+    assert not index.tag("controller/Words", segments_of("[5]")).unused
+    assert index.tag("controller/BitNo").count == 1

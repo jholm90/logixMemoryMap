@@ -247,13 +247,13 @@ band, so the estimated parts of a project are visible at a glance.
 
 ## How accurate is it?
 
-Measured against **seventeen real production programs** (1756-L8x and CompactLogix 5380,
+Measured against **eighteen real production programs** (1756-L8x and CompactLogix 5380,
 standard processors), each compared with the memory figure Studio 5000 reports for the
 real compiled project:
 
 | | |
 |---|---|
-| **Mean absolute error** | **1.66%** |
+| **Mean absolute error** | **1.79%** |
 | **Worst case** | **4.83%** (a program carrying 39 source-protected routines the tool cannot see inside) |
 | **Blind test** | a 7.89 MB program predicted at **+2.15%** before its real figure was used for anything |
 

@@ -13,9 +13,13 @@ evidence that counts.
 
 ### Current — after the capture batch that followed the blind set
 
-**Standard processors only — seventeen real programs present: mean absolute error
-1.66%, worst 4.83%** (was 2.86% / 5.42% before operand types and member-path indexes
-were resolved through every spelling; see OQ-REALUNDER). Safety processors are
+**Standard processors only — eighteen real programs present: mean absolute error
+1.79%, worst 4.83%.** The eighteenth (export 43) came with its reading, so it is a
+fitting input, at −2.66%. The original seventeen read 1.74% after OQ-BRIDGEPH priced
+childless ETHERNET-BRIDGE placeholders at their measured 320 instead of the flat 2,344,
+removing an over-charge that hid under-prediction; 1.66% before that, and 2.86% / 5.42%
+before operand types and member-path indexes were resolved through every spelling (see
+OQ-REALUNDER). Safety processors are
 excluded from accuracy (CLAUDE.md). The paragraphs below describe the 2.86% state. With
 export 13, the one safety program: eighteen programs, mean 3.12%, worst 5.99%, every one
 under-predicting (sum-weighted −3.20%).** Stopping rule NOT MET.

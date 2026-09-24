@@ -863,6 +863,9 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # guarantee uniqueness -- see parser/modules.py label_modules.
     _modules = parse_modules(root)
     _module_labels = label_modules(_modules)
+    # Modules something else hangs off: a bridge with devices beneath it is a
+    # live path, not a placeholder (OQ-BRIDGEPH).
+    _module_parents = {m.parent_module for m in _modules if m.name != "Local"}
 
     for _module_index, module in enumerate(_modules):
         # "Local" is the processor's own self-entry (always present, always
@@ -897,23 +900,35 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             # largest structural error in the corpus. It is now charged a flat
             # rate; see memory_model.yaml zero_connection_module for why a
             # per-catalog table was tried and REJECTED by cross-validation.
+            # OQ-BRIDGEPH: an ETHERNET-BRIDGE with nothing beneath it is an
+            # IP-address placeholder a programmer leaves in the tree -- nothing
+            # flows through it, so it costs its measured node overhead only
+            # and needs no notice. Anything else here (a gateway such as a
+            # 1756-EN2T, or a bridge with devices beneath it) keeps the flat
+            # rate and its coverage notice.
+            placeholder = (module.name not in _module_parents
+                           and module.catalog_number in model.zero_connection_by_catalog)
+            if placeholder:
+                zero_bytes, zero_basis = model.zero_connection_by_catalog[module.catalog_number]
+            else:
+                zero_bytes = model.zero_connection_module_bytes
+                zero_basis = model.zero_connection_module_confidence
             module_entries.append((
-                f"modules/{label}", "module_io", module.catalog_number,
-                model.zero_connection_module_bytes,
-                model.zero_connection_module_confidence,
+                f"modules/{label}", "module_io", module.catalog_number, zero_bytes, zero_basis,
             ))
-            display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
-            errors.append(SizeError(
-                path=f"coverage/module_zero_connection/{label}",
-                message=(
-                    f"Module {display}: no connections/stated size of its own (a bridge/gateway "
-                    f"node, e.g. an Ethernet-only fan-out to a remote device). Charged the FLAT "
-                    f"zero_connection_module rate ({model.zero_connection_module_bytes} bytes) "
-                    f"rather than a per-catalog value -- a per-catalog fit was rejected by "
-                    f"cross-validation (see OQ-MODULEZEROCONN), so this number is right on "
-                    f"average and can be off for any single catalog"
-                ),
-            ))
+            if not placeholder:
+                display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
+                errors.append(SizeError(
+                    path=f"coverage/module_zero_connection/{label}",
+                    message=(
+                        f"Module {display}: no connections/stated size of its own (a gateway, or a "
+                        f"bridge with devices beneath it). Charged the FLAT zero_connection_module "
+                        f"rate ({model.zero_connection_module_bytes} bytes) rather than a per-catalog "
+                        f"value -- a per-catalog fit was rejected by cross-validation (see "
+                        f"OQ-MODULEZEROCONN), so this number is right on average and can be off for "
+                        f"any single catalog"
+                    ),
+                ))
             continue
         display = f"{module.name} ({module.catalog_number})" if module.name else module.catalog_number
         # found live-checking this wiring against the 1769-
@@ -945,28 +960,29 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if not has_real_catalog_data and (
             module.uses_rack_connection or module.catalog_number == "Embedded" or module.is_legacy_network
         ):
-            if module.uses_rack_connection:
-                reason = "rack-aliased (RackConnection/InAliasTag)"
-            elif module.catalog_number == "Embedded":
+            if module.catalog_number == "Embedded":
                 reason = "processor-embedded I/O (CatalogNumber=\"Embedded\")"
             else:
                 reason = f"legacy-network bridge (Port Type={sorted(module.port_types)})"
-            errors.append(SizeError(
-                # A coverage notice, not a sizing failure: the file
-                # contains a module shape the model does not price yet.
-                # Its own sibling case (zero_connection) has always been
-                # filed under coverage/; this one was filed under
-                # modules/, which manifest.predicted_bytes treats as a
-                # blocking generator bug -- so a sample built precisely to
-                # MEASURE this gap could not be generated at all.
-                path=f"coverage/module_unmodeled_shape/{label}",
-                message=(
-                    f"Module {display}: {reason} -- module_overhead (fitted from 2 real discrete "
-                    f"add-on modules) is NOT charged here, zero real data confirms it applies the "
-                    f"same way to this shape; module_defined_bytes ({module.module_defined_bytes}) "
-                    f"not summed into the total either, controller-memory cost unmodeled for now"
-                ),
-            ))
+            # A rack-aliased card is priced (OQ-POINTIOCONN: declared data
+            # plus rack_aliased_module overhead, from the pioconn_* sweep), so
+            # it gets no coverage notice; the old notice said it was not.
+            if not module.uses_rack_connection:
+                errors.append(SizeError(
+                    # A coverage notice, not a sizing failure: the file
+                    # contains a module shape the model does not price yet.
+                    # Its own sibling case (zero_connection) has always been
+                    # filed under coverage/; this one was filed under
+                    # modules/, which manifest.predicted_bytes treats as a
+                    # blocking generator bug -- so a sample built precisely to
+                    # MEASURE this gap could not be generated at all.
+                    path=f"coverage/module_unmodeled_shape/{label}",
+                    message=(
+                        f"Module {display}: {reason} -- its declared data "
+                        f"({module.module_defined_bytes} bytes) is charged; its node overhead is "
+                        f"not, because no capture has measured this shape"
+                    ),
+                ))
             # Charged its OWN DECLARED DATA and still emitted.
             #
             # This used to be charged exactly ZERO, on the reasoning that

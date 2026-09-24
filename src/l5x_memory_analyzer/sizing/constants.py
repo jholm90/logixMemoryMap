@@ -1283,6 +1283,10 @@ class MemoryModel:
     zero_connection_module_bytes: int
     module_connection_data: ModuleConnectionDataModel
     zero_connection_module_confidence: str
+    # Catalogs whose zero-connection cost was measured in isolation
+    # (OQ-BRIDGEPH): catalog -> (bytes, confidence). Everything else keeps the
+    # flat rate above.
+    zero_connection_by_catalog: dict
     module_overhead_by_catalog: ModuleOverheadModel
     # OQ-DEFSCALE see memory_model.yaml definition_scale_correction.
     udt_definition_extra: int
@@ -1417,6 +1421,10 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
         rack_aliased_module_bytes=raw.get("rack_aliased_module", {}).get("overhead_bytes", 0),
         rack_aliased_module_confidence=raw.get("rack_aliased_module", {}).get("confidence", "FITTED"),
         zero_connection_module_confidence=raw.get("zero_connection_module", {}).get("confidence", "UNKNOWN"),
+        zero_connection_by_catalog={
+            catalog: (entry["bytes"], entry["confidence"])
+            for catalog, entry in (raw.get("zero_connection_module", {}).get("by_catalog") or {}).items()
+        },
         module_overhead_confidence=module_overhead["confidence"],
         module_connection_data=ModuleConnectionDataModel(
             word_bytes=raw["module_connection_data"]["word_bytes"],
