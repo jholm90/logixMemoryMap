@@ -32,18 +32,42 @@
   --band-APPROX: #c9a227;
   --band-UNVERIFIED: #b3552f;
   --band-UNPRICED: #8d3a3a;
+
+  /* Free controller memory ("Show Empty Space"): neutral grey, so the tile
+     reads as "nothing here" and never as a data type. */
+  --free-fill: #9aa1ab;
 }
 
+/* Dark theme: follows the operating system unless the header toggle has
+   picked one explicitly (data-theme on <html>, remembered per browser). */
+:root[data-theme="dark"] {
+  --bg: #14171c;
+  --panel-bg: #1c2028;
+  --text: #e8eaee;
+  --text-dim: #9aa3b0;
+  --border: #333a45;
+  --group-fill: #465873;
+  --free-fill: #4b525d;
+  color-scheme: dark;
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #14171c;
     --panel-bg: #1c2028;
     --text: #e8eaee;
     --text-dim: #9aa3b0;
     --border: #333a45;
     --group-fill: #465873;
+    --free-fill: #4b525d;
+    color-scheme: dark;
   }
 }
+
+#theme-toggle {
+  background: transparent; color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 1rem; line-height: 1;
+}
+#theme-toggle:hover { border-color: var(--accent); }
 
 * { box-sizing: border-box; }
 

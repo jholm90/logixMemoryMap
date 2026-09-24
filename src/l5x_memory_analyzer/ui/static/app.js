@@ -1544,6 +1544,8 @@ function paintTreemap(svg, children) {
     rect.setAttribute("width", Math.max(r.w, 0));
     rect.setAttribute("height", Math.max(r.h, 0));
     rect.classList.add("tm-rect");
+    // Names every tile for automation (screenshots, UI tests); not displayed.
+    rect.dataset.name = node.name || "";
     rect.style.fill = fillForNode(node);
     rect.addEventListener("click", () => drillInto(node));
     rect.addEventListener("mousemove", ev => showTooltip(ev, node));
@@ -1667,6 +1669,7 @@ function paintNested(svg, g, node, r, headerH, depth, ancestors) {
     crect.setAttribute("width", Math.max(ir.w, 0));
     crect.setAttribute("height", Math.max(ir.h, 0));
     crect.classList.add("tm-rect", "tm-rect-nested");
+    crect.dataset.name = cnode.name || "";
     crect.style.fill = fillForNode(cnode);
     crect.addEventListener("click", ev => { ev.stopPropagation(); drillInto(cnode, ancestors); });
     crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
@@ -1706,6 +1709,7 @@ const TYPE_COLORS = {
 // the root. Give each group its own hue derived from its name -- stable
 // across reloads, and distinct from the type palette by being lighter.
 function fillForNode(node) {
+  if (node && node.is_empty_space) return "var(--free-fill)";
   // Confidence mode answers "how well is this known" with the tile colour, in
   // the same band palette the bars use. Byte-weighted like every other
   // confidence figure, so a group tile is the colour of what it mostly holds.
@@ -1774,6 +1778,20 @@ function tooltipControllerBar(node) {
 function showTooltip(ev, node) {
   const tooltip = document.getElementById("tooltip");
   tooltip.classList.remove("hidden");
+
+  // Free space is not part of what the project uses, so its share is of the
+  // controller's CAPACITY. Against the used total it read as "509% of All".
+  if (node.is_empty_space) {
+    const cap = (REPORT && REPORT.budget_bytes) || 0;
+    const pct = cap ? (node.value / cap) * 100 : 0;
+    tooltip.innerHTML = `<strong>${displayName(node)}</strong><br>` +
+      `<span class="text-dim-on-dark">not used by this project</span><br>` +
+      `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
+      `<div class="tooltip-bar-wrap"><div class="tooltip-bar" style="width:${Math.min(pct, 100).toFixed(1)}%"></div></div>` +
+      `<div class="tooltip-bar-label">${pct.toFixed(1)}% of controller capacity (${fmtBytes(cap)})</div>`;
+    positionTooltip(tooltip, ev);
+    return;
+  }
 
   if (isGroup(node)) {
     const routines = routineCountFor(node);
@@ -2378,3 +2396,23 @@ function scrollListToTop() {
   }
   if (window.scrollY) window.scrollTo(0, 0);
 }
+
+// ---- light / dark theme ----
+// The OS preference decides until the header toggle picks one; the choice is
+// remembered per browser. Storage may be unavailable (private window, locked
+// down workstation), in which case the toggle still works for the session.
+(function themeToggle() {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  const root = document.documentElement;
+  const isDark = () => root.dataset.theme === "dark" ||
+    (!root.dataset.theme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const sync = () => { btn.innerHTML = isDark() ? "&#9728;" : "&#9790;"; };
+  btn.addEventListener("click", () => {
+    root.dataset.theme = isDark() ? "light" : "dark";
+    try { localStorage.setItem("l5x-theme", root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  sync();
+})();
+
