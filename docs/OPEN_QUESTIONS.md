@@ -1,6 +1,6 @@
 # Open Questions
 
-**Eleven.** Three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR); four with the operand-spelling finding (TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE); two with the L9 / v38 batch (L9PLATFORM, V36MNEMONIC), which are platform scope rather than real-set residual. Closed questions and their reasoning trails are in
+**Ten.** Three opened with the realism floor (REALISMFLOOR, SERIESREAL, PIOADDR); four with the operand-spelling finding (TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE); one with the L9 / v38 batch (L9PLATFORM), which is platform scope rather than real-set residual. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -33,7 +33,6 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-SERIESREAL** | The −12-per-extra-series-output law, re-measured with no duplicated bits on a full controller. 8 files awaiting capture. |
 | **OQ-PIOADDR** | A POINT I/O address vs a controller BOOL vs an alias as a rung operand. 6 files awaiting capture. |
 | **OQ-L9PLATFORM** | Is an L9 at v38 a constant offset from an L81E at v35? Firmware and platform separated by a third arm. 96 files built, awaiting capture. Moves nothing on the seventeen (none is L9 or v36+). |
-| **OQ-V36MNEMONIC** | From v36 the comparisons are spelled GE/GT/LE/LT/EQ/NE. Priced identically to GEQ/GRT/LEQ/LES/EQU/NEQ; only GEQ→GE is a stated fact. 6 discriminator files built, awaiting capture. |
 
 ---
 
@@ -363,20 +362,3 @@ seen with content in the file.
 | **How to read it** | `l8v38 − l8v35` per item = the firmware move; `l9v38 − l8v38` = the L9. Both flat across the densities → two project constants, and stages 3–4 confirm. Either growing → a rate, and stage 3 says which instruction carries it |
 | **Unproven in the build** | an L9 Ethernet child is parented to Local port 4. The L9 blanks carry no modules; port 4 is where all five real 5069 programs put theirs. The L9 arm's Kinetix blocks are the L8 arm's proven blocks re-parented; `check_proven_blocks.py` now reads a block parented to the controller's own Ethernet port (2 on L8, 4 on L9) as one shape, and still refuses any other port |
 | **Not covered** | the L9 capacity budget (OQ-L9BUDGET, resolved as bounded): a bench reading on an empty project per catalog, not a file |
-
-## 11. OQ-V36MNEMONIC — the v36 comparison renames
-
-From Logix Designer v36 the ladder comparison instructions are spelled **GE, GT, LE, LT,
-EQ, NE** where v35 and earlier spell them **GEQ, GRT, LEQ, LES, EQU, NEQ**. GEQ→GE is a
-stated fact; the other five are the same renaming carried across the family, and no
-v36+ export with ladder is on file to confirm them. The six are 9.3% of every instruction
-occurrence across the real exports in `samples/local/`, so a v36+ file read without the mapping would price every
-comparison at zero.
-
-| | |
-|---|---|
-| **Wired** | `parser.logic.V36_MNEMONIC_ALIASES` / `canonical_rung_text`: rung text is respelled to v35 where it is read (program routines, AOI internal logic, coverage), so both spellings price identically. A file-declared AOI of the same name wins. `lint` accepts the new spellings on MajorRev ≥ 36 and refuses them below (`v36_mnemonic_before_v36`); `lint.to_v36_spelling` respells a whole file for a v36+ build |
-| **Open** | whether v38 still imports the v35 spelling, and whether the other five renames are right |
-| **Batch built** | `l9v38_spell_{equ,neq,grt,les,geq,leq}_l8v38_v35spelling` — each the `l9v38_i_*_l8v38` file with the v35 spelling left in. An import error answers "not accepted"; a clean import reading the same as its twin answers "alias", and a re-export shows which spelling Studio writes. A rejected new spelling in the `i_*` v38 files would equally falsify that rename |
-| **Expected movement** | none on the seventeen; without it, every comparison in a v36+ export is unpriced |
-

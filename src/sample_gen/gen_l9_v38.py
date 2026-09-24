@@ -5,9 +5,9 @@ platform AND firmware at once. This batch separates the two by building every
 content item three times, byte-identical apart from what the arm changes:
 
     arm      processor      firmware   rung spelling
-    l8v35    1756-L81E      v35.05     v35 (GEQ, GRT, ...)   the control
-    l8v38    1756-L81E      v38.02     v36+ (GE, GT, ...)    firmware only
-    l9v38    1756-L908TS    v38.02     v36+ (GE, GT, ...)    platform only, vs l8v38
+    l8v35    1756-L81E      v35.05     v35 (GEQ, MOV, LIM ...)     the control
+    l8v38    1756-L81E      v38.02     v36+ (GE, MOVE, LIMIT ...)  firmware only
+    l9v38    1756-L908TS    v38.02     v36+ (GE, MOVE, LIMIT ...)  platform only, vs l8v38
 
   l8v38 - l8v35   = what the firmware move costs at that content
   l9v38 - l8v38   = what the L9 costs at the same firmware
@@ -19,19 +19,19 @@ Content items (FUTURE_TESTS.md, "L9 (ControlLogix 5590): what it takes"):
              project-level constant, growing means a rate.
   stage 3    i_<mnemonic>           1,000 rungs of one instruction, for the
              21 most-used real instructions (the top 20 plus LEQ, so all six
-             renamed comparisons are present).
+             renamed comparisons are present; MOV and LIM are renamed too).
   stage 4    m_<item>               Kinetix bus + drive + two axes, PowerFlex
              525, generic Ethernet, a sixth POINT I/O rack, 1756 local I/O in
              the chassis, 200 tag-based alarm conditions.
 
-Plus six SPELLING DISCRIMINATORS (OQ-V36MNEMONIC): each comparison file of
-stage 3 on L81E v38 with the v35 spelling left in. If Studio v38 rejects the
-v35 spelling, the import error names it; if it accepts it, the reading must
-equal the v36-spelled l8v38 twin, and the re-export shows which spelling
-Studio writes.
+A v36+ project does not accept the v35 spelling of the sixteen renamed
+instructions (OQ-V36MNEMONIC), so every v38 file is respelled whole with
+lint.to_v36_spelling -- content and baseline alike (the baseline's own GRT,
+EQU, LES and MOV) -- and lint refuses a v35 spelling at v36+. An earlier build
+of this batch carried six v38 files that kept the v35 comparison spelling on
+purpose, to ask whether v38 accepts it; it does not, so they are gone.
 
-Every file is on the realism floor (sample_gen.realism.with_baseline): the
-baseline's own GRT/EQU/LES rungs are respelled with the content on v38 arms.
+Every file is on the realism floor (sample_gen.realism.with_baseline).
 The L9 catalog is 1756-L908TS; content cost is not expected to depend on the
 catalog within the family, and the budget question is OQ-L9BUDGET.
 
@@ -53,7 +53,7 @@ from sample_gen.gen_alarm_conditions import _ASSOC_ORDER, _condition_xml
 from sample_gen.gen_module_motion import (
     _MOTION_GROUP_TAG_XML, _axis_tag, _drive_module_xml, bus_supply_with_converter,
 )
-from sample_gen.lint import to_v36_spelling
+from sample_gen.lint import V36_SPELLINGS, to_v36_spelling
 from sample_gen.manifest import append_manifest_row, write_sample
 from sample_gen.realism import rack_xml, with_baseline
 from sample_gen.wrapper import build_l5x
@@ -105,7 +105,9 @@ INSTRUCTIONS: dict[str, str] = {
     "LIM": "LIM(0,PnSrc[{i}],100)OTE(PnOut[{i}]);",
     "LEQ": _CMP.replace("{m}", "LEQ"),
 }
-RENAMED = ("EQU", "NEQ", "GRT", "LES", "GEQ", "LEQ")
+# The stage-3 instructions renamed at v36: EQU NEQ GRT LES GEQ LEQ MOV LIM.
+_V36_NAME = {old: new for new, old in V36_SPELLINGS.items()}
+RENAMED = tuple(m for m in INSTRUCTIONS if m in V36_SPELLINGS.values())
 
 _ARRAY_TAGS = {
     "PnBit": lambda: tag_xml("PnBit", "BOOL", (_BITS,)),
@@ -235,7 +237,7 @@ def _emit(stem: str, content: dict[str, str], what: str, question: str) -> int:
         out = OUT_ROOT / f"{sample_id}.L5X"
         l5x = build(content, _target(arm, stem), processor, major, software, v36)
         predicted = write_sample(l5x, out)
-        spelling = "v36+ comparison spelling (GE/GT/LE/LT/EQ/NE)" if v36 else "v35 spelling"
+        spelling = "v36+ spelling (GE, MOVE, LIMIT, ...)" if v36 else "v35 spelling (GEQ, MOV, LIM, ...)"
         append_manifest_row(
             sample_id,
             f"{processor} at v{software}, {spelling}, on the realism baseline, carrying {what}. "
@@ -259,26 +261,10 @@ def main() -> None:
             f"i_{m}", _content_instruction(m),
             f"{RUNGS} rungs of {m} ({INSTRUCTIONS[m].format(i='n')})",
             "OQ-L9PLATFORM stage 3: any per-instruction cost that moved with firmware or platform."
-            + (" OQ-V36MNEMONIC: renamed at v36." if m in RENAMED else ""))
+            + (f" OQ-V36MNEMONIC: spelled {_V36_NAME[m]} at v36+." if m in RENAMED else ""))
     for item, what in MODULE_ITEMS.items():
         written += _emit(f"m_{item}", _content_module(item), what,
                          "OQ-L9PLATFORM stage 4: module, axis and alarm costs at v38 and on L9.")
-    # Spelling discriminators: L81E v38, v35 spelling kept.
-    for m in RENAMED:
-        sample_id = f"l9v38_spell_{m.lower()}_l8v38_v35spelling"
-        out = OUT_ROOT / f"{sample_id}.L5X"
-        l5x = build(_content_instruction(m), _target("l8v38", f"spell_{m}"), "1756-L81E",
-                    "38", "38.02", v36_spelling=False)
-        predicted = write_sample(l5x, out)
-        append_manifest_row(
-            sample_id,
-            f"1756-L81E at v38.02 with the v35 spelling {m} left in, on the realism baseline, "
-            f"{RUNGS} rungs of {m}. Twin of l9v38_i_{m.lower()}_l8v38, which is identical but "
-            f"spelled the v36+ way. OQ-V36MNEMONIC: an import error here says v38 does not accept "
-            f"the v35 spelling; a clean import reading the same as the twin says it is an alias "
-            f"of the same instruction, and the re-export shows which spelling Studio writes.",
-            CATEGORY, out, predicted)
-        written += 1
     print(f"Done. {written} files in {OUT_ROOT}.")
 
 

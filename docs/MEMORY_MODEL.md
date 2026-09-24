@@ -873,12 +873,21 @@ measurement** — an exact linear fit, not a loose regression.
 Logic entries are emitted at estimated tier, separate from the exact tier that
 tag and UDT entries use, per the ground-truth constraint in `CLAUDE.md`.
 
-### v36+ comparison spelling — WIRED, unconfirmed beyond GEQ
+### v36+ instruction names — WIRED
 
-From v36 the comparisons are spelled GE, GT, LE, LT, EQ, NE. Every weight, surcharge
-and destination table is keyed by the v35 spelling (GEQ, GRT, LEQ, LES, EQU, NEQ), so
-rung text is respelled to v35 where it is read and both spellings cost the same. No
-constant is involved. OQ-V36MNEMONIC.
+From v36 sixteen ladder instructions are renamed, and a v36+ project rejects the old
+name:
+
+| v35 | v36+ | v35 | v36+ | v35 | v36+ | v35 | v36+ |
+|---|---|---|---|---|---|---|---|
+| EQU | EQ | NEQ | NE | GRT | GT | GEQ | GE |
+| LES | LT | LEQ | LE | MOV | MOVE | LIM | LIMIT |
+| SQR | SQRT | TRN | TRUNC | XPY | EXPT | ACS | ACOS |
+| ASN | ASIN | ATN | ATAN | TOD | TO_BCD | FRD | BCD_TO |
+
+Every weight, surcharge and destination table is keyed by the v35 name, so rung text is
+respelled to v35 where it is read and both spellings cost the same. No constant is
+involved. OQ-V36MNEMONIC (resolved).
 
 ### Two things to understand before using the table
 

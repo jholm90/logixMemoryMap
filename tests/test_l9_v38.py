@@ -1,5 +1,5 @@
 """ControlLogix 5590 / firmware v38 shape in build_l5x, and the v36+
-comparison spelling (OQ-V36MNEMONIC) in the parser and lint."""
+instruction spelling (OQ-V36MNEMONIC) in the parser and lint."""
 
 from __future__ import annotations
 
@@ -54,6 +54,22 @@ def test_lint_refuses_v36_spelling_before_v36():
     kinds = [f.kind for f in lint_l5x(v36_on_v35)]
     assert kinds.count("v36_mnemonic_before_v36") == 6
     assert not lint_l5x(to_v36_spelling(_file(major="38", software="38.02")))
+
+
+def test_lint_refuses_v35_spelling_at_v36():
+    kinds = [f.kind for f in lint_l5x(_file(major="38", software="38.02"))]
+    assert kinds.count("v35_mnemonic_at_v36") == 6
+
+
+def test_the_sixteen_renames():
+    assert V36_MNEMONIC_ALIASES == {
+        "EQ": "EQU", "NE": "NEQ", "GT": "GRT", "GE": "GEQ", "LT": "LES", "LE": "LEQ",
+        "MOVE": "MOV", "LIMIT": "LIM", "SQRT": "SQR", "TRUNC": "TRN", "EXPT": "XPY",
+        "ACOS": "ACS", "ASIN": "ASN", "ATAN": "ATN", "TO_BCD": "TOD", "BCD_TO": "FRD",
+    }
+    rung = "<Text><![CDATA[MOV(A,B)LIM(0,A,9)OTE(C);TOD(A,B)XIC(T.MOV)OTE(D);]]></Text>"
+    assert to_v36_spelling(rung) == (
+        "<Text><![CDATA[MOVE(A,B)LIMIT(0,A,9)OTE(C);TO_BCD(A,B)XIC(T.MOV)OTE(D);]]></Text>")
 
 
 def test_l9_shell_matches_the_real_exports():

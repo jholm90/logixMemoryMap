@@ -373,45 +373,52 @@ _PURE_CONDITION_INSTRUCTIONS = {
     "DTR",
 }
 
-# v36+ comparison spellings (OQ-V36MNEMONIC): GE/GT/LE/LT/EQ/NE for the v35
-# GEQ/GRT/LEQ/LES/EQU/NEQ. The mapping lives in the parser, which prices both
-# spellings identically; here each new spelling is a known native comparison
-# on a v36+ controller and an unknown one on anything older.
+# v36+ spellings (OQ-V36MNEMONIC): sixteen ladder instructions renamed at v36
+# (GEQ->GE, MOV->MOVE, LIM->LIMIT, ...; the table is in parser.logic). The
+# parser prices both spellings identically. A controller at v36+ does not
+# accept the old spelling and one below v36 does not know the new one, so each
+# is refused on the wrong side of the line.
 V36_SPELLINGS = dict(V36_MNEMONIC_ALIASES)
+_V35_SPELLINGS = {old: new for new, old in V36_SPELLINGS.items()}
 _KNOWN_NATIVE_INSTRUCTIONS |= set(V36_SPELLINGS)
-_PURE_CONDITION_INSTRUCTIONS |= set(V36_SPELLINGS)
+_PURE_CONDITION_INSTRUCTIONS |= {
+    new for new, old in V36_SPELLINGS.items() if old in _PURE_CONDITION_INSTRUCTIONS
+}
 _V36_FIRST_MAJOR = 36
 
 
 def to_v36_spelling(l5x_text: str) -> str:
-    """Every v35 comparison mnemonic in rung text rewritten the v36+ way.
+    """Every v35 mnemonic in rung text rewritten the v36+ way.
 
     Only CDATA rung bodies are touched, so a tag or member that happens to be
-    named EQU or GEQ is untouched unless it is written as a call."""
-    v35_to_v36 = {old: new for new, old in V36_SPELLINGS.items()}
-    call = re.compile(r"(?<![A-Za-z0-9_.\]])(" + "|".join(v35_to_v36) + r")(?=\()")
+    named MOV or GEQ is untouched unless it is written as a call."""
+    call = re.compile(
+        r"(?<![A-Za-z0-9_.\]])("
+        + "|".join(sorted(_V35_SPELLINGS, key=len, reverse=True)) + r")(?=\()")
 
     def rung(m: re.Match) -> str:
-        return m.group(1) + call.sub(lambda c: v35_to_v36[c.group(1)], m.group(2)) + m.group(3)
+        return m.group(1) + call.sub(lambda c: _V35_SPELLINGS[c.group(1)], m.group(2)) + m.group(3)
 
     return re.sub(r"(<Text>\s*<!\[CDATA\[)(.*?)(\]\]>)", rung, l5x_text, flags=re.DOTALL)
 
 
 def _mnemonic_firmware_findings(root: ET.Element, rung_texts: list[str]) -> list[LintFinding]:
-    """A v36+ comparison spelling on a controller older than v36."""
+    """A v36+ spelling below v36, or a v35 spelling at v36+."""
     controller = root.find("Controller")
     major = controller.get("MajorRev") if controller is not None else None
-    if major is None or not major.isdigit() or int(major) >= _V36_FIRST_MAJOR:
+    if major is None or not major.isdigit():
         return []
+    v36 = int(major) >= _V36_FIRST_MAJOR
+    wrong = _V35_SPELLINGS if v36 else V36_SPELLINGS
     aoi_names = _declared_aoi_names(root)
     findings = []
     for text in rung_texts:
         for mnemonic, _ in _call_sites(text):
-            if mnemonic in V36_SPELLINGS and mnemonic not in aoi_names:
+            if mnemonic in wrong and mnemonic not in aoi_names:
                 findings.append(LintFinding(
-                    "v36_mnemonic_before_v36",
-                    f"'{mnemonic}(' is the v36+ spelling of {V36_SPELLINGS[mnemonic]}, on a "
-                    f"MajorRev {major} controller: {text.strip()!r}",
+                    "v35_mnemonic_at_v36" if v36 else "v36_mnemonic_before_v36",
+                    f"'{mnemonic}(' is the {'v35' if v36 else 'v36+'} spelling of "
+                    f"{wrong[mnemonic]}, on a MajorRev {major} controller: {text.strip()!r}",
                 ))
     return findings
 

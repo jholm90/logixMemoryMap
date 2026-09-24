@@ -92,10 +92,12 @@ and both times the deviation looked justified at the moment it was made.** The
 exemptions are the firmware and catalog matrix generators and the L9/v38 side-by-side
 batch (`PlatNine`), for which sweeping those fields is the variable under test.
 
-**From v36 the ladder comparisons are spelled GE/GT/LE/LT/EQ/NE** (v35: GEQ/GRT/LEQ/
-LES/EQU/NEQ). The parser prices both spellings identically; lint refuses the v36
-spelling on a pre-v36 file; a v36+ build respells with `lint.to_v36_spelling`. Only
-GEQ→GE is confirmed (OQ-V36MNEMONIC).
+**From v36, sixteen ladder instructions are renamed and a v36+ project does NOT accept
+the old name:** EQU→EQ, NEQ→NE, GRT→GT, GEQ→GE, LES→LT, LEQ→LE, MOV→MOVE, LIM→LIMIT,
+SQR→SQRT, TRN→TRUNC, XPY→EXPT, ACS→ACOS, ASN→ASIN, ATN→ATAN, TOD→TO_BCD, FRD→BCD_TO.
+Every v36+ generated file is respelled whole with `lint.to_v36_spelling`; lint refuses
+an old name at v36+ and a new name below v36; the parser prices both identically. The
+table lives in `parser.logic.V36_MNEMONIC_ALIASES` (OQ-V36MNEMONIC, resolved).
 
 **Every generated test file is built on the realism floor** (`sample_gen/realism.py`):
 **at least 5 Ethernet I/O nodes, at least 25% of the controller predicted, and no
