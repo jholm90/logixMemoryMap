@@ -845,10 +845,17 @@ this wrong.
   They need their own real-shape research, not a safe-looking reuse of the
   backplane or POINT I/O shapes.
 - **ControlNet and DeviceNet** are not supported.
-- **Zero-connection modules** — a bare `ETHERNET-BRIDGE` used purely as an
-  IP-address fan-out, with no PLC logic connection — were silently skipped. They
-  now raise an explicit reported error so they are visible. `Local` stays excluded
-  from that flag because its overhead is already in the project baseline.
+- **Zero-connection modules** (no connection, no stated size). An `ETHERNET-BRIDGE`
+  with **no child modules** is an IP-address placeholder and costs its node overhead
+  only: **320** (FITTED, `bridge_placeholder_single` / `_ten` exact at 1 and 10;
+  OQ-BRIDGEPH), charged with no notice. Every other zero-connection module — a
+  gateway such as a 1756-EN2T, or a bridge with devices beneath it — is charged the
+  flat 2,344 (`zero_connection_module`) with a coverage notice. `Local` is excluded
+  because its overhead is already in the project baseline.
+- **Rack-aliased POINT I/O cards** are priced: declared data plus the
+  `rack_aliased_module` overhead from the pioconn_* sweep (OQ-POINTIOCONN). They no
+  longer raise a notice; the old one said they were uncharged, which had stopped
+  being true.
 - **Produced and consumed tags need no special connection formula.** A correctly
   built produced or consumed tag's DataType already includes a
   `CONNECTION_STATUS` member, so ordinary UDT recursion covers it. A Produced tag

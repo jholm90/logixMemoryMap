@@ -491,19 +491,13 @@ def _root_with_zero_connection_module(catalog: str = "ETHERNET-BRIDGE") -> ET.El
     return ET.fromstring(xml)
 
 
-def test_zero_connection_module_is_charged_and_still_flagged():
-    """A bridge/gateway module with no Connections is now CHARGED, not skipped.
-
-    it was made visible (previously silently `continue`d past with
-    no SizeEntry and no SizeError). it is also priced, because the
-    captured corpus showed this was the single largest structural error in
-    it: files where every module is priced have a median residual of 4 bytes
-    (n=1,663), files with at least one of these a median of +2,750 (n=81).
-
-    A FLAT rate, not per-catalog -- the per-catalog fit made held-out RMS
-    131% worse on 20 random splits, while the flat rate improved it 20%. So
-    the SizeError stays, downgraded to a coverage note, because the number is
-    right on average and can be wrong for any one catalog.
+def test_zero_connection_bridge_placeholder_is_charged_silently():
+    """A bridge/gateway module with no Connections is CHARGED, not skipped
+    (it used to be silently `continue`d past with no SizeEntry and no
+    SizeError). An ETHERNET-BRIDGE with nothing beneath it is an IP-address
+    placeholder and takes its measured rate with no notice (OQ-BRIDGEPH); every
+    other zero-connection module keeps the flat rate and a coverage notice --
+    see tests/test_bridge_placeholder.py.
 
     "Local" (the processor's own self-entry, also 0/0) must still be excluded
     by name, not by the 0/0 heuristic.
@@ -512,9 +506,8 @@ def test_zero_connection_module_is_charged_and_still_flagged():
     entries, errors = build_report(root, MODEL)
     charged = [e for e in entries if e.category == "module_io"]
     assert len(charged) == 1
-    assert charged[0].bytes == MODEL.zero_connection_module_bytes
-    assert any("no connections/stated size" in e.message for e in errors)
-    assert any(e.path.startswith("coverage/module_zero_connection/") for e in errors)
+    assert charged[0].bytes == MODEL.zero_connection_by_catalog["ETHERNET-BRIDGE"][0]
+    assert not any(e.path.startswith("coverage/module_zero_connection/") for e in errors)
     assert not any("TestLocal" in e.message for e in errors)
     assert not any(e.path == "modules/Local" for e in errors)
 

@@ -359,6 +359,19 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: ETHERNET-BRIDGE placeholders — OQ-BRIDGEPH, 7 files
+
+`gen_bridge_placeholder.py`, `samples/generated/bridgeph/`. v35 / 1756-L81E, on the
+realism baseline. The real shape: an ETHERNET-BRIDGE on the controller's Ethernet port,
+CIPBus port Bus Size 100, IP address only, no `<Communications>`, nothing beneath it.
+
+| file | what varies | differenced against |
+|---|---|---|
+| `bridgeph_n00` | control: baseline, no bridge | — |
+| `bridgeph_ebr_inh_n{01,02,04,08}` | 1/2/4/8 inhibited bridges, 6-char names | `bridgeph_n00`; each other (per-bridge marginal) |
+| `bridgeph_ebr_act_n04` | the same four, not inhibited | `bridgeph_ebr_inh_n04` |
+| `bridgeph_ebr_long_n04` | the same four inhibited, 16-char names | `bridgeph_ebr_inh_n04` (name term) |
+
 ## Also waiting: L9 and v38 side by side — OQ-L9PLATFORM, 96 files
 
 `gen_l9_v38.py`, `samples/generated/l9v38/`. Every content item three times, content

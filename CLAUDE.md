@@ -25,8 +25,13 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.66% on the seventeen standard-processor real programs present,
-worst case 4.83%, sixteen of seventeen under-predicting.** It read 2.86% / 5.42% until
+**Mean absolute error 1.79% on the eighteen standard-processor real programs present,
+worst case 4.83%, seventeen of eighteen under-predicting.** The eighteenth (export 43,
+1756-L81E v35) arrived with its reading and is a fitting input, not a blind test, at
+−2.66%. The original seventeen read 1.74%: pricing a childless ETHERNET-BRIDGE
+placeholder at its measured 320 instead of the flat 2,344 (OQ-BRIDGEPH) removed an
+over-charge that had been hiding under-prediction. Before that they read 1.66%, and
+2.86% / 5.42% until
 two measured costs were applied to every spelling of the operand they price, not just
 a bare tag name: the operand-type surcharge now follows member paths, aliases,
 program-scope tags and AOI parameters, and the tag-driven index cost now covers an
