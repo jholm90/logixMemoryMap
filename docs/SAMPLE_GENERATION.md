@@ -359,6 +359,25 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: series-output styles — OQ-SERIESREAL, 14 files
+
+`gen_series_styles.py`, `samples/generated/srstyle/`. v35 / 1756-L81E, realism floor.
+Every file declares the same inventory (SrC/SrQ 1,600 BOOLs, SrT 1,600 TIMERs, SrD 400
+DINTs, SrV) and writes each output bit once. The engine applies no extra-output
+discount, so each residual against `srsty_k01` (timers: `srsty_ton_k01`) is the discount.
+
+| file | shape |
+|---|---|
+| `srsty_k01` | control, `XIC(c)OTE(q)` ×1,600 |
+| `srsty_legs_k{02,04,08}` | `[XIC(c)OTE(q),…]` — legs each with own condition (61% of real extra outputs) |
+| `srsty_prelegs_k{02,04}` | `XIC(c)[XIC(c)OTE(q),XIO(c)OTE(q),…]` |
+| `srsty_legs2_k04` | two conditions per leg |
+| `srsty_nested_k04` | conditioned legs that branch again into outputs |
+| `srsty_mid_k03` | output mid-rung, then conditioned legs |
+| `srsty_otl_k04` | four latches in series |
+| `srsty_mixlegs_k04` | legs with OTE, OTL, MOV, OTE |
+| `srsty_ton_k01` / `_ton_k04` / `_tonlegs_k04` | timers alone, in series, in legs |
+
 ## Current batch: ETHERNET-BRIDGE placeholders — OQ-BRIDGEPH, 7 files
 
 `gen_bridge_placeholder.py`, `samples/generated/bridgeph/`. v35 / 1756-L81E, on the

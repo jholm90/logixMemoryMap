@@ -25,9 +25,11 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 0.77% on the eighteen standard-processor real programs present,
-worst case 3.87%, 14 of 18 inside 1% and 16 of 18 inside 2%.** The mean half of the
-stopping rule is met for the first time; the max half is not. It read 1.79% / 4.83%
+**Mean absolute error 0.58% on the seventeen standard-processor real programs counted,
+worst case 2.37%, 14 of 17 inside 1% and 16 of 17 inside 2%.** Export 33 is excluded:
+39 source-protected routines make it a known under-read (3.87%), not a measurement of
+the model — see "How accuracy is measured". With it, 0.77% / 3.87% on eighteen. The mean
+half of the stopping rule is met; the max half is not (export 27, 2.37%). It read 1.79% / 4.83%
 until two laws measured on the realism floor were wired: a tag-driven index costs 40
 more when a member follows it, 20 more on a BOOL array and 108 more on a STRING array
 (OQ-INDIRECTUDT), and a call mixing DINT with REAL or INT pays per-operand
@@ -63,6 +65,13 @@ Full reasoning and the elimination table are in `docs/ROADMAP.md`.
 
 **On real programs only.** The seventeen real production exports in
 `samples/local/` are the held-out set and the sole basis for any headline number.
+
+**A real program heavy with source-protected content is excluded from the accuracy
+figures.** The engine cannot see inside `<EncodedData>` and prices it at a minimum, so
+such a file measures the protection, not the model. `scripts/quick_eval.py` drops any
+real program with 10 or more protected blocks (`--include-protected` to report it);
+today that is export 33 alone (39; no other program has more than 5). Report the
+excluded file's figure alongside, never silently.
 
 **The max always travels with the mean.** The honest claim is *mean 1.60%, worst
 case 3.63%, read the worst case as up to 4%.* The worst file is 2.3× the mean.
