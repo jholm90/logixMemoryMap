@@ -68,18 +68,18 @@ light/dark toggle was removed; the page follows the OS setting.
 
 ### 0c. L9 (ControlLogix 5590) validation — built, awaiting capture
 
-102 files (`gen_l9_v38.py`, `samples/generated/l9v38/`): 32 content items (5 densities,
+96 files (`gen_l9_v38.py`, `samples/generated/l9v38/`): 32 content items (5 densities,
 21 instructions × 1,000 rungs, 6 module/alarm items), each on 1756-L81E v35, 1756-L81E v38
-and 1756-L908TS v38, plus 6 v36-spelling discriminators. OQ-L9PLATFORM, OQ-V36MNEMONIC.
+and 1756-L908TS v38, v38 files respelled with the v36 names. OQ-L9PLATFORM.
 Still to do outside the files: four budget readings (stage 0) and two or three real L9
 programs predicted blind. On capture: difference each item's arms; if both differences
 are flat across the densities, wire them as project constants.
 
-### 0e. v36+ comparison spelling — wired, confirmation pending
+### 0e. v36+ instruction names — done
 
-GE/GT/LE/LT/EQ/NE (v36+) price as GEQ/GRT/LEQ/LES/EQU/NEQ (`parser.logic.
-canonical_rung_text`); lint refuses them below v36. Only GEQ→GE is a stated fact. Wanted:
-one real v36+ export with ladder comparisons, to confirm the other five. OQ-V36MNEMONIC.
+Sixteen renames (EQU→EQ … MOV→MOVE, LIM→LIMIT, FRD→BCD_TO) priced identically to the v35
+names; lint refuses the old name at v36+ and the new one below v36. Resolved,
+`RESOLVED_QUESTIONS.md` OQ-V36MNEMONIC.
 
 ### 0b. UI: an AOI definition's "instance" size view disagrees with the instance tag
 

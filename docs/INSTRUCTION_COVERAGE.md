@@ -20,10 +20,18 @@ individually negligible, which is what the noise-floor rule in `CLAUDE.md` is fo
 
 ## Spelling across firmware
 
-From v36 the six comparisons are spelled **GE, GT, LE, LT, EQ, NE** (v35: GEQ, GRT,
-LEQ, LES, EQU, NEQ). The engine reads either spelling as the same instruction, and the
-tables here use the v35 spelling. All seventeen real programs are v31–v35. Only GEQ→GE
-is a stated fact; the rest wait on OQ-V36MNEMONIC.
+From v36 sixteen ladder instructions are renamed, and a v36+ project rejects the old
+name:
+
+| v35 | v36+ | v35 | v36+ | v35 | v36+ | v35 | v36+ |
+|---|---|---|---|---|---|---|---|
+| EQU | EQ | NEQ | NE | GRT | GT | GEQ | GE |
+| LES | LT | LEQ | LE | MOV | MOVE | LIM | LIMIT |
+| SQR | SQRT | TRN | TRUNC | XPY | EXPT | ACS | ACOS |
+| ASN | ASIN | ATN | ATAN | TOD | TO_BCD | FRD | BCD_TO |
+
+The engine reads either spelling as the same instruction, and the tables here use the
+v35 name. All seventeen real programs are v31–v35.
 
 ## What "weighted" and "accurate" each mean
 

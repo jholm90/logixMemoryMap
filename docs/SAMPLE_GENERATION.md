@@ -359,25 +359,25 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Also waiting: L9 and v38 side by side — OQ-L9PLATFORM, OQ-V36MNEMONIC, 102 files
+## Also waiting: L9 and v38 side by side — OQ-L9PLATFORM, 96 files
 
 `gen_l9_v38.py`, `samples/generated/l9v38/`. Every content item three times, content
 byte-identical apart from the rung spelling, all on the realism baseline:
 
 | arm | processor | firmware | comparison spelling |
 |---|---|---|---|
-| `_l8v35` | 1756-L81E | 35.05 | GEQ/GRT/LEQ/LES/EQU/NEQ — the control |
-| `_l8v38` | 1756-L81E | 38.02 | GE/GT/LE/LT/EQ/NE |
-| `_l9v38` | 1756-L908TS | 38.02 | GE/GT/LE/LT/EQ/NE |
+| `_l8v35` | 1756-L81E | 35.05 | v35 names (GEQ, MOV, LIM, …) — the control |
+| `_l8v38` | 1756-L81E | 38.02 | v36 names (GE, MOVE, LIMIT, …) |
+| `_l9v38` | 1756-L908TS | 38.02 | v36 names (GE, MOVE, LIMIT, …) |
 
 | family | files | differenced against | question |
 |---|---:|---|---|
 | `l9v38_d{0000,0025,0100,0400,1600}_*` | 15 | the other arms at the same density; own arm across densities | OQ-L9PLATFORM stages 1–2 |
 | `l9v38_i_<mnemonic>_*` (21 instructions, 1,000 rungs each) | 63 | the other arms; `l9v38_d0000` of the same arm | OQ-L9PLATFORM stage 3 |
 | `l9v38_m_{kinetix,pf525,geneth,pointio,local1756,alarms}_*` | 18 | the other arms; `l9v38_d0000` of the same arm | OQ-L9PLATFORM stage 4 |
-| `l9v38_spell_<cmp>_l8v38_v35spelling` | 6 | `l9v38_i_<cmp>_l8v38` | OQ-V36MNEMONIC |
 
-Target names start `PlatNine` (lint platform exemption). `build_l5x` now builds the L9
+A v36+ project rejects the v35 names, so the v38 arms are respelled whole, baseline
+included (OQ-V36MNEMONIC). Target names start `PlatNine` (lint platform exemption). `build_l5x` now builds the L9
 shell from the real v38 exports (ICP Bus Size 4, Ethernet ports 3/4, dual-IP,
 `SafetyEnabled="false"`, `OpcUaInfo`, no `DataLogs`) and adds `DataExchangeId` on any
 v38 file. **Unproven:** L9 Ethernet children sit on Local port 4 (the 5069 real

@@ -35,6 +35,39 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-V36MNEMONIC — sixteen ladder instructions renamed at v36
+
+**RESOLVED as a stated fact, not a capture.** From v36 these instructions are spelled
+differently, and a v36+ project **does not accept the v35 name**:
+
+| v35 | v36+ | v35 | v36+ | v35 | v36+ | v35 | v36+ |
+|---|---|---|---|---|---|---|---|
+| EQU | EQ | NEQ | NE | GRT | GT | GEQ | GE |
+| LES | LT | LEQ | LE | MOV | MOVE | LIM | LIMIT |
+| SQR | SQRT | TRN | TRUNC | XPY | EXPT | ACS | ACOS |
+| ASN | ASIN | ATN | ATAN | TOD | TO_BCD | FRD | BCD_TO |
+
+The table is the conversion map the capture tooling applies (`LegacyToV36`). The ST
+function names already used SQRT, ACOS, ASIN, ATAN and TRUNC; the rename brings ladder
+into line.
+
+**What is wired.** `parser.logic.V36_MNEMONIC_ALIASES` / `canonical_rung_text` respell
+rung text to the v35 name wherever it is read (program routines, AOI internal logic,
+coverage), so every weight, surcharge and destination table applies unchanged and both
+spellings price identically; a file-declared AOI of the same name wins. `lint` refuses an
+old name at MajorRev ≥ 36 (`v35_mnemonic_at_v36`) and a new name below 36
+(`v36_mnemonic_before_v36`). `lint.to_v36_spelling` respells a whole file's rung text.
+
+**What was withdrawn.** The first L9/v38 build asked whether v38 still takes the old
+spelling with six `l9v38_spell_*_v35spelling` files. It does not, so the files were
+deleted before capture, and the rest of the batch was rebuilt with MOV and LIM respelled
+too (the first build had respelled only the six comparisons, which would have failed on
+every MOV in the baseline).
+
+**Exposure.** None of the seventeen real programs is v36+. Without the mapping, a v36+
+export would price every one of these instructions at zero — the six comparisons plus
+MOV and LIM are about 21% of every real instruction occurrence.
+
 ## OQ-BITSHIFT — BSR and BSL both cost exactly 60 bytes; the length operand is free
 
 **SOLVED.** The assumed weight was right, and it is now measured rather than assumed.

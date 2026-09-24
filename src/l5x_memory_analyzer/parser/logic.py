@@ -30,23 +30,32 @@ from dataclasses import dataclass, field
 # double-charged.
 _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 
-# v36+ comparison mnemonics (OQ-V36MNEMONIC). From v36 the ladder comparisons
-# are spelled GE/GT/LE/LT/EQ/NE where v35 and earlier spell them GEQ/GRT/LEQ/
-# LES/EQU/NEQ. Every weight, operand-type surcharge and destination table in
-# this project is keyed by the v35 spelling, so rung text is rewritten to it
-# once, where it is read, and a v36+ file prices exactly like the same program
-# at v35. Only GEQ -> GE is a stated fact; the other five are the same
-# renaming carried across the family and are unconfirmed until a v36+ export
-# or the v38 spelling-discriminator captures show them. A file-declared AOI of
+# v36+ ladder mnemonics (OQ-V36MNEMONIC). From v36 sixteen ladder instructions
+# are spelled differently, and a v36+ project does not accept the old spelling:
+#
+#   EQU->EQ  NEQ->NE  GRT->GT  GEQ->GE  LES->LT  LEQ->LE  MOV->MOVE  LIM->LIMIT
+#   SQR->SQRT  TRN->TRUNC  XPY->EXPT  ACS->ACOS  ASN->ASIN  ATN->ATAN
+#   TOD->TO_BCD  FRD->BCD_TO
+#
+# The table is the one the capture tooling converts with. Every weight,
+# operand-type surcharge and destination table in this project is keyed by the
+# v35 spelling, so rung text is rewritten to it once, where it is read, and a
+# v36+ file prices exactly like the same program at v35. A file-declared AOI of
 # the same name wins over the rename.
 V36_MNEMONIC_ALIASES = {
-    "GE": "GEQ", "GT": "GRT", "LE": "LEQ", "LT": "LES", "EQ": "EQU", "NE": "NEQ",
+    "EQ": "EQU", "NE": "NEQ", "GT": "GRT", "GE": "GEQ", "LT": "LES", "LE": "LEQ",
+    "MOVE": "MOV", "LIMIT": "LIM", "SQRT": "SQR", "TRUNC": "TRN", "EXPT": "XPY",
+    "ACOS": "ACS", "ASIN": "ASN", "ATAN": "ATN", "TO_BCD": "TOD", "BCD_TO": "FRD",
 }
-_V36_CALL = re.compile(r"(?<![A-Za-z0-9_.\]])(GE|GT|LE|LT|EQ|NE)(?=\()")
+_V36_CALL = re.compile(
+    r"(?<![A-Za-z0-9_.\]])("
+    + "|".join(sorted(V36_MNEMONIC_ALIASES, key=len, reverse=True))
+    + r")(?=\()"
+)
 
 
 def canonical_rung_text(text: str, aoi_names: frozenset[str] = frozenset()) -> str:
-    """Rung text with every v36+ comparison mnemonic spelled the v35 way."""
+    """Rung text with every v36+ mnemonic spelled the v35 way."""
     if "(" not in text:
         return text
     return _V36_CALL.sub(

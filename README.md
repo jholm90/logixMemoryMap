@@ -338,7 +338,7 @@ Without installing, run the same subcommands from `src/` as
 | **5069 / CompactLogix 5380** | ✅ supported, represented in the real validation set |
 | GuardLogix safety controllers | sized, but safety memory is a separate partition, so accuracy is quoted for standard processors only |
 | 1756-L7x, 1769 | older architecture: existing support kept, no new development |
-| 1756-L9x ControlLogix 5590 | 102-file side-by-side batch (L81E v35 / L81E v38 / L908TS v38) built, awaiting capture; not yet validated — see [FUTURE_TESTS.md](docs/FUTURE_TESTS.md#l9-controllogix-5590-what-it-takes) |
+| 1756-L9x ControlLogix 5590 | 96-file side-by-side batch (L81E v35 / L81E v38 / L908TS v38) built, awaiting capture; not yet validated — see [FUTURE_TESTS.md](docs/FUTURE_TESTS.md#l9-controllogix-5590-what-it-takes) |
 
 ---
 
