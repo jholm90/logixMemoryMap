@@ -7,11 +7,6 @@
      missing favicon.ico is otherwise a 404 in every session's console. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%231f2430'/%3E%3Crect x='2' y='2' width='7' height='9' fill='%234a90d9'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%237ec27e'/%3E%3Crect x='10' y='7' width='4' height='4' fill='%23d9a34a'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23888'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
-<script>
-  // Apply the remembered theme before first paint, so a dark-mode user never
-  // sees a white flash. Storage can be unavailable; the OS setting then rules.
-  try { const t = localStorage.getItem("l5x-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-</script>
 </head>
 <body>
   <header id="app-header">
@@ -25,7 +20,6 @@
       <a id="export-csv-btn" class="toolbar-btn" href="/api/export.csv">Export&nbsp;CSV</a>
       <a id="export-xlsx-btn" class="toolbar-btn" href="/api/export.xlsx">Export&nbsp;XLSX</a>
     </div>
-    <button id="theme-toggle" type="button" title="Switch between light and dark">&#9790;</button>
     <div id="budget-bar-wrap">
       <div id="budget-bar"><div id="budget-bar-fill"></div></div>
       <div id="budget-label"></div>
@@ -93,6 +87,7 @@
                   <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
                   <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
                   <th data-sort="bytes">Bytes</th>
+            <th data-sort="uses" title="How often this is referenced in the project's logic, aliases, alarms, axes and modules">Uses</th>
                   <th data-sort="pct_of_total">% of Parent</th>
                   <th data-sort="pct_of_controller">% of Controller</th>
                   <th data-sort="conf" class="conf-only">Confidence</th>
@@ -115,6 +110,7 @@
             <th data-sort="name">Name <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="name" title="Filter by name"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
             <th data-sort="data_type">Type <span class="filter-wrap"><button type="button" class="funnel-btn" data-filter="data_type" title="Filter by type"><svg class="funnel-icon" viewBox="0 0 512 512" width="11" height="11" aria-hidden="true" focusable="false"><path d="M12 26h488L316 258v182l-120 54V258z" fill="none" stroke="currentColor" stroke-width="42" stroke-linejoin="round" stroke-linecap="round"/></svg></button></span></th>
             <th data-sort="bytes">Bytes</th>
+            <th data-sort="uses" title="How often this is referenced in the project's logic, aliases, alarms, axes and modules">Uses</th>
             <th data-sort="pct_of_total">% of Parent</th>
             <th data-sort="pct_of_controller">% of Controller</th>
             <th data-sort="conf" class="conf-only">Confidence</th>
