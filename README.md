@@ -247,17 +247,22 @@ band, so the estimated parts of a project are visible at a glance.
 
 ## How accurate is it?
 
-Measured against **eighteen real production programs** (1756-L8x and CompactLogix 5380,
+Measured against **seventeen real production programs** (1756-L8x and CompactLogix 5380,
 standard processors), each compared with the memory figure Studio 5000 reports for the
 real compiled project:
 
 | | |
 |---|---|
-| **Mean absolute error** | **0.77%** |
-| **Worst case** | **3.87%** (a program carrying 39 source-protected routines the tool cannot see inside) |
+| **Mean absolute error** | **0.58%** |
+| **Worst case** | **2.37%** |
+| **Inside 1% / inside 2%** | 14 of 17 / 16 of 17 |
 | **Blind test** | a 7.89 MB program predicted at **+2.15%** before its real figure was used for anything |
 
-**Read the worst case as "up to about 5%" on a file the tool has never seen.** The blind
+One further real program is left out of those figures: it carries 39 source-protected
+routines the tool cannot see inside, so it under-reads by design (3.87%). Source-protected
+content is always priced at a flagged minimum.
+
+**Read the worst case as "up to about 3%" on a file the tool has never seen.** The blind
 test is the number that matters most: it is the only one no tuning could have touched.
 
 Why the tool can be this close:
@@ -338,7 +343,8 @@ Without installing, run the same subcommands from `src/` as
 | **5069 / CompactLogix 5380** | ✅ supported, represented in the real validation set |
 | GuardLogix safety controllers | sized, but safety memory is a separate partition, so accuracy is quoted for standard processors only |
 | 1756-L7x, 1769 | older architecture: existing support kept, no new development |
-| 1756-L9x ControlLogix 5590 | 96-file side-by-side batch (L81E v35 / L81E v38 / L908TS v38) built, awaiting capture; not yet validated — see [FUTURE_TESTS.md](docs/FUTURE_TESTS.md#l9-controllogix-5590-what-it-takes) |
+| 1756-L9x ControlLogix 5590 | ✅ sized: on 32 test programs from empty to heavily loaded, an L9 at v38 used exactly the same memory as a 1756-L81E plus a fixed 2,276 bytes, which the tool charges. No real L9 program has been measured yet, and no L9 capacity figure is on file, so the headroom percentage is not shown for an L9 |
+| Firmware v36 and later | ✅ read correctly: 16 ladder instructions were renamed at v36 (GEQ→GE, MOV→MOVE, LIM→LIMIT, …); both spellings are sized the same. Eight of the sixteen have been built into v38 projects and measured, identical to their v35 forms; the other eight (SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD, BCD_TO) are mapped but not yet measured. Content costs the same at v38 as at v35 |
 
 ---
 

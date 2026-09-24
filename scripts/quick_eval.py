@@ -102,6 +102,29 @@ def _is_safety_processor(row: dict) -> bool:
     return bool(_SAFETY_PROCESSOR.search(_processor(row)))
 
 
+# Source-protected content: a routine or AOI exported as <EncodedData> is opaque
+# to the engine, which can only price it at a minimum, so a program carrying a
+# lot of it is a known under-prediction, not a measurement of the model. A real
+# program with this many protected blocks or more is excluded from the accuracy
+# figures (--include-protected puts it back). At the time this was set, export 33
+# carried 39 and no other real program more than 5.
+PROTECTED_EXCLUSION_THRESHOLD = 10
+
+
+def _protected_blocks(row: dict) -> int:
+    if row.get("category") != REAL_CATEGORY:
+        return 0
+    try:
+        with open(REPO / row["l5x_path"], encoding="utf-8-sig", errors="ignore") as f:
+            return f.read().count("<EncodedData")
+    except OSError:
+        return 0
+
+
+def _is_protected_heavy(row: dict) -> bool:
+    return _protected_blocks(row) >= PROTECTED_EXCLUSION_THRESHOLD
+
+
 
 def _rows() -> list[dict]:
     return load_manifest()
@@ -208,6 +231,10 @@ def main() -> int:
     ap.add_argument("--include-safety", action="store_true",
                     help="also report safety-processor rows (catalog ending S/S2/S3); "
                          "accuracy is measured on standard processors only")
+    ap.add_argument("--include-protected", action="store_true",
+                    help="also report real programs carrying "
+                         f"{PROTECTED_EXCLUSION_THRESHOLD}+ source-protected blocks, "
+                         "which the engine cannot see into")
     ap.add_argument("--real-only", action="store_true",
                     help="the real production exports and nothing else -- no "
                          "generated sentinels. The accuracy claim, on its own")
@@ -229,6 +256,13 @@ def main() -> int:
     if safety:
         print(f"excluded {safety} safety-processor row(s); estimation is measured on "
               f"standard processors only (--include-safety to report them)")
+    if not args.include_protected:
+        heavy = [r for r in rows if _is_protected_heavy(r)]
+        if heavy:
+            rows = [r for r in rows if r not in heavy]
+            print(f"excluded {len(heavy)} real program(s) with "
+                  f"{PROTECTED_EXCLUSION_THRESHOLD}+ source-protected blocks "
+                  f"({', '.join(r['sample_id'] for r in heavy)}); --include-protected to report them")
     picked = select(rows, args.family, args.full, args.lenient)
     if args.real_only:
         picked = [r for r in picked if r["category"] == REAL_CATEGORY]

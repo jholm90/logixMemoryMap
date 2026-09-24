@@ -66,6 +66,19 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0h. Series-output styles — BUILT, awaiting capture
+
+14 `srsty_*` files (`gen_series_styles.py`) for OQ-SERIESREAL, built on request: the
+dominant real multi-output shape (branch legs with their own conditions, 61% of real
+extra outputs) at k = 2/4/8, plus shared-condition legs, two-condition legs, nested
+branches, output mid-rung, series latches, mixed writers in legs, and timers. Supersedes
+spec item 1 below.
+
+### Accuracy headline excludes protected-heavy programs — DONE
+
+`quick_eval.py` drops real programs with 10+ `<EncodedData>` blocks (export 33 only).
+Seventeen counted: 0.58% mean, 2.37% worst.
+
 ### Next batch — SPECIFIED, NOT BUILT (ask before generating)
 
 Each answers a still-open item; v35 / 1756-L81E, realism floor.

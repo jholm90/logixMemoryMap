@@ -23,8 +23,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **0.77% mean, 3.87% worst** on the eighteen standard-processor real programs present, 14 of 18 inside 1%, 16 of 18 inside 2%. The mean half of the stopping rule is met for the first time; the max half is not (export 33, 39 source-protected routines). |
-| **OQ-SERIESREAL** | The −12-per-extra-output law holds exactly on a full controller, with unique bits, in series, in output-only branches and in interleaved condition/output pairs, and still makes the real set worse when applied (0.77% → 2.48%). Unwired. The unmeasured real shape is branch legs that carry their own conditions. |
+| **OQ-REALUNDER** | The real residual: **0.58% mean, 2.37% worst** on the seventeen standard-processor real programs counted (export 33 excluded for 39 source-protected routines; with it 0.77% / 3.87% on eighteen). 14 of 17 inside 1%, 16 of 17 inside 2%; only export 27 is over. |
+| **OQ-SERIESREAL** | The −12-per-extra-output law holds exactly on every generated shape and still makes the real set worse when applied. 61% of real extra outputs sit in branch legs with their own conditions, never built — 14 `srsty_*` files now built for it and other styles, awaiting capture. |
 | **OQ-BRIDGEPH** | An ETHERNET-BRIDGE left in the tree, often inhibited, with nothing beneath it, as an IP-address placeholder. Wired at a measured 320 each (was the flat 2,344), no notice. 7 files built on the realism floor, not yet converted or captured. |
 
 ---
@@ -228,6 +228,8 @@ generated files are this one law.
 | **Expected movement** | none directly — the law is not wired. If it vanishes here, the engine is right to leave it out and the contradiction is closed; if it holds, real programs carry 0.5–1.5% of bytes the model over-charges, and the true residual is that much larger |
 | **Batch built** | 1,600 distinct output BOOLs, each written once, a distinct condition per rung, identical tags in all 8: `realism_srout_series_k{01,02,04,08}` (1600/k rungs of XIC then k OTEs), `_branch_k{02,08}` (parallel legs), `_inter_k{02,08}` (k XIC-OTE pairs per rung — the instruction list of k01 exactly, only rung packing moves) |
 | **Captured** | **The law holds, exactly.** Against `_series_k01`, per extra output: −12 at k = 2, 4, 8 in series; `_branch_k{02,08}` identical to series; `_inter_k{02,08}` (a condition before every output) identical too. The L9/v38 density rungs (`XIC … MOV … OTE`) show it again, −12 per rung on 1,600 rungs. So it is not the empty controller, not repeated bits, and not a single condition. |
+| **Real shapes** | Of real extra outputs (rungs with 2+ writing instructions): 27% plain series, 12% output-only branch legs, **61% branch legs each carrying their own conditions** — the one shape never built |
+| **Batch built** (styles) | `gen_series_styles.py`, `samples/generated/srstyle/`, 14 files, one tag inventory, each output written once, realism floor: `srsty_k01` control; `_legs_k{02,04,08}` (legs with own conditions); `_prelegs_k{02,04}` (shared + own conditions); `_legs2_k04` (two conditions per leg); `_nested_k04`; `_mid_k03` (output mid-rung then legs); `_otl_k04` (series latches); `_mixlegs_k04` (OTE/OTL/MOV/OTE legs); `_ton_k01` / `_ton_k04` / `_tonlegs_k04` (timers, which the counter does not count as writers). Each residual against its control is the discount for that shape |
 | **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
 
 ## 3. OQ-BRIDGEPH — an ETHERNET-BRIDGE placeholder with nothing beneath it

@@ -13,9 +13,10 @@ evidence that counts.
 
 ### Current — after the capture batch that followed the blind set
 
-**Standard processors only — eighteen real programs present: mean absolute error
-0.77%, worst 3.87%, 14 of 18 inside 1%.** The mean half of the stopping rule is met;
-the max is not (export 33, source-protected routines). From 1.79% / 4.83% by wiring
+**Standard processors only, protected-heavy export 33 excluded — seventeen real
+programs: mean absolute error 0.58%, worst 2.37%, 14 of 17 inside 1%, 16 of 17 inside
+2%.** With export 33 (39 source-protected routines, 3.87%): 0.77% / 3.87% on eighteen.
+The mean half of the stopping rule is met; the max is not (export 27, 2.37%). From 1.79% / 4.83% by wiring
 OQ-INDIRECTUDT (what a tag-driven index selects: member +40, BOOL element +20, STRING
 element +108) and OQ-MIXEDTYPE (DINT↔REAL / DINT↔INT conversions inside one call),
 both measured on the realism floor, no generated exact row moved. The eighteenth
