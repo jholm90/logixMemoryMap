@@ -280,6 +280,11 @@ constant is the wrong instrument and the expensive one.**
 `--full` is for exactly two things: reconciling a newly landed capture batch, and
 the single final check before a constant is committed. **Not for iterating.**
 
+**Any run across the whole generated corpus needs the user's approval first, every
+time** — `--full`, a before/after census, or any script that re-parses all ~3,700
+generated files. Ask, say why, and wait. No approval is needed for scoped runs:
+`--family` on the rows under test, `--real-only`, or files just generated this session.
+
 The same applies to reading the corpus generally — **filter first, then parse.**
 Never parse every L5X to answer a question about one family.
 
