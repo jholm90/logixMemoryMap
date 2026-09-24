@@ -51,6 +51,15 @@ constant had been hiding: **mean 2.86%, worst 5.42% (now 1.66% / 4.83% — opera
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
+### 0b. UI: an AOI definition's "instance" size view disagrees with the instance tag
+
+On the demo project (`scripts/build_demo_project.py`), opening Add-On Instructions ›
+`Valve_Ctrl` with **AOI Size: instance** reads 28 B, the sum of its seven 4-byte members,
+while the instance tag `V001` of that same AOI is priced at 104 B in Controller Tags. One
+of the two views is leaving out the per-instance overhead the tag sizer charges. Fix so
+both views give the instance tag's figure. The README deliberately shows the definition page
+and the instance tag, not the instance view, until then.
+
 ### 0a. Operand spelling — DONE, 2.86% → 1.66%
 
 The operand-type surcharge and the tag-driven index cost were charged only on bare tag

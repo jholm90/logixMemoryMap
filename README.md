@@ -5,12 +5,12 @@
 **Point it at an L5X export. See exactly where every byte of your controller's memory
 budget is going — before a download fails with "memory full".**
 
-![The whole controller at a glance: tags, tasks, programs, I/O, AOIs and UDTs, each drawn to scale](docs/images/overview.png)
+![The whole controller at a glance, in dark mode: axes, tags, tasks, programs, I/O, AOIs and UDTs, each drawn to scale](docs/images/overview.png)
 
-Tags, UDTs, Add-On Instructions, I/O modules, alarm conditions and compiled ladder logic, all
-laid out as one drillable treemap where **area is memory**. The 400-element recipe array
-hiding in the top-left corner above is using a quarter of everything this controller is
-doing. That is the kind of thing this tool exists to find.
+Tags, UDTs, Add-On Instructions, Kinetix axes, I/O modules, alarm conditions and compiled
+ladder logic, all laid out as one drillable treemap where **area is memory**. The recipe
+array in the middle of the picture above is one tag declaration, and it is using a sixth of
+everything this controller does. That is the kind of thing this tool exists to find.
 
 ---
 
@@ -27,11 +27,14 @@ The L5X Memory Analyzer replaces the hunt with a picture:
   that grew for ten years — they stand out immediately.
 - 🧭 **Drill from the whole controller down to a single REAL.** Controller → task →
   program → routine → rung, or tag → array element → member → the byte.
+- ⚙️ **See motion and I/O for what they cost.** Every Kinetix axis, drive, bus supply,
+  VFD and Ethernet device is its own tile, sized.
 - 📏 **Plan before you buy.** See how full a 1756-L81E would be before you order one, or
   how much headroom a migration leaves.
 - 🧾 **Export the evidence.** Every number goes to CSV or XLSX for the design review.
 - 🔌 **Works offline.** A single Python process and a browser tab. No cloud, no licence
   server, no Studio 5000 install required. Built for air-gapped OT workstations.
+- 🌙 **Light or dark.** Follows your operating system, or flip it with one click.
 
 ---
 
@@ -39,19 +42,27 @@ The L5X Memory Analyzer replaces the hunt with a picture:
 
 ### 1. The budget bar — your controller's fuel gauge
 
-![Header zoomed: file name, firmware, catalog, and the memory budget bar](docs/images/zoom_header.png)
+![Header zoomed: file name, firmware, catalog, theme switch, and the memory budget bar](docs/images/zoom_header.png)
 
 The moment a file opens, the header shows the controller catalog, the firmware, and a
-budget bar for **that catalog's real capacity**. Here: 344.1 KB of a 1756-L81E's 3.00 MB,
-11.2%, counted in the same blocks Studio 5000's Capacity tab uses.
+budget bar for **that catalog's real capacity**. Here: 504.1 KB of a 1756-L81E's 3.00 MB,
+16.41%, counted in the same blocks Studio 5000's Capacity tab uses. The ☀ / ☾ button beside
+it switches between dark and light.
 
-### 2. Hover anything
+### 2. Hover anything, at any depth
 
-![Tooltip zoomed: RecipeHistory, RecipeRecord[400], 84.5 KB, 24.5% of the controller](docs/images/zoom_tooltip.png)
+Every tile answers three questions: **what is it, how big is it, and what share is it** —
+of the level you are looking at *and* of the whole controller. The two bars tell different
+stories the deeper you go:
 
-Every tile answers the three questions that matter: **what is it, how big is it, and what
-share of the controller is it?** The recipe history above is 86,488 blocks, 24.55% of the
-whole controller, from a single tag declaration.
+| | |
+|:---:|:---:|
+| ![RecipeHistory: 84.5 KB, 54.3% of Controller Tags, 16.75% of the controller](docs/images/tip_recipe.png) | ![An axis: AXIS_CIP_DRIVE, 22.2 KB, 14.2% of Axis Definitions, 4.40% of the controller](docs/images/tip_axis.png) |
+| **The hog.** Over half of all controller tags, a sixth of the controller. | **A servo axis.** 22.2 KB each — axes are not free. |
+| ![A Kinetix drive module: 2198-D057-ERS3, 3.6 KB, 10.9% of I/O Modules](docs/images/tip_drive.png) | ![A rung: its full ladder text, 80 B, 2.0% of its routine](docs/images/tip_rung.png) |
+| **A Kinetix 5700 drive.** Catalog number, size, share of the I/O tree. | **A single rung,** with its ladder text and its estimated compiled size. |
+| ![A UDT member: Setpoints, REAL[32], 128 B, 60.1% of its record](docs/images/tip_member.png) | ![Free space: 2.51 MB, 83.6% of controller capacity](docs/images/tip_free.png) |
+| **One member of one record.** 60% of the record, 0.02% of the controller. | **The room you have left,** as a share of the controller's capacity. |
 
 ### 3. Drill in. Then keep drilling.
 
@@ -60,6 +71,11 @@ where you came from.
 
 ![Breadcrumb zoomed: All › Controller Tags › RecipeHistory › [0]](docs/images/zoom_breadcrumb.png)
 
+**Into the controller tags.** The recipe array dominates. The sixty small tiles on the
+right are valve AOI instances, and each opens up in turn.
+
+![Controller Tags opened: the recipe array and sixty AOI instances](docs/images/drill_tags.png)
+
 **Into one record of the array.** Here is `RecipeHistory[0]`, member by member: a
 `REAL[32]` of setpoints, a `DINT[16]` of piece counts, the scalar fields, and even the
 **hidden SINT that Logix packs the UDT's BOOLs into**, laid out the way the controller
@@ -67,11 +83,36 @@ lays them out.
 
 ![One UDT array element, member by member, including the hidden BOOL-packing SINT](docs/images/drill_record.png)
 
-**Into one member.** Keep going and every element of `Setpoints` is its own 4-byte tile.
+### 4. Motion and I/O, priced module by module
 
-![Every REAL in a member array as its own 4-byte tile](docs/images/drill_member.png)
+Open **I/O Modules** and every device on the network has its own tile: a Kinetix 5700 bus
+supply, three dual-axis drives, a PowerFlex 525 and a generic Ethernet adapter. The six
+servo axes and the bus converter axis live under **Axis Definitions**, where each
+`AXIS_CIP_DRIVE` shows what it really costs.
 
-### 4. Ladder logic, priced rung by rung
+![I/O Modules opened: PowerFlex 525, Kinetix drives and supply, generic Ethernet device](docs/images/drill_modules.png)
+
+![I/O module list: every device with its catalog number, bytes and share](docs/images/list_modules.png)
+
+### 5. An AOI's definition vs. its instances
+
+An Add-On Instruction costs memory in **two places**, and the tool shows both.
+
+The **definition** is paid once, however many instances you create: its base overhead,
+its parameter and local-tag table, and its compiled internal logic.
+
+| | |
+|:---:|:---:|
+| ![Valve_Ctrl definition opened: overhead, the Logic routine and the parameter table](docs/images/aoi_definition.png) | ![Instance V001 opened: its parameter and local-tag data](docs/images/aoi_instance.png) |
+| **Definition** `Valve_Ctrl`: 1.4 KB, paid once. | **Instance** `V001`: 104 B, paid sixty times over. |
+| ![Tooltip on the Valve_Ctrl definition: 1.4 KB, 1 routine](docs/images/tip_aoi_definition.png) | ![Tooltip on instance V001: 104 B, 0.1% of Controller Tags](docs/images/tip_aoi_instance.png) |
+
+**Cross-Reference** lists every instance of the AOI, and every path is a link straight to
+it in the treemap:
+
+![Cross-reference for Valve_Ctrl: sixty usages, each a link](docs/images/xref_aoi.png)
+
+### 6. Ladder logic, priced rung by rung
 
 Open a program, then a routine, and every rung becomes a tile labelled with its
 instructions and its estimated compiled size.
@@ -88,59 +129,56 @@ The fat rungs are the ones worth rewriting.
 > every screen, in every mode. Tag, UDT and AOI data space is *calculated*, and carries no
 > such mark.
 
-### 5. See the whole tree at once
+### 7. The List — every item, ranked
 
-Turn **Depth** up and the treemap nests as many levels as you ask for. Programs open into
-routines, racks open into their POINT I/O cards, and arrays open into their elements, all
-in one view.
+The **List** tab ranks everything at the current level by bytes, with its share of its
+parent and of the whole controller. Filter by name or type, and sort by any column.
 
-![Depth 4: programs into routines, racks into cards, arrays into elements, all at once](docs/images/depth4.png)
+**Controller tags**, the hog first, then the sixty valve instances:
 
-### 6. How much room is left?
+![List of controller tags: RecipeHistory at 86,488 bytes, then V001-V030 at 104 each](docs/images/list_tags.png)
 
-Tick **Show Empty Space** and the controller's free memory becomes a tile of its own. It is
-the fastest way to explain headroom to someone who does not read hex.
+**The rungs of one routine**, largest first — the rewrite candidates, in order:
 
-![Free space shown as a tile: 2.66 MB unused beside everything that is used](docs/images/empty_space.png)
+![List of rungs in a routine, sorted by bytes](docs/images/list_rungs.png)
 
-### 7. Picture and numbers, side by side
-
-**⊞ Details** docks a sortable table next to the treemap. It follows every drill-down.
+**⊞ Details** docks the same table beside the treemap and follows every drill-down, and
+**Type Summary** rolls the level up by kind:
 
 ![Treemap with the details list docked alongside](docs/images/details_dock.png)
 
-The **List** view ranks every item at the current level by bytes, with its share of its
-parent and of the whole controller. Filter by name or type.
+![Type summary: share of the controller by kind](docs/images/type_summary.png)
 
-![List view zoomed: name, type, bytes, % of parent, % of controller](docs/images/zoom_list.png)
+### 8. See the whole tree at once
 
-**Type Summary** rolls the same level up by kind, which answers "is it tags or is it logic?"
-in one glance.
+Turn **Depth** up and the treemap nests as many levels as you ask for. Programs open into
+routines, arrays into their elements and AOI instances into their members, all in one view.
 
-![Type summary: tag scope, task, folder, project overhead, AOI, UDT](docs/images/type_summary.png)
+![Depth 4: programs into routines, arrays into elements, all at once](docs/images/depth4.png)
 
-### 8. Where is this type used?
+### 9. How much room is left?
 
-Select a UDT or AOI and **Cross-Reference** lists every place it is instantiated: controller
-tags, program tags, nested members. Every path is a link straight to it in the treemap.
+Tick **Show Empty Space** and the controller's free memory becomes a neutral grey tile beside
+everything the project uses. It is the fastest way to explain headroom to someone who does
+not read hex.
 
-![Cross-reference for RecipeRecord: every usage, its scope, and how it is reached](docs/images/xref.png)
+![Free space as a grey tile: 2.51 MB unused beside everything that is used](docs/images/empty_space.png)
 
-### 9. A tool that tells you what it doesn't know
+### 10. A tool that tells you what it doesn't know
 
 Most estimators give you one confident number. This one tells you **how much of that number
 to trust**.
 
-![File confidence card zoomed: 94.0%, split into Exact, Measured and Unverified](docs/images/zoom_confidence.png)
+![File confidence card zoomed: 97.8%, split into Exact, Measured, Approximate and Unverified](docs/images/zoom_confidence.png)
 
 The **File confidence** card splits the prediction by evidence: **Exact** (calculated from
-known sizes), **Measured** (fitted and checked against real controller readings), and
-**Unverified**. Anything the model cannot price is listed by name and never silently
-counted as zero: here, POINT I/O cards on a rack-optimized connection.
+known sizes), **Measured** (fitted and checked against real controller readings),
+**Approximate** and **Unverified**. Anything the model cannot price is listed by name and
+never silently counted as zero. This demo prices everything:
 
-![Errors tab: the confidence card and every unpriced item listed with the reason](docs/images/errors.png)
+![Errors tab: 0 errors, nothing went unpriced in this file](docs/images/errors.png)
 
-Source-protected routines and AOIs get the same treatment. The tool prices what it can see
+Source-protected routines and AOIs get the same honesty. The tool prices what it can see
 (the interface, the instances, the calls) and raises a red **MINIMUM** banner, because
 nobody can see inside the encryption.
 
@@ -148,6 +186,13 @@ Add `?ConfidenceMode=true` to the address and the whole treemap is recoloured by
 band, so the estimated parts of a project are visible at a glance.
 
 ![Confidence mode: every tile coloured by how well its size is known](docs/images/confidence_mode.png)
+
+### 11. Light or dark
+
+Dark mode follows your operating system automatically, and the ☀ / ☾ button in the header
+overrides it. The choice is remembered per browser.
+
+![The same controller in light mode](docs/images/overview_light.png)
 
 ---
 
@@ -249,9 +294,12 @@ Without installing, run the same subcommands from `src/` as
 
 ## The screenshots
 
-Every picture above comes from a **synthetic demo project**, not a customer file. It has five
-POINT I/O racks, four production-line programs of machine stations, a valve AOI with sixty
-instances, and one deliberately oversized recipe array. Rebuild it and explore it yourself:
+Every picture above comes from a **synthetic demo project**, not a customer file: a Kinetix
+5700 bus (P208 supply, three dual-axis drives, six servo axes), a PowerFlex 525, a generic
+Ethernet device, four production-line programs of machine stations, a valve AOI with sixty
+instances, and one deliberately oversized recipe array. Every module and axis in it is built
+from blocks that compiled with zero errors in Studio 5000, and it opens with **zero unpriced
+items** — the build script refuses to write it otherwise. Rebuild it and explore it yourself:
 
 ```bash
 python scripts/build_demo_project.py
