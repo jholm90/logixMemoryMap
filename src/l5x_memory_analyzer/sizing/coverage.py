@@ -37,7 +37,11 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 from l5x_memory_analyzer.parser.alarms import parse_alarm_conditions
-from l5x_memory_analyzer.parser.logic import count_instructions_in_text, routine_language
+from l5x_memory_analyzer.parser.logic import (
+    canonical_rung_text,
+    count_instructions_in_text,
+    routine_language,
+)
 
 # Priced outside logic_instructions.weights -- see the module docstring.
 _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
@@ -155,7 +159,7 @@ def _rung_texts(routine_el: ET.Element) -> list[str]:
     if rll is None:
         return []
     return [
-        rung_el.find("Text").text or ""
+        canonical_rung_text(rung_el.find("Text").text or "")
         for rung_el in rll.findall("Rung")
         if rung_el.find("Text") is not None
     ]

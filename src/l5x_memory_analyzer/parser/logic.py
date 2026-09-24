@@ -30,6 +30,30 @@ from dataclasses import dataclass, field
 # double-charged.
 _INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
 
+# v36+ comparison mnemonics (OQ-V36MNEMONIC). From v36 the ladder comparisons
+# are spelled GE/GT/LE/LT/EQ/NE where v35 and earlier spell them GEQ/GRT/LEQ/
+# LES/EQU/NEQ. Every weight, operand-type surcharge and destination table in
+# this project is keyed by the v35 spelling, so rung text is rewritten to it
+# once, where it is read, and a v36+ file prices exactly like the same program
+# at v35. Only GEQ -> GE is a stated fact; the other five are the same
+# renaming carried across the family and are unconfirmed until a v36+ export
+# or the v38 spelling-discriminator captures show them. A file-declared AOI of
+# the same name wins over the rename.
+V36_MNEMONIC_ALIASES = {
+    "GE": "GEQ", "GT": "GRT", "LE": "LEQ", "LT": "LES", "EQ": "EQU", "NE": "NEQ",
+}
+_V36_CALL = re.compile(r"(?<![A-Za-z0-9_.\]])(GE|GT|LE|LT|EQ|NE)(?=\()")
+
+
+def canonical_rung_text(text: str, aoi_names: frozenset[str] = frozenset()) -> str:
+    """Rung text with every v36+ comparison mnemonic spelled the v35 way."""
+    if "(" not in text:
+        return text
+    return _V36_CALL.sub(
+        lambda m: m.group(1) if m.group(1) in aoi_names else V36_MNEMONIC_ALIASES[m.group(1)],
+        text,
+    )
+
 # JSR's own target-routine name (first argument) -- see JSR_TARGET_ROUTINES
 # below for why this needs its own extraction, not just an instruction count.
 _JSR_TARGET = re.compile(r"\bJSR\(\s*([A-Za-z_][A-Za-z0-9_]*)")
@@ -906,7 +930,7 @@ def parse_rll_routines(
                 for rung_el in rll_content.findall("Rung"):
                     text_el = rung_el.find("Text")
                     if text_el is not None and text_el.text:
-                        rung_texts.append(text_el.text)
+                        rung_texts.append(canonical_rung_text(text_el.text, aoi_names))
             per_routine_rung_texts[routine_name] = rung_texts
 
         program_jsr_targets: set[str] = set()
@@ -990,7 +1014,7 @@ def parse_aoi_internal_logic(
             for rung_el in rll_content.findall("Rung"):
                 text_el = rung_el.find("Text")
                 if text_el is not None and text_el.text:
-                    rung_texts.append(text_el.text)
+                    rung_texts.append(canonical_rung_text(text_el.text, declared_aoi_names))
         if not rung_texts:
             continue
         aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(

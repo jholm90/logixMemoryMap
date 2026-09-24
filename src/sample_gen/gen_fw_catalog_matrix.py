@@ -97,7 +97,7 @@ from datetime import datetime
 from pathlib import Path
 
 from sample_gen.manifest import append_manifest_row, write_sample, write_sample_unmodeled
-from sample_gen.wrapper import _1769_bus_size, _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
+from sample_gen.wrapper import L9X_PRODUCT_CODES, _1769_bus_size, _5069_bus_size, _ICP_BUS_SIZE, _PRODUCT_CODES
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "fw_catalog_matrix"
 
@@ -319,12 +319,7 @@ def _1769_module_xml(catalog: str, major_rev: str) -> str:
 #     datatype-level alarm template distinct from the tag-level
 #     AlarmCondition this project already prices. Unmodelled; see
 #     OQ-ALARMDEF.
-_L9X_PRODUCT_CODES = {
-    "1756-L902TS": 316,
-    "1756-L905TS": 317,
-    "1756-L908TS": 319,
-    "1756-L915TS": 320,
-}
+_L9X_PRODUCT_CODES = L9X_PRODUCT_CODES
 _L9X_CATALOGS = list(_L9X_PRODUCT_CODES)
 
 _L8XS_PRODUCT_CODES = {

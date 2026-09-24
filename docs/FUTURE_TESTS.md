@@ -152,6 +152,14 @@ firmware matrix and the alarm-definition batch). No content has been measured on
 no L9 capacity budget is known (OQ-L9BUDGET), and no real L9 program has a reading. The
 model is fitted on 1756-L81E at v35.
 
+**Stages 1–4 are BUILT** (`gen_l9_v38.py`, `samples/generated/l9v38/`, 102 files, awaiting
+capture) — widened from the 36 below so every content item has all three arms side by
+side: 1756-L81E v35 (control), 1756-L81E v38, 1756-L908TS v38, on the realism baseline.
+Stage 3 is 21 instructions (LEQ added so all six v36 renames are present), and six
+spelling discriminators test the v36 comparison renames (OQ-V36MNEMONIC). The v35 arm is
+rebuilt rather than taken from the old isolation captures, because those predate the
+realism floor. See OQ-L9PLATFORM. Stage 0 (budget readings) is still a bench job.
+
 **Why it is two unknowns, not one.** An L9 cannot run v35, so an L9 file differs from
 every existing capture in platform *and* firmware at once. The 5069 precedent
 (OQ-REAL5069: identical content at five densities, byte-identical residuals, so the

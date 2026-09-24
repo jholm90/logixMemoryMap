@@ -873,6 +873,13 @@ measurement** — an exact linear fit, not a loose regression.
 Logic entries are emitted at estimated tier, separate from the exact tier that
 tag and UDT entries use, per the ground-truth constraint in `CLAUDE.md`.
 
+### v36+ comparison spelling — WIRED, unconfirmed beyond GEQ
+
+From v36 the comparisons are spelled GE, GT, LE, LT, EQ, NE. Every weight, surcharge
+and destination table is keyed by the v35 spelling (GEQ, GRT, LEQ, LES, EQU, NEQ), so
+rung text is respelled to v35 where it is read and both spellings cost the same. No
+constant is involved. OQ-V36MNEMONIC.
+
 ### Two things to understand before using the table
 
 **The raw and isolated columns differ, and the isolated one is what the engine
