@@ -1191,8 +1191,30 @@ conditions and one OTE fixed and varying only the arrangement across 1, 2, 4 and
 ### Indirect addressing — WIRED
 
 A direct array index costs nothing beyond existing indexed-tag handling. A
-**tag-driven** index costs roughly 84 per rung and an **arithmetic-offset
-tag-driven** index roughly 108.
+**tag-driven** index costs 84 per index (KNOWN) and an **arithmetic-offset
+tag-driven** index 108 (KNOWN) — calibrated on a bare `DINT[20]`.
+
+**What the index selects adds to that** (OQ-INDIRECTUDT, realism floor, each file
+against its literal-index twin); the element's size does not matter:
+
+| after the index | extra | confidence |
+|---|---:|---|
+| a member, `Arr[Idx].M` (elements of 4, 8, 12, 76 bytes; MOV, EQU, XIC on a BOOL member) | **+40** | KNOWN, 6 files |
+| nothing, on a BOOL array, `Bits[Idx]` | **+20** | FITTED, 1 file |
+| nothing, on a STRING array, `Strs[Idx]` | **+108** | FITTED, 1 file |
+| a bit, `Arr[Idx].3` / `Arr[Idx].[Bit]` | 0 (unmeasured) | — |
+
+### Mixed operand types in one call — FITTED
+
+A typed instruction whose operands mix types pays conversions (OQ-MIXEDTYPE):
+
+- **DINT with REAL:** the instruction's REAL surcharge, **+52** per DINT source,
+  and a DINT destination **+40** (**+48** on MOV).
+- **DINT with INT:** **+52** per INT operand, **+8** when an INT is a source.
+- Any other mix: the first resolvable operand's surcharge, as before.
+
+Measured: MOV(D→R) 76, MOV(R→D) 72, ADD(D,R,R) 68, ADD(R,D,D) 108, GRT(R,D) 68,
+MOV(I→D) 60, MOV(D→I) 52, GRT(I,D) 60 — all eight exact under the law.
 
 ### Cross-program references
 

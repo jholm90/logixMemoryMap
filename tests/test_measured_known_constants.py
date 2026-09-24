@@ -30,6 +30,14 @@ def _raw() -> dict:
 # (dotted path to the value, expected value, dotted path to its tier, rows, spans)
 KNOWN_REGISTER = [
     (
+        "indirect_index.member_access_cost", 40,
+        "indirect_index.member_access_confidence", 6,
+        "opsp_ind_mov_e04/e08/e12/e76_idx, opsp_ind_equ_e76_idx and opsp_ind_xicmem_idx "
+        "against their literal-index twins, 500 rungs each on the realism floor: "
+        "every one +40 per index over the 84 index cost, element size irrelevant; "
+        "OQ-INDIRECTUDT",
+    ),
+    (
         "logic_instructions.fixed_base_per_routine", 4816,
         "logic_instructions.fixed_base_per_routine_confidence", 12,
         "empty-project baseline plus subrtn_shell/sbronly/sbrret at 1/5/25/100 "

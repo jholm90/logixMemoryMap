@@ -14,8 +14,12 @@ evidence that counts.
 ### Current — after the capture batch that followed the blind set
 
 **Standard processors only — eighteen real programs present: mean absolute error
-1.79%, worst 4.83%.** The eighteenth (export 43) came with its reading, so it is a
-fitting input, at −2.66%. The original seventeen read 1.74% after OQ-BRIDGEPH priced
+0.77%, worst 3.87%, 14 of 18 inside 1%.** The mean half of the stopping rule is met;
+the max is not (export 33, source-protected routines). From 1.79% / 4.83% by wiring
+OQ-INDIRECTUDT (what a tag-driven index selects: member +40, BOOL element +20, STRING
+element +108) and OQ-MIXEDTYPE (DINT↔REAL / DINT↔INT conversions inside one call),
+both measured on the realism floor, no generated exact row moved. The eighteenth
+(export 43) came with its reading, so it is a fitting input. The original seventeen read 1.74% after OQ-BRIDGEPH priced
 childless ETHERNET-BRIDGE placeholders at their measured 320 instead of the flat 2,344,
 removing an over-charge that hid under-prediction; 1.66% before that, and 2.86% / 5.42%
 before operand types and member-path indexes were resolved through every spelling (see

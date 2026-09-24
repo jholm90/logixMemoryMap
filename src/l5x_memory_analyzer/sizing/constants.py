@@ -584,9 +584,38 @@ class CptExpressionModel:
 class OperandTypeSurchargeModel:
     confidence: str
     surcharges: dict[str, dict[str, int]]  # instruction -> {atomic_type: extra bytes/call}
+    # OQ-MIXEDTYPE: a call whose operands mix DINT with REAL, or DINT with INT.
+    # See memory_model.yaml operand_type_surcharge.mixed.
+    mixed: dict = field(default_factory=dict)
 
     def surcharge_for(self, mnemonic: str, atomic_type: str) -> int:
         return self.surcharges.get(mnemonic, {}).get(atomic_type, 0)
+
+    def mixed_surcharge_for(self, mnemonic: str, types: list[str | None],
+                            dest_index: int | None) -> int | None:
+        """Surcharge for a call mixing DINT with REAL or with INT; None when
+        the mix is not one that has been measured (the caller then falls back
+        to the first resolvable operand, as before)."""
+        known = {t for t in types if t}
+        if not self.mixed or len(known) != 2 or "DINT" not in known:
+            return None
+        other = (known - {"DINT"}).pop()
+        is_dest = [i == dest_index for i in range(len(types))]
+        if other == "REAL":
+            total = self.surcharge_for(mnemonic, "REAL")
+            for t, dest in zip(types, is_dest):
+                if t == "DINT" and not dest:
+                    total += self.mixed["real_dint_source"]
+                elif t == "DINT" and dest:
+                    total += (self.mixed["real_dint_dest_mov"] if mnemonic == "MOV"
+                              else self.mixed["real_dint_dest"])
+            return total
+        if other == "INT":
+            total = sum(self.mixed["int_operand"] for t in types if t == "INT")
+            if any(t == "INT" and not dest for t, dest in zip(types, is_dest)):
+                total += self.mixed["int_source"]
+            return total
+        return None
 
 
 @dataclass(frozen=True)
@@ -594,6 +623,24 @@ class IndirectIndexModel:
     confidence: str
     tag_index_cost: int
     tag_offset_index_cost: int
+    # OQ-INDIRECTUDT: extra cost by what the indexed element is. See
+    # memory_model.yaml indirect_index.
+    member_access_cost: int = 0
+    bool_element_cost: int = 0
+    string_element_cost: int = 0
+
+    def element_cost_for(self, follows: str, element_type: str | None) -> int:
+        """On top of cost_for(kind): a member after the index, or an indexed
+        BOOL / STRING element. A bit after the index is unmeasured (0)."""
+        if follows == "member":
+            return self.member_access_cost
+        if follows:
+            return 0
+        if element_type == "BOOL":
+            return self.bool_element_cost
+        if element_type == "STRING":
+            return self.string_element_cost
+        return 0
 
     def cost_for(self, kind: str) -> int:
         if kind == "tag":
@@ -1634,11 +1681,15 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                     instr: dict(types)
                     for instr, types in raw["operand_type_surcharge"]["surcharges"].items()
                 },
+                mixed=dict(raw["operand_type_surcharge"].get("mixed") or {}),
             ),
             indirect_index=IndirectIndexModel(
                 confidence=raw["indirect_index"]["confidence"],
                 tag_index_cost=raw["indirect_index"]["tag_index_cost"],
                 tag_offset_index_cost=raw["indirect_index"]["tag_offset_index_cost"],
+                member_access_cost=raw["indirect_index"].get("member_access_cost", 0),
+                bool_element_cost=raw["indirect_index"].get("bool_element_cost", 0),
+                string_element_cost=raw["indirect_index"].get("string_element_cost", 0),
             ),
             cmp_surcharge=CmpSurchargeModel(
                 compound_confidence=raw["cmp_surcharge"]["compound_confidence"],

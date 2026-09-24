@@ -2357,6 +2357,24 @@ cpt_expression:
 # an honest "don't know" rather than a wrong guess.
 operand_type_surcharge:
   confidence: FITTED
+  # OQ-MIXEDTYPE, measured on the realism floor (opsp_mixed_*, 500 rungs each,
+  # against the DINT control of the same instruction; bytes per call):
+  #   MOV(DINT->REAL) 76   MOV(REAL->DINT) 72   ADD(D,R,R) 68   ADD(R,D,D) 108
+  #   GRT(REAL,DINT)  68   MOV(INT->DINT)  60   MOV(DINT->INT) 52   GRT(INT,DINT) 60
+  # DINT with REAL: the instruction's REAL surcharge, plus 52 for each DINT
+  #   source converted up, plus a DINT destination converted down (40; 48 on MOV).
+  #   The 52 is exact three ways (76-24, 68-16, 68-16); each destination value
+  #   rests on one file.
+  # DINT with INT: 52 for each INT operand, plus 8 when an INT is a source.
+  #   Uniform INT is already in the table (MOV 104 = 2 x 52, ADD 156 = 3 x 52).
+  # Any other mix (REAL with INT, SINT, ...) is unmeasured and keeps the old
+  # rule: the first resolvable operand decides.
+  mixed:
+    real_dint_source: 52
+    real_dint_dest: 40
+    real_dint_dest_mov: 48
+    int_operand: 52
+    int_source: 8
   surcharges:
     ADD: {SINT: 132, INT: 156, REAL: 16}
     SUB: {SINT: 132, INT: 156, REAL: 16}
@@ -2386,10 +2404,28 @@ operand_type_surcharge:
 # `Arr[Stn.Idx+1]`); parser/logic.py prices it as the same tag-driven index.
 # 2,700 real occurrences; real set 1.98% -> 1.66%, no generated row moved.
 # Calibrated on `MOV(Arr[Idx],Dest)` with a DINT[20] only -- OQ-INDIRECTUDT.
+#
+# OQ-INDIRECTUDT: WHAT is indexed matters; its size does not. Measured on the
+# realism floor, 500 rungs each, every idx file against its literal-index twin
+# (opsp_ind_*):
+#   Arr[Idx].Member, element 4 / 8 / 12 / 76 bytes, MOV and EQU,
+#     and a BOOL member by XIC                  124 per index   (84 + 40)
+#   BoolArr[Idx] by XIC                        104             (84 + 20)
+#   StrArr[Idx] by MOV (opsp_str_movidx vs the plain STRING MOV)
+#                                               192             (84 + 108)
+# member_access_cost is KNOWN: five files, four element sizes, three
+# instructions, identical to the byte. bool_element_cost and
+# string_element_cost are one file each: FITTED. A bit after the index
+# (`Arr[Idx].3`, `Arr[Idx].[Bit]`) is unmeasured and charged nothing extra.
 indirect_index:
   confidence: KNOWN
   tag_index_cost: 84
   tag_offset_index_cost: 108
+  member_access_cost: 40
+  member_access_confidence: KNOWN
+  bool_element_cost: 20
+  string_element_cost: 108
+  element_confidence: FITTED
 
 # CMP's own surcharges (wired). The existing flat CMP:76 below
 # is CONFIRMED EXACT for a single simple condition -- live-recomputed

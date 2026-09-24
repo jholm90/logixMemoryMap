@@ -47,9 +47,43 @@ are too small to carry the residual.
 Re-ranked after the capture batch that followed the blind set. That batch closed five
 questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
 by correcting the JSR caller base, exposed a larger real residual that a wrong
-constant had been hiding: **mean 2.86%, worst 5.42% (now 1.66% / 4.83% — operand spelling, below) on the seventeen standard-processor
-real programs**, all under-predicting.
+constant had been hiding: **mean 2.86%, worst 5.42% (now 0.77% / 3.87% on eighteen —
+operand spelling, then OQ-INDIRECTUDT and OQ-MIXEDTYPE, below) on the standard-processor
+real programs**.
 Every item below is aimed at that.
+
+### 0g. The 174-capture batch — DONE
+
+All 174 captured with zero build errors and no flagged reads (L9/v38 96, operand
+spelling 50, realism 16, program scope 12). Closed eight questions; wired two:
+- **OQ-INDIRECTUDT**: an index followed by a member +40 (KNOWN), a BOOL element +20,
+  a STRING element +108 (FITTED).
+- **OQ-MIXEDTYPE**: DINT↔REAL and DINT↔INT conversions per operand (FITTED).
+Real set 1.79% → **0.77%** mean, 4.83% → **3.87%** worst; full census: no exact or
+within-8 generated row moved. Confirmed without wiring: program scope is free;
+the plant prices exactly at 25% and 50% fill; POINT I/O address = BOOL = alias;
+REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L81E
+v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
+unwired (OQ-SERIESREAL).
+
+### Next batch — SPECIFIED, NOT BUILT (ask before generating)
+
+Each answers a still-open item; v35 / 1756-L81E, realism floor.
+1. **OQ-SERIESREAL, branch legs with their own conditions** — 6 files, 1,600 unique
+   output BOOLs each: `[XIC(a)OTE(x),XIC(b)OTE(y)]` with k = 2, 4, 8 legs, against the
+   same outputs as k single-output rungs (k01) and as `XIC(c)[OTE…]` (the measured
+   output-only form). Discriminates: whether −12 applies when every leg has its own
+   condition, the one real shape never built.
+2. **Sixth POINT I/O rack over-predicted by 826** (`l9v38_m_pointio`) — 4 files: the
+   baseline plus 1, 2, 4 extra RACK_n racks. Discriminates a per-rack repeat discount
+   (AENTR/C or card) from a one-off. Differenced against `realism_base_f25`.
+3. **Generic ETHERNET-MODULE under by 440** (`l9v38_m_geneth`, also +392 on the
+   near-empty capture) — 3 files: 1, 2, 4 modules of 8/8 SINT. Separates a per-module
+   overhead from the connection-data law. ETHERNET-MODULE is 25% of real modules.
+4. ~~INT member alignment~~ — **dropped, below the floor in bytes.** 2,716 real typed
+   calls carry an INT member operand (0.63% of 431,798 real instructions), but at +4
+   each that is about 11 KB across every real export, ~0.02% of bytes.
+Plus the 7 `bridgeph_*` files already built (OQ-BRIDGEPH), not yet converted.
 
 ### 0f. Export 43 — bridge placeholders, POINT I/O notices, indirect-bit usage — DONE, capture pending
 
