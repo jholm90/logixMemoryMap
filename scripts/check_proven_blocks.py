@@ -29,8 +29,28 @@ _MODULE = re.compile(r'<Module Name="[^"]*" CatalogNumber="2198-[^"]*".*?</Modul
 _AXIS = re.compile(r'<Tag Name="[^"]*" TagType="Base" DataType="AXIS_CIP_DRIVE".*?</Tag>', re.S)
 
 
+# The Local module port a controller's Ethernet children hang off: 2 on a
+# single-port 1756, 4 on a dual-port 1756-L9x (sample_gen.wrapper). A block
+# parented to THAT port is written with a token instead of the number, so a
+# proven L8 block re-parented for an L9 still matches -- and a block parented
+# to any other port still does not.
+_LOCAL_ETHERNET_PORT = re.compile(r'<Module Name="Local"[^>]*>.*?</Module>', re.S)
+_ETHERNET_PORT_ID = re.compile(r'<Port Id="(\d+)"[^>]*Type="Ethernet"')
+
+
+def _controller_ethernet_port(text: str) -> str | None:
+    local = _LOCAL_ETHERNET_PORT.search(text)
+    ids = _ETHERNET_PORT_ID.findall(local.group(0)) if local else []
+    return ids[-1] if ids else None
+
+
 def blocks(text: str) -> list[str]:
-    return _MODULE.findall(text) + _AXIS.findall(text)
+    found = _MODULE.findall(text) + _AXIS.findall(text)
+    port = _controller_ethernet_port(text)
+    if port is None:
+        return found
+    own = f'ParentModule="Local" ParentModPortId="{port}"'
+    return [b.replace(own, 'ParentModule="Local" ParentModPortId="<ethernet>"', 1) for b in found]
 
 
 def normalise(block: str) -> str:

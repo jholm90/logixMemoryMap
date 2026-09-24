@@ -21,6 +21,7 @@ reference to get right.
 from __future__ import annotations
 
 import re
+import uuid
 from datetime import datetime
 
 from sample_gen.builders import validate_logix_name
@@ -46,6 +47,28 @@ DEFAULT_SOFTWARE_REVISION = "35.05"
 # Real, Studio-5000-confirmed values for 1756-L81E (export).
 _PRODUCT_CODE = "164"
 _ICP_BUS_SIZE = "17"
+
+# ControlLogix 5590 (1756-L9xTS). ProductCodes read from the four real blank
+# v38 exports; gen_fw_catalog_matrix.py takes its table from here. The family
+# is v38-era: none of the four is older, and build_l5x refuses an L9 below it.
+L9X_PRODUCT_CODES = {
+    "1756-L902TS": 316,
+    "1756-L905TS": 317,
+    "1756-L908TS": 319,
+    "1756-L915TS": 320,
+}
+L9X_MIN_MAJOR_REV = 38
+# The real L9 Local module: 1756 backplane (ICP, Bus Size 4) plus two embedded
+# Ethernet ports numbered 3 and 4, the 5069 numbering.
+_L9X_ICP_BUS_SIZE = "4"
+# Ethernet children of an L9 hang off port 4. The L9 blanks carry no modules,
+# so this follows the only dual-port family with real I/O on file: all five
+# real 5069 programs parent every Ethernet module to Local port 4.
+_L9X_ETHERNET_PORT = "4"
+# DataExchangeId: a controller attribute present in every real v38 export and
+# absent from every v35 one. The GUID is per-export, so it is derived from the
+# target name to keep regeneration byte-stable.
+_DATA_EXCHANGE_ID_FIRST_MAJOR = 38
 
 # Real 5069-family (Compact 5000, no separate chassis) Local-module Ports
 # shape, confirmed against samples/local/
@@ -306,6 +329,12 @@ def build_l5x(
     # assumed to share the same no-embedded-Ethernet shape by product
     # family, not independently confirmed.
     is_pre5580_1756 = bool(re.match(r"1756-L[67]\d", processor_type))
+    is_l9 = processor_type in L9X_PRODUCT_CODES
+    if is_l9 and (safety_level or int(major_rev) < L9X_MIN_MAJOR_REV):
+        raise ValueError(
+            f"build_l5x() builds {processor_type} as a standard controller at "
+            f"v{L9X_MIN_MAJOR_REV}+ only -- the real L9 exports on file are that and nothing else"
+        )
     if is_1769:
         # See _1769_bus_size's docstring above for the real corpus source.
         # SafetyNetwork handling mirrors the SIL2/is_5069 fix (same real
@@ -327,6 +356,18 @@ def build_l5x(
             f'<Port Id="2" Type="Ethernet" Upstream="false"{safety_net_attrs[1]}>\n<Bus/>\n</Port>'
         )
         local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+    elif is_l9:
+        local_ports_xml = (
+            f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
+            f'<Bus Size="{_L9X_ICP_BUS_SIZE}"/>\n'
+            f'</Port>\n'
+            f'<Port Id="3" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>\n'
+            f'<Port Id="4" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
+        )
+        local_product_code = str(L9X_PRODUCT_CODES[processor_type])
+        extra_modules_xml = re.sub(
+            r'(ParentModule="Local" ParentModPortId=")2(")',
+            rf"\g<1>{_L9X_ETHERNET_PORT}\g<2>", extra_modules_xml)
     elif is_5069:
         # BUG FOUND alongside the SIL2 fix below: this branch
         # is checked BEFORE safety_level, so a 5069-family safety project
@@ -447,8 +488,15 @@ def build_l5x(
             '<SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" '
             'ConfigureSafetyIOAlways="true" SafetyLevel="SIL2/PLd"/>'
         )
+    elif is_l9:
+        # Verbatim from the real L9 exports: capability stated as an attribute.
+        safety_info_xml = '<SafetyInfo SafetyEnabled="false"/>'
     else:
         safety_info_xml = '<SafetyInfo/>'
+    data_exchange_attr = (
+        f' DataExchangeId="{{{str(uuid.uuid5(uuid.NAMESPACE_URL, target_name)).upper()}}}"'
+        if int(major_rev) >= _DATA_EXCHANGE_ID_FIRST_MAJOR else ""
+    )
     # Format matches the real reference export exactly (Python's ctime-style
     # strftime): "Thu Aug 20 11:19:00 2026".
     now = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
@@ -461,16 +509,26 @@ def build_l5x(
     # Ethernet ports are configured (Dual-IP addressing) -- something
     # only a 5069 processor has (1756/1769 have at most one embedded
     # port), so it's correctly omitted for every other family.
-    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if is_5069 else ""
+    ethernet_ip_mode_attr = ' EtherNetIPMode="A1/A2: Dual-IP"' if is_5069 or is_l9 else ""
     # See is_pre5580_1756's definition above: samples/local/L7_v21_Sample.L5X
     # (real 1756-L71 export) has no Controller-level <EthernetPorts> element
     # at all -- this CPU has no embedded network port to describe.
     ethernet_ports_xml = "" if is_pre5580_1756 else (
         '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     )
+    # The real L9 exports: an A1/A2 port pair, <OpcUaInfo>, and no <DataLogs>.
+    datalogs_xml = "<DataLogs/>\n"
+    if is_l9:
+        ethernet_ports_xml = (
+            '<EthernetPorts>\n'
+            '<EthernetPort Port="1" Label="A1" PortEnabled="true"/>\n'
+            '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>\n'
+            '</EthernetPorts>\n<OpcUaInfo EnabledPorts=""/>\n'
+        )
+        datalogs_xml = ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr} AutoDiagsEnabled="true" WebServerEnabled="false">
+<Controller Use="Target" Name="{target_name}" ProcessorType="{processor_type}" MajorRev="{major_rev}" MinorRev="{minor_rev}" ProjectCreationDate="{now}" LastModifiedDate="{now}" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false"{ethernet_ip_mode_attr} AutoDiagsEnabled="true" WebServerEnabled="false"{data_exchange_attr}>
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 {safety_info_xml}
@@ -520,8 +578,7 @@ def build_l5x(
 <CST MasterID="0"/>
 <WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
 <Trends/>
-<DataLogs/>
-<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+{datalogs_xml}<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
 {ethernet_ports_xml}</Controller>
 </RSLogix5000Content>
 """

@@ -339,6 +339,10 @@ refuses a file with fewer than 5 Ethernet I/O nodes, under 25% of the controller
 predicted, or an output bit written twice. The first batch on it is
 `python -m sample_gen.gen_realism_batch`.
 
+**L9 and v38 side by side:** `python -m sample_gen.gen_l9_v38` (102 files, OQ-L9PLATFORM,
+OQ-V36MNEMONIC). A v36+ build respells its comparisons with
+`sample_gen.lint.to_v36_spelling(l5x)`; lint refuses the v36 spelling below v36.
+
 Grouped by area:
 
 **Tags and UDTs** — `batch2`, `mixed_udt`, `arraypack_boolarray`, `tagscope_alias`,

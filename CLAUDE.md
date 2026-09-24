@@ -89,8 +89,13 @@ against the existing captures without first subtracting a baseline difference th
 is itself only approximately known, which defeats the isolation test. Enforced by
 lint rather than left to each generator's defaults — **it has been violated twice,
 and both times the deviation looked justified at the moment it was made.** The
-exemptions are the firmware and catalog matrix generators, for which sweeping those
-fields is the variable under test.
+exemptions are the firmware and catalog matrix generators and the L9/v38 side-by-side
+batch (`PlatNine`), for which sweeping those fields is the variable under test.
+
+**From v36 the ladder comparisons are spelled GE/GT/LE/LT/EQ/NE** (v35: GEQ/GRT/LEQ/
+LES/EQU/NEQ). The parser prices both spellings identically; lint refuses the v36
+spelling on a pre-v36 file; a v36+ build respells with `lint.to_v36_spelling`. Only
+GEQ→GE is confirmed (OQ-V36MNEMONIC).
 
 **Every generated test file is built on the realism floor** (`sample_gen/realism.py`):
 **at least 5 Ethernet I/O nodes, at least 25% of the controller predicted, and no

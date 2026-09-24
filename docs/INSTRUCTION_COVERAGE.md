@@ -18,6 +18,13 @@ Real logic is extremely top-heavy: **4 mnemonics cover half of all
 occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
 individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
 
+## Spelling across firmware
+
+From v36 the six comparisons are spelled **GE, GT, LE, LT, EQ, NE** (v35: GEQ, GRT,
+LEQ, LES, EQU, NEQ). The engine reads either spelling as the same instruction, and the
+tables here use the v35 spelling. All seventeen real programs are v31–v35. Only GEQ→GE
+is a stated fact; the rest wait on OQ-V36MNEMONIC.
+
 ## What "weighted" and "accurate" each mean
 
 These are two different things and the table separates them.

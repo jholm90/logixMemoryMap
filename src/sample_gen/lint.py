@@ -106,6 +106,8 @@ from sample_gen.data.kinetix import (
 )
 from dataclasses import dataclass
 
+from l5x_memory_analyzer.parser.logic import V36_MNEMONIC_ALIASES
+
 # Every native instruction mnemonic this project has confirmed real via
 # the corpus scan (gen_logic_sweep.py's INSTRUCTIONS dict) plus JSR/LBL/JMP
 # (handled specially there, not simple single-rung patterns) and a handful
@@ -370,6 +372,50 @@ _PURE_CONDITION_INSTRUCTIONS = {
     # worth remembering when adding any future compare-like mnemonic.
     "DTR",
 }
+
+# v36+ comparison spellings (OQ-V36MNEMONIC): GE/GT/LE/LT/EQ/NE for the v35
+# GEQ/GRT/LEQ/LES/EQU/NEQ. The mapping lives in the parser, which prices both
+# spellings identically; here each new spelling is a known native comparison
+# on a v36+ controller and an unknown one on anything older.
+V36_SPELLINGS = dict(V36_MNEMONIC_ALIASES)
+_KNOWN_NATIVE_INSTRUCTIONS |= set(V36_SPELLINGS)
+_PURE_CONDITION_INSTRUCTIONS |= set(V36_SPELLINGS)
+_V36_FIRST_MAJOR = 36
+
+
+def to_v36_spelling(l5x_text: str) -> str:
+    """Every v35 comparison mnemonic in rung text rewritten the v36+ way.
+
+    Only CDATA rung bodies are touched, so a tag or member that happens to be
+    named EQU or GEQ is untouched unless it is written as a call."""
+    v35_to_v36 = {old: new for new, old in V36_SPELLINGS.items()}
+    call = re.compile(r"(?<![A-Za-z0-9_.\]])(" + "|".join(v35_to_v36) + r")(?=\()")
+
+    def rung(m: re.Match) -> str:
+        return m.group(1) + call.sub(lambda c: v35_to_v36[c.group(1)], m.group(2)) + m.group(3)
+
+    return re.sub(r"(<Text>\s*<!\[CDATA\[)(.*?)(\]\]>)", rung, l5x_text, flags=re.DOTALL)
+
+
+def _mnemonic_firmware_findings(root: ET.Element, rung_texts: list[str]) -> list[LintFinding]:
+    """A v36+ comparison spelling on a controller older than v36."""
+    controller = root.find("Controller")
+    major = controller.get("MajorRev") if controller is not None else None
+    if major is None or not major.isdigit() or int(major) >= _V36_FIRST_MAJOR:
+        return []
+    aoi_names = _declared_aoi_names(root)
+    findings = []
+    for text in rung_texts:
+        for mnemonic, _ in _call_sites(text):
+            if mnemonic in V36_SPELLINGS and mnemonic not in aoi_names:
+                findings.append(LintFinding(
+                    "v36_mnemonic_before_v36",
+                    f"'{mnemonic}(' is the v36+ spelling of {V36_SPELLINGS[mnemonic]}, on a "
+                    f"MajorRev {major} controller: {text.strip()!r}",
+                ))
+    return findings
+
+
 # Instructions that exist in Logix but CANNOT appear in a ladder (RLL)
 # routine -- they are Function Block / Structured Text only. Emitting one
 # into a rung produces a file Studio 5000 rejects, and no operand fiddling
@@ -968,6 +1014,10 @@ _PLATFORM_EXEMPT_NAME_PREFIXES = (
     # exempt. Its 1756-L81E arm is the control and stays on the
     # standard, so the batch still anchors to the rest of the corpus.
     "PlatEqL",
+    # gen_l9_v38.py: ControlLogix 5590 and firmware v38 against the
+    # 1756-L81E at v35 and v38, content held -- processor and firmware are
+    # the variables under test. Its l8v35 arm is the standard.
+    "PlatNine",
 )
 
 
@@ -1459,6 +1509,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     global_tag_types = _tag_types_from(root, "Tag")
     udt_members = _udt_member_types(root)
     findings.extend(_rung_missing_output_findings(rung_texts))
+    findings.extend(_mnemonic_firmware_findings(root, rung_texts))
     findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
     for program_el in root.iter("Program"):
         findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
