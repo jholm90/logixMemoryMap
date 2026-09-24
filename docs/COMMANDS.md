@@ -116,6 +116,28 @@ unattended, safe to leave running overnight.
 Parameters: `-ConvertLog` (required), `-ManifestPath`, `-HandoffPath`,
 `-OpenRequestPath`, `-TimeoutSeconds` (default 1200), `-Limit`.
 
+**Capture order is the row order of the `-ConvertLog` file** (`ok` rows, minus
+anything already in `captures.csv`), read once at start. That is the log next to the
+ACDs, `C:\l5x_scratch\acd\convert_log.csv` — **not** `samples/convert_log.csv`, which
+is a mirror the next conversion run overwrites, so sorting it does nothing. A
+conversion run rewrites the outside log and appends new files in folder/name order,
+and a re-converted file keeps its older `ok` row higher up.
+
+**Keep firmware versions together.** Opening a v38 project after a v35 one switches
+Logix Designer versions, over two minutes each time, and name order alternates them
+(the L9/v38 batch's `_l8v35` / `_l8v38` / `_l9v38` siblings). After the last
+conversion run and before capturing, sort the outside log so each version is
+contiguous:
+
+```powershell
+$log = 'C:\l5x_scratch\acd\convert_log.csv'
+Import-Csv $log | Sort-Object @{ e = { if ($_.l5x_path -match 'v38\.L5X$') { 1 } else { 0 } } } |
+    Export-Csv $log -NoTypeInformation
+```
+
+`captures.csv` is written after every file; only the auto-commit and push wait for
+the end of the run.
+
 **Controller model and firmware are not parameters.** They are read from each
 L5X's own `Controller/@ProcessorType` and
 `RSLogix5000Content/@SoftwareRevision`. A file whose head cannot be parsed records
