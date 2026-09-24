@@ -345,7 +345,7 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Current batch: operand spelling — 50 files
+## Captured: operand spelling — 50 files, zero errors (OQ-TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE resolved)
 
 `gen_operand_spelling.py`, `samples/generated/opspell/`, all on the realism baseline, 500
 added rungs each.
@@ -372,7 +372,7 @@ CIPBus port Bus Size 100, IP address only, no `<Communications>`, nothing beneat
 | `bridgeph_ebr_act_n04` | the same four, not inhibited | `bridgeph_ebr_inh_n04` |
 | `bridgeph_ebr_long_n04` | the same four inhibited, 16-char names | `bridgeph_ebr_inh_n04` (name term) |
 
-## Also waiting: L9 and v38 side by side — OQ-L9PLATFORM, 96 files
+## Captured: L9 and v38 side by side — 96 files, zero errors (OQ-L9PLATFORM resolved: v38 +0, L9 +2,276 on every item)
 
 `gen_l9_v38.py`, `samples/generated/l9v38/`. Every content item three times, content
 byte-identical apart from the rung spelling, all on the realism baseline:
@@ -397,7 +397,7 @@ v38 file. **Unproven:** L9 Ethernet children sit on Local port 4 (the 5069 real
 convention). `check_proven_blocks.py` treats the controller's own Ethernet port as one
 token, so the L9 arm's Kinetix blocks match their proven L8 twins; any other port fails.
 
-## Also waiting: the realism batch — 16 files
+## Captured: the realism batch — 16 files, zero errors (OQ-REALISMFLOOR, PIOADDR resolved; SERIESREAL open)
 
 `gen_realism_batch.py`, `samples/generated/realism/`. Every file on the baseline; each
 arm declares the same tags in every file.
@@ -410,7 +410,7 @@ arm declares the same tags in every file.
 | `realism_srout_inter_k{02,08}` | `_series_k01` (same instructions, fewer rungs) | OQ-SERIESREAL |
 | `realism_pio_{bool,addr,alias}_n{080,160}` | the other two arms at the same n; own other n | OQ-PIOADDR |
 
-## Also waiting: program-scoped structured tags — OQ-PROGSCOPESTRUCT, 12 files (on the baseline)
+## Captured: program-scoped structured tags — 12 files, zero errors (OQ-PROGSCOPESTRUCT resolved: scope is free)
 
 `gen_program_scope_struct.py`. The identical tags at controller scope and at program
 scope (MainProgram), at 10, 50 and 200: a 7-member UDT (4 DINT, 2 BOOL, REAL) and a

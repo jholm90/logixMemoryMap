@@ -25,13 +25,16 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.79% on the eighteen standard-processor real programs present,
-worst case 4.83%, seventeen of eighteen under-predicting.** The eighteenth (export 43,
-1756-L81E v35) arrived with its reading and is a fitting input, not a blind test, at
-−2.66%. The original seventeen read 1.74%: pricing a childless ETHERNET-BRIDGE
-placeholder at its measured 320 instead of the flat 2,344 (OQ-BRIDGEPH) removed an
-over-charge that had been hiding under-prediction. Before that they read 1.66%, and
-2.86% / 5.42% until
+**Mean absolute error 0.77% on the eighteen standard-processor real programs present,
+worst case 3.87%, 14 of 18 inside 1% and 16 of 18 inside 2%.** The mean half of the
+stopping rule is met for the first time; the max half is not. It read 1.79% / 4.83%
+until two laws measured on the realism floor were wired: a tag-driven index costs 40
+more when a member follows it, 20 more on a BOOL array and 108 more on a STRING array
+(OQ-INDIRECTUDT), and a call mixing DINT with REAL or INT pays per-operand
+conversions (OQ-MIXEDTYPE). No generated exact row moved. The eighteenth program
+(export 43, 1756-L81E v35) arrived with its reading and is a fitting input, not a
+blind test. Before export 43 the seventeen read 1.66% (1.74% once OQ-BRIDGEPH removed
+a compensating bridge over-charge), and 2.86% / 5.42% until
 two measured costs were applied to every spelling of the operand they price, not just
 a bare tag name: the operand-type surcharge now follows member paths, aliases,
 program-scope tags and AOI parameters, and the tag-driven index cost now covers an

@@ -35,6 +35,185 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-PROGSCOPESTRUCT — does a UDT or array tag cost the same at program scope?
+
+**RESOLVED — scope is free.** Captured on the realism floor: every `progscope_ctl_*` file reads byte-identical to its `progscope_prog_*` twin at 10, 50 and 200 tags, UDT and array alike, and the engine already predicted them identical. Program scope costs exactly what controller scope costs. Side finding, not a scope effect: a standalone `DINT[20]` array tag reads +4 over its prediction per tag in both scopes (arrays n010/n050/n200: +16/+176/+776 against the UDT arm, i.e. −24 + 4n). Real exposure is a few kilobytes; recorded, not wired.
+
+**The question as it was asked:**
+
+Program-scoped DINT tags are exact (`tagscope_*`, 10 to 1,000 tags). A program-scoped
+**UDT or array** tag has never been built: an element sweep over the seventeen
+standard-processor real programs found `Program/Tags/Tag/Data/Structure` and `/Array`
+in 14 of them and in no generated file that captured clean. They are densest in the
+three worst-predicted programs — exports 27, 06 and 33 carry 102, 118 and 157.
+
+| | |
+|---|---|
+| **Mechanism** | a per-program tag table, or a per-tag cost for structured program tags, the engine does not charge |
+| **Expected movement** | unknown until read; the three worst files carry the most of them |
+| **Batch built** | 12 files, `gen_program_scope_struct.py`: the identical UDT tags (7 members) and DINT[20] arrays at controller scope vs program scope, at 10, 50 and 200 tags. 1756-L81E fw35, lint and confound clean. Rebuilt on the realism baseline, identical in all twelve |
+
+---
+
+## OQ-REALISMFLOOR — does the model hold on a full controller?
+
+**RESOLVED — the model holds on a full controller.** `realism_base_f25` (842,178 predicted) and `realism_base_f50` (1,632,706, the plant doubled) both read **−1,794**, to the byte. The plant — 1,280 then 2,560 stations of ordinary ladder — is priced exactly at a quarter and at half of the controller; operand encoding does not depend on fill, data-table offset or distinct-tag count. The −1,794 is a constant of the baseline shell (the five POINT I/O racks are the likely owner: a sixth identical rack, `l9v38_m_pointio`, reads −826 on its own), present identically in every file built on the baseline.
+
+**The question as it was asked:**
+
+Every instruction weight was fitted on files that are almost empty: typically under 5%
+of the controller, no I/O, and ten BOOLs reused thousands of times
+(`gen_logic_sweep._b(i)` is `B{i % 10}`). Real programs fill 16–94%, every standard one
+has at least 5 Ethernet I/O nodes, and they reference thousands of distinct tags. If
+operand encoding depends on where a tag sits in the data table or how many distinct tags
+a routine touches, no calibration file could have seen it.
+
+| | |
+|---|---|
+| **Mechanism** | an operand or instruction cost that depends on controller fill, data-table offset or distinct-tag count |
+| **Expected movement** | up to the whole residual (~2.9 points) if the plant under-predicts at real fill; zero, and the hypothesis eliminated, if it lands exact |
+| **Batch built** | `realism_base_f25` (baseline alone, 842,178 predicted, 26% of an L81E) and `realism_base_f50` (plant doubled, 1,632,706). Plant = 1,280 stations, each a UDT instance, a TIMER and ten rungs (seal-in branch, TON and its DN, GRT, ONS+ADD, EQU+OTL, OTU, MOV, LES), all isolation-confirmed instructions, every output bit written once. f25→f50 is a count sweep of a composite unit, so the confound gate flags it; it is read as residual per station, not as one cost |
+
+## OQ-PIOADDR — POINT I/O address vs controller BOOL vs alias
+
+**RESOLVED — no difference.** `realism_pio_{bool,addr,alias}` read byte-identical at 80 and at 160 operands: a rack-optimized POINT I/O address (`RACK_n:s:I.b`), a controller BOOL and an alias onto the I/O point cost the same as a rung operand, and the engine already priced them the same.
+
+**The question as it was asked:**
+
+Real standard programs use 100–1,700 direct module-tag operands each
+(`RACK:slot:I.b` is the commonest POINT I/O form: 1,108 input and 510 output uses), and
+up to 3,350 alias tags onto I/O. No generated file has ever put a module tag in a rung.
+
+| | |
+|---|---|
+| **Mechanism** | a module-tag operand resolves through the adapter's rack-optimized connection image, and an alias adds a level; either could cost more than a plain BOOL reference |
+| **Expected movement** | per-operand delta × real count: at +8 per operand, 1,500 operands is 12 KB, ~0.2–0.5% on a mid-size program |
+| **Batch built** | `realism_pio_{bool,addr,alias}_n{080,160}`: n rungs of `XIC(in)OTE(out)`; controller BOOLs, the RACK_n:slot:I.b / O.b points directly, or alias tags onto them. All 320 BOOLs and 320 aliases declared in all six. 160 is every point the five racks have |
+
+## OQ-TYPEDMEMBER — does a member-path operand pay the bare tag's type surcharge?
+
+**RESOLVED — confirmed.** REAL operands spelled as a bare tag, a UDT member, or a member of a literal-indexed UDT-array element read byte-identical for ADD, MOV and GRT, as wired. The AOI arm (`opsp_aoi_add_real` vs `_dint`) is exact: AOI-internal logic pays the surcharge. INT member/array-element operands read **+4 per rung** over the bare INT spelling in all six files; each of those rungs has exactly one INT member at a non-4-byte offset, so the data cannot separate "+4 per rung" from "+4 per misaligned INT operand". Recorded, not wired: 2,716 real calls carry an INT member operand (0.63% of real instructions), about 11 KB at +4 each — ~0.02% of real bytes, below the floor.
+
+**The question as it was asked:**
+
+Wired on real-set evidence (above): resolving member paths, aliases, program scope and
+AOI parameters moved all 17 real files toward zero. No generated file carries a typed
+member operand, so the rule itself has never been captured in isolation.
+
+| | |
+|---|---|
+| **Mechanism** | the surcharge follows the operand's type, however it is spelled |
+| **Expected movement** | none if confirmed (already wired); up to +0.9 points back if a member path does NOT pay it |
+| **Already in the waiting batch** | the realism plant carries 1,280 `LES(Stn.Pv,Stn.PvHi)` on REAL members — 20,480 bytes of this rule in every `realism_*` and `progscope_*` file. `realism_base_f25` against its own prediction reads it before any new file is built |
+| **Batch built** | `opsp_typed_{add,mov,grt}_{real,int}_{bare,member,arrelem}` (18) + `opsp_typed_*_dint_bare` DINT controls (3) + `opsp_aoi_add_{real,dint}` (AOI definition, 100 internal ADDs on REAL vs DINT locals). Each member file against its bare twin |
+
+## OQ-INDIRECTUDT — indirect addressing into a UDT array
+
+**RESOLVED — WIRED, and the largest single gain since operand spelling.** What the index selects matters; its size does not. Against their literal-index twins, 500 rungs each:
+
+| indexed operand | measured | was charged |
+|---|---:|---:|
+| `Arr[Idx].Member`, element 4 / 8 / 12 / 76 bytes, MOV and EQU; a BOOL member by XIC | **124** | 84 |
+| `BoolArr[Idx]` by XIC | **104** | 84 |
+| `StrArr[Idx]` by MOV | **192** | 84 |
+
+`indirect_index.member_access_cost` 40 (KNOWN, six files), `bool_element_cost` 20 and `string_element_cost` 108 (FITTED, one file each). A bit after the index is unmeasured and charged nothing extra. The parser now records each index's array path and what follows it (`_indirect_index_sites`); sizing resolves the element type. With OQ-MIXEDTYPE: **real set 1.79% → 0.77% mean, 4.83% → 3.87% worst**; no generated exact row moved.
+
+**The question as it was asked:**
+
+The whole indirect-index price rests on `MOV(Arr[Idx],Dest)` with `Arr` a `DINT[20]`:
+a 4-byte element, a power of two, read by one MOV. Real indirect references:
+
+| shape | real uses |
+|---|---:|
+| `UdtArr[Idx].Member` | 15,936 |
+| `UdtArr[Idx]` (whole element, mostly COP) | 1,355 |
+| `StrArr[Idx]` | 1,014 |
+| `DintArr[Idx]` — the calibrated shape | 366 |
+| `BoolArr[Idx]` | 229 |
+
+…inside MOV, EQU, XIC, NEQ, COP, XIO, SUB, ADD, OTL. An element size that is not a
+power of two needs a multiply; a BOOL array needs a bit address; a member adds an
+offset. Before the member-index fix, `UdtArr[Idx].Member` count alone took the
+residual from 1.98% to LOO 1.29%.
+
+| | |
+|---|---|
+| **Mechanism** | address computation depends on element size, member offset and bit addressing |
+| **Expected movement** | up to ~0.6 points |
+| **Batch built** | `opsp_ind_mov_e{04,08,12,76}_{idx,lit}`, `opsp_ind_xicmem_*`, `opsp_ind_xicbool_*`, `opsp_ind_equ_e76_*` — 14 files, each `_idx` against its literal-index `_lit` twin. The engine predicts every element size identically (+84 per indexed rung) |
+
+## OQ-STRINGMOV — MOV of a STRING
+
+**RESOLVED.** `MOV` of a STRING costs exactly a DINT `MOV` (`opsp_str_mov`, `_movcustom` = `_movdint`), as the engine already charged; `COP` of one STRING is exact too. The one gap was an **indexed** STRING-array source, +108 over the index cost — wired under OQ-INDIRECTUDT.
+
+**The question as it was asked:**
+
+7,626 real `MOV`s have a STRING operand (6,044 STRING→STRING, 1,001 with an indexed
+source), 53 to 1,309 per file. The engine charges a DINT `MOV` (36). A STRING is an
+88-byte structure; `COP` of a structure costs more than an atomic move (JSR structured
+arguments: +8 per copy). Never measured.
+
+| | |
+|---|---|
+| **Mechanism** | a structure move compiled as a copy, not a register move |
+| **Expected movement** | 0.2–0.6 points; export 16 (2.6%) carries 1,309 |
+| **Batch built** | `opsp_str_{mov,cop,movidx,movcustom,movdint}` — 5 files. The engine predicts `mov` and `movcustom` identical to the DINT control |
+
+## OQ-MIXEDTYPE — a typed instruction whose operands differ in type
+
+**RESOLVED — WIRED.** Bytes per call over the DINT control, 500 rungs each: MOV(D→R) 76, MOV(R→D) 72, ADD(D,R,R) 68, ADD(R,D,D) 108, GRT(R,D) 68, MOV(I→D) 60, MOV(D→I) 52, GRT(I,D) 60. The law (`operand_type_surcharge.mixed`, FITTED):
+- DINT with REAL: the instruction's REAL surcharge + **52** per DINT source + a DINT destination **40** (48 on MOV). The 52 is exact three ways.
+- DINT with INT: **52** per INT operand + **8** when an INT is a source; uniform INT is 52 per operand already (MOV 104, ADD 156).
+- Any other mix keeps the old first-operand rule.
+
+All eight files read exact after wiring.
+
+**The question as it was asked:**
+
+The surcharge table was fitted on files where every operand of a call has one type;
+the engine charges by the first resolvable operand. Real files carry 24 to 932 mixed
+calls each (`MOV(DINT,REAL)`, `ADD(REAL,DINT,REAL)`, `GRT(INT,DINT)`). Inside CPT a
+DINT→REAL conversion measures 40 per operand; outside CPT it has never been measured.
+
+| | |
+|---|---|
+| **Mechanism** | an implicit conversion per mismatched operand |
+| **Expected movement** | 0.1–0.4 points |
+| **Batch built** | `opsp_mixed_{mov_d2r,mov_r2d,mov_i2d,mov_d2i,add_drr,add_rdd,grt_rd,grt_id}` — 8 files, sharing one tag inventory with `opsp_typed_*` so the uniform twins are the typed `_bare` and `_dint_bare` files |
+
+All 50 files (`gen_operand_spelling.py`, `samples/generated/opspell/`) are on the
+realism floor (RACK_1..RACK_5, ≥25% fill, no duplicated output bits), 1756-L81E fw35,
+500 added rungs each, identical tag inventory within each question; lint and confound
+clean. Awaiting capture.
+
+## OQ-L9PLATFORM — is the L9 at v38 a constant offset from the L81E at v35?
+
+**RESOLVED — two constants, both already wired.** 32 content items (five densities, 21 instructions × 1,000 rungs, six module/alarm items), each on three arms:
+
+| difference | every one of the 32 items |
+|---|---:|
+| 1756-L81E v38 − 1756-L81E v35 | **0** |
+| 1756-L908TS v38 − 1756-L81E v38 | **+2,276** |
+
+Flat from an empty controller to 1,600 density units, across every instruction and module type — the firmware move costs nothing for content and the L9 is the same +2,276 project constant the engine already charges from the blank captures. The v36 respellings (MOVE, LIMIT, GE…) read identical to their v35 twins. Still open outside the files: the L9 capacity budgets (OQ-L9BUDGET) and a real L9 program predicted blind. Side findings on the shared baseline (identical in all arms): a sixth POINT I/O rack over-predicted by 826; one generic ETHERNET-MODULE (8 in / 8 out SINT) under by 440; the density rungs carry the series-output law again (−12 per rung with MOV + OTE; see OQ-SERIESREAL).
+
+**The question as it was asked:**
+
+An L9 cannot run v35, so any L9 file differs from every existing capture in platform
+**and** firmware at once. The engine charges the L9 +2,276 bytes over an L81E, read off
+18 near-empty v38 captures, and charges nothing for v35→v38 on an L81E. Neither has been
+seen with content in the file.
+
+| | |
+|---|---|
+| **Mechanism** | a per-content rate that differs by firmware or platform, which near-empty files cannot show (the rejected per-platform baseline broke 612 files for exactly that reason) |
+| **Expected movement** | none on the seventeen, which are all v31–v35 L8x/5069. It is what makes an L9 number quotable at all |
+| **Batch built** | `gen_l9_v38.py`, `samples/generated/l9v38/`, 96 files: 32 content items × three arms — `l8v35` (1756-L81E v35.05, v35 spelling, the control), `l8v38` (1756-L81E v38.02, v36+ spelling), `l9v38` (1756-L908TS v38.02, v36+ spelling). Content byte-identical across arms apart from the spelling. Items: densities `d0000..d1600` (stages 1–2), 21 instructions × 1,000 rungs `i_*` (stage 3), and `m_{kinetix,pf525,geneth,pointio,local1756,alarms}` (stage 4). Every file on the realism baseline |
+| **How to read it** | `l8v38 − l8v35` per item = the firmware move; `l9v38 − l8v38` = the L9. Both flat across the densities → two project constants, and stages 3–4 confirm. Either growing → a rate, and stage 3 says which instruction carries it |
+| **Unproven in the build** | an L9 Ethernet child is parented to Local port 4. The L9 blanks carry no modules; port 4 is where all five real 5069 programs put theirs. The L9 arm's Kinetix blocks are the L8 arm's proven blocks re-parented; `check_proven_blocks.py` now reads a block parented to the controller's own Ethernet port (2 on L8, 4 on L9) as one shape, and still refuses any other port |
+| **Not covered** | the L9 capacity budget (OQ-L9BUDGET, resolved as bounded): a bench reading on an empty project per catalog, not a file |
+
 ## OQ-V36MNEMONIC — sixteen ladder instructions renamed at v36
 
 **RESOLVED as a stated fact, not a capture.** From v36 these instructions are spelled

@@ -18,6 +18,15 @@ Real logic is extremely top-heavy: **4 mnemonics cover half of all
 occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
 individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
 
+## On a full controller
+
+The 21 most-used real instructions (XIC OTE MOV XIO EQU OTU CLR OTL ADD ONS NEQ TON GRT
+COP NOP LES SUB JSR GEQ LIM LEQ), 1,000 rungs each on the realism baseline, read within
+**±8 bytes** of the baseline file's own residual on all three arms of the L9/v38 batch
+(`l9v38_i_*`): every weight holds at a quarter-full controller, unchanged by v38 or by
+the L9. No weight moved in this batch; the two operand laws wired from it
+(OQ-INDIRECTUDT, OQ-MIXEDTYPE) are surcharges on top of the weights.
+
 ## Spelling across firmware
 
 From v36 sixteen ladder instructions are renamed, and a v36+ project rejects the old

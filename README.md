@@ -253,8 +253,8 @@ real compiled project:
 
 | | |
 |---|---|
-| **Mean absolute error** | **1.79%** |
-| **Worst case** | **4.83%** (a program carrying 39 source-protected routines the tool cannot see inside) |
+| **Mean absolute error** | **0.77%** |
+| **Worst case** | **3.87%** (a program carrying 39 source-protected routines the tool cannot see inside) |
 | **Blind test** | a 7.89 MB program predicted at **+2.15%** before its real figure was used for anything |
 
 **Read the worst case as "up to about 5%" on a file the tool has never seen.** The blind

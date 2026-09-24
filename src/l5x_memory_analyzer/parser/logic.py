@@ -485,6 +485,54 @@ def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:
     return kinds
 
 
+def _array_path_before(text: str, bracket_start: int) -> str:
+    """The operand path that owns the bracket opening at text[bracket_start]:
+    `Stn.Buf` for `Stn.Buf[Idx]`. Scans left over identifier characters, dots
+    and complete subscripts, stopping at an enclosing unmatched `[`."""
+    j, depth = bracket_start, 0
+    while j > 0:
+        c = text[j - 1]
+        if c == "]":
+            depth += 1
+        elif c == "[":
+            if depth == 0:
+                break
+            depth -= 1
+        elif not (c.isalnum() or c in "_." or depth > 0):
+            break
+        j -= 1
+    return text[j:bracket_start]
+
+
+def _indirect_index_sites(rung_texts: list[str]) -> list[tuple[str, str, str]]:
+    """(kind, array path, what follows) for every tag-driven index, the same
+    brackets _indirect_index_kinds counts. `what follows` is 'member' for
+    `Arr[Idx].Name`, 'bit' for `Arr[Idx].3` or `Arr[Idx].[Bit]`, else ''. The
+    array path lets sizing resolve the element type (OQ-INDIRECTUDT)."""
+    sites: list[tuple[str, str, str]] = []
+    for text in rung_texts:
+        for m in _ARRAY_INDEX.finditer(text):
+            content = m.group(1).strip()
+            if _PURE_LITERAL_INDEX.match(content):
+                continue
+            if _TAG_INDEX.match(content):
+                kind = "tag"
+            elif _TAG_OFFSET_INDEX.match(content):
+                kind = "tag_offset"
+            else:
+                continue
+            bracket = text.index("[", m.start())
+            after = text[m.end():m.end() + 2]
+            if after[:1] == "." and (after[1:2].isalpha() or after[1:2] == "_"):
+                follows = "member"
+            elif after[:1] == "." and after[1:2] in "0123456789[" and after[1:2]:
+                follows = "bit"
+            else:
+                follows = ""
+            sites.append((kind, _array_path_before(text, bracket), follows))
+    return sites
+
+
 # CMP's own surcharges (wired, real data confirms the existing
 # flat CMP:76 weight is exact for a SINGLE simple condition -- the
 # "inconsistency" flagged in an earlier pass was a manual-arithmetic
@@ -632,6 +680,9 @@ class RoutineLogic:
     # above (OQ-INDIRECT). Direct/literal indices cost nothing extra and
     # are not represented here at all.
     indirect_index_kinds: list[str] = field(default_factory=list)
+    # The same brackets with their array path and what follows the index --
+    # see _indirect_index_sites (OQ-INDIRECTUDT). Sizing prices these.
+    indirect_index_sites: list[tuple[str, str, str]] = field(default_factory=list)
     # One entry per real CMP(...) call, (is_compound, has_float_literal) --
     # see _cmp_calls above (OQ-CMPCPTLAYOUT's CMP piece, wired).
     cmp_calls: list[CmpCall] = field(default_factory=list)
@@ -962,6 +1013,7 @@ def parse_rll_routines(
                 cpt_calls=_cpt_calls(rung_texts),
                 typed_calls=_typed_instruction_calls(rung_texts),
                 indirect_index_kinds=_indirect_index_kinds(rung_texts),
+                indirect_index_sites=_indirect_index_sites(rung_texts),
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
@@ -1051,6 +1103,7 @@ def parse_aoi_internal_logic(
             cpt_calls=_cpt_calls(rung_texts),
             typed_calls=_typed_instruction_calls(rung_texts),
             indirect_index_kinds=_indirect_index_kinds(rung_texts),
+            indirect_index_sites=_indirect_index_sites(rung_texts),
             cmp_calls=_cmp_calls(rung_texts),
             branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
             word_destination_count=word_destination_count(rung_texts, internal_types),

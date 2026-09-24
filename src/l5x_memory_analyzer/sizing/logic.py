@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from l5x_memory_analyzer.parser.logic import RoutineLogic
+from l5x_memory_analyzer.parser.logic import _DESTINATION_ARG, RoutineLogic
 from l5x_memory_analyzer.sizing.constants import LogicInstructionModel
 
 # A bare tag reference -- e.g. "TD0". The legacy resolution path, used only
@@ -191,6 +191,16 @@ def compute_routine_logic_bytes(
     # instruction's own base weight is still correct and still applied).
     if tag_types or operand_types is not None:
         for mnemonic, operands in routine.typed_calls:
+            if operand_types is not None:
+                # A call mixing DINT with REAL or INT pays conversions
+                # (OQ-MIXEDTYPE); any other shape keeps the first-operand rule.
+                types = [operand_types.resolve(op) for op in operands]
+                dest = _DESTINATION_ARG.get(mnemonic)
+                dest_index = None if dest is None else dest % len(operands) if operands else None
+                mixed = model.operand_type_surcharge.mixed_surcharge_for(mnemonic, types, dest_index)
+                if mixed is not None:
+                    total += mixed
+                    continue
             resolved_type = _resolve_call_type(operands, tag_types or {}, operand_types)
             if resolved_type is not None:
                 total += model.operand_type_surcharge.surcharge_for(mnemonic, resolved_type)
@@ -198,8 +208,17 @@ def compute_routine_logic_bytes(
     # Indirect (tag-driven) array-index cost (OQ-INDIRECT) -- additive per
     # real bracket occurrence, on top of everything else above. See
     # memory_model.yaml indirect_index for the derivation.
-    for kind in routine.indirect_index_kinds:
+    # What the index selects adds to that (OQ-INDIRECTUDT): a member after the
+    # index, or an indexed BOOL / STRING element.
+    for kind, array_path, follows in routine.indirect_index_sites:
         total += model.indirect_index.cost_for(kind)
+        element_type = None
+        if not follows:
+            if operand_types is not None:
+                element_type = operand_types.resolve(array_path)
+            elif tag_types and _BARE_TAG.match(array_path):
+                element_type = tag_types.get(array_path)
+        total += model.indirect_index.element_cost_for(follows, element_type)
 
     # CMP compound-condition/float-literal surcharge -- additive on top of
     # the base CMP:76 weight already summed via instruction_counts above.
