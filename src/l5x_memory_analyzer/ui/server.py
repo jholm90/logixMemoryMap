@@ -49,6 +49,7 @@ from l5x_memory_analyzer.sizing.tree import (
 )
 from l5x_memory_analyzer.sizing.udt import RecursiveUdtError, UnknownDataTypeError
 from l5x_memory_analyzer.ui.hierarchy import build_hierarchy, type_utilization
+from l5x_memory_analyzer.usage import UsageIndex, segments_of
 
 STATIC_DIR = Path(__file__).with_name("static")
 
@@ -80,6 +81,63 @@ class DocState:
     rungs_cache: dict = field(default_factory=dict)
     alarms_cache: dict = field(default_factory=dict)
     xref_cache: dict = field(default_factory=dict)
+    # Where each tag, member, routine, module and type member is used
+    # (l5x_memory_analyzer/usage.py). Built once at load.
+    usage: UsageIndex | None = None
+
+
+def _usage_for_path(path: str, usage: UsageIndex) -> dict | None:
+    """The usage record for one hierarchy node, by the node's path. None where
+    "used" has no meaning (a group, an overhead line, a rung)."""
+    if not path or path.startswith(("alarms/", "aoi_definitions/")) or path == "project_baseline":
+        return None
+    if path.startswith("modules/"):
+        name = path[len("modules/"):].split("/")[0]
+        return {**usage.module(name).as_json(), "kind": "references"}
+    if path.startswith("udt_definitions/"):
+        rest = path[len("udt_definitions/"):]
+        name, dot, member = rest.partition(".")
+        if "/" in name:
+            return None
+        if dot:
+            if not usage.has_member(name, member):
+                return None  # an overhead line of the definition, not a member
+            return _member_json(usage, name, member)
+        return {"count": usage.type_instances(name), "via_parent": False, "implicit": 0,
+                "kind": "instances"}
+    scope, slash, rest = path.partition("/")
+    if not slash:
+        return None
+    if scope.startswith("program:") and "/" not in rest and rest and usage.is_routine(path):
+        return {**usage.routine(path).as_json(), "kind": "calls"}
+    if scope == "controller" or scope.startswith("program:"):
+        return _tag_json(usage, path, [])
+    return None
+
+
+def _tag_json(usage: UsageIndex, tag_path: str, segments: list[str]) -> dict | None:
+    u = usage.tag(tag_path, segments)
+    return None if u is None else {**u.as_json(), "kind": "references"}
+
+
+def _member_json(usage: UsageIndex, type_name: str, member: str) -> dict | None:
+    # Only a declared member has a use count; a definition's overhead rows
+    # (base, name pool, BOOL packing) are costs, not things logic can name.
+    if not usage.has_member(type_name, member):
+        return None
+    u = usage.type_member(type_name, member)
+    if u is None:
+        return None
+    return {**u.as_json(), "kind": "member", "copied_whole": usage.copied_whole(type_name)}
+
+
+def _attach_usage(node: dict, usage: UsageIndex) -> None:
+    rec = _usage_for_path(node.get("path") or "", usage) if not node.get("children") or \
+        (node.get("path") or "").startswith(("udt_definitions/", "modules/", "controller/", "program:")) else None
+    if rec is not None:
+        node["uses"] = rec
+    for child in node.get("children") or []:
+        _attach_usage(child, usage)
 
 
 def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
@@ -222,6 +280,8 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # three-second load.
     conf_cache: dict = {}
     _attach_subtree_confidence(report_json["hierarchy"], data_types, model, conf_cache)
+    usage = UsageIndex(doc.root)
+    _attach_usage(report_json["hierarchy"], usage)
 
     children_cache: dict = {}
     for key in list(conf_cache):
@@ -293,7 +353,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
                      report_json=report_json, entries=entries, errors=errors,
                      confidence_cache=conf_cache, children_cache=children_cache,
                      rungs_cache=rungs_cache, alarms_cache=alarms_cache,
-                     xref_cache=xref_cache)
+                     xref_cache=xref_cache, usage=usage)
 
 
 def _module_parent_labels(root) -> dict[str, str]:
@@ -613,6 +673,8 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
                 return jsonify({"error": f"unknown data type: {exc}"}), 400
             return jsonify({"mode": "instance", "children": [
                 {
+                    "uses": (_member_json(state.usage, resolved_type, c.segment[1:])
+                             if state.usage and c.segment.startswith(".") else None),
                     "name": c.name, "segment": c.segment, "data_type": c.data_type,
                     "dimensions": list(c.dimensions), "value": c.bytes,
                     "basis": c.basis, "has_children": c.has_children,
@@ -632,6 +694,8 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             return jsonify({
                 "children": [
                     {
+                        "uses": (_member_json(state.usage, def_name, c.segment[1:])
+                                 if state.usage and c.segment.startswith(".") else None),
                         "name": c.name,
                         "segment": c.segment,
                         "data_type": c.data_type,
@@ -678,6 +742,8 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
             {
                 "children": [
                     {
+                        "uses": (_tag_json(state.usage, tag_path, segments_of(subpath + c.segment))
+                                 if state.usage else None),
                         "name": c.name,
                         "segment": c.segment,
                         "data_type": c.data_type,

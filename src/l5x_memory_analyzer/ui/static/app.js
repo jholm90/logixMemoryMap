@@ -1159,6 +1159,7 @@ async function ensureChildren(node) {
     confidence: c.confidence,
     basis: c.basis,
     has_children: c.has_children,
+    uses: c.uses || null,
     tier: "exact",
     _tagPath: node._tagPath,
     _subPath: (node._subPath || "") + c.segment,
@@ -1337,7 +1338,65 @@ function squarify(nodes, x, y, w, h, out) {
 const HATCH_PATTERN_SVG =
   '<pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">' +
   '<line x1="0" y1="0" x2="0" y2="6" stroke="#000" stroke-opacity="0.4" stroke-width="3"/>' +
+  '</pattern>' +
+  // Unused: bold warning stripes. A different pattern from the confidence
+  // hatch and the estimated outline, and it takes priority over both -- an
+  // unused tile's first message is that nothing uses it.
+  '<pattern id="unused" width="14" height="14" patternTransform="rotate(-45)" patternUnits="userSpaceOnUse">' +
+  '<rect width="14" height="14" fill="#000" fill-opacity="0.25"/>' +
+  '<line x1="0" y1="0" x2="0" y2="14" stroke="#ffb020" stroke-opacity="0.85" stroke-width="5"/>' +
   '</pattern>';
+
+// ---- usage ----
+// node.uses comes from the server (l5x_memory_analyzer/usage.py): how often a
+// tag, member, routine, module or type member is referenced in this project.
+function isUnused(node) {
+  const u = node && node.uses;
+  return !!u && u.count === 0 && !u.via_parent && !u.implicit;
+}
+
+function usageText(node) {
+  const u = node && node.uses;
+  if (!u) return "";
+  if (u.kind === "instances") return u.count === 0 ? "no instances" : `${u.count} instance${u.count === 1 ? "" : "s"}`;
+  if (u.kind === "calls") {
+    if (u.count === 0 && u.implicit) return "main routine";
+    if (u.count === 0) return "never called";
+    return `${u.count} JSR call${u.count === 1 ? "" : "s"}` + (u.implicit ? " + main" : "");
+  }
+  if (u.count > 0) return `${u.count.toLocaleString()}`;
+  if (u.implicit) return `inside AOI (${u.implicit})`;
+  if (u.via_parent) return "via parent";
+  return "unused";
+}
+
+function usageNoteHtml(node) {
+  const u = node && node.uses;
+  if (!u) return "";
+  if (isUnused(node)) {
+    const what = u.kind === "instances" ? "No tag or member is declared with this type."
+      : u.kind === "calls" ? "Not the main routine, and no JSR calls it."
+      : u.kind === "member" ? ("No logic in this project names this member" +
+          (u.copied_whole ? " (it is only ever copied along with its whole structure)." : "."))
+      : "No logic, alias, alarm, axis or module in this project references it.";
+    return `<div class="tooltip-unused">&#9888; Not used anywhere in this project</div>` +
+      `<div class="tooltip-bar-label">${what}` +
+      (u.kind === "references" || u.kind === "member" ? " HMI or SCADA access is not visible in an L5X." : "") +
+      `</div>`;
+  }
+  return `<div class="tooltip-uses">Used: ${escapeHtml(usageText(node))}</div>`;
+}
+
+function appendUnusedOverlay(g, x, y, w, h) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const o = document.createElementNS(svgNS, "rect");
+  o.setAttribute("x", x); o.setAttribute("y", y);
+  o.setAttribute("width", Math.max(w, 0)); o.setAttribute("height", Math.max(h, 0));
+  o.setAttribute("fill", "url(#unused)");
+  o.setAttribute("stroke", "#ffb020"); o.setAttribute("stroke-width", "2");
+  o.style.pointerEvents = "none";
+  g.appendChild(o);
+}
 
 // Second line of a tile's label -- rung count for a routine, routine count
 // for a Program group, [DataType] for an ordinary tag/member leaf
@@ -1552,7 +1611,10 @@ function paintTreemap(svg, children) {
     rect.addEventListener("mouseleave", hideTooltip);
     g.appendChild(rect);
 
-    if (CONFIDENCE_MODE && !isGroup(node) && node.basis && node.basis !== "KNOWN") {
+    const unused = isUnused(node);
+    if (unused) appendUnusedOverlay(g, r.x, r.y, r.w, r.h);
+
+    if (!unused && CONFIDENCE_MODE && !isGroup(node) && node.basis && node.basis !== "KNOWN") {
       const hatch = document.createElementNS(svgNS, "rect");
       hatch.setAttribute("x", r.x);
       hatch.setAttribute("y", r.y);
@@ -1569,7 +1631,7 @@ function paintTreemap(svg, children) {
     // never blur together. Only leaf nodes carry a tier at all (group
     // nodes mix tiers, so they're left unmarked, same convention the
     // basis hatch above already uses).
-    if (!isGroup(node) && node.tier === "estimated") {
+    if (!unused && !isGroup(node) && node.tier === "estimated") {
       const outline = document.createElementNS(svgNS, "rect");
       outline.setAttribute("x", r.x + 1);
       outline.setAttribute("y", r.y + 1);
@@ -1675,6 +1737,7 @@ function paintNested(svg, g, node, r, headerH, depth, ancestors) {
     crect.addEventListener("mousemove", ev => showTooltip(ev, cnode));
     crect.addEventListener("mouseleave", hideTooltip);
     g.appendChild(crect);
+    if (isUnused(cnode)) appendUnusedOverlay(g, ir.x, ir.y, ir.w, ir.h);
 
     let usedH = 0;
     if (ir.w > 26 && ir.h > 12) {
@@ -1803,6 +1866,7 @@ function showTooltip(ev, node) {
       (task ? `<br>${task.type}${task.type === "PERIODIC" && task.rate ? ` @ ${task.rate} ms` : ""}` +
         `${task.priority ? `, priority ${task.priority}` : ""}` : "") +
       (routines != null ? `<br>${routines} routine${routines === 1 ? "" : "s"}` : "") +
+      usageNoteHtml(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
       (CONFIDENCE_MODE ? confidenceBarHtml(node, false) : "");
@@ -1818,6 +1882,7 @@ function showTooltip(ev, node) {
       `${fmtBytes(node.value)} (${fmtBlocks(node.value)} blocks)<br>` +
       (CONFIDENCE_MODE ? bandChipHtml(node) : "") +
       jsrCallsNote(node) +
+      usageNoteHtml(node) +
       tooltipParentBar(node) +
       tooltipControllerBar(node) +
       // withChip = false: the chip is already on the line above. It was
@@ -1885,6 +1950,7 @@ function currentLevelRows() {
       jsr_targets: (REPORT && REPORT.jsr_calls && REPORT.jsr_calls[c.path]) || null,
       rung_count: c.data_type === "RLL" ? rungCountFor(c) : null,
       routine_count: routineCountFor(c),
+      uses: c.uses ? (isUnused(c) ? -1 : c.uses.count + (c.uses.implicit || 0) + (c.uses.via_parent ? 0.5 : 0)) : null,
     };
   });
 }
@@ -2221,6 +2287,7 @@ function renderListInto(tableId) {
     const tr = document.createElement("tr");
     const drillable = isDrillable(e.node);
     tr.classList.toggle("row-drillable", drillable);
+    tr.classList.toggle("row-unused", isUnused(e.node));
     if (drillable) tr.addEventListener("click", () => drillInto(e.node));
 
     const subNote = e.jsr_targets
@@ -2250,6 +2317,9 @@ function renderListInto(tableId) {
       `<td>${escapeHtml(e.name)}${subNote}</td>` +
       `<td>${escapeHtml(e.data_type)}</td>` +
       `<td class="num">${Math.round(e.bytes).toLocaleString()}</td>` +
+      `<td class="uses-cell">${e.node.uses
+        ? (isUnused(e.node) ? `<span class="unused-pill">UNUSED</span>` : escapeHtml(usageText(e.node)))
+        : `<span class="text-dim">&mdash;</span>`}</td>` +
       `<td>${pctCellHtml(e.pct_of_total, "pct-parent")}</td>` +
       `<td>${pctCellHtml(e.pct_of_controller, "pct-controller")}</td>` +
       `<td class="conf-only">${conf}</td>`;
@@ -2396,23 +2466,3 @@ function scrollListToTop() {
   }
   if (window.scrollY) window.scrollTo(0, 0);
 }
-
-// ---- light / dark theme ----
-// The OS preference decides until the header toggle picks one; the choice is
-// remembered per browser. Storage may be unavailable (private window, locked
-// down workstation), in which case the toggle still works for the session.
-(function themeToggle() {
-  const btn = document.getElementById("theme-toggle");
-  if (!btn) return;
-  const root = document.documentElement;
-  const isDark = () => root.dataset.theme === "dark" ||
-    (!root.dataset.theme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const sync = () => { btn.innerHTML = isDark() ? "&#9728;" : "&#9790;"; };
-  btn.addEventListener("click", () => {
-    root.dataset.theme = isDark() ? "light" : "dark";
-    try { localStorage.setItem("l5x-theme", root.dataset.theme); } catch (e) {}
-    sync();
-  });
-  sync();
-})();
-

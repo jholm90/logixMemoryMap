@@ -145,6 +145,45 @@ memory on those files, that 8.8% matters.
 
 ---
 
+## L9 (ControlLogix 5590): what it takes
+
+**Where it stands.** 18 captured rows, every one a near-empty file at firmware v38 (the
+firmware matrix and the alarm-definition batch). No content has been measured on an L9,
+no L9 capacity budget is known (OQ-L9BUDGET), and no real L9 program has a reading. The
+model is fitted on 1756-L81E at v35.
+
+**Why it is two unknowns, not one.** An L9 cannot run v35, so an L9 file differs from
+every existing capture in platform *and* firmware at once. The 5069 precedent
+(OQ-REAL5069: identical content at five densities, byte-identical residuals, so the
+platform is one project-level constant) is strong evidence for the platform half. Nothing
+measures the firmware half. The plan separates them.
+
+| stage | files | what varies | differenced against | what it settles |
+|---|---:|---|---|---|
+| 0. Budgets | 0 (4 readings) | L9 catalog | — | each L9 catalog's Capacity total, read from Studio on an empty project (OQ-L9BUDGET); the UI then has a denominator |
+| 1. Firmware | 5 | L81E v35 → **L81E v38**, content held | the existing v35 platform-equivalence densities | is the firmware change a constant, or does content cost change? |
+| 2. Platform | 5 | L81E v38 → **L9 v38**, content held | stage 1 | is the L9 a constant offset from an L81E at the same firmware? |
+| 3. Instructions | 20 | the 20 most-used real instructions, 1,000 rungs each, on L9 v38 | their v35 isolation captures | any per-instruction weight that moved beyond ±8 bytes a rung |
+| 4. Modules and data | 6 | Kinetix drive + axis, PowerFlex, generic Ethernet, POINT I/O rack, 1756 local I/O, alarm conditions on L9 v38 | their v35 captures | module, axis and alarm costs at v38 |
+
+**36 generated files**, all on the realism floor, under the platform/firmware-matrix
+exemption the rule in CLAUDE.md already carries for sweeping those fields (`PlatEqL`).
+
+**If stages 1 and 2 both come back as flat constants** — the likely outcome, given 5069 —
+the L9 is wired as two project-level constants and stages 3 and 4 are a confirmation. **If
+either varies with content,** stage 3 is where it is found, and a follow-up decomposition
+batch of roughly 20 files is needed.
+
+**What "confident" means here is the same as everywhere else: real programs.** The generated
+stages make the model *plausible* on L9; only real L9 exports, each predicted and written
+down before its Capacity reading is taken, make it *validated*. Two or three are the minimum
+to quote a number; the accuracy claim for the L8x rests on seventeen.
+
+**Time.** Stage 0 is a quarter of an hour at the bench. Stages 1–4 are about an hour to
+generate and one unattended capture run; reading and wiring them is half a day. So: **about
+one working day if the constants hold, two to three if the firmware moved instruction
+costs**, plus however long it takes to obtain real L9 programs with readings.
+
 ## Superseded — do not re-run
 
 Recorded so these are not mistaken for open work.

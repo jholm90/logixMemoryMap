@@ -51,6 +51,29 @@ constant had been hiding: **mean 2.86%, worst 5.42% (now 1.66% / 4.83% — opera
 real programs**, all under-predicting.
 Every item below is aimed at that.
 
+### 0d. Usage counts in the UI — DONE
+
+`l5x_memory_analyzer/usage.py`, built once per file at load. Every tag, member, array
+element, UDT/AOI member, routine and module carries a use count in the List (**Uses**
+column; unused rows tinted amber with an UNUSED pill) and in the treemap (amber stripes,
+which take priority over the estimated-logic outline, and a tooltip note). A use is a
+reference from ladder, ST or FBD operands, an alias target, an alarm input or associated
+tag, an axis's motion group or drive module, a JSR target, or a main routine. Indexed
+access uses every element; a file instruction on an element uses the whole array; a
+reference to a whole structure uses its members "via parent" (the UDT definition view
+still reports a member nothing names as unused, noting it is copied whole). AOI
+EnableIn/EnableOut and hidden BOOL-packing members carry no count. HMI/SCADA access is
+not visible in an L5X, and the tooltip says so. Pinned by `tests/test_usage.py`. The
+light/dark toggle was removed; the page follows the OS setting.
+
+### 0c. L9 (ControlLogix 5590) validation — specified, not built
+
+36 generated files in four stages (firmware v35→v38 on L81E, then L81E→L9 at v38, then
+instruction and module spot checks) plus four budget readings and two or three real L9
+programs predicted blind. About one working day if the platform and firmware differences
+are constants, two to three if not. Full spec: `FUTURE_TESTS.md`, "L9 (ControlLogix 5590):
+what it takes". Awaiting approval.
+
 ### 0b. UI: an AOI definition's "instance" size view disagrees with the instance tag
 
 On the demo project (`scripts/build_demo_project.py`), opening Add-On Instructions ›

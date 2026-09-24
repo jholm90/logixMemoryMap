@@ -38,20 +38,8 @@
   --free-fill: #9aa1ab;
 }
 
-/* Dark theme: follows the operating system unless the header toggle has
-   picked one explicitly (data-theme on <html>, remembered per browser). */
-:root[data-theme="dark"] {
-  --bg: #14171c;
-  --panel-bg: #1c2028;
-  --text: #e8eaee;
-  --text-dim: #9aa3b0;
-  --border: #333a45;
-  --group-fill: #465873;
-  --free-fill: #4b525d;
-  color-scheme: dark;
-}
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     --bg: #14171c;
     --panel-bg: #1c2028;
     --text: #e8eaee;
@@ -59,15 +47,8 @@
     --border: #333a45;
     --group-fill: #465873;
     --free-fill: #4b525d;
-    color-scheme: dark;
   }
 }
-
-#theme-toggle {
-  background: transparent; color: var(--text); border: 1px solid var(--border);
-  border-radius: 4px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 1rem; line-height: 1;
-}
-#theme-toggle:hover { border-color: var(--accent); }
 
 * { box-sizing: border-box; }
 
@@ -747,3 +728,17 @@ rect.tile-empty-space {
   color: var(--error-fg, #fff);
   font-weight: 600;
 }
+
+
+/* Unused items (l5x_memory_analyzer/usage.py): the row is tinted and edged in
+   amber, and the Uses cell carries a pill, so an unused row is findable while
+   scrolling a thousand-row list. */
+.row-unused td { background: rgba(255, 176, 32, 0.13); }
+.row-unused td:first-child { box-shadow: inset 4px 0 0 #ffb020; }
+.unused-pill {
+  display: inline-block; padding: 1px 7px; border-radius: 9px; font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 0.04em; background: #ffb020; color: #1c1406;
+}
+.uses-cell { white-space: nowrap; }
+.tooltip-unused { color: #ffb020; font-weight: 700; margin-top: 0.35rem; }
+.tooltip-uses { color: #9aa3b0; font-size: 0.8rem; margin-top: 0.2rem; }
