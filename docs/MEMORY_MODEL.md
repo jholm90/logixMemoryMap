@@ -1227,6 +1227,14 @@ tag in MOV (`litop_type_real_lit`, `litop_form_floatform`), not wired. `DINT wit
 from a literal is unmeasured (`litop_type_sint_lit` reads −40 per call). Per-instruction
 rates: `litreal_*` (47 files).
 
+**Motion-structure members are typed** for the resolver: axis `ActualPosition`,
+`CommandPosition`, `ActualVelocity`, `CommandVelocity`, `AverageVelocity` and the other
+numeric attributes REAL, `CIPAxisState` INT, `AxisFault`/`AxisStatus` DINT; CAM `Master`/`Slave`
+REAL; MOTION_INSTRUCTION `ERR` INT, `EXERR`/`STATUS`/`STATE` SINT. Types agree with the
+instruction-set structure definitions and a controller tag export. 8,800 real typed-call
+operands resolved to nothing before; real set 1.74% → 1.41% mean, 3.44% → 3.18% worst. No
+generated row moved (836 captured rows across every axis/CAM/motion family checked).
+
 ### Cross-program references
 
 A shared alias across programs costs about −16 per rung per additional program.

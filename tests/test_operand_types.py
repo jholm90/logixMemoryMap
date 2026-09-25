@@ -54,3 +54,21 @@ def test_member_path_pays_the_same_surcharge_as_a_bare_tag():
     assert _total("MOV(U.Pv,R);") == _total("MOV(R,R);")
     assert _total("MOV(U.Pv,R);") - _total("MOV(D,D);") == 24
     assert _total("MOV(AlR,R);") == _total("MOV(R,R);")
+
+
+def test_motion_structure_members_resolve():
+    """Axis, CAM and MOTION_INSTRUCTION numeric members carry their structure types, so a
+    literal or DINT tag beside them pays the measured conversion (OQ-LITREAL)."""
+    import xml.etree.ElementTree as ET
+    from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
+    root = ET.fromstring(
+        '<RSLogix5000Content><Controller><Tags>'
+        '<Tag Name="Ax" DataType="AXIS_CIP_DRIVE"/><Tag Name="Vx" DataType="AXIS_VIRTUAL"/>'
+        '<Tag Name="Mi" DataType="MOTION_INSTRUCTION"/><Tag Name="Cm" DataType="CAM" Dimensions="4"/>'
+        '</Tags><Programs/></Controller></RSLogix5000Content>')
+    t = FileOperandTypes(root).for_program(None)
+    assert t.resolve("Ax.ActualPosition") == "REAL"
+    assert t.resolve("Ax.CIPAxisState") == "INT"
+    assert t.resolve("Vx.CommandVelocity") == "REAL"
+    assert t.resolve("Mi.ERR") == "INT" and t.resolve("Mi.EXERR") == "SINT"
+    assert t.resolve("Cm[2].Master") == "REAL"

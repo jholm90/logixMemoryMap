@@ -23,7 +23,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | **1.74% mean, 3.44% worst** since OQ-LITREAL (was **2.18% / 4.31%, all seventeen under**, export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
+| **OQ-REALUNDER** | **1.41% mean, 3.18% worst** since motion-structure members were typed (1.74% / 3.44% after OQ-LITREAL alone (was **2.18% / 4.31%, all seventeen under**, export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
 | **OQ-LITREAL** | **WIRED (FITTED), batch built.** A literal is typed by its spelling (integer DINT, float REAL) and pays the mixed-type conversions. Real set 2.18% → 1.74% mean, 4.31% → 3.44% worst. 47 `litreal_*`, 118 `litint_*` and 22 `typun_*` files measure it per instruction and type. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 

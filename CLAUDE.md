@@ -25,8 +25,11 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.74% on the seventeen standard-processor real programs counted,
-worst case 3.44%** since literals were typed by their spelling (OQ-LITREAL, 2026-09-25):
+**Mean absolute error 1.41% on the seventeen standard-processor real programs counted,
+worst case 3.18%, 6/17 inside 1%, 14/17 inside 2%** since motion-structure members (axis
+positions and velocities REAL, `CIPAxisState` INT, CAM Master/Slave REAL, MOTION_INSTRUCTION
+ERR INT) were typed for the resolver — 8,800 real operands had resolved to nothing. Before
+that 1.74% / 3.44%, since literals were typed by their spelling (OQ-LITREAL, 2026-09-25):
 an integer literal is DINT and a float literal REAL, paying the measured mixed-type
 conversion against a REAL or INT operand — found by a Studio-made edit of one real rung.
 Before that: **2.18%, worst 4.31%, all seventeen under-predicting (1.2% to 4.3%)** — deliberately, since
