@@ -79,6 +79,8 @@ Already ruled out, measured:
   priced exact on the realism floor (`l9v38_m_kinetix`, `l9v38_m_alarms`), and real
   axis tags have exactly the generated tags' shape.
 - **Documentation.** Descriptions and comments measured free.
+- **Motion operands and rung density.** Axis attributes, MOTION_INSTRUCTION members and
+  rungs of up to 64 units / 16 legs / two-deep nesting all price exact (`motop_*`, 44 files).
 
 **Where it lives (category scale test, seventeen programs).** Scaling one category alone
 to absorb each file's shortfall: **routine logic needs +11.6%, spread ±3.1% across the
@@ -134,7 +136,16 @@ a MOTION_INSTRUCTION member (`Mam.DN`, `OTU(Mah.EN)`, …) — rms ±216 on seve
 lead, not a constant. The engine prices both as plain operands and cannot resolve axis
 attribute types at all. Real exposure (17 programs): 6,440 axis-attribute and 1,366
 MI-member references; at those rates ~20% of the real shortfall on average (2% to 68% by
-program). **Rung-level (Studio-made, one rung kept per routine, against the routine-removed file):** homing-routine rung 7 measured 712 vs 568 predicted (short 144, 25%); cam-correction rung 3 measured 2,484 vs 2,232 (short 252, 11%). The two-feature rates over-predict both rungs (~380 and ~600), so the motion lead is real in direction but not in size, and density is still in play. **Built, awaiting capture:** `gen_motion_operands.py`, 44 `motop_*` files (OQ-MOTIONOP, OQ-DENSERUNG) — axis REAL/BOOL attributes and MI members against paired plain controls, and a 1–64-units-per-rung density sweep. Real-rung templates (the two isolated rungs rebuilt over synthetic tags) were withdrawn before commit as customer-derived; the same question is answered by Studio-made variants of the real rung with its motion operands swapped for plain tags. Next: capture, then wire whichever premium the pairs show.
+program). **Rung-level (Studio-made, one rung kept per routine, against the routine-removed file):** homing-routine rung 7 measured 712 vs 568 predicted (short 144, 25%); cam-correction rung 3 measured 2,484 vs 2,232 (short 252, 11%). The two-feature rates over-predict both rungs (~380 and ~600), so the motion lead is real in direction but not in size, and density is still in play. **Captured — both leads dead.** All 44 `motop_*` files, zero errors, read the control's +1,330 to the byte (OQ-MOTIONOP, OQ-DENSERUNG closed negative, RESOLVED_QUESTIONS): axis attributes and MOTION_INSTRUCTION members cost exactly what plain members and TIMER bits cost, and rungs of up to 64 units, 16 legs or two-deep nesting are priced right. The seven-routine fit was size, not mechanism.
+
+What the two isolated rungs carry that no generated file has:
+- **AOI output parameters read from outside the AOI** (`Sensor.Out`, 4 in rung 7) — 1–8% of real operands per program.
+- **Four-level member paths** through a UDT whose member is a UDT holding a MOTION_INSTRUCTION (`Cell.Servo.MAH.PC`, 3 in rung 7) — OQ-OPERANDSHAPE went to three levels; deeper is 3.2% of real operands.
+- **REAL compared with a DINT tag or an integer literal** (`LES(RealArr[2],DintTag)`, `GRT(RealArr[2],1)`, rung 3), on **program-scope arrays**.
+
+Next, in order:
+1. **Studio-made variants of the two kept-rung files (asked for, not built here).** In the rung-7 file: (a) replace the four AOI-output reads with a plain controller BOOL; (b) replace the deep `Cell.Servo.*` references with plain tags of the same type. In the rung-3 file: (c) make the DINT compare limit a REAL tag and the literals `1`/`-1` REAL (`1.0`/`-1.0`). Read Capacity after each single change; each delta against the engine's delta for the same edit says which feature carries the rung's shortfall.
+2. **Spec, not built: split the motop inventory's +3,108** (RESOLVED, OQ-DENSERUNG note). Three files on the captured `l9v38_m_kinetix_l8v35` content, differenced against it: MOTION_INSTRUCTION[400] alone; 100 tags of a UDT holding four MOTION_INSTRUCTION members alone; 100 tags of a UDT holding five TIMER members alone. Expected payoff ~0.05 pp — below the floor unless the rate is far above 4 bytes; run only if item 1 comes back empty.
 
 1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
    one program at a time, starting from the full project:

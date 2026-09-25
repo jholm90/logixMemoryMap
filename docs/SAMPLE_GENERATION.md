@@ -359,7 +359,7 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Current batch: motion operands and dense rungs — 44 files, awaiting capture
+## Captured: motion operands and dense rungs — 44 files, zero errors, every file exact against its control (OQ-MOTIONOP, OQ-DENSERUNG closed negative)
 
 `gen_motion_operands.py`, `samples/generated/motop/`. v35 / 1756-L81E, realism floor, the
 captured-exact `l9v38_m_kinetix_l8v35` content (2198-P208 + converter axis, one
