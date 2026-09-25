@@ -627,6 +627,34 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
     return findings
 
 
+# Instructions the instruction set documents as integer-only: no REAL (or LREAL)
+# operand is accepted. SWPB further takes only INT or DINT.
+_INTEGER_ONLY_INSTRUCTIONS = frozenset({
+    "BTD", "MVM", "MEQ", "TOD", "FRD", "TO_BCD", "BCD_TO", "SWPB"})
+_SWPB_TYPES = frozenset({"INT", "DINT"})
+
+
+def _documented_type_findings(rung_texts: list[str], tag_types: dict[str, str],
+                              udt_members: dict[str, dict[str, str]] | None = None) -> list[LintFinding]:
+    """An operand whose resolved type the instruction does not accept. Unresolvable
+    operands are skipped, the same conservative bias as _bit_level_findings."""
+    findings = []
+    for text in rung_texts:
+        for mnemonic, args_str in _call_sites(text):
+            if mnemonic not in _INTEGER_ONLY_INSTRUCTIONS:
+                continue
+            for operand in _split_top_level_args(args_str):
+                t = _resolve_operand_type(operand.strip(), tag_types, udt_members)
+                if not t:
+                    continue
+                if t in ("REAL", "LREAL") or (mnemonic == "SWPB" and t not in _SWPB_TYPES):
+                    findings.append(LintFinding(
+                        "operand_type_not_accepted",
+                        f"'{mnemonic}' operand {operand.strip()!r} resolves to {t}, which the "
+                        f"instruction does not accept: {text.strip()!r}"))
+    return findings
+
+
 def _rung_missing_output_findings(rung_texts: list[str]) -> list[LintFinding]:
     """: "conditional instructions like EQU with no
     operand at the end of the rung or a NOP() instruction. this is basic
@@ -1522,6 +1550,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
     for program_el in root.iter("Program"):
         findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
+        findings.extend(_documented_type_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
     for aoi_el in root.iter("AddOnInstructionDefinition"):
         aoi_tag_types = _tag_types_from(aoi_el, "Parameter")
         aoi_tag_types.update(_tag_types_from(aoi_el, "LocalTag"))

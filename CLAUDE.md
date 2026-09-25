@@ -355,6 +355,13 @@ waits.
   > is the backstop, not the rule.** The rule is that this content never leaves
   > `samples/local/`.
 
+- **Rockwell help documentation is chat-only.** The instruction-set help files arrive over
+  chat and stay in the session scratchpad — never in the repository, not even under
+  `samples/local/`, and no table, page text or parsed extract of them is committed. A
+  finding drawn from them is written in the project's own words as a fact with its
+  measured consequence (e.g. "the controller handles every immediate value as a DINT"),
+  never as copied content.
+
 ## The real exports in `samples/local/` are READ-ONLY. No exceptions.
 
 **Never modify a real program export and expect the result to build.** It will not.

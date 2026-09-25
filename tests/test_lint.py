@@ -552,3 +552,11 @@ def test_the_firmware_matrix_generators_stay_exempt():
     narrow -- nothing else may opt out."""
     assert _platform_kinds(name="FwMatrix381756L902TS", proc="1756-L902TS", major="38") == set()
     assert _platform_kinds(name="FwBaselineL75V31", proc="1756-L75", major="31") == set()
+
+
+def test_integer_only_instruction_refuses_a_real_operand():
+    from sample_gen.lint import _documented_type_findings
+    types = {"R": "REAL", "D": "DINT", "S": "SINT", "I": "INT"}
+    assert _documented_type_findings(["BTD(R,0,D,0,4);"], types)
+    assert _documented_type_findings(["SWPB(S,REVERSE,D);"], types)
+    assert not _documented_type_findings(["BTD(S,0,D,0,4);", "SWPB(I,REVERSE,D);", "MVM(D,S,I);"], types)
