@@ -66,6 +66,70 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0l. Deep review, 2026-09-25 — where it stands and what is left
+
+**Real set now 1.41% mean, 3.18% worst, 6/17 inside 1%, 14/17 inside 2%** (from 2.18% /
+4.31% this morning): integer/float literals typed by spelling (OQ-LITREAL) and motion-
+structure members typed for the resolver (8,800 real operands had resolved to nothing).
+
+**Studio-made variants re-measured under the current engine** (each isolates real ladder
+against the exactly-priced plant, so these are the sharpest instrument available):
+
+| variant | shortfall, % of added logic, before → now |
+|---|---|
+| plant + worst program's program A | 15.2% → **7.7%** |
+| plant + program B | 9.1% → **2.6%** |
+| plant + program C | 10.6% → **4.5%** |
+| plant + program D (carries a source-protected AOI) | 30.9% → 24.6% (a minimum by design) |
+| seven routines removed one at a time | 5 still short 200–650 bytes (10–16%); the other two now within −56 / −20 |
+| literal-heavy rung | short 252 → over 60 (≈4 per literal: 52 wired vs 48 measured; litreal decides) |
+| bit-and-motion-status rung | still short 144 |
+
+**Real ladder against the plant, per 100 rungs** (the plant is the base of every batch):
+
+| | real | plant |
+|---|---:|---:|
+| instructions | 556 | 249 |
+| bit instructions | 322 | 178 |
+| integer literals | 98 | 31 |
+| AOI calls | 12.9 | 0 |
+| CLR (REAL / DINT) | 7.8 / 11.6 | 0 |
+| COP / CPS / FLL | 9.9 | 0 |
+| JSR (args) | 6.0 (2.8) | 1.0 (0) |
+| motion instructions (literal operands) | 2.3 (4.7) | 0 |
+| **rungs per routine** | **16.7** | **~97** |
+
+**Typed-call coverage** (84,844 real calls, current resolver): measured or wired mixes
+cover ~97% — DINT|literal 37.5%, DINT 20.9%, REAL 15.9%, STRING 9.5% (OQ-STRINGMOV),
+REAL|literal 6.1% (litreal pending), DINT+REAL 1.5%, SINT 1.3%, DINT+INT 1.1%. Unmeasured:
+DINT+SINT 0.3% and SINT|literal 0.3% (litint pending), INT+REAL 0.1%. Unresolved ~1.5%:
+string members, module I/O image words, members of source-protected AOIs.
+
+**What the 17-program attribution can and cannot say.** After both fixes, rungs,
+routines, JSRs and CLR-on-REAL each fit the remaining residual equally (0.52–0.56% mean):
+everything scales with size, so 17 files cannot separate them. Isolation batches and
+Studio-made variants are the only instruments that separate features.
+
+**Ranked, built and awaiting capture:**
+1. `litreal_*` (47), `litint_*` (118), `typun_*` (22) — literal conversion rate per
+   instruction and type; CLR/ABS/NEG/BTD/TRN by type (CLR on REAL: 4,120 real calls at the
+   DINT rate); CLR vs `MOV(0,…)`.
+2. `realidiom_*` (33, OQ-REALIDIOM) — routine granularity at real size (the best single
+   fit to what remains is ~324 bytes per routine, and no realism file has small
+   routines); ONS/OTL/OTU on bits of DINT words (real error-bit and one-shot idiom,
+   never measured on those instructions); MAM/MAS written the real way (literal tails,
+   jerk 75, move type 1) — `litop_mam_*` already read 40–64 per call under.
+
+**Not built, for after capture:**
+- DINT+SINT and INT+REAL mixes if litint/litreal leave them open (0.4% of calls).
+- Module I/O image types (`Local:1:I.Data[0]` INT) — code-only, ~0.7% of typed calls.
+- A Studio-made edit of the bit-heavy routine (ONS on DINT bits → BOOL) if `realidiom_bit_*`
+  comes back exact but that routine stays short.
+
+**Checked and ruled out today:** motion operands and dense rungs (`motop_*`, exact);
+AOI output reads and deep member paths (Studio edits, exact); every documented
+data-type rule for the instructions generated (now enforced by lint).
+
 ### 0k. Find the ~2% the series law was cancelling — NEXT
 
 Checkpoint: tag `checkpoint-2026-09-25-pre-series-law`, commit `172f581` (0.58% state).

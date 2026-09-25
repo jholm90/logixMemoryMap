@@ -359,6 +359,22 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: real idioms at real density — 33 files, awaiting capture (OQ-REALIDIOM)
+
+`gen_real_idioms.py`, `samples/generated/realidiom/`. v35 / 1756-L81E, realism floor.
+`realism.with_baseline(stations_per_routine=)` now cuts the plant into routines of any
+size (default 10, unchanged).
+
+| files | n | differenced against |
+|---|---:|---|
+| `realidiom_gran_spr{01,02,05,20}` | 4 | `realidiom_gran_spr10` (= `realism_base_f25`) |
+| `realidiom_gran_spr10` | 1 | control |
+| `realidiom_bit_n00` | 1 | control for the bit arm |
+| `realidiom_bit_{ote,ons,otl,otu}_{mbool,dbit,abit,mbit}` | 16 | `_mbool` of the same instruction |
+| `realidiom_mam_tag` | 1 | `motop_n00` |
+| `realidiom_mam_{tail0,jerk75,move1,dynilit,dynflit,virtual,keywords,real}` | 8 | `realidiom_mam_tag` |
+| `realidiom_mas_{tag,lit}` | 2 | each other, `motop_n00` |
+
 ## Current batch: literals against SINT/INT/DINT, and types outside the surcharge table — 140 files, awaiting capture (OQ-LITREAL)
 
 `gen_literal_int.py`, `samples/generated/litint/` (118): for each of SINT, INT, DINT and
