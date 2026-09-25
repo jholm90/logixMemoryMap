@@ -105,6 +105,19 @@ Leads, ranked:
    member operands, JSR with parameters, literal-heavy MOV/compare, program-scoped
    operands, public program-scoped operands, COP/FLL block moves, bit-of-word operands
    (`Word.5`), timers/counters with real presets, CPT, and a mixed control.
+**Transplant results (export 27, Studio-made).** Four of its programs were imported one
+at a time INTO the plant (`realism_base_f25`, 840,384, priced exact), so each file's
+error belongs to the imported content alone. Split by category, the shortfall is the
+imported logic: **15.2%, 9.1% and 10.6% of added logic** on the three clean programs
+(the fourth, 30.9%, carries a source-protected AOI and is a minimum by design) — the same
++11.6% ±3.1% the category test found across the seventeen. A second file with the spares
+removed confirmed unused AOIs/spares are priced right (46,560 measured, 46,080
+predicted). Real ladder against the plant, per 100 rungs: 530–680 instructions (plant
+249), 116–214 extra writers (0), 70–94 branch openings (~10), 51–106 bit-of-word operands
+(0), 187–259 multi-level member paths (0). Each of those was measured exact ALONE
+(OQ-OPERANDSHAPE, OQ-SERIESREAL, branch tests), so the suspect is their combination in
+dense rungs. Next: routine-level variants of the worst program (below).
+
 1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
    one program at a time, starting from the full project:
    - Delete ONE program in Logix Designer (its routines and program tags). Leave
@@ -120,7 +133,10 @@ Leads, ranked:
    Per program: measured delta (full - variant) against the engine's delta for the same
    two files. A program whose measured delta beats its predicted delta by ~11% or more
    is where the shortfall lives; its rung shapes are then the next test. The variants
-   are fitting inputs, not blind tests. — the technique that found literal
+   are fitting inputs, not blind tests.
+   **Next, one level down:** in the plant-plus-program file of the worst program, empty
+   ONE routine at a time (delete its rungs, leave one `NOP();` so JSRs still verify),
+   re-read Capacity, largest routines first. Each delta is one routine's rungs. — the technique that found literal
    operands. In Logix Designer, one change at a time, re-read Capacity: (a) delete the
    7 unused AOI definitions; (b) change the 83 `Usage="Public"` program tags to Local;
    (c) delete one heavy data-mapping program. Each gives an exact delta to set against
