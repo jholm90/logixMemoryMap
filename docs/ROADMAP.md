@@ -13,7 +13,11 @@ evidence that counts.
 
 ### Current — after the capture batch that followed the blind set
 
-**Standard processors only, protected-heavy export 33 excluded — seventeen real
+**Now 2.18% mean, 4.31% worst, all seventeen under**, since the series-output law was
+wired (option A, 2026-09-25; checkpoint tag `checkpoint-2026-09-25-pre-series-law`). The
+law is exact on every isolating file; the ~2% it had been cancelling is TASKS 0k.
+
+Before it: **standard processors only, protected-heavy export 33 excluded — seventeen real
 programs: mean absolute error 0.58%, worst 2.37%, 14 of 17 inside 1%, 16 of 17 inside
 2%.** With export 33 (39 source-protected routines, 3.87%): 0.77% / 3.87% on eighteen.
 The mean half of the stopping rule is met; the max is not (export 27, 2.37%). From 1.79% / 4.83% by wiring

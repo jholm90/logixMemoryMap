@@ -285,7 +285,10 @@ _DESTINATION_ARG = {
 # four measured members of that set. Nothing else has been measured, so a rung
 # whose extra outputs are timers or counters is not discounted -- see
 # OQ-SERIESOUTPUT for the files that would settle those.
-_OUTPUT_MNEMONICS = frozenset(_DESTINATION_ARG) | {"OTE", "OTL", "OTU"}
+# TON added on srsty_ton_k04 / srsty_tonlegs_k04: a timer in a rung with other
+# writers takes the same discount (OQ-SERIESREAL). TOF, RTO and counters are
+# unmeasured and not counted.
+_OUTPUT_MNEMONICS = frozenset(_DESTINATION_ARG) | {"OTE", "OTL", "OTU", "TON"}
 
 
 def series_output_extra_count(rung_texts: list[str]) -> int:

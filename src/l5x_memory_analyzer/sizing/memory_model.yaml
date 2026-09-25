@@ -2945,7 +2945,14 @@ aoi_call_site:
 #
 # Carrier: parser/logic.py's series_output_extra_count, summed per routine into
 # RoutineLogic.series_output_extras, subtracted once in sizing/logic.py.
-# MEASURED EXACTLY AND DELIBERATELY NOT APPLIED. Setting apply: true reproduces
+# APPLIED (option A, 2026-09-25; checkpoint tag checkpoint-2026-09-25-pre-series-law
+# holds the unapplied state). The srsty_* captures made it universal: -12 per
+# extra writer in every rung shape, branch legs with their own conditions and
+# timers included; all 38 series files exact once applied. The real set then
+# reads ~2.2% (all under) instead of 0.58% -- the unapplied law had been hiding
+# a real under-charge, which is now the thing to find (OQ-REALUNDER).
+#
+# History, kept for the reasoning: MEASURED EXACTLY AND DELIBERATELY NOT APPLIED. Setting apply: true reproduces
 # a real-set catastrophe, tested rather than assumed:
 #
 #     real set mean|%|   1.7036  ->  3.2167     sum-weighted  +1.6123  ->  +3.3935
@@ -2964,7 +2971,7 @@ aoi_call_site:
 # weights already contain. The srout_* batch cannot separate those two readings
 # because it never varies condition count.
 series_output:
-  apply: false
+  apply: true
   extra_output_discount: 12
   confidence: KNOWN
 
