@@ -359,6 +359,13 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: the other eight v36 renames — OQ-V36MNEMONIC, 8 files
+
+`gen_v36_renames.py`, `samples/generated/v36renames/`. 1756-L81E at v38.02 (`PlatNine`
+exemption), realism floor, 1,000 rungs each, every destination unique: `v36ren_sqrt`,
+`_trunc`, `_expt`, `_acos`, `_asin`, `_atan`, `_to_bcd`, `_bcd_to`. Differenced against the
+baseline's own residual (−1,794); SQRT/TRUNC/EXPT/ATAN also against their v35 weights.
+
 ## Current batch: series-output styles — OQ-SERIESREAL, 14 files
 
 `gen_series_styles.py`, `samples/generated/srstyle/`. v35 / 1756-L81E, realism floor.

@@ -343,8 +343,8 @@ Without installing, run the same subcommands from `src/` as
 | **5069 / CompactLogix 5380** | ✅ supported, represented in the real validation set |
 | GuardLogix safety controllers | sized, but safety memory is a separate partition, so accuracy is quoted for standard processors only |
 | 1756-L7x, 1769 | older architecture: existing support kept, no new development |
-| 1756-L9x ControlLogix 5590 | ✅ sized: on 32 test programs from empty to heavily loaded, an L9 at v38 used exactly the same memory as a 1756-L81E plus a fixed 2,276 bytes, which the tool charges. No real L9 program has been measured yet, and no L9 capacity figure is on file, so the headroom percentage is not shown for an L9 |
-| Firmware v36 and later | ✅ read correctly: 16 ladder instructions were renamed at v36 (GEQ→GE, MOV→MOVE, LIM→LIMIT, …); both spellings are sized the same. Eight of the sixteen have been built into v38 projects and measured, identical to their v35 forms; the other eight (SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD, BCD_TO) are mapped but not yet measured. Content costs the same at v38 as at v35 |
+| **1756-L9x ControlLogix 5590** | ✅ supported: on 32 test programs from empty to heavily loaded, an L9 at v38 used exactly the same memory as a 1756-L81E plus a fixed 2,276 bytes, which the tool charges. Capacity from the published user memory (L902TS 2 MB, L905TS 5 MB, L908TS 8 MB, L915TS 15 MB) |
+| Firmware v36 and later | ✅ read correctly: 16 ladder instructions were renamed at v36 (GEQ→GE, MOV→MOVE, LIM→LIMIT, …); both spellings are sized the same. Eight of the sixteen have been built into v38 projects and measured, identical to their v35 forms; the other eight (SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD, BCD_TO) are built and awaiting measurement. Content costs the same at v38 as at v35 |
 
 ---
 

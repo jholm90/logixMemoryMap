@@ -66,6 +66,13 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0i. The other eight v36 renames — BUILT, awaiting capture
+
+`gen_v36_renames.py`, 8 files: SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD, BCD_TO, one
+each, 1756-L81E v38, realism floor, 1,000 rungs in the v35 calibration shape. A clean
+import confirms v38 takes the name; SQRT/TRUNC/EXPT/ATAN are compared with their v35
+weights, ACOS/ASIN/TO_BCD/BCD_TO have none on file and are measured. OQ-V36MNEMONIC.
+
 ### 0h. Series-output styles — BUILT, awaiting capture
 
 14 `srsty_*` files (`gen_series_styles.py`) for OQ-SERIESREAL, built on request: the
@@ -127,14 +134,11 @@ EnableIn/EnableOut and hidden BOOL-packing members carry no count. HMI/SCADA acc
 not visible in an L5X, and the tooltip says so. Pinned by `tests/test_usage.py`. The
 light/dark toggle was removed; the page follows the OS setting.
 
-### 0c. L9 (ControlLogix 5590) validation — built, awaiting capture
+### 0c. L9 (ControlLogix 5590) — DONE
 
-96 files (`gen_l9_v38.py`, `samples/generated/l9v38/`): 32 content items (5 densities,
-21 instructions × 1,000 rungs, 6 module/alarm items), each on 1756-L81E v35, 1756-L81E v38
-and 1756-L908TS v38, v38 files respelled with the v36 names. OQ-L9PLATFORM.
-Still to do outside the files: four budget readings (stage 0) and two or three real L9
-programs predicted blind. On capture: difference each item's arms; if both differences
-are flat across the densities, wire them as project constants.
+96 files captured clean: L81E v38 = L81E v35 and L9 v38 = L81E v38 + 2,276 on all 32
+content items (OQ-L9PLATFORM). Budgets from published user memory, 2 / 5 / 8 / 15 MB
+(OQ-L9BUDGET). Nothing further planned for the L9.
 
 ### 0e. v36+ instruction names — done
 
