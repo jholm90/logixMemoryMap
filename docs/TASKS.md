@@ -118,6 +118,16 @@ predicted). Real ladder against the plant, per 100 rungs: 530–680 instructions
 (OQ-OPERANDSHAPE, OQ-SERIESREAL, branch tests), so the suspect is their combination in
 dense rungs. Next: routine-level variants of the worst program (below).
 
+**Source-protected AOIs: user-supplied sizes (proposed, not built).** Export 27's one
+protected AOI exposes 20 parameters (~20 bytes of instance data) while Studio reports its
+data type size as 124: ~104 bytes of encrypted local tags per instance (2 instances, ~200
+bytes). Its encrypted logic (41,097 characters) is priced at a minimum; the plant+Line2
+transplant reads 24,420 under (30.9% of its logic) against ~11% elsewhere, so that AOI's
+logic is likely ~15 KB. Proposal: a gitignored sidecar in `samples/local/` giving, per
+protected AOI, its data type size (read in Studio) and its definition cost (import the
+AOI alone into an empty project, read the Capacity rise); the engine uses them instead of
+the minimum and drops the notice. Would also cover export 33.
+
 1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
    one program at a time, starting from the full project:
    - Delete ONE program in Logix Designer (its routines and program tags). Leave
