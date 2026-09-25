@@ -375,6 +375,8 @@ The specific reasons, so this is not re-litigated as a tooling problem:
   would not import. Anything short of a byte-identical round trip of the untouched
   file is a guess.
 
+**A real rung's structure rebuilt over synthetic tags is a derived variant too** — it may not be generated under `samples/generated/`. A real rung shape is measured from a Studio-made variant (edit the rung in Logix Designer, export, read Capacity), never from a template copied out of the export.
+
 So: **a real export is an INPUT.** It gets parsed and predicted against, never
 rewritten. The strip-ladder approach — subtracting categories from a real program to
 attribute its residual — is **dead by this rule**, not merely difficult, and

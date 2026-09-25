@@ -134,10 +134,7 @@ a MOTION_INSTRUCTION member (`Mam.DN`, `OTU(Mah.EN)`, …) — rms ±216 on seve
 lead, not a constant. The engine prices both as plain operands and cannot resolve axis
 attribute types at all. Real exposure (17 programs): 6,440 axis-attribute and 1,366
 MI-member references; at those rates ~20% of the real shortfall on average (2% to 68% by
-program). Test spec (not built): plant + the proven Kinetix block (bus supply, one drive,
-two axes), 100 and 400 rungs reading `ActualPosition`/`ActualVelocity` in GRT/SUB/MOV
-against the same rungs on a plain REAL tag, and XIC/OTU on MOTION_INSTRUCTION members
-against the same on a TIMER member — 8 files.
+program). **Rung-level (Studio-made, one rung kept per routine, against the routine-removed file):** homing-routine rung 7 measured 712 vs 568 predicted (short 144, 25%); cam-correction rung 3 measured 2,484 vs 2,232 (short 252, 11%). The two-feature rates over-predict both rungs (~380 and ~600), so the motion lead is real in direction but not in size, and density is still in play. **Built, awaiting capture:** `gen_motion_operands.py`, 44 `motop_*` files (OQ-MOTIONOP, OQ-DENSERUNG) — axis REAL/BOOL attributes and MI members against paired plain controls, and a 1–64-units-per-rung density sweep. Real-rung templates (the two isolated rungs rebuilt over synthetic tags) were withdrawn before commit as customer-derived; the same question is answered by Studio-made variants of the real rung with its motion operands swapped for plain tags. Next: capture, then wire whichever premium the pairs show.
 
 1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
    one program at a time, starting from the full project:
