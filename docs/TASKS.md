@@ -66,14 +66,21 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0i. The other eight v36 renames — BUILT, awaiting capture
+### 0j. Series-output law — DECISION PENDING
+
+The 14 `srsty_*` captures make it universal: −12 per extra writing instruction in
+every shape, timers included. Applied, all 38 series files are exact and the real set
+reads 2.18% (all under) instead of 0.58%. Either ship it and hunt the ~2% under-charge
+it exposes, or keep it off. See OQ-SERIESREAL.
+
+### 0i. The other eight v36 renames — DONE (captured, ACS/ASN/TOD/FRD weights wired)
 
 `gen_v36_renames.py`, 8 files: SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD, BCD_TO, one
 each, 1756-L81E v38, realism floor, 1,000 rungs in the v35 calibration shape. A clean
 import confirms v38 takes the name; SQRT/TRUNC/EXPT/ATAN are compared with their v35
 weights, ACOS/ASIN/TO_BCD/BCD_TO have none on file and are measured. OQ-V36MNEMONIC.
 
-### 0h. Series-output styles — BUILT, awaiting capture
+### 0h. Series-output styles — CAPTURED (see 0j)
 
 14 `srsty_*` files (`gen_series_styles.py`) for OQ-SERIESREAL, built on request: the
 dominant real multi-output shape (branch legs with their own conditions, 61% of real

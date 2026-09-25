@@ -638,10 +638,11 @@ zero_connection_module:
   # Only a bridge with NO child modules; one with devices beneath it (4 of the
   # 18 real ETHERNET-BRIDGE modules) keeps the flat rate. A gateway module such
   # as a 1756-EN2T is not a placeholder and keeps the flat rate too.
-  # FITTED until the bridgeph_* count sweep (realism floor, v35/L81E, inhibited)
-  # confirms it at several counts.
+  # KNOWN: the bridgeph_* sweep on the realism floor reads exact at 1, 2, 4 and
+  # 8 inhibited bridges, and 4 not inhibited read the same. 16-character names
+  # read +8 per bridge over 6-character ones (bridgeph_ebr_long_n04).
   by_catalog:
-    'ETHERNET-BRIDGE': { bytes: 320, confidence: FITTED }
+    'ETHERNET-BRIDGE': { bytes: 320, confidence: KNOWN }
 
 # repeat_bytes (OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
 # later modules of the SAME catalog in one project cost LESS than the first.
@@ -3536,6 +3537,14 @@ logic_instructions:
     MCR: 16
     TND: 24
     ATN: 60
+    # OQ-V36MNEMONIC: measured at v38 under their v36 names (v36ren_acos/_asin,
+    # v36ren_to_bcd/_bcd_to, 1,000 rungs each, realism floor); SQRT, TRUNC,
+    # EXPT and ATAN in the same batch cost exactly their v35 weights, so the
+    # v36 name costs what the v35 name costs. One file each: FITTED.
+    ACS: 60
+    ASN: 60
+    TOD: 52
+    FRD: 52
     DEG: 64
     RAD: 116
     TAN: 60

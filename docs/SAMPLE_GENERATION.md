@@ -359,14 +359,14 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Current batch: the other eight v36 renames — OQ-V36MNEMONIC, 8 files
+## Captured: the other eight v36 renames — 8 files, zero errors (all sixteen confirmed)
 
 `gen_v36_renames.py`, `samples/generated/v36renames/`. 1756-L81E at v38.02 (`PlatNine`
 exemption), realism floor, 1,000 rungs each, every destination unique: `v36ren_sqrt`,
 `_trunc`, `_expt`, `_acos`, `_asin`, `_atan`, `_to_bcd`, `_bcd_to`. Differenced against the
 baseline's own residual (−1,794); SQRT/TRUNC/EXPT/ATAN also against their v35 weights.
 
-## Current batch: series-output styles — OQ-SERIESREAL, 14 files
+## Captured: series-output styles — 14 files, zero errors (−12 per extra writer in every shape)
 
 `gen_series_styles.py`, `samples/generated/srstyle/`. v35 / 1756-L81E, realism floor.
 Every file declares the same inventory (SrC/SrQ 1,600 BOOLs, SrT 1,600 TIMERs, SrD 400
@@ -385,7 +385,7 @@ discount, so each residual against `srsty_k01` (timers: `srsty_ton_k01`) is the 
 | `srsty_mixlegs_k04` | legs with OTE, OTL, MOV, OTE |
 | `srsty_ton_k01` / `_ton_k04` / `_tonlegs_k04` | timers alone, in series, in legs |
 
-## Current batch: ETHERNET-BRIDGE placeholders — OQ-BRIDGEPH, 7 files
+## Captured: ETHERNET-BRIDGE placeholders — 7 files, zero errors (OQ-BRIDGEPH resolved, 320 KNOWN)
 
 `gen_bridge_placeholder.py`, `samples/generated/bridgeph/`. v35 / 1756-L81E, on the
 realism baseline. The real shape: an ETHERNET-BRIDGE on the controller's Ethernet port,

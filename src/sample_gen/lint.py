@@ -124,6 +124,8 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "MSG", "MUL", "MVM", "NEQ", "NOP", "ONS", "OTE", "OTL", "OTU", "RES",
     "RTO", "SIZE", "SSV", "STOD", "SUB", "TOF", "TON", "XIC", "XIO", "XPY",
     "OSR", "OSF", "TRN", "SQR", "SBR", "RET",
+    # Weighed at v38 under their v36 names (gen_v36_renames.py).
+    "ACS", "ASN", "TOD", "FRD",
     # Motion instructions (gen_motion_instructions.py) --
     # MAH/MSO corpus-confirmed call syntax, the rest real per Rockwell
     # documentation though not independently corpus-confirmed for that

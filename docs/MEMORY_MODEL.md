@@ -847,7 +847,7 @@ this wrong.
 - **ControlNet and DeviceNet** are not supported.
 - **Zero-connection modules** (no connection, no stated size). An `ETHERNET-BRIDGE`
   with **no child modules** is an IP-address placeholder and costs its node overhead
-  only: **320** (FITTED, `bridge_placeholder_single` / `_ten` exact at 1 and 10;
+  only: **320** (KNOWN — exact at 1, 2, 4, 8 and 10 bridges, inhibited or not;
   OQ-BRIDGEPH), charged with no notice. Every other zero-connection module — a
   gateway such as a 1756-EN2T, or a bridge with devices beneath it — is charged the
   flat 2,344 (`zero_connection_module`) with a coverage notice. `Local` is excluded

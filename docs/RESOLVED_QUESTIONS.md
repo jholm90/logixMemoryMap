@@ -35,6 +35,25 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-BRIDGEPH — an ETHERNET-BRIDGE placeholder with nothing beneath it
+
+**RESOLVED — KNOWN 320 per bridge.** `bridgeph_*` on the realism floor, zero errors: exact at 1, 2, 4 and 8 inhibited bridges; four not inhibited read the same (inhibiting costs nothing); four with 16-character names read +8 per bridge over 6-character names. Charged 320 with no notice for a childless ETHERNET-BRIDGE; a gateway (1756-EN2T) or a bridge with devices beneath it keeps the flat rate and its notice.
+
+**The question as it was asked:**
+
+Programmers leave an ETHERNET-BRIDGE in the I/O tree, usually inhibited, with no device
+beneath it and no connection through it, so the plant's IP addresses are visible in the
+project. It carries no data and should cost its own node overhead only. The engine
+charged it the flat `zero_connection_module` rate — 2,344, a median over noisy real
+files — and raised a coverage notice on every one.
+
+| | |
+|---|---|
+| **Evidence already on file** | `bridge_placeholder_single` 18,448 and `_ten` 21,336 against the 18,128 blank: **320 per bridge**, 3,200 + 8 for ten (noise floor). Both were over-predicted by 2,024 per bridge |
+| **Wired** | `zero_connection_module.by_catalog` ETHERNET-BRIDGE 320 FITTED, applied only to a bridge with **no child modules** and with no notice. Both captures now read 0 and −8. A bridge with devices beneath it (4 of the 18 real ones), and any gateway module such as a zero-connection 1756-EN2T, keeps the flat rate and its notice — an EN2T fronting another network is a different case and is not measured here |
+| **Real-set effect** | the original seventeen 1.66% → 1.74%, worst unchanged. The flat rate was over-charging 14 real placeholders by ~2,000 each, which hid that much under-prediction elsewhere; the measured rate is right on the isolation files, so it stays wired |
+| **Batch built** | `gen_bridge_placeholder.py`, `samples/generated/bridgeph/`, 7 files, v35 / 1756-L81E, realism floor: `bridgeph_n00` (control), `bridgeph_ebr_inh_n{01,02,04,08}` (inhibited, the real shape, 6-char names), `bridgeph_ebr_act_n04` (not inhibited), `bridgeph_ebr_long_n04` (16-char names). Flat marginals across n and `_act` = `_inh` close it as KNOWN |
+
 ## OQ-PROGSCOPESTRUCT — does a UDT or array tag cost the same at program scope?
 
 **RESOLVED — scope is free.** Captured on the realism floor: every `progscope_ctl_*` file reads byte-identical to its `progscope_prog_*` twin at 10, 50 and 200 tags, UDT and array alike, and the engine already predicted them identical. Program scope costs exactly what controller scope costs. Side finding, not a scope effect: a standalone `DINT[20]` array tag reads +4 over its prediction per tag in both scopes (arrays n010/n050/n200: +16/+176/+776 against the UDT arm, i.e. −24 + 4n). Real exposure is a few kilobytes; recorded, not wired.
@@ -243,9 +262,11 @@ deleted before capture, and the rest of the batch was rebuilt with MOV and LIM r
 too (the first build had respelled only the six comparisons, which would have failed on
 every MOV in the baseline).
 
-**Captured so far.** EQ, NE, GT, GE, LT, LE, MOVE and LIMIT, in the L9/v38 batch: clean
-imports, cost identical to the v35 forms. The other eight have one v38 file each
-(`gen_v36_renames.py`, `v36ren_*`), awaiting capture.
+**All sixteen captured at v38, zero errors.** EQ, NE, GT, GE, LT, LE, MOVE and LIMIT in the
+L9/v38 batch; SQRT, TRUNC, EXPT, ACOS, ASIN, ATAN, TO_BCD and BCD_TO one file each
+(`v36ren_*`). Every one imports clean. SQRT, TRUNC, EXPT and ATAN cost exactly their v35
+weights; ACOS and ASIN cost 60 per rung (as ATAN) and TO_BCD and BCD_TO 52 — weights their
+v35 forms never had, now wired for both spellings.
 
 **Exposure.** None of the seventeen real programs is v36+. Without the mapping, a v36+
 export would price every one of these instructions at zero — the six comparisons plus

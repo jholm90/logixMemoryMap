@@ -1,6 +1,6 @@
 # Open Questions
 
-**Three.** The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Two.** OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -24,8 +24,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | question | state |
 |---|---|
 | **OQ-REALUNDER** | The real residual: **0.58% mean, 2.37% worst** on the seventeen standard-processor real programs counted (export 33 excluded for 39 source-protected routines; with it 0.77% / 3.87% on eighteen). 14 of 17 inside 1%, 16 of 17 inside 2%; only export 27 is over. |
-| **OQ-SERIESREAL** | The −12-per-extra-output law holds exactly on every generated shape and still makes the real set worse when applied. 61% of real extra outputs sit in branch legs with their own conditions, never built — 14 `srsty_*` files now built for it and other styles, awaiting capture. |
-| **OQ-BRIDGEPH** | An ETHERNET-BRIDGE left in the tree, often inhibited, with nothing beneath it, as an IP-address placeholder. Wired at a measured 320 each (was the flat 2,344), no notice. 7 files built on the realism floor, not yet converted or captured. |
+| **OQ-SERIESREAL** | **The law is universal**: −12 per extra writing instruction in a rung in all 13 `srsty_*` shapes — branch legs with their own conditions (61% of real extra outputs), nested, mid-rung, latches, mixed writers — and **timers count as writers too**. Applied (with TON), all 38 series files read exact, and the real set goes **0.58% → 2.18%, every program under-predicting 1.2–4.3%**: the unapplied law has been hiding a uniform ~2% under-charge elsewhere. Unwired pending the decision on whether to ship that. |
 
 ---
 
@@ -230,20 +229,6 @@ generated files are this one law.
 | **Captured** | **The law holds, exactly.** Against `_series_k01`, per extra output: −12 at k = 2, 4, 8 in series; `_branch_k{02,08}` identical to series; `_inter_k{02,08}` (a condition before every output) identical too. The L9/v38 density rungs (`XIC … MOV … OTE`) show it again, −12 per rung on 1,600 rungs. So it is not the empty controller, not repeated bits, and not a single condition. |
 | **Real shapes** | Of real extra outputs (rungs with 2+ writing instructions): 27% plain series, 12% output-only branch legs, **61% branch legs each carrying their own conditions** — the one shape never built |
 | **Batch built** (styles) | `gen_series_styles.py`, `samples/generated/srstyle/`, 14 files, one tag inventory, each output written once, realism floor: `srsty_k01` control; `_legs_k{02,04,08}` (legs with own conditions); `_prelegs_k{02,04}` (shared + own conditions); `_legs2_k04` (two conditions per leg); `_nested_k04`; `_mid_k03` (output mid-rung then legs); `_otl_k04` (series latches); `_mixlegs_k04` (OTE/OTL/MOV/OTE legs); `_ton_k01` / `_ton_k04` / `_tonlegs_k04` (timers, which the counter does not count as writers). Each residual against its control is the discount for that shape |
+| **Captured (styles)** | All 14 `srsty_*` files, zero errors. Against `srsty_k01` / `srsty_ton_k01`, every shape reads exactly −12 per extra writer: `_legs_k{02,04,08}`, `_prelegs_k{02,04}`, `_legs2_k04`, `_nested_k04`, `_mid_k03`, `_otl_k04`, `_mixlegs_k04`, `_ton_k04`, `_tonlegs_k04`. TON is a writer for this law although the counter did not count it. |
+| **Trial** | Counter extended with TON, `apply: true`: all 38 series files (`realism_srout_*`, `srsty_*`) exact. Real set, seventeen counted: **0.58% → 2.18%**, all seventeen under-predicting, 1.19% to 4.31%. Reverted, pending decision. The law is right on every file that isolates it, so the real set's agreement without it is a compensating error (CLAUDE.md failure mode 3): something real programs carry is under-charged by about the size of the discount. Wiring it means the headline reads ~2% until that is found |
 | **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
-
-## 3. OQ-BRIDGEPH — an ETHERNET-BRIDGE placeholder with nothing beneath it
-
-Programmers leave an ETHERNET-BRIDGE in the I/O tree, usually inhibited, with no device
-beneath it and no connection through it, so the plant's IP addresses are visible in the
-project. It carries no data and should cost its own node overhead only. The engine
-charged it the flat `zero_connection_module` rate — 2,344, a median over noisy real
-files — and raised a coverage notice on every one.
-
-| | |
-|---|---|
-| **Evidence already on file** | `bridge_placeholder_single` 18,448 and `_ten` 21,336 against the 18,128 blank: **320 per bridge**, 3,200 + 8 for ten (noise floor). Both were over-predicted by 2,024 per bridge |
-| **Wired** | `zero_connection_module.by_catalog` ETHERNET-BRIDGE 320 FITTED, applied only to a bridge with **no child modules** and with no notice. Both captures now read 0 and −8. A bridge with devices beneath it (4 of the 18 real ones), and any gateway module such as a zero-connection 1756-EN2T, keeps the flat rate and its notice — an EN2T fronting another network is a different case and is not measured here |
-| **Real-set effect** | the original seventeen 1.66% → 1.74%, worst unchanged. The flat rate was over-charging 14 real placeholders by ~2,000 each, which hid that much under-prediction elsewhere; the measured rate is right on the isolation files, so it stays wired |
-| **Batch built** | `gen_bridge_placeholder.py`, `samples/generated/bridgeph/`, 7 files, v35 / 1756-L81E, realism floor: `bridgeph_n00` (control), `bridgeph_ebr_inh_n{01,02,04,08}` (inhibited, the real shape, 6-char names), `bridgeph_ebr_act_n04` (not inhibited), `bridgeph_ebr_long_n04` (16-char names). Flat marginals across n and `_act` = `_inh` close it as KNOWN |
-
