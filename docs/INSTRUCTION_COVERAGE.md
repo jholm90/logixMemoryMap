@@ -40,7 +40,8 @@ name:
 | ASN | ASIN | ATN | ATAN | TOD | TO_BCD | FRD | BCD_TO |
 
 The engine reads either spelling as the same instruction, and the tables here use the
-v35 name. All seventeen real programs are v31–v35.
+v35 name. All sixteen were captured at v38 with their v35 cost; ACS/ASN (60) and TOD/FRD
+(52) were weighed there for the first time — none appears in the real exports. All seventeen real programs are v31–v35.
 
 ## What "weighted" and "accurate" each mean
 

@@ -30,6 +30,12 @@ def _raw() -> dict:
 # (dotted path to the value, expected value, dotted path to its tier, rows, spans)
 KNOWN_REGISTER = [
     (
+        "zero_connection_module.by_catalog.ETHERNET-BRIDGE.bytes", 320,
+        "zero_connection_module.by_catalog.ETHERNET-BRIDGE.confidence", 8,
+        "bridge_placeholder_single/_ten and bridgeph_n00 + ebr_inh_n01/02/04/08 + "
+        "ebr_act_n04 on the realism floor, all exact; inhibiting costs nothing; OQ-BRIDGEPH",
+    ),
+    (
         "indirect_index.member_access_cost", 40,
         "indirect_index.member_access_confidence", 6,
         "opsp_ind_mov_e04/e08/e12/e76_idx, opsp_ind_equ_e76_idx and opsp_ind_xicmem_idx "
