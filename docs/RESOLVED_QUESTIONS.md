@@ -35,6 +35,45 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-MOTIONOP — do axis attributes and MOTION_INSTRUCTION members cost more than plain operands?
+
+**CLOSED NEGATIVE.** All 44 `motop_*` files captured with zero errors (8 warnings each,
+the axis max-deceleration/motor warnings the Kinetix base already carries), and every
+one reads the **same +1,330 residual as the control `motop_n00`**, to the byte. So each
+rung set costs exactly what the engine charges, and each motion operand costs exactly
+what its plain twin costs:
+
+- axis REAL attributes (`ActualPosition`, `CommandVelocity`) as MOV/GRT/LIM/SUB sources,
+  CIP and virtual, one axis or two, one or two references per SUB, 100 and 400 rungs —
+  identical to a REAL member of a plain UDT tag;
+- axis BOOL attributes (`AxisHomedStatus`, `VelocityStandstillStatus`) in XIC/XIO,
+  CIP and virtual — identical to a BOOL member and to a bit of a DINT member;
+- MOTION_INSTRUCTION `.DN/.EN/.ER/.PC/.IP`, read (XIC) and written (OTU), as a scalar
+  tag, an array element and a UDT member — identical to the TIMER bit in the same
+  position and to a bit of a DINT array element. A status bit costs a bit reference;
+  it does not bring in the whole FLAGS word at any extra cost.
+
+The seven-routine fit that pointed here (+50 per axis attribute, +29 per MI member) was
+size correlation, not mechanism. Do not reopen.
+
+## OQ-DENSERUNG — do dense real-shaped rungs cost more than their parts?
+
+**CLOSED NEGATIVE** for every shape built. The same 1,600 heterogeneous units (XIC/XIO,
+GRT/LES, MOV or OTE) at 1, 4, 16 and 64 per rung in series, as 4 and 16 branch legs, and
+16 nested two deep (`motop_dens_*`) all read the control's +1,330 exactly: the series law
+and the branch costs price long, branch-heavy, many-writer rungs correctly at 64 units
+(~190 instructions) per rung. Rung length, branch count, branch nesting and writer count
+do not carry the real shortfall.
+
+**Also found (not a question yet):** `motop_n00` reads +1,330 where the same plant +
+Kinetix block without the motop inventory (`l9v38_m_kinetix_l8v35`) reads −1,778, so the
+inventory is under-charged by **3,108**. Scalar MOTION_INSTRUCTION and TIMER tags and
+AXIS_VIRTUAL tags are each exact alone (`motioninstr_n*`, `axmarg_virtual_n*`), so the
+candidates are the parts never captured before: MOTION_INSTRUCTION[400] (priced at
+TIMER's 12 per element) and 100 UDT tags carrying four MOTION_INSTRUCTION and five TIMER
+members. A 16-byte MI element would give ~3,200. Real exposure: ~9,100 MI UDT members
+and ~300 MI array elements across the real set — ~4 bytes each is ~0.05 pp. See TASKS 0k.
+
 ## OQ-BRIDGEPH — an ETHERNET-BRIDGE placeholder with nothing beneath it
 
 **RESOLVED — KNOWN 320 per bridge.** `bridgeph_*` on the realism floor, zero errors: exact at 1, 2, 4 and 8 inhibited bridges; four not inhibited read the same (inhibiting costs nothing); four with 16-character names read +8 per bridge over 6-character names. Charged 320 with no notice for a childless ETHERNET-BRIDGE; a gateway (1756-EN2T) or a bridge with devices beneath it keeps the flat rate and its notice.
