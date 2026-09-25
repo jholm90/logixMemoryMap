@@ -40,3 +40,22 @@ def test_mixed_type_law_reproduces_every_measured_call():
         assert ots.mixed_surcharge_for(mnemonic, list(types), dest) == cost, (mnemonic, types)
     assert ots.mixed_surcharge_for("MOV", ["REAL", "REAL"], 1) is None
     assert ots.mixed_surcharge_for("MOV", ["REAL", "INT"], 1) is None
+
+
+def test_literals_take_the_type_their_spelling_implies():
+    """OQ-LITREAL: an integer literal is DINT, a float literal REAL, for mixing."""
+    from l5x_memory_analyzer.sizing.logic import _operand_type
+
+    class _NoTags:
+        def resolve(self, op):
+            return None
+
+    lt = LOGIC.operand_type_surcharge.literal_types
+    assert lt == {"integer": "DINT", "float": "REAL"}
+    assert [_operand_type(op, _NoTags(), lt) for op in ("5", "-1", "5.0", "1.5e3", "Tag")] == [
+        "DINT", "DINT", "REAL", "REAL", None]
+    ots = LOGIC.operand_type_surcharge
+    # litop_type_int_lit: MOV(5,INT) costs the DINT->INT conversion, 52, not uniform INT's 104.
+    assert ots.mixed_surcharge_for("MOV", ["DINT", "INT"], 1) == 52
+    # litop_form_floatform: MOV(5.0,DINT) measured 76; REAL 24 + DINT destination 48.
+    assert ots.mixed_surcharge_for("MOV", ["REAL", "DINT"], 1) == 72

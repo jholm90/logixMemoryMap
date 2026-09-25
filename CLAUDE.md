@@ -25,8 +25,11 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 2.18% on the seventeen standard-processor real programs counted,
-worst case 4.31%, all seventeen under-predicting (1.2% to 4.3%)** — deliberately, since
+**Mean absolute error 1.74% on the seventeen standard-processor real programs counted,
+worst case 3.44%** since literals were typed by their spelling (OQ-LITREAL, 2026-09-25):
+an integer literal is DINT and a float literal REAL, paying the measured mixed-type
+conversion against a REAL or INT operand — found by a Studio-made edit of one real rung.
+Before that: **2.18%, worst 4.31%, all seventeen under-predicting (1.2% to 4.3%)** — deliberately, since
 the series-output law was wired (option A, 2026-09-25): −12 per extra writing
 instruction in a rung, exact in all 38 files that isolate it, timers included. Before it
 the same set read 0.58% / 2.37%, but only because that over-charge was cancelling a real

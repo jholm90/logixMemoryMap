@@ -359,6 +359,22 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: literal operands in REAL calls — 47 files, awaiting capture (OQ-LITREAL)
+
+`gen_literal_real.py`, `samples/generated/litreal/`. v35 / 1756-L81E, realism floor, one
+inventory in all 47 (`LrA`/`LrD` REAL[400], `LdA`/`LdD` DINT[400], `LrQ` BOOL[400], `LrK`,
+`LrLo` REAL, `LdK` DINT), 400 calls each, every destination and output distinct.
+
+| files | n | differenced against |
+|---|---:|---|
+| `litreal_n00` | 1 | — |
+| `litreal_{mov,add,sub,mul,div,mod,grt,les,geq,leq,equ,neq,lim}_tag` | 13 | `litreal_n00` (uniform REAL control) |
+| `litreal_<mn>_ilit` (integer literal 5) | 13 | `litreal_<mn>_tag` |
+| `litreal_<mn>_flit` (float literal 5.0) | 13 | `litreal_<mn>_tag` |
+| `litreal_grt_ilit_v{0,1000,100000}`, `_grt_ilit_first` | 4 | `litreal_grt_ilit` |
+| `litreal_lim_ilit2` | 1 | `litreal_lim_ilit`, `litreal_lim_tag` |
+| `litreal_mul_dint_{ilit,flit}` | 2 | each other |
+
 ## Captured: motion operands and dense rungs — 44 files, zero errors, every file exact against its control (OQ-MOTIONOP, OQ-DENSERUNG closed negative)
 
 `gen_motion_operands.py`, `samples/generated/motop/`. v35 / 1756-L81E, realism floor, the

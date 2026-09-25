@@ -17,6 +17,21 @@ from l5x_memory_analyzer.sizing.constants import LogicInstructionModel
 # when a caller passes no operand_types (sizing/operand_types.py resolves every
 # spelling; see memory_model.yaml operand_type_surcharge).
 _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Literal operands (OQ-LITREAL): an integer literal is typed DINT and a float
+# literal REAL when a call's operand types are mixed, so it pays the measured
+# OQ-MIXEDTYPE conversion against a REAL or INT operand.
+_INT_LITERAL = re.compile(r"^[-+]?\d+$")
+_FLOAT_LITERAL = re.compile(r"^[-+]?(\d+\.\d*|\.\d+|\d+(\.\d*)?[eE][-+]?\d+)$")
+
+
+def _operand_type(op: str, operand_types, literal_types: dict[str, str]) -> str | None:
+    op = op.strip()
+    if literal_types:
+        if _INT_LITERAL.match(op):
+            return literal_types.get("integer")
+        if _FLOAT_LITERAL.match(op):
+            return literal_types.get("float")
+    return operand_types.resolve(op)
 
 # Operand types that a REAL-destination CPT has to convert to float before
 # it can evaluate (memory_model.yaml cpt_expression.real_dest). BOOL is
@@ -194,7 +209,8 @@ def compute_routine_logic_bytes(
             if operand_types is not None:
                 # A call mixing DINT with REAL or INT pays conversions
                 # (OQ-MIXEDTYPE); any other shape keeps the first-operand rule.
-                types = [operand_types.resolve(op) for op in operands]
+                literal_types = model.operand_type_surcharge.literal_types
+                types = [_operand_type(op, operand_types, literal_types) for op in operands]
                 dest = _DESTINATION_ARG.get(mnemonic)
                 dest_index = None if dest is None else dest % len(operands) if operands else None
                 mixed = model.operand_type_surcharge.mixed_surcharge_for(mnemonic, types, dest_index)

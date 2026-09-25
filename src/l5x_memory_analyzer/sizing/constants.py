@@ -587,6 +587,9 @@ class OperandTypeSurchargeModel:
     # OQ-MIXEDTYPE: a call whose operands mix DINT with REAL, or DINT with INT.
     # See memory_model.yaml operand_type_surcharge.mixed.
     mixed: dict = field(default_factory=dict)
+    # OQ-LITREAL: the type a literal operand takes in a mixed-type call, by its
+    # spelling ({"integer": "DINT", "float": "REAL"}); empty leaves literals untyped.
+    literal_types: dict = field(default_factory=dict)
 
     def surcharge_for(self, mnemonic: str, atomic_type: str) -> int:
         return self.surcharges.get(mnemonic, {}).get(atomic_type, 0)
@@ -1682,6 +1685,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                     for instr, types in raw["operand_type_surcharge"]["surcharges"].items()
                 },
                 mixed=dict(raw["operand_type_surcharge"].get("mixed") or {}),
+                literal_types=dict(raw["operand_type_surcharge"].get("literal_types") or {}),
             ),
             indirect_index=IndirectIndexModel(
                 confidence=raw["indirect_index"]["confidence"],
