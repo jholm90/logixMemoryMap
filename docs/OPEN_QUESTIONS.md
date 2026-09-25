@@ -1,6 +1,6 @@
 # Open Questions
 
-**Two.** OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Four.** OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants. OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -25,6 +25,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 |---|---|
 | **OQ-REALUNDER** | **2.18% mean, 4.31% worst, all seventeen under** (export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
+| **OQ-MOTIONOP** | Axis attributes and MOTION_INSTRUCTION members read short in real ladder; 44-file `motop_*` batch built, awaiting capture. |
+| **OQ-DENSERUNG** | Whether dense real-shaped rungs (5–7 instructions, branches, many writers) cost more than their parts; built in the same batch. |
 
 ---
 
@@ -232,3 +234,27 @@ generated files are this one law.
 | **Captured (styles)** | All 14 `srsty_*` files, zero errors. Against `srsty_k01` / `srsty_ton_k01`, every shape reads exactly −12 per extra writer: `_legs_k{02,04,08}`, `_prelegs_k{02,04}`, `_legs2_k04`, `_nested_k04`, `_mid_k03`, `_otl_k04`, `_mixlegs_k04`, `_ton_k04`, `_tonlegs_k04`. TON is a writer for this law although the counter did not count it. |
 | **Trial** | Counter extended with TON, `apply: true`: all 38 series files (`realism_srout_*`, `srsty_*`) exact. Real set, seventeen counted: **0.58% → 2.18%**, all seventeen under-predicting, 1.19% to 4.31%. Reverted, pending decision. The law is right on every file that isolates it, so the real set's agreement without it is a compensating error (CLAUDE.md failure mode 3): something real programs carry is under-charged by about the size of the discount. Wiring it means the headline reads ~2% until that is found |
 | **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
+
+---
+
+## 3. OQ-MOTIONOP — operands that live in the motion system
+
+| | |
+|---|---|
+| **Evidence** | Plant + export 27's worst program, one routine removed per file (Studio-made): all seven routines read short of the engine by 6.8%–38.6%. Two rungs isolated from it (one rung kept per routine, differenced against the routine-removed file): homing-routine rung 7 measured **712 vs 568** predicted (short 144, 25%); cam-correction rung 3 measured **2,484 vs 2,232** (short 252, 11%). A two-feature fit over the seven routines gave ~+50 per axis-attribute reference and ~+29 per MOTION_INSTRUCTION member reference (rms ±216), but those rates over-predict both isolated rungs (rung 7: 3 axis + 8 MI refs → ~380; rung 3: 12 axis refs → ~600), so the rates are not right as stated. |
+| **Mechanism** | The engine prices `Axis.ActualPosition` and `Mi.DN` as ordinary member operands and cannot type axis attributes. A MOTION_INSTRUCTION status bit is a bit of FLAGS the way TIMER.DN is a bit of its control word; whether the axis/MI path pays a premium, per reference or per distinct axis, is what the batch measures. |
+| **Expected movement** | Real exposure (17 programs): 6,440 axis-attribute and 1,366 MI-member references. At the fitted rates ~20% of the real shortfall on average (2% to 68% by program), i.e. ~0.4 pp of the 2.18% mean; at the rates the two isolated rungs allow, less. |
+| **Batch built** | `gen_motion_operands.py`, `samples/generated/motop/`, 44 files, 1756-L81E v35, realism floor, the captured-exact `l9v38_m_kinetix_l8v35` content plus one shared inventory (4 AXIS_VIRTUAL; MOTION_INSTRUCTION and TIMER as 400 scalars, a [400] array each, and members of 100 `MoCell` UDT tags; plain `MoRef` UDT controls). `motop_n00` control. `axr_*` (14): axis REAL attribute in MOV/GRT/LIM/SUB vs `MoRef.R`; CIP vs virtual, one axis vs two, ActualPosition vs CommandVelocity, 100 vs 400. `axb_*` (7): AxisHomedStatus / VelocityStandstillStatus in XIC/XIO vs a BOOL member and a DINT-member bit. `mi_*` (15): XIC and OTU on MI .DN (and EN/DN/ER/PC/IP cycling) as scalar, array element and UDT member, each vs a TIMER in the same position, plus a DINT-array bit. Real-rung templates were built and withdrawn before commit: a real rung's structure over synthetic tags is customer-derived content and may not sit under `samples/generated/`; a real rung shape is measured only from Studio-made variants. |
+| **Reads** | motion − paired control = the premium per reference; `_n100` vs `_n400` = per-reference scaling; `cip1` vs `cip` = per distinct axis; `sub1`/`sub2` = per reference vs per call; `mi_xic_dw_arr` = whether a status bit costs like a word-bit read. |
+| **CAPTURE** | not yet captured |
+
+## 4. OQ-DENSERUNG — dense real-shaped rungs
+
+| | |
+|---|---|
+| **Evidence** | Export 27's transplanted programs carry 530–680 instructions, 116–214 extra writers and 70–94 branch openings per 100 rungs (plant: 249, 0, ~10) and read 9–15% of their logic short. Each feature was measured exact alone (series law across 38 shapes incl. `srsty_*` legs to k=8; branch tests), so the suspect is their combination in long rungs. |
+| **Mechanism** | A per-rung or per-branch cost that grows with rung length beyond what the series law and branch costs charge. |
+| **Expected movement** | Unknown until captured; if dense rungs carry it, up to the ~11% of logic the category test found (the whole residual). |
+| **Batch built** | In the `motop_*` batch: `dens_ser_k{01,04,16,64}`, `dens_br_k{04,16}`, `dens_nest_k16` — the same 1,600 heterogeneous units (XIC/XIO, GRT/LES, MOV or OTE) in every file, 1 to 64 per rung in series, 4 and 16 as branch legs, 16 nested two deep. |
+| **Reads** | residual of each against `dens_ser_k01` is what density costs beyond the model; zero means dense rungs are priced right and the shortfall is in operands. |
+| **CAPTURE** | not yet captured |

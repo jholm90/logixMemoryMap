@@ -359,6 +359,31 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: motion operands and dense rungs — 44 files, awaiting capture
+
+`gen_motion_operands.py`, `samples/generated/motop/`. v35 / 1756-L81E, realism floor, the
+captured-exact `l9v38_m_kinetix_l8v35` content (2198-P208 + converter axis, one
+2198-D032-ERS3, PnAxisX/PnAxisY) plus one inventory shared by all 44: MoV1..4
+AXIS_VIRTUAL; MOTION_INSTRUCTION and TIMER as 400 scalars (`MoMiS###`/`MoTmS###`), a [400]
+array each (`MoMi`/`MoTm`), and four of each as members of 100 `MoCell###` UDT tags; plain
+controls `MoRef1..6` (B1..B3 BOOL, R REAL, W DINT); `MoDw` DINT[400], `MoDst` REAL[400],
+`MoC`/`MoQ` BOOL[1600], `MoA`/`MoB`/`MoE` DINT[1600]. Every output bit written once.
+`scripts/check_proven_blocks.py`: 0 unproven blocks.
+
+| files | n | question | differenced against |
+|---|---:|---|---|
+| `motop_n00` | 1 | control | — |
+| `motop_axr_{mov,grt,lim,sub2}_ref_n400` | 4 | OQ-MOTIONOP controls | `motop_n00` |
+| `motop_axr_mov_{cip,cip1,virt,cipvel}_n400`, `_mov_cip_n100` | 5 | OQ-MOTIONOP | `axr_mov_ref_n400` |
+| `motop_axr_{grt,lim}_cip_n400`, `_grt_virt_n400` | 3 | OQ-MOTIONOP | the `_ref` twin |
+| `motop_axr_sub{1,2}_cip_n400` | 2 | OQ-MOTIONOP | `axr_sub2_ref_n400` |
+| `motop_axb_xic_{ref,wbit}_n400` | 2 | OQ-MOTIONOP controls | `motop_n00` |
+| `motop_axb_{xic_cip,xic_cipvss,xio_cip,xic_virt}_n400`, `_xic_cip_n100` | 5 | OQ-MOTIONOP | `axb_xic_ref_n400`, `axb_xic_wbit_n400` |
+| `motop_mi_xic_tmr_{arr,sc,udt}_n400`, `_otu_tmr_{arr,sc,udt}_n400`, `_xic_dw_arr_n400` | 7 | OQ-MOTIONOP controls | `motop_n00` |
+| `motop_mi_xic_mi_{arr,sc,udt}_n400`, `_xic_mi_arr_n100`, `_xic_mibits_arr_n400` | 5 | OQ-MOTIONOP | the TIMER twin |
+| `motop_mi_otu_mi_{arr,sc,udt}_n400` | 3 | OQ-MOTIONOP | the TIMER twin |
+| `motop_dens_ser_k{01,04,16,64}`, `_br_k{04,16}`, `_nest_k16` | 7 | OQ-DENSERUNG | `dens_ser_k01` |
+
 ## Captured: the other eight v36 renames — 8 files, zero errors (all sixteen confirmed)
 
 `gen_v36_renames.py`, `samples/generated/v36renames/`. 1756-L81E at v38.02 (`PlatNine`
