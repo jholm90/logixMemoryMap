@@ -132,7 +132,7 @@ def _routine_xml(name: str, rungs: list[str]) -> str:
     return f'<Routine Name="{name}" Type="RLL">\n<RLLContent>\n{body}\n</RLLContent>\n</Routine>'
 
 
-def plant(stations: int = STATIONS) -> dict[str, str]:
+def plant(stations: int = STATIONS, stations_per_routine: int = STATIONS_PER_ROUTINE) -> dict[str, str]:
     """The fill: build_l5x keyword arguments to MERGE with an arm's own.
 
     Returns datatypes, controller tags, programs and scheduled-program XML.
@@ -149,10 +149,13 @@ def plant(stations: int = STATIONS) -> dict[str, str]:
         line_names = names[line * per_line:(line + 1) * per_line]
         if not line_names:
             continue
-        areas = [line_names[i:i + STATIONS_PER_ROUTINE]
-                 for i in range(0, len(line_names), STATIONS_PER_ROUTINE)]
-        routines = [_routine_xml("MainRoutine", [f"JSR(Area{a + 1:02d},0);" for a in range(len(areas))])]
-        routines += [_routine_xml(f"Area{a + 1:02d}", [r for s in area for r in _station_rungs(s)])
+        areas = [line_names[i:i + stations_per_routine]
+                 for i in range(0, len(line_names), stations_per_routine)]
+        # Two digits at the default granularity (unchanged names); three when a line
+        # carries 100+ routines. Both stay under 8 characters: a routine name costs 0.
+        width = 2 if len(areas) < 100 else 3
+        routines = [_routine_xml("MainRoutine", [f"JSR(Area{a + 1:0{width}d},0);" for a in range(len(areas))])]
+        routines += [_routine_xml(f"Area{a + 1:0{width}d}", [r for s in area for r in _station_rungs(s)])
                      for a, area in enumerate(areas)]
         prog = f"Line{line + 1}"
         programs.append(
@@ -169,13 +172,14 @@ def plant(stations: int = STATIONS) -> dict[str, str]:
     }
 
 
-def with_baseline(stations: int = STATIONS, **arm) -> dict[str, str]:
+def with_baseline(stations: int = STATIONS, stations_per_routine: int = STATIONS_PER_ROUTINE,
+                  **arm) -> dict[str, str]:
     """build_l5x keyword arguments: the arm's own content plus the baseline.
 
     Every XML-fragment argument is concatenated (arm first), so an arm passes
     exactly what it would have passed to build_l5x without the baseline.
     """
-    base = plant(stations)
+    base = plant(stations, stations_per_routine)
     merged = dict(arm)
     for key, xml in base.items():
         merged[key] = "\n".join(p for p in (arm.get(key, ""), xml) if p)
