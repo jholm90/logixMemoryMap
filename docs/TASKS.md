@@ -80,7 +80,31 @@ Already ruled out, measured:
   axis tags have exactly the generated tags' shape.
 - **Documentation.** Descriptions and comments measured free.
 
+**Where it lives (category scale test, seventeen programs).** Scaling one category alone
+to absorb each file's shortfall: **routine logic needs +11.6%, spread ±3.1% across the
+seventeen**, and would take the set to 0.45% mean. Every other category needs a scale that
+varies wildly by file (tags +4.2% ±2.6%, UDT definitions +57% ±26%, modules +89% ±85%).
+So the ~2% is almost certainly in **how real ladder is priced**, about 11% of logic,
+consistently.
+
+**What it is not, within logic.** The realism plant (1,280 stations of ordinary ladder
+over 128 routines) prices exactly, so plain rungs, routines, member operands and the
+XIC/OTE/TON/compare/ADD/MOV mix are right. Per-file counts of rungs, instructions,
+operands, literals, branches, routines and AOI calls all fit the gap about equally
+(0.45–0.6% mean), because all scale with size; 17 files cannot separate them.
+Program-scope operand references are a few percent of real references and do not fit
+(1.81%), though the two worst programs have the highest share (IPC 12%, export 18 25%).
+Distinct operand paths per routine do not separate either: the plant has more (0.75 per
+reference) than real ladder (0.53) and still prices exactly.
+
 Leads, ranked:
+0. **Feature transplant onto the plant** (spec, not built): the plant prices exactly, so
+   add ONE real-ladder feature at a time at its real density and see which reads ~11%
+   of its own logic under. About 12 files, each baseline + ~2,000 rungs: branch-heavy
+   rungs (real density ~0.8 branch opens per rung), AOI calls at real density, 3-level
+   member operands, JSR with parameters, literal-heavy MOV/compare, program-scoped
+   operands, public program-scoped operands, COP/FLL block moves, bit-of-word operands
+   (`Word.5`), timers/counters with real presets, CPT, and a mixed control.
 1. **Studio-made variants of export 27 (IPC, 4.31%)** — the technique that found literal
    operands. In Logix Designer, one change at a time, re-read Capacity: (a) delete the
    7 unused AOI definitions; (b) change the 83 `Usage="Public"` program tags to Local;
