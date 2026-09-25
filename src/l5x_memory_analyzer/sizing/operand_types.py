@@ -21,6 +21,10 @@ from __future__ import annotations
 import re
 import xml.etree.ElementTree as ET
 
+_AXIS_COMMON = {"ActualPosition": "REAL", "CommandPosition": "REAL", "ActualVelocity": "REAL",
+                "CommandVelocity": "REAL", "AverageVelocity": "REAL",
+                "InterpolatedActualPosition": "REAL", "AxisFault": "DINT", "AxisStatus": "DINT"}
+
 # Members of the predefined structures real operands reach into. Only the
 # members an arithmetic, compare or move instruction can take are needed.
 _PREDEFINED_MEMBERS: dict[str, dict[str, str]] = {
@@ -30,6 +34,21 @@ _PREDEFINED_MEMBERS: dict[str, dict[str, str]] = {
     "CONTROL": {"LEN": "DINT", "POS": "DINT", "EN": "BOOL", "EU": "BOOL", "DN": "BOOL",
                 "EM": "BOOL", "ER": "BOOL", "UL": "BOOL", "IN": "BOOL", "FD": "BOOL"},
     "STRING": {"LEN": "DINT", "DATA": "SINT"},
+    # Motion structures: the numeric attributes real ladder reads (types per the
+    # instruction-set structure definitions). A status BOOL needs no entry here --
+    # it is only ever an XIC/XIO operand, which carries no type surcharge.
+    "MOTION_INSTRUCTION": {"FLAGS": "DINT", "ERR": "INT", "STATUS": "SINT", "STATE": "SINT",
+                           "SEGMENT": "DINT", "EXERR": "SINT", "EN": "BOOL", "DN": "BOOL",
+                           "ER": "BOOL", "PC": "BOOL", "IP": "BOOL", "AC": "BOOL"},
+    "CAM": {"Master": "REAL", "Slave": "REAL", "SegmentType": "DINT"},
+    "AXIS_CIP_DRIVE": {**_AXIS_COMMON, "CIPAxisState": "INT", "OutputCurrent": "REAL",
+                       "MotorCapacity": "REAL", "PositionError": "REAL", "VelocityError": "REAL",
+                       "Registration1Position": "REAL", "Registration1Time": "DINT",
+                       "Registration2Time": "DINT", "OutputFrequency": "REAL",
+                       "TorqueReferenceFiltered": "REAL", "CIPAxisIOStatus": "DINT"},
+    "AXIS_VIRTUAL": dict(_AXIS_COMMON),
+    "AXIS_SERVO": dict(_AXIS_COMMON),
+    "AXIS_SERVO_DRIVE": dict(_AXIS_COMMON),
 }
 
 _SUBSCRIPT = re.compile(r"\[[^\]]*\]")
