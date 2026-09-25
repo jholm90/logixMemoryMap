@@ -1,6 +1,6 @@
 # Open Questions
 
-**Two.** OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Three.** OQ-LITREAL opened and wired from one Studio-made rung edit. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,7 +23,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | **2.18% mean, 4.31% worst, all seventeen under** (export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
+| **OQ-REALUNDER** | **1.74% mean, 3.44% worst** since OQ-LITREAL (was **2.18% / 4.31%, all seventeen under**, export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
+| **OQ-LITREAL** | **WIRED (FITTED), batch built.** A literal is typed by its spelling (integer DINT, float REAL) and pays the mixed-type conversions. Real set 2.18% → 1.74% mean, 4.31% → 3.44% worst. 47 `litreal_*` files measure it per instruction. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
@@ -233,3 +234,16 @@ generated files are this one law.
 | **Trial** | Counter extended with TON, `apply: true`: all 38 series files (`realism_srout_*`, `srsty_*`) exact. Real set, seventeen counted: **0.58% → 2.18%**, all seventeen under-predicting, 1.19% to 4.31%. Reverted, pending decision. The law is right on every file that isolates it, so the real set's agreement without it is a compensating error (CLAUDE.md failure mode 3): something real programs carry is under-charged by about the size of the discount. Wiring it means the headline reads ~2% until that is found |
 | **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
 
+---
+
+## 3. OQ-LITREAL — a literal operand's type
+
+| | |
+|---|---|
+| **Evidence** | Three Studio-made edits of export 27's kept rungs, each against its unedited file: four AOI-output reads → a plain BOOL, measured +104 vs engine +120 (−16, the new tag's name bucket; AOI outputs price right); deep `Cell.Servo.*` paths → plain BOOLs, +448 vs +448 exact; one DINT compare limit → REAL plus six `1`/`-1` → `1.0`/`-1.0` against REAL operands, **−600 vs −312**. The engine priced the DINT tag's six conversions (312) and gave the literals nothing; the other 288 is 48 per literal. |
+| **Mechanism** | A literal carries a type: integer → DINT, float → REAL. Against a REAL or INT operand it pays the measured OQ-MIXEDTYPE conversion (52 per DINT source into REAL; 52 per INT operand). Two captured rows the engine had been missing for weeks fit the same rule: `litop_type_int_lit` MOV(5,INT) over by 52 → exact; `litop_form_floatform` MOV(5.0,DINT) under by 76 → +4. |
+| **Wired** | `operand_type_surcharge.literal_types` (integer DINT, float REAL). Real set **2.18% → 1.74% mean, 4.31% → 3.44% worst**, 12/17 inside 2%; 5,851 integer literals sit in real REAL calls. Full-corpus run declined (literal-in-mixed-type calls were never generated outside `litop_*`). Scoped generated check: 691 captured rows in the typed/literal/CPT/series/motion families, 2 moved (both the rows above, both better), none that was exact. |
+| **Batch built** | `gen_literal_real.py`, `samples/generated/litreal/`, 47 files, realism floor, one inventory: for MOV, ADD, SUB, MUL, DIV, MOD, GRT, LES, GEQ, LEQ, EQU, NEQ, LIM, 400 calls with the tested operand a REAL tag / integer literal 5 / float literal 5.0; GRT with 0, 1000, 100000 and literal-first; LIM with two literals; MUL on DINT with 2 vs 1.5. Predictions recorded before capture: +52 per call for every `_ilit`, +92 for `mul_dint_flit`. |
+| **Reads** | `_ilit − _tag` per instruction is the literal's cost; if it is not 52 everywhere, the rate becomes per instruction. `_flit − _tag` checks the ~4 float-literal extra. |
+| **Open** | DINT with a SINT operand from a literal (`litop_type_sint_lit` −40 per call); the +4 float literal. |
+| **CAPTURE** | not yet captured |

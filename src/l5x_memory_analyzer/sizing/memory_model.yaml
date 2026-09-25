@@ -2370,6 +2370,18 @@ operand_type_surcharge:
   #   Uniform INT is already in the table (MOV 104 = 2 x 52, ADD 156 = 3 x 52).
   # Any other mix (REAL with INT, SINT, ...) is unmeasured and keeps the old
   # rule: the first resolvable operand decides.
+  # OQ-LITREAL: a literal operand takes the type its spelling implies -- an integer
+  # literal is DINT, a float literal REAL -- and pays the `mixed` conversions below
+  # against a REAL or INT operand. Evidence, all already captured:
+  #   litop_type_int_lit   MOV(5,INT)    engine over by 52 = DINT->INT, 52 per INT
+  #   litop_form_floatform MOV(5.0,DINT) engine under by 76; REAL 24 + DINT dest 48 = 72
+  #   litop_type_real_lit  MOV(5.0,REAL) +4 (a float literal vs a REAL tag)
+  #   Studio edit, one real rung: six `1`/`-1` -> `1.0`/`-1.0` against REAL operands
+  #   saved 288 beyond the engine (48 each; the rule charges 52).
+  # Real set: 2.18% -> see TASKS 0k. litreal_* (47 files) measures it per instruction.
+  literal_types:
+    integer: DINT
+    float: REAL
   mixed:
     real_dint_source: 52
     real_dint_dest: 40

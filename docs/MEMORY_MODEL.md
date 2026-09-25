@@ -1216,6 +1216,17 @@ A typed instruction whose operands mix types pays conversions (OQ-MIXEDTYPE):
 Measured: MOV(D→R) 76, MOV(R→D) 72, ADD(D,R,R) 68, ADD(R,D,D) 108, GRT(R,D) 68,
 MOV(I→D) 60, MOV(D→I) 52, GRT(I,D) 60 — all eight exact under the law.
 
+**Literals take the type their spelling implies (OQ-LITREAL, FITTED):** in a typed call,
+an integer literal is DINT and a float literal REAL, and the call pays the mixed
+conversions above. So `GRT(RealTag,1)` costs a REAL compare plus 52, `MOV(5,IntTag)` 52
+(not uniform INT's 104), `MOV(5.0,DintTag)` 72. Evidence: `litop_type_int_lit` (engine
+was over by 52 per call, now exact), `litop_form_floatform` (under by 76, now +4), and a
+Studio-made edit of one real rung (six `1`/`-1` → `1.0`/`-1.0` against REAL operands
+saved 288 beyond the engine, 48 each). A float literal also costs ~4 more than a REAL
+tag in MOV (`litop_type_real_lit`, `litop_form_floatform`), not wired. `DINT with SINT`
+from a literal is unmeasured (`litop_type_sint_lit` reads −40 per call). Per-instruction
+rates: `litreal_*` (47 files).
+
 ### Cross-program references
 
 A shared alias across programs costs about −16 per rung per additional program.

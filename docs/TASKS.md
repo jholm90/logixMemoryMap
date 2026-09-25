@@ -143,8 +143,10 @@ What the two isolated rungs carry that no generated file has:
 - **Four-level member paths** through a UDT whose member is a UDT holding a MOTION_INSTRUCTION (`Cell.Servo.MAH.PC`, 3 in rung 7) — OQ-OPERANDSHAPE went to three levels; deeper is 3.2% of real operands.
 - **REAL compared with a DINT tag or an integer literal** (`LES(RealArr[2],DintTag)`, `GRT(RealArr[2],1)`, rung 3), on **program-scope arrays**.
 
+**Studio-made results:** AOI output reads price right (+104 vs +120, the new tag's name bucket); deep member paths price exactly (+448 vs +448); **integer literals against REAL operands do not** (−600 vs −312). Wired as OQ-LITREAL: real set **2.18% → 1.74% mean, 4.31% → 3.44% worst**; 47 `litreal_*` files built to measure it per instruction.
+
 Next, in order:
-1. **Studio-made variants of the two kept-rung files (asked for, not built here).** In the rung-7 file: (a) replace the four AOI-output reads with a plain controller BOOL; (b) replace the deep `Cell.Servo.*` references with plain tags of the same type. In the rung-3 file: (c) make the DINT compare limit a REAL tag and the literals `1`/`-1` REAL (`1.0`/`-1.0`). Read Capacity after each single change; each delta against the engine's delta for the same edit says which feature carries the rung's shortfall.
+1. **(Done) Studio-made variants of the two kept-rung files.** In the rung-7 file: (a) replace the four AOI-output reads with a plain controller BOOL; (b) replace the deep `Cell.Servo.*` references with plain tags of the same type. In the rung-3 file: (c) make the DINT compare limit a REAL tag and the literals `1`/`-1` REAL (`1.0`/`-1.0`). Read Capacity after each single change; each delta against the engine's delta for the same edit says which feature carries the rung's shortfall.
 2. **Spec, not built: split the motop inventory's +3,108** (RESOLVED, OQ-DENSERUNG note). Three files on the captured `l9v38_m_kinetix_l8v35` content, differenced against it: MOTION_INSTRUCTION[400] alone; 100 tags of a UDT holding four MOTION_INSTRUCTION members alone; 100 tags of a UDT holding five TIMER members alone. Expected payoff ~0.05 pp — below the floor unless the rate is far above 4 bytes; run only if item 1 comes back empty.
 
 1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
