@@ -68,7 +68,7 @@ unwired (OQ-SERIESREAL).
 
 ### 0k. Find the ~2% the series law was cancelling — NEXT
 
-Checkpoint: tag `checkpoint-2026-09-25-pre-series-law` (0.58% state).
+Checkpoint: tag `checkpoint-2026-09-25-pre-series-law`, commit `172f581` (0.58% state).
 Real set with the law: 2.18% mean, 4.31% worst, all seventeen under, 1.19%–4.31%.
 
 Already ruled out, measured:

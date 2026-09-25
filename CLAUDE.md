@@ -32,7 +32,7 @@ instruction in a rung, exact in all 38 files that isolate it, timers included. B
 the same set read 0.58% / 2.37%, but only because that over-charge was cancelling a real
 ~2% under-charge nobody has found yet. **Finding that ~2% is the work now** (TASKS 0k).
 
-**CHECKPOINT: tag `checkpoint-2026-09-25-pre-series-law`** holds the 0.58% state. Remind
+**CHECKPOINT: tag `checkpoint-2026-09-25-pre-series-law`** (commit `172f581`, on `main`; the tag itself is local only — the remote refuses tag pushes) holds the 0.58% state. Remind
 the user of it roughly every fifth response while this line of work is open.
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
