@@ -105,7 +105,22 @@ Leads, ranked:
    member operands, JSR with parameters, literal-heavy MOV/compare, program-scoped
    operands, public program-scoped operands, COP/FLL block moves, bit-of-word operands
    (`Word.5`), timers/counters with real presets, CPT, and a mixed control.
-1. **Studio-made variants of export 27 (IPC, 4.31%)** — the technique that found literal
+1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
+   one program at a time, starting from the full project:
+   - Delete ONE program in Logix Designer (its routines and program tags). Leave
+     controller tags, UDTs, AOIs and modules alone, so only that program's logic and
+     program data leave.
+   - Verify, read Capacity (Used), and **export the WHOLE project** (File > Save As
+     .L5X), not a program-level export: only a whole-project file can be set against a
+     whole-controller reading.
+   - Save as `<export>_minus_<program>.L5X` with the Used figure; files go to
+     `samples/local/` over chat, never the repository.
+   - Order by the engine's predicted logic per program, largest first; the six largest
+     carry ~70% of its logic.
+   Per program: measured delta (full - variant) against the engine's delta for the same
+   two files. A program whose measured delta beats its predicted delta by ~11% or more
+   is where the shortfall lives; its rung shapes are then the next test. The variants
+   are fitting inputs, not blind tests. — the technique that found literal
    operands. In Logix Designer, one change at a time, re-read Capacity: (a) delete the
    7 unused AOI definitions; (b) change the 83 `Usage="Public"` program tags to Local;
    (c) delete one heavy data-mapping program. Each gives an exact delta to set against
