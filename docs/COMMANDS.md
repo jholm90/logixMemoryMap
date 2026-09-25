@@ -131,9 +131,20 @@ contiguous:
 
 ```powershell
 $log = 'C:\l5x_scratch\acd\convert_log.csv'
-Import-Csv $log | Sort-Object @{ e = { if ($_.l5x_path -match 'v38\.L5X$') { 1 } else { 0 } } } |
-    Export-Csv $log -NoTypeInformation
+$rows = Import-Csv $log | Sort-Object @{ e = { if ($_.l5x_path -match 'v38\.L5X$|v36ren_') { 1 } else { 0 } } }
+$lines = @('l5x_path,acd_path,status,message,l5x_hash') +
+    ($rows | ForEach-Object { "$($_.l5x_path),$($_.acd_path),$($_.status),$($_.message),$($_.l5x_hash)" })
+Set-Content -Path $log -Value $lines -Encoding utf8
 ```
+
+**Write the log back in its own unquoted format, never with `Export-Csv`.** `Export-Csv`
+quotes every field, including the header. `batch_l5x_to_acd.ps1` used to compare the
+header text exactly, took a quoted header for an old-format log, "migrated" it and blanked
+every recorded hash — and the next conversion run reconverted all ~3,800 files. The
+script now strips quotes before comparing and keeps hashes when it migrates, but write
+the log unquoted anyway. **If hashes are ever lost, re-run conversion with
+`-AdoptExisting`**: it records the current hash for every file that already has an ACD
+and converts only files with none.
 
 `captures.csv` is written after every file; only the auto-commit and push wait for
 the end of the run.

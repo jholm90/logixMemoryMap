@@ -454,6 +454,12 @@ than trusted.
    closed only when lint refuses it and the broken source is gone. **Before handing
    over any file with Kinetix content, run `scripts/check_proven_blocks.py` on it** —
    every 2198 block must match one from a zero-error capture.
+10. **A log re-saved by `Export-Csv` wiped every conversion hash.** Sorting
+   `convert_log.csv` with `Export-Csv` quoted its header; the converter read that as an
+   old-format log, blanked every recorded hash and queued all ~3,800 files for
+   reconversion. The converter now tolerates quotes and keeps hashes, but any command
+   handed over for editing that log must write it back unquoted (`docs/COMMANDS.md`),
+   and the recovery is `-AdoptExisting`, never a full reconversion.
 
 ## Repo map
 

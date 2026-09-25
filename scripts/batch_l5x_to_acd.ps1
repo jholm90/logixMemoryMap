@@ -101,12 +101,20 @@ if (Test-Path $logPath) {
     # l5x_path/acd_path/status/message, blank out the old (now-meaningless
     # mtime) 5th column rather than pretend it's a real hash, rewrite with
     # the correct header.
-    $firstLine = Get-Content -Path $logPath -TotalCount 1
+    # Quotes are stripped before comparing: a log re-saved by Export-Csv (for
+    # example after sorting it) has every header field quoted and is still the
+    # current format. Comparing the raw line used to send such a log down the
+    # migration path below, which blanked every recorded hash and made the next
+    # run reconvert the whole corpus.
+    $firstLine = (Get-Content -Path $logPath -TotalCount 1) -replace '"', ''
     if ($firstLine -ne $canonicalHeader) {
         Write-Host "Migrating $logPath to hash-tracked format (one-time)..."
         $oldRows = Import-Csv $logPath
+        # A recorded hash is kept whenever the column exists; only a genuinely
+        # old log (an l5x_mtime column, no l5x_hash) gets blank hashes.
+        $hasHash = $oldRows.Count -gt 0 -and ($oldRows[0].PSObject.Properties.Name -contains 'l5x_hash')
         $migrated = $oldRows | ForEach-Object {
-            [pscustomobject]@{ l5x_path = $_.l5x_path; acd_path = $_.acd_path; status = $_.status; message = $_.message; l5x_hash = "" }
+            [pscustomobject]@{ l5x_path = $_.l5x_path; acd_path = $_.acd_path; status = $_.status; message = $_.message; l5x_hash = $(if ($hasHash) { $_.l5x_hash } else { "" }) }
         }
         $canonicalHeader | Out-File -FilePath $logPath -Encoding utf8
         foreach ($r in $migrated) {
