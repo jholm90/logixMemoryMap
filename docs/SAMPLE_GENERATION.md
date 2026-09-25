@@ -359,6 +359,18 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: literals against SINT/INT/DINT, and types outside the surcharge table — 140 files, awaiting capture (OQ-LITREAL)
+
+`gen_literal_int.py`, `samples/generated/litint/` (118): for each of SINT, INT, DINT and
+each of MOV ADD SUB MUL DIV MOD GRT LES GEQ LEQ EQU NEQ LIM, 400 calls with the tested
+operand a tag of the call's own type (`_tag`), the integer literal 5 (`_ilit`) or the
+float literal 5.0 (`_flit`); control `litint_n00`; one inventory throughout. Difference
+`_ilit`/`_flit` against the `_tag` of the same type and instruction.
+
+`gen_typed_unary.py`, `samples/generated/typun/` (22): CLR and its `MOV(0,…)` twin, ABS, NEG on SINT/INT/DINT/REAL,
+BTD on SINT/INT/DINT, `TRN` REAL→REAL and REAL→DINT; control `typun_n00`. Difference each
+type against the DINT twin.
+
 ## Current batch: literal operands in REAL calls — 47 files, awaiting capture (OQ-LITREAL)
 
 `gen_literal_real.py`, `samples/generated/litreal/`. v35 / 1756-L81E, realism floor, one
