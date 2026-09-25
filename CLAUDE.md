@@ -25,11 +25,19 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 0.58% on the seventeen standard-processor real programs counted,
-worst case 2.37%, 14 of 17 inside 1% and 16 of 17 inside 2%.** Export 33 is excluded:
-39 source-protected routines make it a known under-read (3.87%), not a measurement of
-the model — see "How accuracy is measured". With it, 0.77% / 3.87% on eighteen. The mean
-half of the stopping rule is met; the max half is not (export 27, 2.37%). It read 1.79% / 4.83%
+**Mean absolute error 2.18% on the seventeen standard-processor real programs counted,
+worst case 4.31%, all seventeen under-predicting (1.2% to 4.3%)** — deliberately, since
+the series-output law was wired (option A, 2026-09-25): −12 per extra writing
+instruction in a rung, exact in all 38 files that isolate it, timers included. Before it
+the same set read 0.58% / 2.37%, but only because that over-charge was cancelling a real
+~2% under-charge nobody has found yet. **Finding that ~2% is the work now** (TASKS 0k).
+
+**CHECKPOINT: tag `checkpoint-2026-09-25-pre-series-law`** holds the 0.58% state. Remind
+the user of it roughly every fifth response while this line of work is open.
+
+Export 33 is excluded from these figures: 39 source-protected routines make it a known
+under-read, not a measurement of the model — see "How accuracy is measured". Before the
+series law it read 1.79% / 4.83%
 until two laws measured on the realism floor were wired: a tag-driven index costs 40
 more when a member follows it, 20 more on a BOOL array and 108 more on a STRING array
 (OQ-INDIRECTUDT), and a call mixing DINT with REAL or INT pays per-operand

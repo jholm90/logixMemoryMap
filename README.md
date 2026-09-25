@@ -253,16 +253,20 @@ real compiled project:
 
 | | |
 |---|---|
-| **Mean absolute error** | **0.58%** |
-| **Worst case** | **2.37%** |
-| **Inside 1% / inside 2%** | 14 of 17 / 16 of 17 |
+| **Mean absolute error** | **2.18%** (every program slightly under — see below) |
+| **Worst case** | **4.31%** |
+| **Inside 1% / inside 2%** | 0 of 17 / 7 of 17 |
 | **Blind test** | a 7.89 MB program predicted at **+2.15%** before its real figure was used for anything |
 
 One further real program is left out of those figures: it carries 39 source-protected
 routines the tool cannot see inside, so it under-reads by design (3.87%). Source-protected
 content is always priced at a flagged minimum.
 
-**Read the worst case as "up to about 3%" on a file the tool has never seen.** The blind
+**Why the figure went up.** A measured law — each extra output in a rung costs 12 bytes
+less — was switched on because it is exact on every test that isolates it. The tool
+read closer before only because that error was cancelling a real under-charge of about
+2% that is still being tracked down. Every program now reads slightly under, which is
+the safe direction for "will it fit". **Read the worst case as "up to about 5% low".** The blind
 test is the number that matters most: it is the only one no tuning could have touched.
 
 Why the tool can be this close:

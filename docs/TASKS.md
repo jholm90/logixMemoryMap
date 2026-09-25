@@ -66,7 +66,39 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0j. Series-output law — DECISION PENDING
+### 0k. Find the ~2% the series law was cancelling — NEXT
+
+Checkpoint: tag `checkpoint-2026-09-25-pre-series-law` (0.58% state).
+Real set with the law: 2.18% mean, 4.31% worst, all seventeen under, 1.19%–4.31%.
+
+Already ruled out, measured:
+- **Operand data types.** 91.7% of 84,846 real typed calls are one measured type,
+  3.3% measured mixes; SINT/DINT, INT/REAL and other unmeasured mixes are 0.6%.
+- **Instruction coverage.** Every native mnemonic with 5+ real uses is weighted.
+- **Axes and alarm conditions.** They correlate with the gap only through size; both
+  priced exact on the realism floor (`l9v38_m_kinetix`, `l9v38_m_alarms`), and real
+  axis tags have exactly the generated tags' shape.
+- **Documentation.** Descriptions and comments measured free.
+
+Leads, ranked:
+1. **Studio-made variants of export 27 (IPC, 4.31%)** — the technique that found literal
+   operands. In Logix Designer, one change at a time, re-read Capacity: (a) delete the
+   7 unused AOI definitions; (b) change the 83 `Usage="Public"` program tags to Local;
+   (c) delete one heavy data-mapping program. Each gives an exact delta to set against
+   the engine's own delta for the same content.
+2. **Public program tags** (spec, not built): 6 files, the captured-exact
+   `progscope_prog_{udt,arr}_n{010,050,200}` with every tag `Usage="Public"`,
+   differenced directly against them. Only three real programs use public tags (83,
+   41, 23 of them) and two are among the four worst.
+3. **Module-typed operands**: 4.4% of real typed calls do not resolve, mostly
+   `Module:slot:I.Data[n]` operands whose element type (often INT) the parser skips, so
+   they pay the DINT rate. Code-only: resolve them from the module-defined types.
+4. **Structure** (weak, 17 points): per-routine +339 and per-JSR +314 beyond size.
+   Wait for leads 1–3.
+
+### 0j. Series-output law — WIRED (option A)
+
+−12 per extra writing instruction, TON counted. Headline 0.58% → 2.18% by design.
 
 The 14 `srsty_*` captures make it universal: −12 per extra writing instruction in
 every shape, timers included. Applied, all 38 series files are exact and the real set

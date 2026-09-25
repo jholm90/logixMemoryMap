@@ -23,8 +23,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | The real residual: **0.58% mean, 2.37% worst** on the seventeen standard-processor real programs counted (export 33 excluded for 39 source-protected routines; with it 0.77% / 3.87% on eighteen). 14 of 17 inside 1%, 16 of 17 inside 2%; only export 27 is over. |
-| **OQ-SERIESREAL** | **The law is universal**: −12 per extra writing instruction in a rung in all 13 `srsty_*` shapes — branch legs with their own conditions (61% of real extra outputs), nested, mid-rung, latches, mixed writers — and **timers count as writers too**. Applied (with TON), all 38 series files read exact, and the real set goes **0.58% → 2.18%, every program under-predicting 1.2–4.3%**: the unapplied law has been hiding a uniform ~2% under-charge elsewhere. Unwired pending the decision on whether to ship that. |
+| **OQ-REALUNDER** | **2.18% mean, 4.31% worst, all seventeen under** (export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
+| **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
 
