@@ -196,7 +196,7 @@ clean. Awaiting capture.
 | 1756-L81E v38 − 1756-L81E v35 | **0** |
 | 1756-L908TS v38 − 1756-L81E v38 | **+2,276** |
 
-Flat from an empty controller to 1,600 density units, across every instruction and module type — the firmware move costs nothing for content and the L9 is the same +2,276 project constant the engine already charges from the blank captures. The v36 respellings (MOVE, LIMIT, GE…) read identical to their v35 twins. Still open outside the files: the L9 capacity budgets (OQ-L9BUDGET) and a real L9 program predicted blind. Side findings on the shared baseline (identical in all arms): a sixth POINT I/O rack over-predicted by 826; one generic ETHERNET-MODULE (8 in / 8 out SINT) under by 440; the density rungs carry the series-output law again (−12 per rung with MOV + OTE; see OQ-SERIESREAL).
+Flat from an empty controller to 1,600 density units, across every instruction and module type — the firmware move costs nothing for content and the L9 is the same +2,276 project constant the engine already charges from the blank captures. The v36 respellings (MOVE, LIMIT, GE…) read identical to their v35 twins. The L9 is closed on this evidence; its capacity figures are the published user memory (OQ-L9BUDGET). Side findings on the shared baseline (identical in all arms): a sixth POINT I/O rack over-predicted by 826; one generic ETHERNET-MODULE (8 in / 8 out SINT) under by 440; the density rungs carry the series-output law again (−12 per rung with MOV + OTE; see OQ-SERIESREAL).
 
 **The question as it was asked:**
 
@@ -212,7 +212,7 @@ seen with content in the file.
 | **Batch built** | `gen_l9_v38.py`, `samples/generated/l9v38/`, 96 files: 32 content items × three arms — `l8v35` (1756-L81E v35.05, v35 spelling, the control), `l8v38` (1756-L81E v38.02, v36+ spelling), `l9v38` (1756-L908TS v38.02, v36+ spelling). Content byte-identical across arms apart from the spelling. Items: densities `d0000..d1600` (stages 1–2), 21 instructions × 1,000 rungs `i_*` (stage 3), and `m_{kinetix,pf525,geneth,pointio,local1756,alarms}` (stage 4). Every file on the realism baseline |
 | **How to read it** | `l8v38 − l8v35` per item = the firmware move; `l9v38 − l8v38` = the L9. Both flat across the densities → two project constants, and stages 3–4 confirm. Either growing → a rate, and stage 3 says which instruction carries it |
 | **Unproven in the build** | an L9 Ethernet child is parented to Local port 4. The L9 blanks carry no modules; port 4 is where all five real 5069 programs put theirs. The L9 arm's Kinetix blocks are the L8 arm's proven blocks re-parented; `check_proven_blocks.py` now reads a block parented to the controller's own Ethernet port (2 on L8, 4 on L9) as one shape, and still refuses any other port |
-| **Not covered** | the L9 capacity budget (OQ-L9BUDGET, resolved as bounded): a bench reading on an empty project per catalog, not a file |
+| **Budget** | published user memory per catalog, wired in `controller_budgets.yaml` (OQ-L9BUDGET) |
 
 ## OQ-V36MNEMONIC — sixteen ladder instructions renamed at v36
 
@@ -242,6 +242,10 @@ spelling with six `l9v38_spell_*_v35spelling` files. It does not, so the files w
 deleted before capture, and the rest of the batch was rebuilt with MOV and LIM respelled
 too (the first build had respelled only the six comparisons, which would have failed on
 every MOV in the baseline).
+
+**Captured so far.** EQ, NE, GT, GE, LT, LE, MOVE and LIMIT, in the L9/v38 batch: clean
+imports, cost identical to the v35 forms. The other eight have one v38 file each
+(`gen_v36_renames.py`, `v36ren_*`), awaiting capture.
 
 **Exposure.** None of the seventeen real programs is v36+. Without the mapping, a v36+
 export would price every one of these instructions at zero — the six comparisons plus
@@ -1372,12 +1376,14 @@ difference is a single project-level constant rather than a per-feature one.
 **Read this as "no per-platform CONTENT model is needed", not "the platform difference
 is fully wired."** The result was measured on generated files.
 
-## OQ-L9BUDGET — memory budget for one controller family
+## OQ-L9BUDGET — memory budget for the ControlLogix 5590
 
-**BOUNDED, deliberately not guessed.** There is no budget for that family, so the UI
-has no denominator and cannot show headroom. **The catalog digits look like they encode
-memory, but that is a pattern, not a source**, and this project has been wrong before
-inferring a constant from a catalog number.
+**RESOLVED from published specifications.** User memory as published in the catalog
+descriptions (Rockwell product listings and distributor catalog text): 1756-L902TS 2 MB,
+L905TS 5 MB, L908TS 8 MB, L915TS 15 MB — wired in `controller_budgets.yaml` at ASSUMED,
+the same basis as the 1756-L82E–L85E rows (only the L81E is capture-confirmed). The
+earlier caution stands as a principle: the catalog digits were not taken as the source;
+the published figures were, and they happen to agree. The UI now shows headroom for an L9.
 
 ## OQ-PREDEFINED — firmware-native structure sizes
 

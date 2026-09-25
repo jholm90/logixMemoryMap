@@ -90,8 +90,10 @@ only when the corpus itself is the subject, never as the project's accuracy.
 
 ## Platform scope
 
-Active: **1756-L8x** and **5069 / CompactLogix 5380**. Both are represented in the
-real set.
+Active: **1756-L8x** and **5069 / CompactLogix 5380**, both represented in the real
+set, and **1756-L9x (ControlLogix 5590)**, closed on generated evidence: the same content
+costs the same as on an L81E plus a flat 2,276 (OQ-L9PLATFORM), capacity from published
+user memory (OQ-L9BUDGET). No further L9 work is planned.
 
 **Accuracy is measured on STANDARD processors only.** A safety processor (catalog
 ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags and safety

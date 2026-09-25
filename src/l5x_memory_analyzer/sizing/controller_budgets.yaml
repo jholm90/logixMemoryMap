@@ -53,6 +53,16 @@ processors:
   "1756-L84E": { bytes: 20971520, confidence: ASSUMED }   # 20 MB
   "1756-L85E": { bytes: 41943040, confidence: ASSUMED }   # 40 MB
 
+  # ControlLogix 5590 (1756-L9xTS). User memory as published in the catalog
+  # descriptions (Rockwell product listings and distributor catalog text:
+  # "02 / 05 / 08 / 15 MB User Memory"), the same basis as the L82E-L85E rows
+  # above. Content on an L9 costs what it costs on an L81E plus a flat 2,276
+  # (OQ-L9PLATFORM, 32 items x 3 arms); these are the denominators.
+  "1756-L902TS": { bytes: 2097152, confidence: ASSUMED }   # 2 MB
+  "1756-L905TS": { bytes: 5242880, confidence: ASSUMED }   # 5 MB
+  "1756-L908TS": { bytes: 8388608, confidence: ASSUMED }   # 8 MB
+  "1756-L915TS": { bytes: 15728640, confidence: ASSUMED }  # 15 MB
+
   # ControlLogix 5570 (legacy, "L7 v30"-class hardware spot-checked
   # against) -- DIVIDED memory: separate data_logic_bytes + io_bytes pools,
   # not one number. io_bytes ~1MB is fairly constant across the L7x line.
