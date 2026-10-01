@@ -386,13 +386,6 @@ foreach ($row in $remaining) {
     }
 
     $date = Get-Date -Format "yyyy-MM-dd"
-    $predicted = if ($existing -and $existing.predicted_bytes) { $existing.predicted_bytes } else { "" }
-    $delta = ""
-    $deltaPct = ""
-    if ($predicted -ne "") {
-        $delta = [int]$blocksUsed - [int]$predicted
-        if ([int]$predicted -ne 0) { $deltaPct = [math]::Round(100.0 * $delta / [int]$predicted, 2) }
-    }
 
     # controller_model / firmware_rev come from the L5X ITSELF, not from the
     # -ControllerModel/-FirmwareRev switches. Fixed : those switches
@@ -441,8 +434,6 @@ foreach ($row in $remaining) {
 
     if ($existing) {
         $existing.actual_bytes = $blocksUsed
-        $existing.delta = $delta
-        $existing.delta_pct = $deltaPct
         $existing.controller_model = $declaredProc
         $existing.firmware_rev = $declaredFw
         $existing.date_tested = $date
