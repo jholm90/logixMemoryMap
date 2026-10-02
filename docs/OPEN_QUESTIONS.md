@@ -25,7 +25,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 |---|---|
 | **OQ-REALUNDER** | **1.27% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed and module I/O operands were typed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
 | **OQ-MOTIONLIT** | The literal law on MAJ, MAPC, MCCP, MAG (MAPC alone: 1,009 real integer literals). 15 `motlit_*` files built, predictions recorded, awaiting capture. |
-| **OQ-BLOCKSTR** | COP/CPS/FLL, CONCAT/DTOS/SIZE and JMP/LBL priced on near-empty files only; the exactly-priced transplants carry almost none, real logic thousands. 19 `blkstr_*` files built. |
+| **OQ-BLOCKSTR** | COP/CPS/FLL, CONCAT/DTOS/SIZE and JMP/LBL priced on near-empty files only; the exactly-priced transplants carry almost none, real logic thousands. 27 `blkstr_*` files built, including COP/CPS across types in both directions. |
 | **OQ-AOILITARG** | An AOI Input argument whose type differs from its parameter (1,133 real integer literals into REAL parameters). 9 `aoilit_*` files built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
@@ -257,7 +257,7 @@ generated files are this one law.
 |---|---|
 | **Evidence** | After OQ-LITREAL the category scale test leaves routine logic needing +6.5% ±3.1 (program logic +7.7% ±4.0, AOI logic +51% ±37). Three Studio-made transplants now price within 3% of their logic, so what is missing is what they lack. Against them, real program logic carries per 1,000 instructions COP 12.0 vs 5.3, CONCAT 5.6 vs 0, JMP 4.2 vs 0.9, LBL 3.5 vs 0.9, CPS 1.6 vs 0, DTOS 1.3 vs 0 — all weighted from near-empty calibration files. Real shapes: COP UDT→UDT 2,393 of 3,822 (length 1 in 2,931); FLL literal→UDT 849; CPS UDT→UDT 324; CONCAT STRING×3 1,778; DTOS DINT→STRING 260, literal→STRING 140. |
 | **Expected movement** | COP alone at +50 per call would be ~0.3 pp of the mean; the whole set bounded by the +7.7% program-logic gap. |
-| **Batch built** | `gen_block_string.py`, `samples/generated/blkstr/`, 19 files on one inventory (BkUdt arrays, DINT/REAL arrays, STRING arrays), 400 calls each, control `blkstr_n00`: `cop_{dint,udt,real,string}_l1`, `cop_{dint,udt}_l10`, `cop_udt_lentag`, `cps_{udt,dint}_l1`, `fll_{dint,real}_l10`, `fll_udt_{l1,l10}`, `concat`, `dtos_{dint,lit}`, `size_udt`, `jmplbl`. |
+| **Batch built** | `gen_block_string.py`, `samples/generated/blkstr/`, 27 files on one inventory (BkUdt arrays, DINT/REAL arrays, STRING arrays), 400 calls each, control `blkstr_n00`: `cop_{dint,udt,real,string}_l1`, `cop_{dint,udt}_l10`, `cop_udt_lentag`, cross-type `cop_{udt2dint,dint2udt,udt2dint_l30,dint2udt_l10,udt2sint,sint2udt}` and `cps_{udt2dint,dint2udt}` (COP/CPS move bytes and Length counts destination elements, so one 12-byte UDT moves as 1 UDT or 3 DINTs or 12 SINTs — does direction or either side's element type change the instruction's size?), `cps_{udt,dint}_l1`, `fll_{dint,real}_l10`, `fll_udt_{l1,l10}`, `concat`, `dtos_{dint,lit}`, `size_udt`, `jmplbl`. |
 | **CAPTURE** | not yet captured |
 
 ## 5. OQ-AOILITARG — AOI Input arguments of another type

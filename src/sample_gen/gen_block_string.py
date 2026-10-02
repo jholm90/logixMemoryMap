@@ -7,10 +7,13 @@ COP 5.3 vs 12.0 (3,822 calls), CONCAT 0 vs 5.6 (1,778), JMP 0.9 vs 4.2 (1,340), 
 were fitted on near-empty calibration files. Real shapes, seventeen programs: COP UDT->UDT
 2,393 / DINT->DINT 641 / STRING->STRING 380 / REAL->REAL 104, length 1 in 2,931 of 3,822;
 FLL a literal into a UDT 849 / DINT 182 / STRING 63 / REAL 61; CPS UDT->UDT 324; CONCAT
-STRING x3; DTOS DINT->STRING 260, literal->STRING 140.
+STRING x3; DTOS DINT->STRING 260, literal->STRING 140. Cross-type copies are real too (COP
+DINT->UDT 83, UDT->DINT 71; CPS SINT<->UDT 49): COP/CPS move bytes, Length counts destination
+elements, so `cop_udt2dint` / `cop_dint2udt` (and SINT, CPS, longer lengths) check whether the
+direction or the element type of either side changes the instruction's size.
 
-One inventory: BkUdt (DINT, REAL, INT, four BOOLs) arrays BkA/BkB[400], DINT/REAL arrays,
-STRING arrays BsA/BsB/BsC[400]; 400 calls per file, every destination distinct; realism
+One inventory: BkUdt (DINT, REAL, INT, four BOOLs; 12 bytes) arrays BkA/BkB, DINT/REAL/SINT
+arrays, STRING arrays BsA/BsB/BsC[400]; 400 calls per file, every destination distinct; realism
 floor; 1756-L81E at v35. Control `blkstr_n00`.
 
 Run: python -m sample_gen.gen_block_string
@@ -29,6 +32,8 @@ OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "blks
 CATEGORY = "block_string"
 N = 400
 M = 10 * N  # long arrays for the length-10 copies
+UDT_BYTES = 12  # BkUdt: DINT 4 + REAL 4 + INT 2 + four BOOLs packed in one SINT, padded to 12
+DW = UDT_BYTES // 4  # DINTs per BkUdt
 
 _UDT = [MemberSpec("D", "DINT"), MemberSpec("R", "REAL"), MemberSpec("I", "INT")] + \
        [MemberSpec(f"B{j}", "BOOL") for j in range(4)]
@@ -36,7 +41,8 @@ _UDT = [MemberSpec("D", "DINT"), MemberSpec("R", "REAL"), MemberSpec("I", "INT")
 
 def _inventory() -> dict[str, str]:
     tags = [tag_xml("BkA", "BkUdt", (M,), udt_members=_UDT), tag_xml("BkB", "BkUdt", (M,), udt_members=_UDT),
-            tag_xml("BdA", "DINT", (M,)), tag_xml("BdB", "DINT", (M,)),
+            tag_xml("BdA", "DINT", (DW * M,)), tag_xml("BdB", "DINT", (DW * M,)),
+            tag_xml("BsiA", "SINT", (UDT_BYTES * N,)), tag_xml("BsiB", "SINT", (UDT_BYTES * N,)),
             tag_xml("BrA", "REAL", (M,)), tag_xml("BrB", "REAL", (M,)),
             string_array_tag_xml("BsA", N), string_array_tag_xml("BsB", N), string_array_tag_xml("BsC", N),
             tag_xml("BkLen", "DINT"), tag_xml("BkC", "BOOL", (N,))]
@@ -52,6 +58,22 @@ def _files() -> dict[str, tuple[list[str], str]]:
     f["cop_dint_l10"] = ([f"COP(BdA[{10 * i}],BdB[{10 * i}],10);" for i in range(N)], "COP DINT, length 10")
     f["cop_udt_l10"] = ([f"COP(BkA[{10 * i}],BkB[{10 * i}],10);" for i in range(N)], "COP UDT, length 10")
     f["cop_udt_lentag"] = ([f"COP(BkA[{i}],BkB[{i}],BkLen);" for i in range(N)], "COP UDT, length a DINT tag")
+    # Cross-type copies: COP/CPS move bytes, and Length counts DESTINATION elements, so
+    # the same bytes can be moved as one UDT or as three DINTs (or twelve SINTs).
+    f["cop_udt2dint"] = ([f"COP(BkA[{i}],BdB[{DW * i}],{DW});" for i in range(N)],
+                         f"COP one UDT into {DW} DINTs (length {DW}, counted in DINT destination elements)")
+    f["cop_dint2udt"] = ([f"COP(BdA[{DW * i}],BkB[{i}],1);" for i in range(N)],
+                         f"COP {DW} DINTs into one UDT (length 1, counted in UDT destination elements)")
+    f["cop_udt2dint_l30"] = ([f"COP(BkA[{10 * i}],BdB[{10 * DW * i}],{10 * DW});" for i in range(N)],
+                             f"COP ten UDTs into {10 * DW} DINTs (length {10 * DW})")
+    f["cop_dint2udt_l10"] = ([f"COP(BdA[{10 * DW * i}],BkB[{10 * i}],10);" for i in range(N)],
+                             f"COP {10 * DW} DINTs into ten UDTs (length 10)")
+    f["cop_udt2sint"] = ([f"COP(BkA[{i}],BsiB[{UDT_BYTES * i}],{UDT_BYTES});" for i in range(N)],
+                         f"COP one UDT into {UDT_BYTES} SINTs")
+    f["cop_sint2udt"] = ([f"COP(BsiA[{UDT_BYTES * i}],BkB[{i}],1);" for i in range(N)],
+                         f"COP {UDT_BYTES} SINTs into one UDT")
+    f["cps_udt2dint"] = ([f"CPS(BkA[{i}],BdB[{DW * i}],{DW});" for i in range(N)], f"CPS one UDT into {DW} DINTs")
+    f["cps_dint2udt"] = ([f"CPS(BdA[{DW * i}],BkB[{i}],1);" for i in range(N)], f"CPS {DW} DINTs into one UDT")
     f["cps_udt_l1"] = ([f"CPS(BkA[{i}],BkB[{i}],1);" for i in range(N)], "CPS UDT -> UDT, length 1")
     f["cps_dint_l1"] = ([f"CPS(BdA[{i}],BdB[{i}],1);" for i in range(N)], "CPS DINT -> DINT, length 1")
     f["fll_dint_l10"] = ([f"FLL(0,BdB[{10 * i}],10);" for i in range(N)], "FLL literal 0 into DINT, length 10")
