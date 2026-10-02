@@ -25,8 +25,10 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.41% on the seventeen standard-processor real programs counted,
-worst case 3.18%, 6/17 inside 1%, 14/17 inside 2%** since motion-structure members (axis
+**Mean absolute error 1.29% on the seventeen standard-processor real programs counted,
+worst case 3.08%, 8/17 inside 1%, 15/17 inside 2%** since OQ-LITREAL was measured whole
+(2026-10-02: per-literal conversion against REAL/INT/SINT, CLR/ABS/NEG/BTD/TRN by type,
+literals in MAM/MAS). Before that 1.41% / 3.18%, since motion-structure members (axis
 positions and velocities REAL, `CIPAxisState` INT, CAM Master/Slave REAL, MOTION_INSTRUCTION
 ERR INT) were typed for the resolver — 8,800 real operands had resolved to nothing. Before
 that 1.74% / 3.44%, since literals were typed by their spelling (OQ-LITREAL, 2026-09-25):

@@ -66,6 +66,36 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0m. After the literal and idiom captures, 2026-10-02 — NEXT
+
+**Real set 1.29% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%.** OQ-LITREAL closed
+KNOWN on 198 exact files; OQ-REALIDIOM closed (routine size and DINT-bit targets exact).
+
+**Studio-made checks under the current engine:** transplants 2.9% / −1.0% / 0.2% of added
+logic (20.7% on the one with a source-protected AOI); six of seven removed routines within
+±4%; the DINT→REAL rung edit predicted to the byte (−600 vs −600). Still short: the
+cam-correction routine (520, 12.6%) and the bit-and-status rung (144).
+
+**Next batch — SPEC, not built (ask before generating):**
+1. **OQ-MOTIONLIT, ~12 files** on the captured motop inventory (control `motop_n00`, +1,330),
+   400 calls each, one MOTION_INSTRUCTION per call, alternating PnAxisX/PnAxisY:
+   - MAJ: speed/accel/decel/jerk as REAL tags (control) / integer literals / float literals (3).
+   - MAPC: slave and master scaling and the two lock positions as REAL tags / integer
+     literals (`1,1,…,0,0`) / float literals, on the captured-exact `instrfirst_mapc_v2`
+     signature and a CAM_PROFILE from the proven blocks (3).
+   - MCCP and MAG: the same tag / integer / float triple on each (needs the real signature
+     from `gen_motion_instructions`; 4–6).
+   - MAM in the old `litop_mam` shape (AXIS_VIRTUAL, `% of Maximum`, `Trapezoidal`,
+     `Disabled,Current,0,None,0,0`) on the realism floor, against `realidiom_mam_tag`: settles
+     the 12-per-call disagreement (1).
+   Each `_ilit`/`_flit` file differences against its `_tag` twin; the prediction for each is
+   the wired law (52 + 44(n−1), +4 per float) applied at the documented REAL positions.
+2. **Studio edits (asked for, not built here):** in the cam-correction routine file, delete the
+   rung with the three MAM calls and read Capacity — that routine is the one still 12.6%
+   short with every literal now priced.
+3. Small, only if 1 and 2 leave room: DINT+SINT tag mixes (258 real calls), unresolved
+   module I/O and string-member operands (~1.5% of typed calls).
+
 ### 0l. Deep review, 2026-09-25 — where it stands and what is left
 
 **Real set now 1.41% mean, 3.18% worst, 6/17 inside 1%, 14/17 inside 2%** (from 2.18% /

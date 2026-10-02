@@ -206,6 +206,17 @@ def compute_routine_logic_bytes(
     # instruction's own base weight is still correct and still applied).
     if tag_types or operand_types is not None:
         for mnemonic, operands in routine.typed_calls:
+            ots = model.operand_type_surcharge
+            if mnemonic in ots.motion_real_params:
+                params = [operands[i].strip() for i in ots.motion_real_params[mnemonic] if i < len(operands)]
+                total += ots.literal_run_cost(sum(1 for o in params if _INT_LITERAL.match(o)),
+                                              sum(1 for o in params if _FLOAT_LITERAL.match(o)))
+                continue
+            if mnemonic in ots.single_operand:
+                idx = ots.single_operand[mnemonic]["operand"]
+                if operands and operand_types is not None:
+                    total += ots.single_operand_surcharge(mnemonic, operand_types.resolve(operands[idx]))
+                continue
             if operand_types is not None:
                 # A call mixing DINT with REAL or INT pays conversions
                 # (OQ-MIXEDTYPE); any other shape keeps the first-operand rule.

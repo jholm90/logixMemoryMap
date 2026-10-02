@@ -39,11 +39,14 @@ def test_mixed_type_law_reproduces_every_measured_call():
     for (mnemonic, types, dest), cost in measured.items():
         assert ots.mixed_surcharge_for(mnemonic, list(types), dest) == cost, (mnemonic, types)
     assert ots.mixed_surcharge_for("MOV", ["REAL", "REAL"], 1) is None
-    assert ots.mixed_surcharge_for("MOV", ["REAL", "INT"], 1) is None
+    # REAL with INT is measured now (litint_int_*_flit): REAL 24 + INT destination 48.
+    assert ots.mixed_surcharge_for("MOV", ["REAL", "INT"], 1) == 72
 
 
 def test_literals_take_the_type_their_spelling_implies():
-    """OQ-LITREAL: an integer literal is DINT, a float literal REAL, for mixing."""
+    """OQ-LITREAL: every rule reproduces the litreal_*/litint_*/realidiom_mam_* captures."""
+    from l5x_memory_analyzer.sizing.constants import FLOAT_LITERAL as F
+    from l5x_memory_analyzer.sizing.constants import INT_LITERAL as I
     from l5x_memory_analyzer.sizing.logic import _operand_type
 
     class _NoTags:
@@ -51,11 +54,18 @@ def test_literals_take_the_type_their_spelling_implies():
             return None
 
     lt = LOGIC.operand_type_surcharge.literal_types
-    assert lt == {"integer": "DINT", "float": "REAL"}
-    assert [_operand_type(op, _NoTags(), lt) for op in ("5", "-1", "5.0", "1.5e3", "Tag")] == [
-        "DINT", "DINT", "REAL", "REAL", None]
-    ots = LOGIC.operand_type_surcharge
-    # litop_type_int_lit: MOV(5,INT) costs the DINT->INT conversion, 52, not uniform INT's 104.
-    assert ots.mixed_surcharge_for("MOV", ["DINT", "INT"], 1) == 52
-    # litop_form_floatform: MOV(5.0,DINT) measured 76; REAL 24 + DINT destination 48.
-    assert ots.mixed_surcharge_for("MOV", ["REAL", "DINT"], 1) == 72
+    assert [_operand_type(op, _NoTags(), lt) for op in ("5", "-1", "5.0", "1.5e3", "Tag")] == [I, I, F, F, None]
+    o = LOGIC.operand_type_surcharge
+    measured = {  # per call, over the same call with a tag of the call's own type
+        ("GRT", ("REAL", I), None): 16 + 52, ("ADD", ("REAL", I, "REAL"), 2): 16 + 52,
+        ("LIM", (I, "REAL", I), None): -8 + 96, ("MOV", (F, "REAL"), 1): 24 + 4,
+        ("MOV", (I, "INT"), 1): 104 - 52, ("ADD", ("INT", I, "INT"), 2): 156 - 52,
+        ("GRT", ("SINT", I), None): 88 - 40, ("MOV", (F, "DINT"), 1): 76,
+        ("ADD", ("DINT", F, "DINT"), 2): 112, ("ADD", ("INT", F, "INT"), 2): 168,
+        ("GRT", ("SINT", F), None): 116, ("LIM", ("INT", "INT", F), None): 204,
+    }
+    for (mnemonic, types, dest), cost in measured.items():
+        assert o.mixed_surcharge_for(mnemonic, list(types), dest) == cost, (mnemonic, types)
+    assert o.mixed_surcharge_for("GRT", ("DINT", I), None) is None  # free beside DINT
+    assert o.literal_run_cost(2, 0) == 96 and o.literal_run_cost(4, 0) == 184 and o.literal_run_cost(0, 4) == 16
+    assert o.single_operand_surcharge("CLR", "REAL") == 0 and o.single_operand_surcharge("CLR", "INT") == 52

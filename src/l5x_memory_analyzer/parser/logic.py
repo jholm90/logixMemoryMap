@@ -208,6 +208,8 @@ def _cpt_calls(rung_texts: list[str]) -> list[CptCall]:
 # flat DINT-rate weight unconditionally the way it used to.
 _TYPE_SENSITIVE_INSTRUCTIONS = frozenset({
     "ADD", "SUB", "MUL", "DIV", "MOD", "EQU", "GEQ", "GRT", "LEQ", "LES", "NEQ", "MOV", "LIM",
+    # OQ-LITREAL: priced by one operand's type, or by literal REAL parameters.
+    "CLR", "NEG", "ABS", "BTD", "TRN", "MAM", "MAS",
 })
 
 

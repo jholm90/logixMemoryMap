@@ -1216,7 +1216,15 @@ A typed instruction whose operands mix types pays conversions (OQ-MIXEDTYPE):
 Measured: MOV(D→R) 76, MOV(R→D) 72, ADD(D,R,R) 68, ADD(R,D,D) 108, GRT(R,D) 68,
 MOV(I→D) 60, MOV(D→I) 52, GRT(I,D) 60 — all eight exact under the law.
 
-**Literals take the type their spelling implies (OQ-LITREAL, FITTED):** in a typed call,
+**Literals — KNOWN (2026-10-02, 198 files exact; full table in RESOLVED_QUESTIONS OQ-LITREAL).**
+An integer literal against REAL: 52 for the first, 44 for each further one (typed calls and
+MAM/MAS REAL parameters). A float literal: +4 over a REAL tag. Against uniform INT/SINT: the
+uniform surcharge less 52/40 per literal. REAL with INT/SINT: 108/96 per source, 40 (48 MOV)
+per destination. CLR SINT/INT +52; ABS/NEG SINT 92, INT 104, REAL 24/28 (ABS weight 44);
+BTD SINT 108, INT 128; TRN REAL destination +52. Constants: `operand_type_surcharge.mixed`,
+`single_operand`, `motion_real_params` in memory_model.yaml.
+
+The original finding, kept for its evidence — **literals take the type their spelling implies:** in a typed call,
 an integer literal is DINT and a float literal REAL, and the call pays the mixed
 conversions above. So `GRT(RealTag,1)` costs a REAL compare plus 52, `MOV(5,IntTag)` 52
 (not uniform INT's 104), `MOV(5.0,DintTag)` 72. Evidence: `litop_type_int_lit` (engine
