@@ -256,6 +256,9 @@ generated files are this one law.
 
 ## 4. OQ-REALIDIOM — real idioms at real density
 
+**CAPTURE ERRORS: 1 row(s)** — `realidiom_gran_spr01` (1,280 routines) built with 3 errors, each `Compiler Error (0x0A). Call technical support.` on one Area routine (Line3 Area298, Line4 Area090, Line4 Area228) whose rungs are identical to every other station routine. Suspect, not used: an internal compiler fault rather than a shape error; re-capture once before reading it.
+
+
 | | |
 |---|---|
 | **Evidence** | Under the current engine the Studio-made transplants still read 2.6–7.7% of added logic short and five of seven removed routines 200–650 bytes short; the best single-feature fit to the real residual is ~324 bytes per routine (tied with rungs and JSRs — size). Real ladder carries 16.7 rungs per routine against the plant's ~97, ONS/OTL/OTU on DINT bits, and motion instructions with literal operands (3,261 across 1,763 real calls); `litop_mam_tag`/`_lit` already read +40/+64 per call. |
