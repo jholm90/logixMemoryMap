@@ -580,6 +580,11 @@ class CptExpressionModel:
         return self.base_read + sum(tiers) + correction
 
 
+# Operand types the sizing code gives literal operands (OQ-LITREAL).
+INT_LITERAL = "INT_LITERAL"
+FLOAT_LITERAL = "FLOAT_LITERAL"
+
+
 @dataclass(frozen=True)
 class OperandTypeSurchargeModel:
     confidence: str
@@ -590,33 +595,103 @@ class OperandTypeSurchargeModel:
     # OQ-LITREAL: the type a literal operand takes in a mixed-type call, by its
     # spelling ({"integer": "DINT", "float": "REAL"}); empty leaves literals untyped.
     literal_types: dict = field(default_factory=dict)
+    # Instructions priced by the type of ONE data operand (CLR, NEG, ABS, BTD by
+    # the source/target; TRN by its destination) -- their other operands are bit
+    # numbers and lengths, not data, so the mixed-type rules must not see them.
+    # {mnemonic: {"operand": index, "types": {type: bytes}}}.
+    single_operand: dict = field(default_factory=dict)
+    # Motion instructions: the operand positions that take a REAL value, where an
+    # integer literal pays the REAL conversion and a float literal its 4.
+    motion_real_params: dict = field(default_factory=dict)
+
+    def single_operand_surcharge(self, mnemonic: str, operand_type: str | None) -> int:
+        spec = self.single_operand.get(mnemonic)
+        return spec["types"].get(operand_type, 0) if spec and operand_type else 0
+
+    def literal_run_cost(self, n_int: int, n_float: int) -> int:
+        m = self.mixed
+        total = m.get("float_literal", 0) * n_float
+        if n_int:
+            total += m["real_int_literal_first"] + m["real_int_literal_next"] * (n_int - 1)
+        return total
 
     def surcharge_for(self, mnemonic: str, atomic_type: str) -> int:
         return self.surcharges.get(mnemonic, {}).get(atomic_type, 0)
 
     def mixed_surcharge_for(self, mnemonic: str, types: list[str | None],
                             dest_index: int | None) -> int | None:
-        """Surcharge for a call mixing DINT with REAL or with INT; None when
-        the mix is not one that has been measured (the caller then falls back
-        to the first resolvable operand, as before)."""
-        known = {t for t in types if t}
-        if not self.mixed or len(known) != 2 or "DINT" not in known:
+        """Surcharge for a call whose operands mix types; None when the mix is
+        not one that has been measured (the caller then falls back to the first
+        resolvable operand, as before).
+
+        Literal operands arrive as INT_LITERAL / FLOAT_LITERAL (OQ-LITREAL): the
+        controller handles an immediate as a DINT, and a float literal makes the
+        call a REAL one. Measured on the realism floor (litreal_*, litint_*,
+        realidiom_mam_*/mas_*), every rule exact on every instruction tested:
+          - against REAL: 52 for the first integer literal, 44 for each further
+            one; a float literal costs 4 more than a REAL tag;
+          - integer literal against uniform INT / SINT tags: the uniform surcharge
+            less 52 / 40 per literal;
+          - REAL with INT / SINT (a float literal or a REAL tag): the REAL
+            surcharge, 108 / 96 per INT / SINT source, 40 (48 on MOV) for an
+            INT / SINT destination;
+          - LIM with a float literal and integer tags reads 8 under that sum.
+        """
+        m = self.mixed
+        if not m:
             return None
-        other = (known - {"DINT"}).pop()
+        n_il = types.count(INT_LITERAL)
+        n_fl = types.count(FLOAT_LITERAL)
+        if not (n_il or n_fl):
+            return self._tag_mix(mnemonic, types, dest_index, uniform_ok=False)
+        tags = [None if t in (INT_LITERAL, FLOAT_LITERAL) else t for t in types]
+        known = {t for t in tags if t}
+        effective = known | ({"REAL"} if n_fl else set())
+        if not effective:
+            return None
+        if not n_fl and len(known) == 1 and next(iter(known)) in m.get("int_literal_saving", {}):
+            t = next(iter(known))
+            return self.surcharge_for(mnemonic, t) - m["int_literal_saving"][t] * n_il
+        if "REAL" not in effective:
+            return None  # integer literals beside DINT only: free, as before
+        as_real = ["REAL" if t == FLOAT_LITERAL else (None if t == INT_LITERAL else t) for t in types]
+        base = self._tag_mix(mnemonic, as_real, dest_index, uniform_ok=True)
+        if base is None:
+            return None
+        total = base + m.get("float_literal", 0) * n_fl
+        if n_il:
+            total += m["real_int_literal_first"] + m["real_int_literal_next"] * (n_il - 1)
+        if mnemonic == "LIM" and n_fl and known & {"DINT", "INT", "SINT"}:
+            total += m.get("lim_float_mix", 0)
+        return total
+
+    def _tag_mix(self, mnemonic: str, types: list[str | None], dest_index: int | None,
+                 uniform_ok: bool) -> int | None:
+        m = self.mixed
+        known = {t for t in types if t}
+        if known == {"REAL"}:
+            return self.surcharge_for(mnemonic, "REAL") if uniform_ok else None
+        if len(known) != 2:
+            return None
         is_dest = [i == dest_index for i in range(len(types))]
-        if other == "REAL":
+        if "REAL" in known:
+            other = (known - {"REAL"}).pop()
+            if other == "DINT":
+                source = m["real_dint_source"]
+            elif other in m.get("real_narrow_source", {}):
+                source = m["real_narrow_source"][other]
+            else:
+                return None
             total = self.surcharge_for(mnemonic, "REAL")
             for t, dest in zip(types, is_dest):
-                if t == "DINT" and not dest:
-                    total += self.mixed["real_dint_source"]
-                elif t == "DINT" and dest:
-                    total += (self.mixed["real_dint_dest_mov"] if mnemonic == "MOV"
-                              else self.mixed["real_dint_dest"])
+                if t == other:
+                    total += (source if not dest else
+                              m["real_dint_dest_mov"] if mnemonic == "MOV" else m["real_dint_dest"])
             return total
-        if other == "INT":
-            total = sum(self.mixed["int_operand"] for t in types if t == "INT")
+        if known == {"DINT", "INT"}:
+            total = sum(m["int_operand"] for t in types if t == "INT")
             if any(t == "INT" and not dest for t, dest in zip(types, is_dest)):
-                total += self.mixed["int_source"]
+                total += m["int_source"]
             return total
         return None
 
@@ -1686,6 +1761,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 },
                 mixed=dict(raw["operand_type_surcharge"].get("mixed") or {}),
                 literal_types=dict(raw["operand_type_surcharge"].get("literal_types") or {}),
+                single_operand=dict(raw["operand_type_surcharge"].get("single_operand") or {}),
+                motion_real_params={k: list(v) for k, v in
+                                    (raw["operand_type_surcharge"].get("motion_real_params") or {}).items()},
             ),
             indirect_index=IndirectIndexModel(
                 confidence=raw["indirect_index"]["confidence"],

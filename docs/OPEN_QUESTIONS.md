@@ -1,6 +1,6 @@
 # Open Questions
 
-**Four.** OQ-REALIDIOM opened from the deep review (TASKS 0l). OQ-LITREAL opened and wired from one Studio-made rung edit. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Three.** OQ-LITREAL and OQ-REALIDIOM closed on 220 captured files, every one exact (RESOLVED_QUESTIONS); OQ-MOTIONLIT opened for the motion instructions they did not cover. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,9 +23,8 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | **1.41% mean, 3.18% worst** since motion-structure members were typed (1.74% / 3.44% after OQ-LITREAL alone (was **2.18% / 4.31%, all seventeen under**, export 33 excluded) since the series-output law was wired. The ~2% is a real under-charge the unwired law had been cancelling; the leads and the plan are in TASKS 0k. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law`. |
-| **OQ-LITREAL** | **WIRED (FITTED), batch built.** A literal is typed by its spelling (integer DINT, float REAL) and pays the mixed-type conversions. Real set 2.18% → 1.74% mean, 4.31% → 3.44% worst. 47 `litreal_*`, 118 `litint_*` and 22 `typun_*` files measure it per instruction and type. |
-| **OQ-REALIDIOM** | Real-ladder features at real density that no realism file has: small routines (16.7 rungs vs the plant's ~97), ONS/OTL/OTU on DINT bits, motion instructions written with literal tails. 33 `realidiom_*` files built. |
+| **OQ-REALUNDER** | **1.29% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
+| **OQ-MOTIONLIT** | The literal law on the motion instructions not yet measured: MAPC (1,009 real integer literals), MCCP (155), MAJ (188), MAG (136). Spec in TASKS 0l, not built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
@@ -237,31 +236,12 @@ generated files are this one law.
 
 ---
 
-## 3. OQ-LITREAL — a literal operand's type
+## 3. OQ-MOTIONLIT — literals in the remaining motion instructions
 
 | | |
 |---|---|
-| **Evidence** | Three Studio-made edits of export 27's kept rungs, each against its unedited file: four AOI-output reads → a plain BOOL, measured +104 vs engine +120 (−16, the new tag's name bucket; AOI outputs price right); deep `Cell.Servo.*` paths → plain BOOLs, +448 vs +448 exact; one DINT compare limit → REAL plus six `1`/`-1` → `1.0`/`-1.0` against REAL operands, **−600 vs −312**. The engine priced the DINT tag's six conversions (312) and gave the literals nothing; the other 288 is 48 per literal. |
-| **Mechanism** | A literal carries a type: integer → DINT, float → REAL. Against a REAL or INT operand it pays the measured OQ-MIXEDTYPE conversion (52 per DINT source into REAL; 52 per INT operand). Two captured rows the engine had been missing for weeks fit the same rule: `litop_type_int_lit` MOV(5,INT) over by 52 → exact; `litop_form_floatform` MOV(5.0,DINT) under by 76 → +4. |
-| **Wired** | `operand_type_surcharge.literal_types` (integer DINT, float REAL). Real set **2.18% → 1.74% mean, 4.31% → 3.44% worst**, 12/17 inside 2%; 5,851 integer literals sit in real REAL calls. Full-corpus run declined (literal-in-mixed-type calls were never generated outside `litop_*`). Scoped generated check: 691 captured rows in the typed/literal/CPT/series/motion families, 2 moved (both the rows above, both better), none that was exact. |
-| **Batch built** | `gen_literal_real.py`, `samples/generated/litreal/`, 47 files, realism floor, one inventory: for MOV, ADD, SUB, MUL, DIV, MOD, GRT, LES, GEQ, LEQ, EQU, NEQ, LIM, 400 calls with the tested operand a REAL tag / integer literal 5 / float literal 5.0; GRT with 0, 1000, 100000 and literal-first; LIM with two literals; MUL on DINT with 2 vs 1.5. Predictions recorded before capture: +52 per call for every `_ilit`, +92 for `mul_dint_flit`. |
-| **Batch built (integer types)** | `gen_literal_int.py`, `samples/generated/litint/`, 118 files: the same thirteen instructions for SINT, INT and DINT, tested operand a tag of the call's type / integer literal 5 / float literal 5.0 (`litint_<type>_<mn>_{tag,ilit,flit}`, control `litint_n00`). The DINT set is the control that an integer literal against DINT is free. |
-| **Batch built (types outside the table)** | `gen_typed_unary.py`, `samples/generated/typun/`, 22 files: CLR and `MOV(0,…)` (the same clear; the literal 0 is a DINT, so on SINT/INT/REAL the move pays a conversion the CLR does not), ABS, NEG on SINT/INT/DINT/REAL, BTD on SINT/INT/DINT, TRN REAL→REAL vs REAL→DINT. The surcharge table covers thirteen instructions; real non-DINT use outside it is led by **CLR on REAL (4,120 calls)**, CLR SINT 239, BTD SINT 231, CLR INT 98, ABS REAL 90. |
-| **Documented rules (instruction-set help, chat-only)** | The controller handles every immediate value as a DINT. Mixed operands convert to the highest-ranked type (SINT < INT < DINT < LINT < REAL); SINT and INT sources are promoted to DINT by sign extension, and the help states mixed types cost memory and time. That is the mechanism behind the 52-per-INT-operand charge and behind OQ-LITREAL. BTD, MVM, MEQ, TOD, FRD and SWPB accept no REAL operand (SWPB: INT or DINT only) — now refused by lint (`operand_type_not_accepted`). |
-| **Reads** | `_ilit − _tag` per instruction is the literal's cost; if it is not 52 everywhere, the rate becomes per instruction. `_flit − _tag` checks the ~4 float-literal extra. |
-| **Open** | DINT with a SINT operand from a literal (`litop_type_sint_lit` −40 per call); the +4 float literal. |
-| **CAPTURE** | not yet captured |
-
----
-
-## 4. OQ-REALIDIOM — real idioms at real density
-
-**CAPTURE ERRORS: 1 row(s)** — `realidiom_gran_spr01` (1,280 routines) built with 3 errors, each `Compiler Error (0x0A). Call technical support.` on one Area routine (Line3 Area298, Line4 Area090, Line4 Area228) whose rungs are identical to every other station routine. Suspect, not used: an internal compiler fault rather than a shape error; re-capture once before reading it.
-
-
-| | |
-|---|---|
-| **Evidence** | Under the current engine the Studio-made transplants still read 2.6–7.7% of added logic short and five of seven removed routines 200–650 bytes short; the best single-feature fit to the real residual is ~324 bytes per routine (tied with rungs and JSRs — size). Real ladder carries 16.7 rungs per routine against the plant's ~97, ONS/OTL/OTU on DINT bits, and motion instructions with literal operands (3,261 across 1,763 real calls); `litop_mam_tag`/`_lit` already read +40/+64 per call. |
-| **Batch built** | `gen_real_idioms.py`, `samples/generated/realidiom/`, 33 files. Granularity: `gran_spr{01,02,05,10,20}` (plant alone, 10–200 rungs per routine; spr10 = the standard plant). Bit targets: `bit_{ote,ons,otl,otu}_{mbool,dbit,abit,mbit}` + `bit_n00` (BOOL member / scalar DINT bit / DINT array bit / DINT member bit, 800 each). Motion: `mam_{tag,tail0,jerk75,move1,dynilit,dynflit,virtual,keywords,real}`, `mas_{tag,lit}` on the captured motop inventory (control `motop_n00`). |
-| **Reads** | gran vs spr10 = per-routine/JSR cost at scale; each bit target vs `_mbool` of its instruction; each MAM variant vs `mam_tag`. |
-| **CAPTURE** | not yet captured |
+| **Evidence** | MAM and MAS follow the typed-call literal law exactly (`realidiom_mam_*`, `realidiom_mas_*`): 52 for the first integer literal in a REAL parameter, 44 for each further one, +4 per float literal; keywords, move type, axis type and the event-distance / calculated-data arrays cost nothing. Wired for MAM and MAS only. |
+| **Expected movement** | Real integer literals in other motion instructions: MAPC 1,009, MCCP 155, MAJ 188, MAG 136, MAW 50, MAR 36 — about 1,600, ~70–80 KB across the seventeen at the measured rate if they follow the law, i.e. up to ~0.15 pp of the 1.29% mean. |
+| **Open discrepancy** | `litop_mam_tag` / `_lit` (near-empty controller, AXIS_VIRTUAL, `Disabled,Current`) read 12 per call over under the wired rule, where the realism-floor MAM files are exact. Two old files against eleven new; the realism floor wins until a file isolates the difference. |
+| **Spec** | TASKS 0l item 1. |
+| **CAPTURE** | not yet built |

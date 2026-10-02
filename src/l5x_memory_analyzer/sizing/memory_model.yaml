@@ -2380,9 +2380,36 @@ operand_type_surcharge:
   #   saved 288 beyond the engine (48 each; the rule charges 52).
   # Real set: 2.18% -> see TASKS 0k. litreal_* (47 files) measures it per instruction.
   literal_types:
-    integer: DINT
-    float: REAL
+    integer: INT_LITERAL
+    float: FLOAT_LITERAL
+  # KNOWN from litreal_* (47), litint_* (118), typun_* (22), realidiom_mam_*/mas_*
+  # (11), 2026-10-02 -- every file exact under these rules:
+  #   integer literal vs REAL      52 first, 44 each further (13 instructions; LIM
+  #                                two-literal 96; MAM jerk pair 96, four dynamics 184)
+  #   float literal vs REAL tag    +4 (13 instructions; MAM 4 x 4)
+  #   integer literal vs INT/SINT  uniform surcharge less 52 / 40 (13 instructions each)
+  #   REAL with INT / SINT         108 / 96 per source, 40 (48 MOV) per destination
+  #   LIM, float literal, integer tags: 8 under that sum (DINT, INT, SINT alike)
+  single_operand:
+    # Priced by one data operand's type; DINT and REAL rows are the measured zeroes.
+    # (ABS and NEG are two-operand and go through `surcharges` + `mixed`: the old
+    # ABS weight 120 is exactly 44 + REAL 24 + DINT source 52 on instr_abs's
+    # ABS(DINT,REAL).)
+    CLR: {operand: 0, types: {SINT: 52, INT: 52, DINT: 0, REAL: 0}}
+    BTD: {operand: 0, types: {SINT: 108, INT: 128, DINT: 0}}
+    TRN: {operand: -1, types: {REAL: 52, DINT: 0}}
+  motion_real_params:
+    # Operand positions taking a REAL value (0-based). Move type, keywords, the
+    # event-distance and calculated-data arrays take no conversion (measured).
+    MAM: [3, 4, 6, 8, 11, 12, 16]
+    MAS: [4, 7]
   mixed:
+    real_int_literal_first: 52
+    real_int_literal_next: 44
+    float_literal: 4
+    int_literal_saving: {INT: 52, SINT: 40}
+    real_narrow_source: {INT: 108, SINT: 96}
+    lim_float_mix: -8
     real_dint_source: 52
     real_dint_dest: 40
     real_dint_dest_mov: 48
@@ -2402,6 +2429,9 @@ operand_type_surcharge:
     NEQ: {SINT: 88, INT: 112, REAL: 0, STRING: 52}
     MOV: {SINT: 92, INT: 104, REAL: 24}
     LIM: {SINT: 128, INT: 164, REAL: -8}
+    # typun_* (realism floor, same-type source and destination), 2026-10-02:
+    ABS: {SINT: 92, INT: 104, REAL: 24}
+    NEG: {SINT: 92, INT: 104, REAL: 28}
 
 # Indirect (tag-driven) array-index cost (OQ-INDIRECT, wired).
 # CONFIRMED KNOWN -- 4 real count points each (10/50/100/1000 rungs),
@@ -3329,7 +3359,7 @@ logic_instructions:
     FOR: 80
     SBR: 0
     RET: 0
-    ABS: 120
+    ABS: 44  # realism floor, DINT operands (typun_dint_abs); was 120
     XPY: 116
     CONCAT: 104
     MID: 100

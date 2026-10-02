@@ -35,6 +35,42 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 # Tags, UDTs and strings
 
+## OQ-LITREAL — a literal operand's type
+
+**SOLVED and wired, KNOWN.** All 187 `litreal_*`, `litint_*`, `typun_*` files and the 11
+motion files of `realidiom_*` exact under these rules (2026-10-02). The controller handles
+every immediate as a DINT, and a call mixing types converts to the highest-ranked one:
+
+| case | cost per call | files |
+|---|---|---|
+| integer literal vs REAL | 52 first, 44 each further | 13 instructions, 4 sizes, literal first or second; LIM two-literal 96; MAM 96 / 184 / 140; MAS 96 |
+| float literal vs REAL tag | +4 | 13 instructions; MAM four floats 16 |
+| integer literal vs DINT | 0 | 13 instructions |
+| integer literal vs uniform INT / SINT | uniform surcharge −52 / −40 | 13 instructions each |
+| REAL with INT / SINT | REAL surcharge + 108 / 96 per source + 40 (48 MOV) per destination | float-literal files, 12 of 13 instructions each |
+| LIM, float literal, integer tags | 8 under that sum | DINT, INT, SINT alike |
+| CLR | SINT/INT +52; DINT, REAL 0 | `typun_*` |
+| ABS / NEG | SINT 92, INT 104, REAL 24 / 28 (two-operand, mixed rules apply) | `typun_*`; ABS base weight 120 → 44 (the old 120 was `ABS(DINT,REAL)` = 44 + 24 + 52) |
+| BTD | SINT 108, INT 128 | `typun_*` |
+| TRN | REAL destination +52, DINT 0 | `typun_*` |
+| MOV(0, x) vs CLR(x) | DINT 36/32, INT 88/84, SINT 88/84, **REAL 112/32** | `typun_*` — CLR is the cheaper clear on every type |
+
+Found by one Studio-made rung edit (six `1`/`-1` → `1.0`/`-1.0` against REAL). Real set:
+2.18% / 4.31% → **1.29% / 3.08%** with the motion-structure types (same day). Generated
+regression: 1,033 captured rows in every instruction-sensitive family re-checked, 5 moved —
+`litop_type_sint_lit`, `_real_lit`, `_form_floatform` to exact; `litop_mam_tag`/`_lit` from
++40/+64 under to 12 over (carried to OQ-MOTIONLIT).
+
+## OQ-REALIDIOM — real idioms at real density
+
+**CLOSED NEGATIVE for routine size and bit targets; motion literals SOLVED (in OQ-LITREAL).**
+`realidiom_gran_spr{01,02,05,10,20}` (10 to 200 rungs per routine) all read the plant's own
+−1,794: routine and JSR costs are right at real granularity. All 16
+`realidiom_bit_{ote,ons,otl,otu}_{mbool,dbit,abit,mbit}` read the control's −1,890: ONS, OTL
+and OTU on a bit of a DINT tag, array element or member cost what they cost on a BOOL.
+`realidiom_gran_spr01` (1,280 routines) failed its first builds with `Compiler Error (0x0A)` on
+three routines identical to the rest and built clean on retry at the same reading.
+
 ## OQ-MOTIONOP — do axis attributes and MOTION_INSTRUCTION members cost more than plain operands?
 
 **CLOSED NEGATIVE.** All 44 `motop_*` files captured with zero errors (8 warnings each,

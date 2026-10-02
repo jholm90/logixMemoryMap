@@ -359,7 +359,7 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Current batch: real idioms at real density — 33 files, awaiting capture (OQ-REALIDIOM)
+## Captured: real idioms at real density — 33 files, all exact against their controls (OQ-REALIDIOM closed)
 
 `gen_real_idioms.py`, `samples/generated/realidiom/`. v35 / 1756-L81E, realism floor.
 `realism.with_baseline(stations_per_routine=)` now cuts the plant into routines of any
@@ -375,7 +375,7 @@ size (default 10, unchanged).
 | `realidiom_mam_{tail0,jerk75,move1,dynilit,dynflit,virtual,keywords,real}` | 8 | `realidiom_mam_tag` |
 | `realidiom_mas_{tag,lit}` | 2 | each other, `motop_n00` |
 
-## Current batch: literals against SINT/INT/DINT, and types outside the surcharge table — 140 files, awaiting capture (OQ-LITREAL)
+## Captured: literals against SINT/INT/DINT, and types outside the surcharge table — 140 files, all exact under the wired rules (OQ-LITREAL closed)
 
 `gen_literal_int.py`, `samples/generated/litint/` (118): for each of SINT, INT, DINT and
 each of MOV ADD SUB MUL DIV MOD GRT LES GEQ LEQ EQU NEQ LIM, 400 calls with the tested
@@ -387,7 +387,7 @@ float literal 5.0 (`_flit`); control `litint_n00`; one inventory throughout. Dif
 BTD on SINT/INT/DINT, `TRN` REAL→REAL and REAL→DINT; control `typun_n00`. Difference each
 type against the DINT twin.
 
-## Current batch: literal operands in REAL calls — 47 files, awaiting capture (OQ-LITREAL)
+## Captured: literal operands in REAL calls — 47 files, all exact under the wired rules (OQ-LITREAL closed)
 
 `gen_literal_real.py`, `samples/generated/litreal/`. v35 / 1756-L81E, realism floor, one
 inventory in all 47 (`LrA`/`LrD` REAL[400], `LdA`/`LdD` DINT[400], `LrQ` BOOL[400], `LrK`,
