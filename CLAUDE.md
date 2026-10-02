@@ -362,6 +362,9 @@ waits.
   > is the backstop, not the rule.** The rule is that this content never leaves
   > `samples/local/`.
 
+- **In chat, name a real program by its customer/program or file name** (resolved through the
+  gitignored `samples/local/aliases.csv`), not just its export number — the numbers are not
+  memorable. Committed files keep the export number only; the names never enter the repository.
 - **Rockwell help documentation is chat-only.** The instruction-set help files arrive over
   chat and stay in the session scratchpad — never in the repository, not even under
   `samples/local/`, and no table, page text or parsed extract of them is committed. A

@@ -90,7 +90,7 @@ moved). Findings, all measured on the real set:
   transplant of its next-largest programs (the ones with the alarm, camming-control and
   junction-box logic) is the sharpest remaining instrument.
 
-**Ready to capture together:** `motlit_*` (15), `aoilit_*` (9), `blkstr_*` (19).
+**Ready to capture together:** `motlit_*` (15), `aoilit_*` (9), `blkstr_*` (27, with the COP/CPS cross-type pairs).
 
 ### 0m. After the literal and idiom captures, 2026-10-02 — NEXT
 

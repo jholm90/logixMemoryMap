@@ -359,11 +359,11 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Current batch: block moves, strings, jumps — 19 files, awaiting capture (OQ-BLOCKSTR)
+## Current batch: block moves, strings, jumps — 27 files, awaiting capture (OQ-BLOCKSTR)
 
 `gen_block_string.py`, `samples/generated/blkstr/`: one inventory (BkUdt DINT/REAL/INT/4 BOOL
 arrays of 4,000, DINT/REAL arrays, STRING arrays of 400), 400 calls each, control `blkstr_n00`;
-COP by type and length, CPS, FLL literal fills, CONCAT, DTOS, SIZE, JMP/LBL pairs. Each file
+COP by type and length, COP/CPS across types in both directions (UDT↔DINT, UDT↔SINT; Length counts destination elements), CPS, FLL literal fills, CONCAT, DTOS, SIZE, JMP/LBL pairs. Each file
 differences against `blkstr_n00`.
 
 ## Current batch: AOI arguments of another type — 9 files, awaiting capture (OQ-AOILITARG)

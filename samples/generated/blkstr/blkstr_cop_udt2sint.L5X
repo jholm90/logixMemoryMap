@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="BlkstrDtosDint" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Oct 02 23:45:55 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="BlkstrDtosDint" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Oct 02 23:45:55 2026" LastModifiedDate="Fri Oct 02 23:45:55 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="BlkstrCopUdt2sint" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Fri Oct 02 23:45:30 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="BlkstrCopUdt2sint" ProcessorType="1756-L81E" MajorRev="35" MinorRev="11" ProjectCreationDate="Fri Oct 02 23:45:30 2026" LastModifiedDate="Fri Oct 02 23:45:30 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo/>
@@ -12488,1204 +12488,1204 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[DTOS(BdA[0],BsC[0]);]]></Text>
+                <Text><![CDATA[COP(BkA[0],BsiB[0],12);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[DTOS(BdA[1],BsC[1]);]]></Text>
+                <Text><![CDATA[COP(BkA[1],BsiB[12],12);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[DTOS(BdA[2],BsC[2]);]]></Text>
+                <Text><![CDATA[COP(BkA[2],BsiB[24],12);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[DTOS(BdA[3],BsC[3]);]]></Text>
+                <Text><![CDATA[COP(BkA[3],BsiB[36],12);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[DTOS(BdA[4],BsC[4]);]]></Text>
+                <Text><![CDATA[COP(BkA[4],BsiB[48],12);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[DTOS(BdA[5],BsC[5]);]]></Text>
+                <Text><![CDATA[COP(BkA[5],BsiB[60],12);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[DTOS(BdA[6],BsC[6]);]]></Text>
+                <Text><![CDATA[COP(BkA[6],BsiB[72],12);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[DTOS(BdA[7],BsC[7]);]]></Text>
+                <Text><![CDATA[COP(BkA[7],BsiB[84],12);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[DTOS(BdA[8],BsC[8]);]]></Text>
+                <Text><![CDATA[COP(BkA[8],BsiB[96],12);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[DTOS(BdA[9],BsC[9]);]]></Text>
+                <Text><![CDATA[COP(BkA[9],BsiB[108],12);]]></Text>
               </Rung>
               <Rung Number="10" Type="N">
-                <Text><![CDATA[DTOS(BdA[10],BsC[10]);]]></Text>
+                <Text><![CDATA[COP(BkA[10],BsiB[120],12);]]></Text>
               </Rung>
               <Rung Number="11" Type="N">
-                <Text><![CDATA[DTOS(BdA[11],BsC[11]);]]></Text>
+                <Text><![CDATA[COP(BkA[11],BsiB[132],12);]]></Text>
               </Rung>
               <Rung Number="12" Type="N">
-                <Text><![CDATA[DTOS(BdA[12],BsC[12]);]]></Text>
+                <Text><![CDATA[COP(BkA[12],BsiB[144],12);]]></Text>
               </Rung>
               <Rung Number="13" Type="N">
-                <Text><![CDATA[DTOS(BdA[13],BsC[13]);]]></Text>
+                <Text><![CDATA[COP(BkA[13],BsiB[156],12);]]></Text>
               </Rung>
               <Rung Number="14" Type="N">
-                <Text><![CDATA[DTOS(BdA[14],BsC[14]);]]></Text>
+                <Text><![CDATA[COP(BkA[14],BsiB[168],12);]]></Text>
               </Rung>
               <Rung Number="15" Type="N">
-                <Text><![CDATA[DTOS(BdA[15],BsC[15]);]]></Text>
+                <Text><![CDATA[COP(BkA[15],BsiB[180],12);]]></Text>
               </Rung>
               <Rung Number="16" Type="N">
-                <Text><![CDATA[DTOS(BdA[16],BsC[16]);]]></Text>
+                <Text><![CDATA[COP(BkA[16],BsiB[192],12);]]></Text>
               </Rung>
               <Rung Number="17" Type="N">
-                <Text><![CDATA[DTOS(BdA[17],BsC[17]);]]></Text>
+                <Text><![CDATA[COP(BkA[17],BsiB[204],12);]]></Text>
               </Rung>
               <Rung Number="18" Type="N">
-                <Text><![CDATA[DTOS(BdA[18],BsC[18]);]]></Text>
+                <Text><![CDATA[COP(BkA[18],BsiB[216],12);]]></Text>
               </Rung>
               <Rung Number="19" Type="N">
-                <Text><![CDATA[DTOS(BdA[19],BsC[19]);]]></Text>
+                <Text><![CDATA[COP(BkA[19],BsiB[228],12);]]></Text>
               </Rung>
               <Rung Number="20" Type="N">
-                <Text><![CDATA[DTOS(BdA[20],BsC[20]);]]></Text>
+                <Text><![CDATA[COP(BkA[20],BsiB[240],12);]]></Text>
               </Rung>
               <Rung Number="21" Type="N">
-                <Text><![CDATA[DTOS(BdA[21],BsC[21]);]]></Text>
+                <Text><![CDATA[COP(BkA[21],BsiB[252],12);]]></Text>
               </Rung>
               <Rung Number="22" Type="N">
-                <Text><![CDATA[DTOS(BdA[22],BsC[22]);]]></Text>
+                <Text><![CDATA[COP(BkA[22],BsiB[264],12);]]></Text>
               </Rung>
               <Rung Number="23" Type="N">
-                <Text><![CDATA[DTOS(BdA[23],BsC[23]);]]></Text>
+                <Text><![CDATA[COP(BkA[23],BsiB[276],12);]]></Text>
               </Rung>
               <Rung Number="24" Type="N">
-                <Text><![CDATA[DTOS(BdA[24],BsC[24]);]]></Text>
+                <Text><![CDATA[COP(BkA[24],BsiB[288],12);]]></Text>
               </Rung>
               <Rung Number="25" Type="N">
-                <Text><![CDATA[DTOS(BdA[25],BsC[25]);]]></Text>
+                <Text><![CDATA[COP(BkA[25],BsiB[300],12);]]></Text>
               </Rung>
               <Rung Number="26" Type="N">
-                <Text><![CDATA[DTOS(BdA[26],BsC[26]);]]></Text>
+                <Text><![CDATA[COP(BkA[26],BsiB[312],12);]]></Text>
               </Rung>
               <Rung Number="27" Type="N">
-                <Text><![CDATA[DTOS(BdA[27],BsC[27]);]]></Text>
+                <Text><![CDATA[COP(BkA[27],BsiB[324],12);]]></Text>
               </Rung>
               <Rung Number="28" Type="N">
-                <Text><![CDATA[DTOS(BdA[28],BsC[28]);]]></Text>
+                <Text><![CDATA[COP(BkA[28],BsiB[336],12);]]></Text>
               </Rung>
               <Rung Number="29" Type="N">
-                <Text><![CDATA[DTOS(BdA[29],BsC[29]);]]></Text>
+                <Text><![CDATA[COP(BkA[29],BsiB[348],12);]]></Text>
               </Rung>
               <Rung Number="30" Type="N">
-                <Text><![CDATA[DTOS(BdA[30],BsC[30]);]]></Text>
+                <Text><![CDATA[COP(BkA[30],BsiB[360],12);]]></Text>
               </Rung>
               <Rung Number="31" Type="N">
-                <Text><![CDATA[DTOS(BdA[31],BsC[31]);]]></Text>
+                <Text><![CDATA[COP(BkA[31],BsiB[372],12);]]></Text>
               </Rung>
               <Rung Number="32" Type="N">
-                <Text><![CDATA[DTOS(BdA[32],BsC[32]);]]></Text>
+                <Text><![CDATA[COP(BkA[32],BsiB[384],12);]]></Text>
               </Rung>
               <Rung Number="33" Type="N">
-                <Text><![CDATA[DTOS(BdA[33],BsC[33]);]]></Text>
+                <Text><![CDATA[COP(BkA[33],BsiB[396],12);]]></Text>
               </Rung>
               <Rung Number="34" Type="N">
-                <Text><![CDATA[DTOS(BdA[34],BsC[34]);]]></Text>
+                <Text><![CDATA[COP(BkA[34],BsiB[408],12);]]></Text>
               </Rung>
               <Rung Number="35" Type="N">
-                <Text><![CDATA[DTOS(BdA[35],BsC[35]);]]></Text>
+                <Text><![CDATA[COP(BkA[35],BsiB[420],12);]]></Text>
               </Rung>
               <Rung Number="36" Type="N">
-                <Text><![CDATA[DTOS(BdA[36],BsC[36]);]]></Text>
+                <Text><![CDATA[COP(BkA[36],BsiB[432],12);]]></Text>
               </Rung>
               <Rung Number="37" Type="N">
-                <Text><![CDATA[DTOS(BdA[37],BsC[37]);]]></Text>
+                <Text><![CDATA[COP(BkA[37],BsiB[444],12);]]></Text>
               </Rung>
               <Rung Number="38" Type="N">
-                <Text><![CDATA[DTOS(BdA[38],BsC[38]);]]></Text>
+                <Text><![CDATA[COP(BkA[38],BsiB[456],12);]]></Text>
               </Rung>
               <Rung Number="39" Type="N">
-                <Text><![CDATA[DTOS(BdA[39],BsC[39]);]]></Text>
+                <Text><![CDATA[COP(BkA[39],BsiB[468],12);]]></Text>
               </Rung>
               <Rung Number="40" Type="N">
-                <Text><![CDATA[DTOS(BdA[40],BsC[40]);]]></Text>
+                <Text><![CDATA[COP(BkA[40],BsiB[480],12);]]></Text>
               </Rung>
               <Rung Number="41" Type="N">
-                <Text><![CDATA[DTOS(BdA[41],BsC[41]);]]></Text>
+                <Text><![CDATA[COP(BkA[41],BsiB[492],12);]]></Text>
               </Rung>
               <Rung Number="42" Type="N">
-                <Text><![CDATA[DTOS(BdA[42],BsC[42]);]]></Text>
+                <Text><![CDATA[COP(BkA[42],BsiB[504],12);]]></Text>
               </Rung>
               <Rung Number="43" Type="N">
-                <Text><![CDATA[DTOS(BdA[43],BsC[43]);]]></Text>
+                <Text><![CDATA[COP(BkA[43],BsiB[516],12);]]></Text>
               </Rung>
               <Rung Number="44" Type="N">
-                <Text><![CDATA[DTOS(BdA[44],BsC[44]);]]></Text>
+                <Text><![CDATA[COP(BkA[44],BsiB[528],12);]]></Text>
               </Rung>
               <Rung Number="45" Type="N">
-                <Text><![CDATA[DTOS(BdA[45],BsC[45]);]]></Text>
+                <Text><![CDATA[COP(BkA[45],BsiB[540],12);]]></Text>
               </Rung>
               <Rung Number="46" Type="N">
-                <Text><![CDATA[DTOS(BdA[46],BsC[46]);]]></Text>
+                <Text><![CDATA[COP(BkA[46],BsiB[552],12);]]></Text>
               </Rung>
               <Rung Number="47" Type="N">
-                <Text><![CDATA[DTOS(BdA[47],BsC[47]);]]></Text>
+                <Text><![CDATA[COP(BkA[47],BsiB[564],12);]]></Text>
               </Rung>
               <Rung Number="48" Type="N">
-                <Text><![CDATA[DTOS(BdA[48],BsC[48]);]]></Text>
+                <Text><![CDATA[COP(BkA[48],BsiB[576],12);]]></Text>
               </Rung>
               <Rung Number="49" Type="N">
-                <Text><![CDATA[DTOS(BdA[49],BsC[49]);]]></Text>
+                <Text><![CDATA[COP(BkA[49],BsiB[588],12);]]></Text>
               </Rung>
               <Rung Number="50" Type="N">
-                <Text><![CDATA[DTOS(BdA[50],BsC[50]);]]></Text>
+                <Text><![CDATA[COP(BkA[50],BsiB[600],12);]]></Text>
               </Rung>
               <Rung Number="51" Type="N">
-                <Text><![CDATA[DTOS(BdA[51],BsC[51]);]]></Text>
+                <Text><![CDATA[COP(BkA[51],BsiB[612],12);]]></Text>
               </Rung>
               <Rung Number="52" Type="N">
-                <Text><![CDATA[DTOS(BdA[52],BsC[52]);]]></Text>
+                <Text><![CDATA[COP(BkA[52],BsiB[624],12);]]></Text>
               </Rung>
               <Rung Number="53" Type="N">
-                <Text><![CDATA[DTOS(BdA[53],BsC[53]);]]></Text>
+                <Text><![CDATA[COP(BkA[53],BsiB[636],12);]]></Text>
               </Rung>
               <Rung Number="54" Type="N">
-                <Text><![CDATA[DTOS(BdA[54],BsC[54]);]]></Text>
+                <Text><![CDATA[COP(BkA[54],BsiB[648],12);]]></Text>
               </Rung>
               <Rung Number="55" Type="N">
-                <Text><![CDATA[DTOS(BdA[55],BsC[55]);]]></Text>
+                <Text><![CDATA[COP(BkA[55],BsiB[660],12);]]></Text>
               </Rung>
               <Rung Number="56" Type="N">
-                <Text><![CDATA[DTOS(BdA[56],BsC[56]);]]></Text>
+                <Text><![CDATA[COP(BkA[56],BsiB[672],12);]]></Text>
               </Rung>
               <Rung Number="57" Type="N">
-                <Text><![CDATA[DTOS(BdA[57],BsC[57]);]]></Text>
+                <Text><![CDATA[COP(BkA[57],BsiB[684],12);]]></Text>
               </Rung>
               <Rung Number="58" Type="N">
-                <Text><![CDATA[DTOS(BdA[58],BsC[58]);]]></Text>
+                <Text><![CDATA[COP(BkA[58],BsiB[696],12);]]></Text>
               </Rung>
               <Rung Number="59" Type="N">
-                <Text><![CDATA[DTOS(BdA[59],BsC[59]);]]></Text>
+                <Text><![CDATA[COP(BkA[59],BsiB[708],12);]]></Text>
               </Rung>
               <Rung Number="60" Type="N">
-                <Text><![CDATA[DTOS(BdA[60],BsC[60]);]]></Text>
+                <Text><![CDATA[COP(BkA[60],BsiB[720],12);]]></Text>
               </Rung>
               <Rung Number="61" Type="N">
-                <Text><![CDATA[DTOS(BdA[61],BsC[61]);]]></Text>
+                <Text><![CDATA[COP(BkA[61],BsiB[732],12);]]></Text>
               </Rung>
               <Rung Number="62" Type="N">
-                <Text><![CDATA[DTOS(BdA[62],BsC[62]);]]></Text>
+                <Text><![CDATA[COP(BkA[62],BsiB[744],12);]]></Text>
               </Rung>
               <Rung Number="63" Type="N">
-                <Text><![CDATA[DTOS(BdA[63],BsC[63]);]]></Text>
+                <Text><![CDATA[COP(BkA[63],BsiB[756],12);]]></Text>
               </Rung>
               <Rung Number="64" Type="N">
-                <Text><![CDATA[DTOS(BdA[64],BsC[64]);]]></Text>
+                <Text><![CDATA[COP(BkA[64],BsiB[768],12);]]></Text>
               </Rung>
               <Rung Number="65" Type="N">
-                <Text><![CDATA[DTOS(BdA[65],BsC[65]);]]></Text>
+                <Text><![CDATA[COP(BkA[65],BsiB[780],12);]]></Text>
               </Rung>
               <Rung Number="66" Type="N">
-                <Text><![CDATA[DTOS(BdA[66],BsC[66]);]]></Text>
+                <Text><![CDATA[COP(BkA[66],BsiB[792],12);]]></Text>
               </Rung>
               <Rung Number="67" Type="N">
-                <Text><![CDATA[DTOS(BdA[67],BsC[67]);]]></Text>
+                <Text><![CDATA[COP(BkA[67],BsiB[804],12);]]></Text>
               </Rung>
               <Rung Number="68" Type="N">
-                <Text><![CDATA[DTOS(BdA[68],BsC[68]);]]></Text>
+                <Text><![CDATA[COP(BkA[68],BsiB[816],12);]]></Text>
               </Rung>
               <Rung Number="69" Type="N">
-                <Text><![CDATA[DTOS(BdA[69],BsC[69]);]]></Text>
+                <Text><![CDATA[COP(BkA[69],BsiB[828],12);]]></Text>
               </Rung>
               <Rung Number="70" Type="N">
-                <Text><![CDATA[DTOS(BdA[70],BsC[70]);]]></Text>
+                <Text><![CDATA[COP(BkA[70],BsiB[840],12);]]></Text>
               </Rung>
               <Rung Number="71" Type="N">
-                <Text><![CDATA[DTOS(BdA[71],BsC[71]);]]></Text>
+                <Text><![CDATA[COP(BkA[71],BsiB[852],12);]]></Text>
               </Rung>
               <Rung Number="72" Type="N">
-                <Text><![CDATA[DTOS(BdA[72],BsC[72]);]]></Text>
+                <Text><![CDATA[COP(BkA[72],BsiB[864],12);]]></Text>
               </Rung>
               <Rung Number="73" Type="N">
-                <Text><![CDATA[DTOS(BdA[73],BsC[73]);]]></Text>
+                <Text><![CDATA[COP(BkA[73],BsiB[876],12);]]></Text>
               </Rung>
               <Rung Number="74" Type="N">
-                <Text><![CDATA[DTOS(BdA[74],BsC[74]);]]></Text>
+                <Text><![CDATA[COP(BkA[74],BsiB[888],12);]]></Text>
               </Rung>
               <Rung Number="75" Type="N">
-                <Text><![CDATA[DTOS(BdA[75],BsC[75]);]]></Text>
+                <Text><![CDATA[COP(BkA[75],BsiB[900],12);]]></Text>
               </Rung>
               <Rung Number="76" Type="N">
-                <Text><![CDATA[DTOS(BdA[76],BsC[76]);]]></Text>
+                <Text><![CDATA[COP(BkA[76],BsiB[912],12);]]></Text>
               </Rung>
               <Rung Number="77" Type="N">
-                <Text><![CDATA[DTOS(BdA[77],BsC[77]);]]></Text>
+                <Text><![CDATA[COP(BkA[77],BsiB[924],12);]]></Text>
               </Rung>
               <Rung Number="78" Type="N">
-                <Text><![CDATA[DTOS(BdA[78],BsC[78]);]]></Text>
+                <Text><![CDATA[COP(BkA[78],BsiB[936],12);]]></Text>
               </Rung>
               <Rung Number="79" Type="N">
-                <Text><![CDATA[DTOS(BdA[79],BsC[79]);]]></Text>
+                <Text><![CDATA[COP(BkA[79],BsiB[948],12);]]></Text>
               </Rung>
               <Rung Number="80" Type="N">
-                <Text><![CDATA[DTOS(BdA[80],BsC[80]);]]></Text>
+                <Text><![CDATA[COP(BkA[80],BsiB[960],12);]]></Text>
               </Rung>
               <Rung Number="81" Type="N">
-                <Text><![CDATA[DTOS(BdA[81],BsC[81]);]]></Text>
+                <Text><![CDATA[COP(BkA[81],BsiB[972],12);]]></Text>
               </Rung>
               <Rung Number="82" Type="N">
-                <Text><![CDATA[DTOS(BdA[82],BsC[82]);]]></Text>
+                <Text><![CDATA[COP(BkA[82],BsiB[984],12);]]></Text>
               </Rung>
               <Rung Number="83" Type="N">
-                <Text><![CDATA[DTOS(BdA[83],BsC[83]);]]></Text>
+                <Text><![CDATA[COP(BkA[83],BsiB[996],12);]]></Text>
               </Rung>
               <Rung Number="84" Type="N">
-                <Text><![CDATA[DTOS(BdA[84],BsC[84]);]]></Text>
+                <Text><![CDATA[COP(BkA[84],BsiB[1008],12);]]></Text>
               </Rung>
               <Rung Number="85" Type="N">
-                <Text><![CDATA[DTOS(BdA[85],BsC[85]);]]></Text>
+                <Text><![CDATA[COP(BkA[85],BsiB[1020],12);]]></Text>
               </Rung>
               <Rung Number="86" Type="N">
-                <Text><![CDATA[DTOS(BdA[86],BsC[86]);]]></Text>
+                <Text><![CDATA[COP(BkA[86],BsiB[1032],12);]]></Text>
               </Rung>
               <Rung Number="87" Type="N">
-                <Text><![CDATA[DTOS(BdA[87],BsC[87]);]]></Text>
+                <Text><![CDATA[COP(BkA[87],BsiB[1044],12);]]></Text>
               </Rung>
               <Rung Number="88" Type="N">
-                <Text><![CDATA[DTOS(BdA[88],BsC[88]);]]></Text>
+                <Text><![CDATA[COP(BkA[88],BsiB[1056],12);]]></Text>
               </Rung>
               <Rung Number="89" Type="N">
-                <Text><![CDATA[DTOS(BdA[89],BsC[89]);]]></Text>
+                <Text><![CDATA[COP(BkA[89],BsiB[1068],12);]]></Text>
               </Rung>
               <Rung Number="90" Type="N">
-                <Text><![CDATA[DTOS(BdA[90],BsC[90]);]]></Text>
+                <Text><![CDATA[COP(BkA[90],BsiB[1080],12);]]></Text>
               </Rung>
               <Rung Number="91" Type="N">
-                <Text><![CDATA[DTOS(BdA[91],BsC[91]);]]></Text>
+                <Text><![CDATA[COP(BkA[91],BsiB[1092],12);]]></Text>
               </Rung>
               <Rung Number="92" Type="N">
-                <Text><![CDATA[DTOS(BdA[92],BsC[92]);]]></Text>
+                <Text><![CDATA[COP(BkA[92],BsiB[1104],12);]]></Text>
               </Rung>
               <Rung Number="93" Type="N">
-                <Text><![CDATA[DTOS(BdA[93],BsC[93]);]]></Text>
+                <Text><![CDATA[COP(BkA[93],BsiB[1116],12);]]></Text>
               </Rung>
               <Rung Number="94" Type="N">
-                <Text><![CDATA[DTOS(BdA[94],BsC[94]);]]></Text>
+                <Text><![CDATA[COP(BkA[94],BsiB[1128],12);]]></Text>
               </Rung>
               <Rung Number="95" Type="N">
-                <Text><![CDATA[DTOS(BdA[95],BsC[95]);]]></Text>
+                <Text><![CDATA[COP(BkA[95],BsiB[1140],12);]]></Text>
               </Rung>
               <Rung Number="96" Type="N">
-                <Text><![CDATA[DTOS(BdA[96],BsC[96]);]]></Text>
+                <Text><![CDATA[COP(BkA[96],BsiB[1152],12);]]></Text>
               </Rung>
               <Rung Number="97" Type="N">
-                <Text><![CDATA[DTOS(BdA[97],BsC[97]);]]></Text>
+                <Text><![CDATA[COP(BkA[97],BsiB[1164],12);]]></Text>
               </Rung>
               <Rung Number="98" Type="N">
-                <Text><![CDATA[DTOS(BdA[98],BsC[98]);]]></Text>
+                <Text><![CDATA[COP(BkA[98],BsiB[1176],12);]]></Text>
               </Rung>
               <Rung Number="99" Type="N">
-                <Text><![CDATA[DTOS(BdA[99],BsC[99]);]]></Text>
+                <Text><![CDATA[COP(BkA[99],BsiB[1188],12);]]></Text>
               </Rung>
               <Rung Number="100" Type="N">
-                <Text><![CDATA[DTOS(BdA[100],BsC[100]);]]></Text>
+                <Text><![CDATA[COP(BkA[100],BsiB[1200],12);]]></Text>
               </Rung>
               <Rung Number="101" Type="N">
-                <Text><![CDATA[DTOS(BdA[101],BsC[101]);]]></Text>
+                <Text><![CDATA[COP(BkA[101],BsiB[1212],12);]]></Text>
               </Rung>
               <Rung Number="102" Type="N">
-                <Text><![CDATA[DTOS(BdA[102],BsC[102]);]]></Text>
+                <Text><![CDATA[COP(BkA[102],BsiB[1224],12);]]></Text>
               </Rung>
               <Rung Number="103" Type="N">
-                <Text><![CDATA[DTOS(BdA[103],BsC[103]);]]></Text>
+                <Text><![CDATA[COP(BkA[103],BsiB[1236],12);]]></Text>
               </Rung>
               <Rung Number="104" Type="N">
-                <Text><![CDATA[DTOS(BdA[104],BsC[104]);]]></Text>
+                <Text><![CDATA[COP(BkA[104],BsiB[1248],12);]]></Text>
               </Rung>
               <Rung Number="105" Type="N">
-                <Text><![CDATA[DTOS(BdA[105],BsC[105]);]]></Text>
+                <Text><![CDATA[COP(BkA[105],BsiB[1260],12);]]></Text>
               </Rung>
               <Rung Number="106" Type="N">
-                <Text><![CDATA[DTOS(BdA[106],BsC[106]);]]></Text>
+                <Text><![CDATA[COP(BkA[106],BsiB[1272],12);]]></Text>
               </Rung>
               <Rung Number="107" Type="N">
-                <Text><![CDATA[DTOS(BdA[107],BsC[107]);]]></Text>
+                <Text><![CDATA[COP(BkA[107],BsiB[1284],12);]]></Text>
               </Rung>
               <Rung Number="108" Type="N">
-                <Text><![CDATA[DTOS(BdA[108],BsC[108]);]]></Text>
+                <Text><![CDATA[COP(BkA[108],BsiB[1296],12);]]></Text>
               </Rung>
               <Rung Number="109" Type="N">
-                <Text><![CDATA[DTOS(BdA[109],BsC[109]);]]></Text>
+                <Text><![CDATA[COP(BkA[109],BsiB[1308],12);]]></Text>
               </Rung>
               <Rung Number="110" Type="N">
-                <Text><![CDATA[DTOS(BdA[110],BsC[110]);]]></Text>
+                <Text><![CDATA[COP(BkA[110],BsiB[1320],12);]]></Text>
               </Rung>
               <Rung Number="111" Type="N">
-                <Text><![CDATA[DTOS(BdA[111],BsC[111]);]]></Text>
+                <Text><![CDATA[COP(BkA[111],BsiB[1332],12);]]></Text>
               </Rung>
               <Rung Number="112" Type="N">
-                <Text><![CDATA[DTOS(BdA[112],BsC[112]);]]></Text>
+                <Text><![CDATA[COP(BkA[112],BsiB[1344],12);]]></Text>
               </Rung>
               <Rung Number="113" Type="N">
-                <Text><![CDATA[DTOS(BdA[113],BsC[113]);]]></Text>
+                <Text><![CDATA[COP(BkA[113],BsiB[1356],12);]]></Text>
               </Rung>
               <Rung Number="114" Type="N">
-                <Text><![CDATA[DTOS(BdA[114],BsC[114]);]]></Text>
+                <Text><![CDATA[COP(BkA[114],BsiB[1368],12);]]></Text>
               </Rung>
               <Rung Number="115" Type="N">
-                <Text><![CDATA[DTOS(BdA[115],BsC[115]);]]></Text>
+                <Text><![CDATA[COP(BkA[115],BsiB[1380],12);]]></Text>
               </Rung>
               <Rung Number="116" Type="N">
-                <Text><![CDATA[DTOS(BdA[116],BsC[116]);]]></Text>
+                <Text><![CDATA[COP(BkA[116],BsiB[1392],12);]]></Text>
               </Rung>
               <Rung Number="117" Type="N">
-                <Text><![CDATA[DTOS(BdA[117],BsC[117]);]]></Text>
+                <Text><![CDATA[COP(BkA[117],BsiB[1404],12);]]></Text>
               </Rung>
               <Rung Number="118" Type="N">
-                <Text><![CDATA[DTOS(BdA[118],BsC[118]);]]></Text>
+                <Text><![CDATA[COP(BkA[118],BsiB[1416],12);]]></Text>
               </Rung>
               <Rung Number="119" Type="N">
-                <Text><![CDATA[DTOS(BdA[119],BsC[119]);]]></Text>
+                <Text><![CDATA[COP(BkA[119],BsiB[1428],12);]]></Text>
               </Rung>
               <Rung Number="120" Type="N">
-                <Text><![CDATA[DTOS(BdA[120],BsC[120]);]]></Text>
+                <Text><![CDATA[COP(BkA[120],BsiB[1440],12);]]></Text>
               </Rung>
               <Rung Number="121" Type="N">
-                <Text><![CDATA[DTOS(BdA[121],BsC[121]);]]></Text>
+                <Text><![CDATA[COP(BkA[121],BsiB[1452],12);]]></Text>
               </Rung>
               <Rung Number="122" Type="N">
-                <Text><![CDATA[DTOS(BdA[122],BsC[122]);]]></Text>
+                <Text><![CDATA[COP(BkA[122],BsiB[1464],12);]]></Text>
               </Rung>
               <Rung Number="123" Type="N">
-                <Text><![CDATA[DTOS(BdA[123],BsC[123]);]]></Text>
+                <Text><![CDATA[COP(BkA[123],BsiB[1476],12);]]></Text>
               </Rung>
               <Rung Number="124" Type="N">
-                <Text><![CDATA[DTOS(BdA[124],BsC[124]);]]></Text>
+                <Text><![CDATA[COP(BkA[124],BsiB[1488],12);]]></Text>
               </Rung>
               <Rung Number="125" Type="N">
-                <Text><![CDATA[DTOS(BdA[125],BsC[125]);]]></Text>
+                <Text><![CDATA[COP(BkA[125],BsiB[1500],12);]]></Text>
               </Rung>
               <Rung Number="126" Type="N">
-                <Text><![CDATA[DTOS(BdA[126],BsC[126]);]]></Text>
+                <Text><![CDATA[COP(BkA[126],BsiB[1512],12);]]></Text>
               </Rung>
               <Rung Number="127" Type="N">
-                <Text><![CDATA[DTOS(BdA[127],BsC[127]);]]></Text>
+                <Text><![CDATA[COP(BkA[127],BsiB[1524],12);]]></Text>
               </Rung>
               <Rung Number="128" Type="N">
-                <Text><![CDATA[DTOS(BdA[128],BsC[128]);]]></Text>
+                <Text><![CDATA[COP(BkA[128],BsiB[1536],12);]]></Text>
               </Rung>
               <Rung Number="129" Type="N">
-                <Text><![CDATA[DTOS(BdA[129],BsC[129]);]]></Text>
+                <Text><![CDATA[COP(BkA[129],BsiB[1548],12);]]></Text>
               </Rung>
               <Rung Number="130" Type="N">
-                <Text><![CDATA[DTOS(BdA[130],BsC[130]);]]></Text>
+                <Text><![CDATA[COP(BkA[130],BsiB[1560],12);]]></Text>
               </Rung>
               <Rung Number="131" Type="N">
-                <Text><![CDATA[DTOS(BdA[131],BsC[131]);]]></Text>
+                <Text><![CDATA[COP(BkA[131],BsiB[1572],12);]]></Text>
               </Rung>
               <Rung Number="132" Type="N">
-                <Text><![CDATA[DTOS(BdA[132],BsC[132]);]]></Text>
+                <Text><![CDATA[COP(BkA[132],BsiB[1584],12);]]></Text>
               </Rung>
               <Rung Number="133" Type="N">
-                <Text><![CDATA[DTOS(BdA[133],BsC[133]);]]></Text>
+                <Text><![CDATA[COP(BkA[133],BsiB[1596],12);]]></Text>
               </Rung>
               <Rung Number="134" Type="N">
-                <Text><![CDATA[DTOS(BdA[134],BsC[134]);]]></Text>
+                <Text><![CDATA[COP(BkA[134],BsiB[1608],12);]]></Text>
               </Rung>
               <Rung Number="135" Type="N">
-                <Text><![CDATA[DTOS(BdA[135],BsC[135]);]]></Text>
+                <Text><![CDATA[COP(BkA[135],BsiB[1620],12);]]></Text>
               </Rung>
               <Rung Number="136" Type="N">
-                <Text><![CDATA[DTOS(BdA[136],BsC[136]);]]></Text>
+                <Text><![CDATA[COP(BkA[136],BsiB[1632],12);]]></Text>
               </Rung>
               <Rung Number="137" Type="N">
-                <Text><![CDATA[DTOS(BdA[137],BsC[137]);]]></Text>
+                <Text><![CDATA[COP(BkA[137],BsiB[1644],12);]]></Text>
               </Rung>
               <Rung Number="138" Type="N">
-                <Text><![CDATA[DTOS(BdA[138],BsC[138]);]]></Text>
+                <Text><![CDATA[COP(BkA[138],BsiB[1656],12);]]></Text>
               </Rung>
               <Rung Number="139" Type="N">
-                <Text><![CDATA[DTOS(BdA[139],BsC[139]);]]></Text>
+                <Text><![CDATA[COP(BkA[139],BsiB[1668],12);]]></Text>
               </Rung>
               <Rung Number="140" Type="N">
-                <Text><![CDATA[DTOS(BdA[140],BsC[140]);]]></Text>
+                <Text><![CDATA[COP(BkA[140],BsiB[1680],12);]]></Text>
               </Rung>
               <Rung Number="141" Type="N">
-                <Text><![CDATA[DTOS(BdA[141],BsC[141]);]]></Text>
+                <Text><![CDATA[COP(BkA[141],BsiB[1692],12);]]></Text>
               </Rung>
               <Rung Number="142" Type="N">
-                <Text><![CDATA[DTOS(BdA[142],BsC[142]);]]></Text>
+                <Text><![CDATA[COP(BkA[142],BsiB[1704],12);]]></Text>
               </Rung>
               <Rung Number="143" Type="N">
-                <Text><![CDATA[DTOS(BdA[143],BsC[143]);]]></Text>
+                <Text><![CDATA[COP(BkA[143],BsiB[1716],12);]]></Text>
               </Rung>
               <Rung Number="144" Type="N">
-                <Text><![CDATA[DTOS(BdA[144],BsC[144]);]]></Text>
+                <Text><![CDATA[COP(BkA[144],BsiB[1728],12);]]></Text>
               </Rung>
               <Rung Number="145" Type="N">
-                <Text><![CDATA[DTOS(BdA[145],BsC[145]);]]></Text>
+                <Text><![CDATA[COP(BkA[145],BsiB[1740],12);]]></Text>
               </Rung>
               <Rung Number="146" Type="N">
-                <Text><![CDATA[DTOS(BdA[146],BsC[146]);]]></Text>
+                <Text><![CDATA[COP(BkA[146],BsiB[1752],12);]]></Text>
               </Rung>
               <Rung Number="147" Type="N">
-                <Text><![CDATA[DTOS(BdA[147],BsC[147]);]]></Text>
+                <Text><![CDATA[COP(BkA[147],BsiB[1764],12);]]></Text>
               </Rung>
               <Rung Number="148" Type="N">
-                <Text><![CDATA[DTOS(BdA[148],BsC[148]);]]></Text>
+                <Text><![CDATA[COP(BkA[148],BsiB[1776],12);]]></Text>
               </Rung>
               <Rung Number="149" Type="N">
-                <Text><![CDATA[DTOS(BdA[149],BsC[149]);]]></Text>
+                <Text><![CDATA[COP(BkA[149],BsiB[1788],12);]]></Text>
               </Rung>
               <Rung Number="150" Type="N">
-                <Text><![CDATA[DTOS(BdA[150],BsC[150]);]]></Text>
+                <Text><![CDATA[COP(BkA[150],BsiB[1800],12);]]></Text>
               </Rung>
               <Rung Number="151" Type="N">
-                <Text><![CDATA[DTOS(BdA[151],BsC[151]);]]></Text>
+                <Text><![CDATA[COP(BkA[151],BsiB[1812],12);]]></Text>
               </Rung>
               <Rung Number="152" Type="N">
-                <Text><![CDATA[DTOS(BdA[152],BsC[152]);]]></Text>
+                <Text><![CDATA[COP(BkA[152],BsiB[1824],12);]]></Text>
               </Rung>
               <Rung Number="153" Type="N">
-                <Text><![CDATA[DTOS(BdA[153],BsC[153]);]]></Text>
+                <Text><![CDATA[COP(BkA[153],BsiB[1836],12);]]></Text>
               </Rung>
               <Rung Number="154" Type="N">
-                <Text><![CDATA[DTOS(BdA[154],BsC[154]);]]></Text>
+                <Text><![CDATA[COP(BkA[154],BsiB[1848],12);]]></Text>
               </Rung>
               <Rung Number="155" Type="N">
-                <Text><![CDATA[DTOS(BdA[155],BsC[155]);]]></Text>
+                <Text><![CDATA[COP(BkA[155],BsiB[1860],12);]]></Text>
               </Rung>
               <Rung Number="156" Type="N">
-                <Text><![CDATA[DTOS(BdA[156],BsC[156]);]]></Text>
+                <Text><![CDATA[COP(BkA[156],BsiB[1872],12);]]></Text>
               </Rung>
               <Rung Number="157" Type="N">
-                <Text><![CDATA[DTOS(BdA[157],BsC[157]);]]></Text>
+                <Text><![CDATA[COP(BkA[157],BsiB[1884],12);]]></Text>
               </Rung>
               <Rung Number="158" Type="N">
-                <Text><![CDATA[DTOS(BdA[158],BsC[158]);]]></Text>
+                <Text><![CDATA[COP(BkA[158],BsiB[1896],12);]]></Text>
               </Rung>
               <Rung Number="159" Type="N">
-                <Text><![CDATA[DTOS(BdA[159],BsC[159]);]]></Text>
+                <Text><![CDATA[COP(BkA[159],BsiB[1908],12);]]></Text>
               </Rung>
               <Rung Number="160" Type="N">
-                <Text><![CDATA[DTOS(BdA[160],BsC[160]);]]></Text>
+                <Text><![CDATA[COP(BkA[160],BsiB[1920],12);]]></Text>
               </Rung>
               <Rung Number="161" Type="N">
-                <Text><![CDATA[DTOS(BdA[161],BsC[161]);]]></Text>
+                <Text><![CDATA[COP(BkA[161],BsiB[1932],12);]]></Text>
               </Rung>
               <Rung Number="162" Type="N">
-                <Text><![CDATA[DTOS(BdA[162],BsC[162]);]]></Text>
+                <Text><![CDATA[COP(BkA[162],BsiB[1944],12);]]></Text>
               </Rung>
               <Rung Number="163" Type="N">
-                <Text><![CDATA[DTOS(BdA[163],BsC[163]);]]></Text>
+                <Text><![CDATA[COP(BkA[163],BsiB[1956],12);]]></Text>
               </Rung>
               <Rung Number="164" Type="N">
-                <Text><![CDATA[DTOS(BdA[164],BsC[164]);]]></Text>
+                <Text><![CDATA[COP(BkA[164],BsiB[1968],12);]]></Text>
               </Rung>
               <Rung Number="165" Type="N">
-                <Text><![CDATA[DTOS(BdA[165],BsC[165]);]]></Text>
+                <Text><![CDATA[COP(BkA[165],BsiB[1980],12);]]></Text>
               </Rung>
               <Rung Number="166" Type="N">
-                <Text><![CDATA[DTOS(BdA[166],BsC[166]);]]></Text>
+                <Text><![CDATA[COP(BkA[166],BsiB[1992],12);]]></Text>
               </Rung>
               <Rung Number="167" Type="N">
-                <Text><![CDATA[DTOS(BdA[167],BsC[167]);]]></Text>
+                <Text><![CDATA[COP(BkA[167],BsiB[2004],12);]]></Text>
               </Rung>
               <Rung Number="168" Type="N">
-                <Text><![CDATA[DTOS(BdA[168],BsC[168]);]]></Text>
+                <Text><![CDATA[COP(BkA[168],BsiB[2016],12);]]></Text>
               </Rung>
               <Rung Number="169" Type="N">
-                <Text><![CDATA[DTOS(BdA[169],BsC[169]);]]></Text>
+                <Text><![CDATA[COP(BkA[169],BsiB[2028],12);]]></Text>
               </Rung>
               <Rung Number="170" Type="N">
-                <Text><![CDATA[DTOS(BdA[170],BsC[170]);]]></Text>
+                <Text><![CDATA[COP(BkA[170],BsiB[2040],12);]]></Text>
               </Rung>
               <Rung Number="171" Type="N">
-                <Text><![CDATA[DTOS(BdA[171],BsC[171]);]]></Text>
+                <Text><![CDATA[COP(BkA[171],BsiB[2052],12);]]></Text>
               </Rung>
               <Rung Number="172" Type="N">
-                <Text><![CDATA[DTOS(BdA[172],BsC[172]);]]></Text>
+                <Text><![CDATA[COP(BkA[172],BsiB[2064],12);]]></Text>
               </Rung>
               <Rung Number="173" Type="N">
-                <Text><![CDATA[DTOS(BdA[173],BsC[173]);]]></Text>
+                <Text><![CDATA[COP(BkA[173],BsiB[2076],12);]]></Text>
               </Rung>
               <Rung Number="174" Type="N">
-                <Text><![CDATA[DTOS(BdA[174],BsC[174]);]]></Text>
+                <Text><![CDATA[COP(BkA[174],BsiB[2088],12);]]></Text>
               </Rung>
               <Rung Number="175" Type="N">
-                <Text><![CDATA[DTOS(BdA[175],BsC[175]);]]></Text>
+                <Text><![CDATA[COP(BkA[175],BsiB[2100],12);]]></Text>
               </Rung>
               <Rung Number="176" Type="N">
-                <Text><![CDATA[DTOS(BdA[176],BsC[176]);]]></Text>
+                <Text><![CDATA[COP(BkA[176],BsiB[2112],12);]]></Text>
               </Rung>
               <Rung Number="177" Type="N">
-                <Text><![CDATA[DTOS(BdA[177],BsC[177]);]]></Text>
+                <Text><![CDATA[COP(BkA[177],BsiB[2124],12);]]></Text>
               </Rung>
               <Rung Number="178" Type="N">
-                <Text><![CDATA[DTOS(BdA[178],BsC[178]);]]></Text>
+                <Text><![CDATA[COP(BkA[178],BsiB[2136],12);]]></Text>
               </Rung>
               <Rung Number="179" Type="N">
-                <Text><![CDATA[DTOS(BdA[179],BsC[179]);]]></Text>
+                <Text><![CDATA[COP(BkA[179],BsiB[2148],12);]]></Text>
               </Rung>
               <Rung Number="180" Type="N">
-                <Text><![CDATA[DTOS(BdA[180],BsC[180]);]]></Text>
+                <Text><![CDATA[COP(BkA[180],BsiB[2160],12);]]></Text>
               </Rung>
               <Rung Number="181" Type="N">
-                <Text><![CDATA[DTOS(BdA[181],BsC[181]);]]></Text>
+                <Text><![CDATA[COP(BkA[181],BsiB[2172],12);]]></Text>
               </Rung>
               <Rung Number="182" Type="N">
-                <Text><![CDATA[DTOS(BdA[182],BsC[182]);]]></Text>
+                <Text><![CDATA[COP(BkA[182],BsiB[2184],12);]]></Text>
               </Rung>
               <Rung Number="183" Type="N">
-                <Text><![CDATA[DTOS(BdA[183],BsC[183]);]]></Text>
+                <Text><![CDATA[COP(BkA[183],BsiB[2196],12);]]></Text>
               </Rung>
               <Rung Number="184" Type="N">
-                <Text><![CDATA[DTOS(BdA[184],BsC[184]);]]></Text>
+                <Text><![CDATA[COP(BkA[184],BsiB[2208],12);]]></Text>
               </Rung>
               <Rung Number="185" Type="N">
-                <Text><![CDATA[DTOS(BdA[185],BsC[185]);]]></Text>
+                <Text><![CDATA[COP(BkA[185],BsiB[2220],12);]]></Text>
               </Rung>
               <Rung Number="186" Type="N">
-                <Text><![CDATA[DTOS(BdA[186],BsC[186]);]]></Text>
+                <Text><![CDATA[COP(BkA[186],BsiB[2232],12);]]></Text>
               </Rung>
               <Rung Number="187" Type="N">
-                <Text><![CDATA[DTOS(BdA[187],BsC[187]);]]></Text>
+                <Text><![CDATA[COP(BkA[187],BsiB[2244],12);]]></Text>
               </Rung>
               <Rung Number="188" Type="N">
-                <Text><![CDATA[DTOS(BdA[188],BsC[188]);]]></Text>
+                <Text><![CDATA[COP(BkA[188],BsiB[2256],12);]]></Text>
               </Rung>
               <Rung Number="189" Type="N">
-                <Text><![CDATA[DTOS(BdA[189],BsC[189]);]]></Text>
+                <Text><![CDATA[COP(BkA[189],BsiB[2268],12);]]></Text>
               </Rung>
               <Rung Number="190" Type="N">
-                <Text><![CDATA[DTOS(BdA[190],BsC[190]);]]></Text>
+                <Text><![CDATA[COP(BkA[190],BsiB[2280],12);]]></Text>
               </Rung>
               <Rung Number="191" Type="N">
-                <Text><![CDATA[DTOS(BdA[191],BsC[191]);]]></Text>
+                <Text><![CDATA[COP(BkA[191],BsiB[2292],12);]]></Text>
               </Rung>
               <Rung Number="192" Type="N">
-                <Text><![CDATA[DTOS(BdA[192],BsC[192]);]]></Text>
+                <Text><![CDATA[COP(BkA[192],BsiB[2304],12);]]></Text>
               </Rung>
               <Rung Number="193" Type="N">
-                <Text><![CDATA[DTOS(BdA[193],BsC[193]);]]></Text>
+                <Text><![CDATA[COP(BkA[193],BsiB[2316],12);]]></Text>
               </Rung>
               <Rung Number="194" Type="N">
-                <Text><![CDATA[DTOS(BdA[194],BsC[194]);]]></Text>
+                <Text><![CDATA[COP(BkA[194],BsiB[2328],12);]]></Text>
               </Rung>
               <Rung Number="195" Type="N">
-                <Text><![CDATA[DTOS(BdA[195],BsC[195]);]]></Text>
+                <Text><![CDATA[COP(BkA[195],BsiB[2340],12);]]></Text>
               </Rung>
               <Rung Number="196" Type="N">
-                <Text><![CDATA[DTOS(BdA[196],BsC[196]);]]></Text>
+                <Text><![CDATA[COP(BkA[196],BsiB[2352],12);]]></Text>
               </Rung>
               <Rung Number="197" Type="N">
-                <Text><![CDATA[DTOS(BdA[197],BsC[197]);]]></Text>
+                <Text><![CDATA[COP(BkA[197],BsiB[2364],12);]]></Text>
               </Rung>
               <Rung Number="198" Type="N">
-                <Text><![CDATA[DTOS(BdA[198],BsC[198]);]]></Text>
+                <Text><![CDATA[COP(BkA[198],BsiB[2376],12);]]></Text>
               </Rung>
               <Rung Number="199" Type="N">
-                <Text><![CDATA[DTOS(BdA[199],BsC[199]);]]></Text>
+                <Text><![CDATA[COP(BkA[199],BsiB[2388],12);]]></Text>
               </Rung>
               <Rung Number="200" Type="N">
-                <Text><![CDATA[DTOS(BdA[200],BsC[200]);]]></Text>
+                <Text><![CDATA[COP(BkA[200],BsiB[2400],12);]]></Text>
               </Rung>
               <Rung Number="201" Type="N">
-                <Text><![CDATA[DTOS(BdA[201],BsC[201]);]]></Text>
+                <Text><![CDATA[COP(BkA[201],BsiB[2412],12);]]></Text>
               </Rung>
               <Rung Number="202" Type="N">
-                <Text><![CDATA[DTOS(BdA[202],BsC[202]);]]></Text>
+                <Text><![CDATA[COP(BkA[202],BsiB[2424],12);]]></Text>
               </Rung>
               <Rung Number="203" Type="N">
-                <Text><![CDATA[DTOS(BdA[203],BsC[203]);]]></Text>
+                <Text><![CDATA[COP(BkA[203],BsiB[2436],12);]]></Text>
               </Rung>
               <Rung Number="204" Type="N">
-                <Text><![CDATA[DTOS(BdA[204],BsC[204]);]]></Text>
+                <Text><![CDATA[COP(BkA[204],BsiB[2448],12);]]></Text>
               </Rung>
               <Rung Number="205" Type="N">
-                <Text><![CDATA[DTOS(BdA[205],BsC[205]);]]></Text>
+                <Text><![CDATA[COP(BkA[205],BsiB[2460],12);]]></Text>
               </Rung>
               <Rung Number="206" Type="N">
-                <Text><![CDATA[DTOS(BdA[206],BsC[206]);]]></Text>
+                <Text><![CDATA[COP(BkA[206],BsiB[2472],12);]]></Text>
               </Rung>
               <Rung Number="207" Type="N">
-                <Text><![CDATA[DTOS(BdA[207],BsC[207]);]]></Text>
+                <Text><![CDATA[COP(BkA[207],BsiB[2484],12);]]></Text>
               </Rung>
               <Rung Number="208" Type="N">
-                <Text><![CDATA[DTOS(BdA[208],BsC[208]);]]></Text>
+                <Text><![CDATA[COP(BkA[208],BsiB[2496],12);]]></Text>
               </Rung>
               <Rung Number="209" Type="N">
-                <Text><![CDATA[DTOS(BdA[209],BsC[209]);]]></Text>
+                <Text><![CDATA[COP(BkA[209],BsiB[2508],12);]]></Text>
               </Rung>
               <Rung Number="210" Type="N">
-                <Text><![CDATA[DTOS(BdA[210],BsC[210]);]]></Text>
+                <Text><![CDATA[COP(BkA[210],BsiB[2520],12);]]></Text>
               </Rung>
               <Rung Number="211" Type="N">
-                <Text><![CDATA[DTOS(BdA[211],BsC[211]);]]></Text>
+                <Text><![CDATA[COP(BkA[211],BsiB[2532],12);]]></Text>
               </Rung>
               <Rung Number="212" Type="N">
-                <Text><![CDATA[DTOS(BdA[212],BsC[212]);]]></Text>
+                <Text><![CDATA[COP(BkA[212],BsiB[2544],12);]]></Text>
               </Rung>
               <Rung Number="213" Type="N">
-                <Text><![CDATA[DTOS(BdA[213],BsC[213]);]]></Text>
+                <Text><![CDATA[COP(BkA[213],BsiB[2556],12);]]></Text>
               </Rung>
               <Rung Number="214" Type="N">
-                <Text><![CDATA[DTOS(BdA[214],BsC[214]);]]></Text>
+                <Text><![CDATA[COP(BkA[214],BsiB[2568],12);]]></Text>
               </Rung>
               <Rung Number="215" Type="N">
-                <Text><![CDATA[DTOS(BdA[215],BsC[215]);]]></Text>
+                <Text><![CDATA[COP(BkA[215],BsiB[2580],12);]]></Text>
               </Rung>
               <Rung Number="216" Type="N">
-                <Text><![CDATA[DTOS(BdA[216],BsC[216]);]]></Text>
+                <Text><![CDATA[COP(BkA[216],BsiB[2592],12);]]></Text>
               </Rung>
               <Rung Number="217" Type="N">
-                <Text><![CDATA[DTOS(BdA[217],BsC[217]);]]></Text>
+                <Text><![CDATA[COP(BkA[217],BsiB[2604],12);]]></Text>
               </Rung>
               <Rung Number="218" Type="N">
-                <Text><![CDATA[DTOS(BdA[218],BsC[218]);]]></Text>
+                <Text><![CDATA[COP(BkA[218],BsiB[2616],12);]]></Text>
               </Rung>
               <Rung Number="219" Type="N">
-                <Text><![CDATA[DTOS(BdA[219],BsC[219]);]]></Text>
+                <Text><![CDATA[COP(BkA[219],BsiB[2628],12);]]></Text>
               </Rung>
               <Rung Number="220" Type="N">
-                <Text><![CDATA[DTOS(BdA[220],BsC[220]);]]></Text>
+                <Text><![CDATA[COP(BkA[220],BsiB[2640],12);]]></Text>
               </Rung>
               <Rung Number="221" Type="N">
-                <Text><![CDATA[DTOS(BdA[221],BsC[221]);]]></Text>
+                <Text><![CDATA[COP(BkA[221],BsiB[2652],12);]]></Text>
               </Rung>
               <Rung Number="222" Type="N">
-                <Text><![CDATA[DTOS(BdA[222],BsC[222]);]]></Text>
+                <Text><![CDATA[COP(BkA[222],BsiB[2664],12);]]></Text>
               </Rung>
               <Rung Number="223" Type="N">
-                <Text><![CDATA[DTOS(BdA[223],BsC[223]);]]></Text>
+                <Text><![CDATA[COP(BkA[223],BsiB[2676],12);]]></Text>
               </Rung>
               <Rung Number="224" Type="N">
-                <Text><![CDATA[DTOS(BdA[224],BsC[224]);]]></Text>
+                <Text><![CDATA[COP(BkA[224],BsiB[2688],12);]]></Text>
               </Rung>
               <Rung Number="225" Type="N">
-                <Text><![CDATA[DTOS(BdA[225],BsC[225]);]]></Text>
+                <Text><![CDATA[COP(BkA[225],BsiB[2700],12);]]></Text>
               </Rung>
               <Rung Number="226" Type="N">
-                <Text><![CDATA[DTOS(BdA[226],BsC[226]);]]></Text>
+                <Text><![CDATA[COP(BkA[226],BsiB[2712],12);]]></Text>
               </Rung>
               <Rung Number="227" Type="N">
-                <Text><![CDATA[DTOS(BdA[227],BsC[227]);]]></Text>
+                <Text><![CDATA[COP(BkA[227],BsiB[2724],12);]]></Text>
               </Rung>
               <Rung Number="228" Type="N">
-                <Text><![CDATA[DTOS(BdA[228],BsC[228]);]]></Text>
+                <Text><![CDATA[COP(BkA[228],BsiB[2736],12);]]></Text>
               </Rung>
               <Rung Number="229" Type="N">
-                <Text><![CDATA[DTOS(BdA[229],BsC[229]);]]></Text>
+                <Text><![CDATA[COP(BkA[229],BsiB[2748],12);]]></Text>
               </Rung>
               <Rung Number="230" Type="N">
-                <Text><![CDATA[DTOS(BdA[230],BsC[230]);]]></Text>
+                <Text><![CDATA[COP(BkA[230],BsiB[2760],12);]]></Text>
               </Rung>
               <Rung Number="231" Type="N">
-                <Text><![CDATA[DTOS(BdA[231],BsC[231]);]]></Text>
+                <Text><![CDATA[COP(BkA[231],BsiB[2772],12);]]></Text>
               </Rung>
               <Rung Number="232" Type="N">
-                <Text><![CDATA[DTOS(BdA[232],BsC[232]);]]></Text>
+                <Text><![CDATA[COP(BkA[232],BsiB[2784],12);]]></Text>
               </Rung>
               <Rung Number="233" Type="N">
-                <Text><![CDATA[DTOS(BdA[233],BsC[233]);]]></Text>
+                <Text><![CDATA[COP(BkA[233],BsiB[2796],12);]]></Text>
               </Rung>
               <Rung Number="234" Type="N">
-                <Text><![CDATA[DTOS(BdA[234],BsC[234]);]]></Text>
+                <Text><![CDATA[COP(BkA[234],BsiB[2808],12);]]></Text>
               </Rung>
               <Rung Number="235" Type="N">
-                <Text><![CDATA[DTOS(BdA[235],BsC[235]);]]></Text>
+                <Text><![CDATA[COP(BkA[235],BsiB[2820],12);]]></Text>
               </Rung>
               <Rung Number="236" Type="N">
-                <Text><![CDATA[DTOS(BdA[236],BsC[236]);]]></Text>
+                <Text><![CDATA[COP(BkA[236],BsiB[2832],12);]]></Text>
               </Rung>
               <Rung Number="237" Type="N">
-                <Text><![CDATA[DTOS(BdA[237],BsC[237]);]]></Text>
+                <Text><![CDATA[COP(BkA[237],BsiB[2844],12);]]></Text>
               </Rung>
               <Rung Number="238" Type="N">
-                <Text><![CDATA[DTOS(BdA[238],BsC[238]);]]></Text>
+                <Text><![CDATA[COP(BkA[238],BsiB[2856],12);]]></Text>
               </Rung>
               <Rung Number="239" Type="N">
-                <Text><![CDATA[DTOS(BdA[239],BsC[239]);]]></Text>
+                <Text><![CDATA[COP(BkA[239],BsiB[2868],12);]]></Text>
               </Rung>
               <Rung Number="240" Type="N">
-                <Text><![CDATA[DTOS(BdA[240],BsC[240]);]]></Text>
+                <Text><![CDATA[COP(BkA[240],BsiB[2880],12);]]></Text>
               </Rung>
               <Rung Number="241" Type="N">
-                <Text><![CDATA[DTOS(BdA[241],BsC[241]);]]></Text>
+                <Text><![CDATA[COP(BkA[241],BsiB[2892],12);]]></Text>
               </Rung>
               <Rung Number="242" Type="N">
-                <Text><![CDATA[DTOS(BdA[242],BsC[242]);]]></Text>
+                <Text><![CDATA[COP(BkA[242],BsiB[2904],12);]]></Text>
               </Rung>
               <Rung Number="243" Type="N">
-                <Text><![CDATA[DTOS(BdA[243],BsC[243]);]]></Text>
+                <Text><![CDATA[COP(BkA[243],BsiB[2916],12);]]></Text>
               </Rung>
               <Rung Number="244" Type="N">
-                <Text><![CDATA[DTOS(BdA[244],BsC[244]);]]></Text>
+                <Text><![CDATA[COP(BkA[244],BsiB[2928],12);]]></Text>
               </Rung>
               <Rung Number="245" Type="N">
-                <Text><![CDATA[DTOS(BdA[245],BsC[245]);]]></Text>
+                <Text><![CDATA[COP(BkA[245],BsiB[2940],12);]]></Text>
               </Rung>
               <Rung Number="246" Type="N">
-                <Text><![CDATA[DTOS(BdA[246],BsC[246]);]]></Text>
+                <Text><![CDATA[COP(BkA[246],BsiB[2952],12);]]></Text>
               </Rung>
               <Rung Number="247" Type="N">
-                <Text><![CDATA[DTOS(BdA[247],BsC[247]);]]></Text>
+                <Text><![CDATA[COP(BkA[247],BsiB[2964],12);]]></Text>
               </Rung>
               <Rung Number="248" Type="N">
-                <Text><![CDATA[DTOS(BdA[248],BsC[248]);]]></Text>
+                <Text><![CDATA[COP(BkA[248],BsiB[2976],12);]]></Text>
               </Rung>
               <Rung Number="249" Type="N">
-                <Text><![CDATA[DTOS(BdA[249],BsC[249]);]]></Text>
+                <Text><![CDATA[COP(BkA[249],BsiB[2988],12);]]></Text>
               </Rung>
               <Rung Number="250" Type="N">
-                <Text><![CDATA[DTOS(BdA[250],BsC[250]);]]></Text>
+                <Text><![CDATA[COP(BkA[250],BsiB[3000],12);]]></Text>
               </Rung>
               <Rung Number="251" Type="N">
-                <Text><![CDATA[DTOS(BdA[251],BsC[251]);]]></Text>
+                <Text><![CDATA[COP(BkA[251],BsiB[3012],12);]]></Text>
               </Rung>
               <Rung Number="252" Type="N">
-                <Text><![CDATA[DTOS(BdA[252],BsC[252]);]]></Text>
+                <Text><![CDATA[COP(BkA[252],BsiB[3024],12);]]></Text>
               </Rung>
               <Rung Number="253" Type="N">
-                <Text><![CDATA[DTOS(BdA[253],BsC[253]);]]></Text>
+                <Text><![CDATA[COP(BkA[253],BsiB[3036],12);]]></Text>
               </Rung>
               <Rung Number="254" Type="N">
-                <Text><![CDATA[DTOS(BdA[254],BsC[254]);]]></Text>
+                <Text><![CDATA[COP(BkA[254],BsiB[3048],12);]]></Text>
               </Rung>
               <Rung Number="255" Type="N">
-                <Text><![CDATA[DTOS(BdA[255],BsC[255]);]]></Text>
+                <Text><![CDATA[COP(BkA[255],BsiB[3060],12);]]></Text>
               </Rung>
               <Rung Number="256" Type="N">
-                <Text><![CDATA[DTOS(BdA[256],BsC[256]);]]></Text>
+                <Text><![CDATA[COP(BkA[256],BsiB[3072],12);]]></Text>
               </Rung>
               <Rung Number="257" Type="N">
-                <Text><![CDATA[DTOS(BdA[257],BsC[257]);]]></Text>
+                <Text><![CDATA[COP(BkA[257],BsiB[3084],12);]]></Text>
               </Rung>
               <Rung Number="258" Type="N">
-                <Text><![CDATA[DTOS(BdA[258],BsC[258]);]]></Text>
+                <Text><![CDATA[COP(BkA[258],BsiB[3096],12);]]></Text>
               </Rung>
               <Rung Number="259" Type="N">
-                <Text><![CDATA[DTOS(BdA[259],BsC[259]);]]></Text>
+                <Text><![CDATA[COP(BkA[259],BsiB[3108],12);]]></Text>
               </Rung>
               <Rung Number="260" Type="N">
-                <Text><![CDATA[DTOS(BdA[260],BsC[260]);]]></Text>
+                <Text><![CDATA[COP(BkA[260],BsiB[3120],12);]]></Text>
               </Rung>
               <Rung Number="261" Type="N">
-                <Text><![CDATA[DTOS(BdA[261],BsC[261]);]]></Text>
+                <Text><![CDATA[COP(BkA[261],BsiB[3132],12);]]></Text>
               </Rung>
               <Rung Number="262" Type="N">
-                <Text><![CDATA[DTOS(BdA[262],BsC[262]);]]></Text>
+                <Text><![CDATA[COP(BkA[262],BsiB[3144],12);]]></Text>
               </Rung>
               <Rung Number="263" Type="N">
-                <Text><![CDATA[DTOS(BdA[263],BsC[263]);]]></Text>
+                <Text><![CDATA[COP(BkA[263],BsiB[3156],12);]]></Text>
               </Rung>
               <Rung Number="264" Type="N">
-                <Text><![CDATA[DTOS(BdA[264],BsC[264]);]]></Text>
+                <Text><![CDATA[COP(BkA[264],BsiB[3168],12);]]></Text>
               </Rung>
               <Rung Number="265" Type="N">
-                <Text><![CDATA[DTOS(BdA[265],BsC[265]);]]></Text>
+                <Text><![CDATA[COP(BkA[265],BsiB[3180],12);]]></Text>
               </Rung>
               <Rung Number="266" Type="N">
-                <Text><![CDATA[DTOS(BdA[266],BsC[266]);]]></Text>
+                <Text><![CDATA[COP(BkA[266],BsiB[3192],12);]]></Text>
               </Rung>
               <Rung Number="267" Type="N">
-                <Text><![CDATA[DTOS(BdA[267],BsC[267]);]]></Text>
+                <Text><![CDATA[COP(BkA[267],BsiB[3204],12);]]></Text>
               </Rung>
               <Rung Number="268" Type="N">
-                <Text><![CDATA[DTOS(BdA[268],BsC[268]);]]></Text>
+                <Text><![CDATA[COP(BkA[268],BsiB[3216],12);]]></Text>
               </Rung>
               <Rung Number="269" Type="N">
-                <Text><![CDATA[DTOS(BdA[269],BsC[269]);]]></Text>
+                <Text><![CDATA[COP(BkA[269],BsiB[3228],12);]]></Text>
               </Rung>
               <Rung Number="270" Type="N">
-                <Text><![CDATA[DTOS(BdA[270],BsC[270]);]]></Text>
+                <Text><![CDATA[COP(BkA[270],BsiB[3240],12);]]></Text>
               </Rung>
               <Rung Number="271" Type="N">
-                <Text><![CDATA[DTOS(BdA[271],BsC[271]);]]></Text>
+                <Text><![CDATA[COP(BkA[271],BsiB[3252],12);]]></Text>
               </Rung>
               <Rung Number="272" Type="N">
-                <Text><![CDATA[DTOS(BdA[272],BsC[272]);]]></Text>
+                <Text><![CDATA[COP(BkA[272],BsiB[3264],12);]]></Text>
               </Rung>
               <Rung Number="273" Type="N">
-                <Text><![CDATA[DTOS(BdA[273],BsC[273]);]]></Text>
+                <Text><![CDATA[COP(BkA[273],BsiB[3276],12);]]></Text>
               </Rung>
               <Rung Number="274" Type="N">
-                <Text><![CDATA[DTOS(BdA[274],BsC[274]);]]></Text>
+                <Text><![CDATA[COP(BkA[274],BsiB[3288],12);]]></Text>
               </Rung>
               <Rung Number="275" Type="N">
-                <Text><![CDATA[DTOS(BdA[275],BsC[275]);]]></Text>
+                <Text><![CDATA[COP(BkA[275],BsiB[3300],12);]]></Text>
               </Rung>
               <Rung Number="276" Type="N">
-                <Text><![CDATA[DTOS(BdA[276],BsC[276]);]]></Text>
+                <Text><![CDATA[COP(BkA[276],BsiB[3312],12);]]></Text>
               </Rung>
               <Rung Number="277" Type="N">
-                <Text><![CDATA[DTOS(BdA[277],BsC[277]);]]></Text>
+                <Text><![CDATA[COP(BkA[277],BsiB[3324],12);]]></Text>
               </Rung>
               <Rung Number="278" Type="N">
-                <Text><![CDATA[DTOS(BdA[278],BsC[278]);]]></Text>
+                <Text><![CDATA[COP(BkA[278],BsiB[3336],12);]]></Text>
               </Rung>
               <Rung Number="279" Type="N">
-                <Text><![CDATA[DTOS(BdA[279],BsC[279]);]]></Text>
+                <Text><![CDATA[COP(BkA[279],BsiB[3348],12);]]></Text>
               </Rung>
               <Rung Number="280" Type="N">
-                <Text><![CDATA[DTOS(BdA[280],BsC[280]);]]></Text>
+                <Text><![CDATA[COP(BkA[280],BsiB[3360],12);]]></Text>
               </Rung>
               <Rung Number="281" Type="N">
-                <Text><![CDATA[DTOS(BdA[281],BsC[281]);]]></Text>
+                <Text><![CDATA[COP(BkA[281],BsiB[3372],12);]]></Text>
               </Rung>
               <Rung Number="282" Type="N">
-                <Text><![CDATA[DTOS(BdA[282],BsC[282]);]]></Text>
+                <Text><![CDATA[COP(BkA[282],BsiB[3384],12);]]></Text>
               </Rung>
               <Rung Number="283" Type="N">
-                <Text><![CDATA[DTOS(BdA[283],BsC[283]);]]></Text>
+                <Text><![CDATA[COP(BkA[283],BsiB[3396],12);]]></Text>
               </Rung>
               <Rung Number="284" Type="N">
-                <Text><![CDATA[DTOS(BdA[284],BsC[284]);]]></Text>
+                <Text><![CDATA[COP(BkA[284],BsiB[3408],12);]]></Text>
               </Rung>
               <Rung Number="285" Type="N">
-                <Text><![CDATA[DTOS(BdA[285],BsC[285]);]]></Text>
+                <Text><![CDATA[COP(BkA[285],BsiB[3420],12);]]></Text>
               </Rung>
               <Rung Number="286" Type="N">
-                <Text><![CDATA[DTOS(BdA[286],BsC[286]);]]></Text>
+                <Text><![CDATA[COP(BkA[286],BsiB[3432],12);]]></Text>
               </Rung>
               <Rung Number="287" Type="N">
-                <Text><![CDATA[DTOS(BdA[287],BsC[287]);]]></Text>
+                <Text><![CDATA[COP(BkA[287],BsiB[3444],12);]]></Text>
               </Rung>
               <Rung Number="288" Type="N">
-                <Text><![CDATA[DTOS(BdA[288],BsC[288]);]]></Text>
+                <Text><![CDATA[COP(BkA[288],BsiB[3456],12);]]></Text>
               </Rung>
               <Rung Number="289" Type="N">
-                <Text><![CDATA[DTOS(BdA[289],BsC[289]);]]></Text>
+                <Text><![CDATA[COP(BkA[289],BsiB[3468],12);]]></Text>
               </Rung>
               <Rung Number="290" Type="N">
-                <Text><![CDATA[DTOS(BdA[290],BsC[290]);]]></Text>
+                <Text><![CDATA[COP(BkA[290],BsiB[3480],12);]]></Text>
               </Rung>
               <Rung Number="291" Type="N">
-                <Text><![CDATA[DTOS(BdA[291],BsC[291]);]]></Text>
+                <Text><![CDATA[COP(BkA[291],BsiB[3492],12);]]></Text>
               </Rung>
               <Rung Number="292" Type="N">
-                <Text><![CDATA[DTOS(BdA[292],BsC[292]);]]></Text>
+                <Text><![CDATA[COP(BkA[292],BsiB[3504],12);]]></Text>
               </Rung>
               <Rung Number="293" Type="N">
-                <Text><![CDATA[DTOS(BdA[293],BsC[293]);]]></Text>
+                <Text><![CDATA[COP(BkA[293],BsiB[3516],12);]]></Text>
               </Rung>
               <Rung Number="294" Type="N">
-                <Text><![CDATA[DTOS(BdA[294],BsC[294]);]]></Text>
+                <Text><![CDATA[COP(BkA[294],BsiB[3528],12);]]></Text>
               </Rung>
               <Rung Number="295" Type="N">
-                <Text><![CDATA[DTOS(BdA[295],BsC[295]);]]></Text>
+                <Text><![CDATA[COP(BkA[295],BsiB[3540],12);]]></Text>
               </Rung>
               <Rung Number="296" Type="N">
-                <Text><![CDATA[DTOS(BdA[296],BsC[296]);]]></Text>
+                <Text><![CDATA[COP(BkA[296],BsiB[3552],12);]]></Text>
               </Rung>
               <Rung Number="297" Type="N">
-                <Text><![CDATA[DTOS(BdA[297],BsC[297]);]]></Text>
+                <Text><![CDATA[COP(BkA[297],BsiB[3564],12);]]></Text>
               </Rung>
               <Rung Number="298" Type="N">
-                <Text><![CDATA[DTOS(BdA[298],BsC[298]);]]></Text>
+                <Text><![CDATA[COP(BkA[298],BsiB[3576],12);]]></Text>
               </Rung>
               <Rung Number="299" Type="N">
-                <Text><![CDATA[DTOS(BdA[299],BsC[299]);]]></Text>
+                <Text><![CDATA[COP(BkA[299],BsiB[3588],12);]]></Text>
               </Rung>
               <Rung Number="300" Type="N">
-                <Text><![CDATA[DTOS(BdA[300],BsC[300]);]]></Text>
+                <Text><![CDATA[COP(BkA[300],BsiB[3600],12);]]></Text>
               </Rung>
               <Rung Number="301" Type="N">
-                <Text><![CDATA[DTOS(BdA[301],BsC[301]);]]></Text>
+                <Text><![CDATA[COP(BkA[301],BsiB[3612],12);]]></Text>
               </Rung>
               <Rung Number="302" Type="N">
-                <Text><![CDATA[DTOS(BdA[302],BsC[302]);]]></Text>
+                <Text><![CDATA[COP(BkA[302],BsiB[3624],12);]]></Text>
               </Rung>
               <Rung Number="303" Type="N">
-                <Text><![CDATA[DTOS(BdA[303],BsC[303]);]]></Text>
+                <Text><![CDATA[COP(BkA[303],BsiB[3636],12);]]></Text>
               </Rung>
               <Rung Number="304" Type="N">
-                <Text><![CDATA[DTOS(BdA[304],BsC[304]);]]></Text>
+                <Text><![CDATA[COP(BkA[304],BsiB[3648],12);]]></Text>
               </Rung>
               <Rung Number="305" Type="N">
-                <Text><![CDATA[DTOS(BdA[305],BsC[305]);]]></Text>
+                <Text><![CDATA[COP(BkA[305],BsiB[3660],12);]]></Text>
               </Rung>
               <Rung Number="306" Type="N">
-                <Text><![CDATA[DTOS(BdA[306],BsC[306]);]]></Text>
+                <Text><![CDATA[COP(BkA[306],BsiB[3672],12);]]></Text>
               </Rung>
               <Rung Number="307" Type="N">
-                <Text><![CDATA[DTOS(BdA[307],BsC[307]);]]></Text>
+                <Text><![CDATA[COP(BkA[307],BsiB[3684],12);]]></Text>
               </Rung>
               <Rung Number="308" Type="N">
-                <Text><![CDATA[DTOS(BdA[308],BsC[308]);]]></Text>
+                <Text><![CDATA[COP(BkA[308],BsiB[3696],12);]]></Text>
               </Rung>
               <Rung Number="309" Type="N">
-                <Text><![CDATA[DTOS(BdA[309],BsC[309]);]]></Text>
+                <Text><![CDATA[COP(BkA[309],BsiB[3708],12);]]></Text>
               </Rung>
               <Rung Number="310" Type="N">
-                <Text><![CDATA[DTOS(BdA[310],BsC[310]);]]></Text>
+                <Text><![CDATA[COP(BkA[310],BsiB[3720],12);]]></Text>
               </Rung>
               <Rung Number="311" Type="N">
-                <Text><![CDATA[DTOS(BdA[311],BsC[311]);]]></Text>
+                <Text><![CDATA[COP(BkA[311],BsiB[3732],12);]]></Text>
               </Rung>
               <Rung Number="312" Type="N">
-                <Text><![CDATA[DTOS(BdA[312],BsC[312]);]]></Text>
+                <Text><![CDATA[COP(BkA[312],BsiB[3744],12);]]></Text>
               </Rung>
               <Rung Number="313" Type="N">
-                <Text><![CDATA[DTOS(BdA[313],BsC[313]);]]></Text>
+                <Text><![CDATA[COP(BkA[313],BsiB[3756],12);]]></Text>
               </Rung>
               <Rung Number="314" Type="N">
-                <Text><![CDATA[DTOS(BdA[314],BsC[314]);]]></Text>
+                <Text><![CDATA[COP(BkA[314],BsiB[3768],12);]]></Text>
               </Rung>
               <Rung Number="315" Type="N">
-                <Text><![CDATA[DTOS(BdA[315],BsC[315]);]]></Text>
+                <Text><![CDATA[COP(BkA[315],BsiB[3780],12);]]></Text>
               </Rung>
               <Rung Number="316" Type="N">
-                <Text><![CDATA[DTOS(BdA[316],BsC[316]);]]></Text>
+                <Text><![CDATA[COP(BkA[316],BsiB[3792],12);]]></Text>
               </Rung>
               <Rung Number="317" Type="N">
-                <Text><![CDATA[DTOS(BdA[317],BsC[317]);]]></Text>
+                <Text><![CDATA[COP(BkA[317],BsiB[3804],12);]]></Text>
               </Rung>
               <Rung Number="318" Type="N">
-                <Text><![CDATA[DTOS(BdA[318],BsC[318]);]]></Text>
+                <Text><![CDATA[COP(BkA[318],BsiB[3816],12);]]></Text>
               </Rung>
               <Rung Number="319" Type="N">
-                <Text><![CDATA[DTOS(BdA[319],BsC[319]);]]></Text>
+                <Text><![CDATA[COP(BkA[319],BsiB[3828],12);]]></Text>
               </Rung>
               <Rung Number="320" Type="N">
-                <Text><![CDATA[DTOS(BdA[320],BsC[320]);]]></Text>
+                <Text><![CDATA[COP(BkA[320],BsiB[3840],12);]]></Text>
               </Rung>
               <Rung Number="321" Type="N">
-                <Text><![CDATA[DTOS(BdA[321],BsC[321]);]]></Text>
+                <Text><![CDATA[COP(BkA[321],BsiB[3852],12);]]></Text>
               </Rung>
               <Rung Number="322" Type="N">
-                <Text><![CDATA[DTOS(BdA[322],BsC[322]);]]></Text>
+                <Text><![CDATA[COP(BkA[322],BsiB[3864],12);]]></Text>
               </Rung>
               <Rung Number="323" Type="N">
-                <Text><![CDATA[DTOS(BdA[323],BsC[323]);]]></Text>
+                <Text><![CDATA[COP(BkA[323],BsiB[3876],12);]]></Text>
               </Rung>
               <Rung Number="324" Type="N">
-                <Text><![CDATA[DTOS(BdA[324],BsC[324]);]]></Text>
+                <Text><![CDATA[COP(BkA[324],BsiB[3888],12);]]></Text>
               </Rung>
               <Rung Number="325" Type="N">
-                <Text><![CDATA[DTOS(BdA[325],BsC[325]);]]></Text>
+                <Text><![CDATA[COP(BkA[325],BsiB[3900],12);]]></Text>
               </Rung>
               <Rung Number="326" Type="N">
-                <Text><![CDATA[DTOS(BdA[326],BsC[326]);]]></Text>
+                <Text><![CDATA[COP(BkA[326],BsiB[3912],12);]]></Text>
               </Rung>
               <Rung Number="327" Type="N">
-                <Text><![CDATA[DTOS(BdA[327],BsC[327]);]]></Text>
+                <Text><![CDATA[COP(BkA[327],BsiB[3924],12);]]></Text>
               </Rung>
               <Rung Number="328" Type="N">
-                <Text><![CDATA[DTOS(BdA[328],BsC[328]);]]></Text>
+                <Text><![CDATA[COP(BkA[328],BsiB[3936],12);]]></Text>
               </Rung>
               <Rung Number="329" Type="N">
-                <Text><![CDATA[DTOS(BdA[329],BsC[329]);]]></Text>
+                <Text><![CDATA[COP(BkA[329],BsiB[3948],12);]]></Text>
               </Rung>
               <Rung Number="330" Type="N">
-                <Text><![CDATA[DTOS(BdA[330],BsC[330]);]]></Text>
+                <Text><![CDATA[COP(BkA[330],BsiB[3960],12);]]></Text>
               </Rung>
               <Rung Number="331" Type="N">
-                <Text><![CDATA[DTOS(BdA[331],BsC[331]);]]></Text>
+                <Text><![CDATA[COP(BkA[331],BsiB[3972],12);]]></Text>
               </Rung>
               <Rung Number="332" Type="N">
-                <Text><![CDATA[DTOS(BdA[332],BsC[332]);]]></Text>
+                <Text><![CDATA[COP(BkA[332],BsiB[3984],12);]]></Text>
               </Rung>
               <Rung Number="333" Type="N">
-                <Text><![CDATA[DTOS(BdA[333],BsC[333]);]]></Text>
+                <Text><![CDATA[COP(BkA[333],BsiB[3996],12);]]></Text>
               </Rung>
               <Rung Number="334" Type="N">
-                <Text><![CDATA[DTOS(BdA[334],BsC[334]);]]></Text>
+                <Text><![CDATA[COP(BkA[334],BsiB[4008],12);]]></Text>
               </Rung>
               <Rung Number="335" Type="N">
-                <Text><![CDATA[DTOS(BdA[335],BsC[335]);]]></Text>
+                <Text><![CDATA[COP(BkA[335],BsiB[4020],12);]]></Text>
               </Rung>
               <Rung Number="336" Type="N">
-                <Text><![CDATA[DTOS(BdA[336],BsC[336]);]]></Text>
+                <Text><![CDATA[COP(BkA[336],BsiB[4032],12);]]></Text>
               </Rung>
               <Rung Number="337" Type="N">
-                <Text><![CDATA[DTOS(BdA[337],BsC[337]);]]></Text>
+                <Text><![CDATA[COP(BkA[337],BsiB[4044],12);]]></Text>
               </Rung>
               <Rung Number="338" Type="N">
-                <Text><![CDATA[DTOS(BdA[338],BsC[338]);]]></Text>
+                <Text><![CDATA[COP(BkA[338],BsiB[4056],12);]]></Text>
               </Rung>
               <Rung Number="339" Type="N">
-                <Text><![CDATA[DTOS(BdA[339],BsC[339]);]]></Text>
+                <Text><![CDATA[COP(BkA[339],BsiB[4068],12);]]></Text>
               </Rung>
               <Rung Number="340" Type="N">
-                <Text><![CDATA[DTOS(BdA[340],BsC[340]);]]></Text>
+                <Text><![CDATA[COP(BkA[340],BsiB[4080],12);]]></Text>
               </Rung>
               <Rung Number="341" Type="N">
-                <Text><![CDATA[DTOS(BdA[341],BsC[341]);]]></Text>
+                <Text><![CDATA[COP(BkA[341],BsiB[4092],12);]]></Text>
               </Rung>
               <Rung Number="342" Type="N">
-                <Text><![CDATA[DTOS(BdA[342],BsC[342]);]]></Text>
+                <Text><![CDATA[COP(BkA[342],BsiB[4104],12);]]></Text>
               </Rung>
               <Rung Number="343" Type="N">
-                <Text><![CDATA[DTOS(BdA[343],BsC[343]);]]></Text>
+                <Text><![CDATA[COP(BkA[343],BsiB[4116],12);]]></Text>
               </Rung>
               <Rung Number="344" Type="N">
-                <Text><![CDATA[DTOS(BdA[344],BsC[344]);]]></Text>
+                <Text><![CDATA[COP(BkA[344],BsiB[4128],12);]]></Text>
               </Rung>
               <Rung Number="345" Type="N">
-                <Text><![CDATA[DTOS(BdA[345],BsC[345]);]]></Text>
+                <Text><![CDATA[COP(BkA[345],BsiB[4140],12);]]></Text>
               </Rung>
               <Rung Number="346" Type="N">
-                <Text><![CDATA[DTOS(BdA[346],BsC[346]);]]></Text>
+                <Text><![CDATA[COP(BkA[346],BsiB[4152],12);]]></Text>
               </Rung>
               <Rung Number="347" Type="N">
-                <Text><![CDATA[DTOS(BdA[347],BsC[347]);]]></Text>
+                <Text><![CDATA[COP(BkA[347],BsiB[4164],12);]]></Text>
               </Rung>
               <Rung Number="348" Type="N">
-                <Text><![CDATA[DTOS(BdA[348],BsC[348]);]]></Text>
+                <Text><![CDATA[COP(BkA[348],BsiB[4176],12);]]></Text>
               </Rung>
               <Rung Number="349" Type="N">
-                <Text><![CDATA[DTOS(BdA[349],BsC[349]);]]></Text>
+                <Text><![CDATA[COP(BkA[349],BsiB[4188],12);]]></Text>
               </Rung>
               <Rung Number="350" Type="N">
-                <Text><![CDATA[DTOS(BdA[350],BsC[350]);]]></Text>
+                <Text><![CDATA[COP(BkA[350],BsiB[4200],12);]]></Text>
               </Rung>
               <Rung Number="351" Type="N">
-                <Text><![CDATA[DTOS(BdA[351],BsC[351]);]]></Text>
+                <Text><![CDATA[COP(BkA[351],BsiB[4212],12);]]></Text>
               </Rung>
               <Rung Number="352" Type="N">
-                <Text><![CDATA[DTOS(BdA[352],BsC[352]);]]></Text>
+                <Text><![CDATA[COP(BkA[352],BsiB[4224],12);]]></Text>
               </Rung>
               <Rung Number="353" Type="N">
-                <Text><![CDATA[DTOS(BdA[353],BsC[353]);]]></Text>
+                <Text><![CDATA[COP(BkA[353],BsiB[4236],12);]]></Text>
               </Rung>
               <Rung Number="354" Type="N">
-                <Text><![CDATA[DTOS(BdA[354],BsC[354]);]]></Text>
+                <Text><![CDATA[COP(BkA[354],BsiB[4248],12);]]></Text>
               </Rung>
               <Rung Number="355" Type="N">
-                <Text><![CDATA[DTOS(BdA[355],BsC[355]);]]></Text>
+                <Text><![CDATA[COP(BkA[355],BsiB[4260],12);]]></Text>
               </Rung>
               <Rung Number="356" Type="N">
-                <Text><![CDATA[DTOS(BdA[356],BsC[356]);]]></Text>
+                <Text><![CDATA[COP(BkA[356],BsiB[4272],12);]]></Text>
               </Rung>
               <Rung Number="357" Type="N">
-                <Text><![CDATA[DTOS(BdA[357],BsC[357]);]]></Text>
+                <Text><![CDATA[COP(BkA[357],BsiB[4284],12);]]></Text>
               </Rung>
               <Rung Number="358" Type="N">
-                <Text><![CDATA[DTOS(BdA[358],BsC[358]);]]></Text>
+                <Text><![CDATA[COP(BkA[358],BsiB[4296],12);]]></Text>
               </Rung>
               <Rung Number="359" Type="N">
-                <Text><![CDATA[DTOS(BdA[359],BsC[359]);]]></Text>
+                <Text><![CDATA[COP(BkA[359],BsiB[4308],12);]]></Text>
               </Rung>
               <Rung Number="360" Type="N">
-                <Text><![CDATA[DTOS(BdA[360],BsC[360]);]]></Text>
+                <Text><![CDATA[COP(BkA[360],BsiB[4320],12);]]></Text>
               </Rung>
               <Rung Number="361" Type="N">
-                <Text><![CDATA[DTOS(BdA[361],BsC[361]);]]></Text>
+                <Text><![CDATA[COP(BkA[361],BsiB[4332],12);]]></Text>
               </Rung>
               <Rung Number="362" Type="N">
-                <Text><![CDATA[DTOS(BdA[362],BsC[362]);]]></Text>
+                <Text><![CDATA[COP(BkA[362],BsiB[4344],12);]]></Text>
               </Rung>
               <Rung Number="363" Type="N">
-                <Text><![CDATA[DTOS(BdA[363],BsC[363]);]]></Text>
+                <Text><![CDATA[COP(BkA[363],BsiB[4356],12);]]></Text>
               </Rung>
               <Rung Number="364" Type="N">
-                <Text><![CDATA[DTOS(BdA[364],BsC[364]);]]></Text>
+                <Text><![CDATA[COP(BkA[364],BsiB[4368],12);]]></Text>
               </Rung>
               <Rung Number="365" Type="N">
-                <Text><![CDATA[DTOS(BdA[365],BsC[365]);]]></Text>
+                <Text><![CDATA[COP(BkA[365],BsiB[4380],12);]]></Text>
               </Rung>
               <Rung Number="366" Type="N">
-                <Text><![CDATA[DTOS(BdA[366],BsC[366]);]]></Text>
+                <Text><![CDATA[COP(BkA[366],BsiB[4392],12);]]></Text>
               </Rung>
               <Rung Number="367" Type="N">
-                <Text><![CDATA[DTOS(BdA[367],BsC[367]);]]></Text>
+                <Text><![CDATA[COP(BkA[367],BsiB[4404],12);]]></Text>
               </Rung>
               <Rung Number="368" Type="N">
-                <Text><![CDATA[DTOS(BdA[368],BsC[368]);]]></Text>
+                <Text><![CDATA[COP(BkA[368],BsiB[4416],12);]]></Text>
               </Rung>
               <Rung Number="369" Type="N">
-                <Text><![CDATA[DTOS(BdA[369],BsC[369]);]]></Text>
+                <Text><![CDATA[COP(BkA[369],BsiB[4428],12);]]></Text>
               </Rung>
               <Rung Number="370" Type="N">
-                <Text><![CDATA[DTOS(BdA[370],BsC[370]);]]></Text>
+                <Text><![CDATA[COP(BkA[370],BsiB[4440],12);]]></Text>
               </Rung>
               <Rung Number="371" Type="N">
-                <Text><![CDATA[DTOS(BdA[371],BsC[371]);]]></Text>
+                <Text><![CDATA[COP(BkA[371],BsiB[4452],12);]]></Text>
               </Rung>
               <Rung Number="372" Type="N">
-                <Text><![CDATA[DTOS(BdA[372],BsC[372]);]]></Text>
+                <Text><![CDATA[COP(BkA[372],BsiB[4464],12);]]></Text>
               </Rung>
               <Rung Number="373" Type="N">
-                <Text><![CDATA[DTOS(BdA[373],BsC[373]);]]></Text>
+                <Text><![CDATA[COP(BkA[373],BsiB[4476],12);]]></Text>
               </Rung>
               <Rung Number="374" Type="N">
-                <Text><![CDATA[DTOS(BdA[374],BsC[374]);]]></Text>
+                <Text><![CDATA[COP(BkA[374],BsiB[4488],12);]]></Text>
               </Rung>
               <Rung Number="375" Type="N">
-                <Text><![CDATA[DTOS(BdA[375],BsC[375]);]]></Text>
+                <Text><![CDATA[COP(BkA[375],BsiB[4500],12);]]></Text>
               </Rung>
               <Rung Number="376" Type="N">
-                <Text><![CDATA[DTOS(BdA[376],BsC[376]);]]></Text>
+                <Text><![CDATA[COP(BkA[376],BsiB[4512],12);]]></Text>
               </Rung>
               <Rung Number="377" Type="N">
-                <Text><![CDATA[DTOS(BdA[377],BsC[377]);]]></Text>
+                <Text><![CDATA[COP(BkA[377],BsiB[4524],12);]]></Text>
               </Rung>
               <Rung Number="378" Type="N">
-                <Text><![CDATA[DTOS(BdA[378],BsC[378]);]]></Text>
+                <Text><![CDATA[COP(BkA[378],BsiB[4536],12);]]></Text>
               </Rung>
               <Rung Number="379" Type="N">
-                <Text><![CDATA[DTOS(BdA[379],BsC[379]);]]></Text>
+                <Text><![CDATA[COP(BkA[379],BsiB[4548],12);]]></Text>
               </Rung>
               <Rung Number="380" Type="N">
-                <Text><![CDATA[DTOS(BdA[380],BsC[380]);]]></Text>
+                <Text><![CDATA[COP(BkA[380],BsiB[4560],12);]]></Text>
               </Rung>
               <Rung Number="381" Type="N">
-                <Text><![CDATA[DTOS(BdA[381],BsC[381]);]]></Text>
+                <Text><![CDATA[COP(BkA[381],BsiB[4572],12);]]></Text>
               </Rung>
               <Rung Number="382" Type="N">
-                <Text><![CDATA[DTOS(BdA[382],BsC[382]);]]></Text>
+                <Text><![CDATA[COP(BkA[382],BsiB[4584],12);]]></Text>
               </Rung>
               <Rung Number="383" Type="N">
-                <Text><![CDATA[DTOS(BdA[383],BsC[383]);]]></Text>
+                <Text><![CDATA[COP(BkA[383],BsiB[4596],12);]]></Text>
               </Rung>
               <Rung Number="384" Type="N">
-                <Text><![CDATA[DTOS(BdA[384],BsC[384]);]]></Text>
+                <Text><![CDATA[COP(BkA[384],BsiB[4608],12);]]></Text>
               </Rung>
               <Rung Number="385" Type="N">
-                <Text><![CDATA[DTOS(BdA[385],BsC[385]);]]></Text>
+                <Text><![CDATA[COP(BkA[385],BsiB[4620],12);]]></Text>
               </Rung>
               <Rung Number="386" Type="N">
-                <Text><![CDATA[DTOS(BdA[386],BsC[386]);]]></Text>
+                <Text><![CDATA[COP(BkA[386],BsiB[4632],12);]]></Text>
               </Rung>
               <Rung Number="387" Type="N">
-                <Text><![CDATA[DTOS(BdA[387],BsC[387]);]]></Text>
+                <Text><![CDATA[COP(BkA[387],BsiB[4644],12);]]></Text>
               </Rung>
               <Rung Number="388" Type="N">
-                <Text><![CDATA[DTOS(BdA[388],BsC[388]);]]></Text>
+                <Text><![CDATA[COP(BkA[388],BsiB[4656],12);]]></Text>
               </Rung>
               <Rung Number="389" Type="N">
-                <Text><![CDATA[DTOS(BdA[389],BsC[389]);]]></Text>
+                <Text><![CDATA[COP(BkA[389],BsiB[4668],12);]]></Text>
               </Rung>
               <Rung Number="390" Type="N">
-                <Text><![CDATA[DTOS(BdA[390],BsC[390]);]]></Text>
+                <Text><![CDATA[COP(BkA[390],BsiB[4680],12);]]></Text>
               </Rung>
               <Rung Number="391" Type="N">
-                <Text><![CDATA[DTOS(BdA[391],BsC[391]);]]></Text>
+                <Text><![CDATA[COP(BkA[391],BsiB[4692],12);]]></Text>
               </Rung>
               <Rung Number="392" Type="N">
-                <Text><![CDATA[DTOS(BdA[392],BsC[392]);]]></Text>
+                <Text><![CDATA[COP(BkA[392],BsiB[4704],12);]]></Text>
               </Rung>
               <Rung Number="393" Type="N">
-                <Text><![CDATA[DTOS(BdA[393],BsC[393]);]]></Text>
+                <Text><![CDATA[COP(BkA[393],BsiB[4716],12);]]></Text>
               </Rung>
               <Rung Number="394" Type="N">
-                <Text><![CDATA[DTOS(BdA[394],BsC[394]);]]></Text>
+                <Text><![CDATA[COP(BkA[394],BsiB[4728],12);]]></Text>
               </Rung>
               <Rung Number="395" Type="N">
-                <Text><![CDATA[DTOS(BdA[395],BsC[395]);]]></Text>
+                <Text><![CDATA[COP(BkA[395],BsiB[4740],12);]]></Text>
               </Rung>
               <Rung Number="396" Type="N">
-                <Text><![CDATA[DTOS(BdA[396],BsC[396]);]]></Text>
+                <Text><![CDATA[COP(BkA[396],BsiB[4752],12);]]></Text>
               </Rung>
               <Rung Number="397" Type="N">
-                <Text><![CDATA[DTOS(BdA[397],BsC[397]);]]></Text>
+                <Text><![CDATA[COP(BkA[397],BsiB[4764],12);]]></Text>
               </Rung>
               <Rung Number="398" Type="N">
-                <Text><![CDATA[DTOS(BdA[398],BsC[398]);]]></Text>
+                <Text><![CDATA[COP(BkA[398],BsiB[4776],12);]]></Text>
               </Rung>
               <Rung Number="399" Type="N">
-                <Text><![CDATA[DTOS(BdA[399],BsC[399]);]]></Text>
+                <Text><![CDATA[COP(BkA[399],BsiB[4788],12);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

@@ -8,6 +8,16 @@ Constants live in `MEMORY_MODEL.md`. This file is the map.
 
 ---
 
+## Logic is charged once per definition, never per instance
+
+An AOI's internal logic is compiled once, in its definition; every instance carries only its
+data, and every call site its call cost. The engine charges `aoi_definitions/<name>/Logic`
+once per file (sizing/report.py), and the captures agree: `defscale_aoiinst_n001…n060` grows
+by exactly 1,576 bytes per added instance from 1 to 60 instances — instance data plus one
+call, no logic term. So a source-protected AOI's unknown logic is a one-off per file; what
+must be precise per instance is its data, which the instance tag's L5K values expose even
+when the definition is encrypted.
+
 ## What an AOI is, structurally
 
 Not in question.
