@@ -1235,6 +1235,11 @@ tag in MOV (`litop_type_real_lit`, `litop_form_floatform`), not wired. `DINT wit
 from a literal is unmeasured (`litop_type_sint_lit` reads −40 per call). Per-instruction
 rates: `litreal_*` (47 files).
 
+**Module I/O operands are typed** from each module's Decorated InputTag/OutputTag/ConfigTag
+structure (`Mod:I.Data[n]`, `Parent:slot:I.Ch0Data`), so they take part in the mixed-type and
+literal rules. 542 of 584 real typed-call module operands resolve (DINT 209, INT 199, SINT 123,
+REAL 11); real set 1.29% → 1.27%; no generated row moved (800 module-related rows checked).
+
 **Motion-structure members are typed** for the resolver: axis `ActualPosition`,
 `CommandPosition`, `ActualVelocity`, `CommandVelocity`, `AverageVelocity` and the other
 numeric attributes REAL, `CIPAxisState` INT, `AxisFault`/`AxisStatus` DINT; CAM `Master`/`Slave`

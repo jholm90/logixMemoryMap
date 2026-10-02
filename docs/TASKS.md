@@ -66,6 +66,32 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0n. Deep pass, 2026-10-02 (before the motlit capture) — NEXT
+
+**1.27% mean, 3.08% worst** after module I/O operands were typed (code-only, no generated row
+moved). Findings, all measured on the real set:
+
+- **Category scale test:** routine logic still the one consistent category, +6.5% ±3.1
+  (program logic +7.7% ±4.0; AOI-internal logic +51% ±37 — noisy). Everything else is
+  inconsistent across files.
+- **What the exact transplants lack:** COP, CONCAT, JMP/LBL, CPS, DTOS, GSV, AFI, SIZE — real
+  logic is full of them, the three exactly-priced transplants have almost none, and their
+  weights come from near-empty files. → OQ-BLOCKSTR, 19 files built.
+- **AOI arguments:** 1,133 integer literals into REAL Input parameters, never measured.
+  → OQ-AOILITARG, 9 files built.
+- **Module I/O operands:** typed from the modules' own connection tags — wired.
+- **Source-protected AOIs: dead end.** The export carries no encrypted payload for a protected
+  AOI (description and revision note only), so its logic cannot be sized from the file; its
+  instance data (from the L5K values) is within a few KB of what is charged.
+- **Alarm conditions:** generated and real conditions share every attribute and shape; no
+  lead.
+- **Export 27:** its four transplants price within ~3 KB except the protected-AOI program
+  (17.7 KB); ~50 KB of its 69 KB residual sits in programs never transplanted. A Studio
+  transplant of its next-largest programs (the ones with the alarm, camming-control and
+  junction-box logic) is the sharpest remaining instrument.
+
+**Ready to capture together:** `motlit_*` (15), `aoilit_*` (9), `blkstr_*` (19).
+
 ### 0m. After the literal and idiom captures, 2026-10-02 — NEXT
 
 **Real set 1.29% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%.** OQ-LITREAL closed
