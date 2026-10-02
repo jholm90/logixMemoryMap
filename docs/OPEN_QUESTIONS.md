@@ -1,6 +1,6 @@
 # Open Questions
 
-**Three.** OQ-LITREAL and OQ-REALIDIOM closed on 220 captured files, every one exact (RESOLVED_QUESTIONS); OQ-MOTIONLIT opened for the motion instructions they did not cover. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Five.** OQ-BLOCKSTR and OQ-AOILITARG opened from the deep pass of 2026-10-02 (TASKS 0n). OQ-LITREAL and OQ-REALIDIOM closed on 220 captured files, every one exact (RESOLVED_QUESTIONS); OQ-MOTIONLIT opened for the motion instructions they did not cover. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,8 +23,10 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | **1.29% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
+| **OQ-REALUNDER** | **1.27% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed and module I/O operands were typed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
 | **OQ-MOTIONLIT** | The literal law on MAJ, MAPC, MCCP, MAG (MAPC alone: 1,009 real integer literals). 15 `motlit_*` files built, predictions recorded, awaiting capture. |
+| **OQ-BLOCKSTR** | COP/CPS/FLL, CONCAT/DTOS/SIZE and JMP/LBL priced on near-empty files only; the exactly-priced transplants carry almost none, real logic thousands. 19 `blkstr_*` files built. |
+| **OQ-AOILITARG** | An AOI Input argument whose type differs from its parameter (1,133 real integer literals into REAL parameters). 9 `aoilit_*` files built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
@@ -245,4 +247,23 @@ generated files are this one law.
 | **Open discrepancy** | `litop_mam_tag` / `_lit` (near-empty controller, AXIS_VIRTUAL, `Disabled,Current`) read 12 per call over under the wired rule, where the realism-floor MAM files are exact. Two old files against eleven new; the realism floor wins until a file isolates the difference. |
 | **Batch built** | `gen_motion_literals.py`, `samples/generated/motlit/`, 15 files on the motop Kinetix inventory (bus supply + converter axis, 2198-D032-ERS3, CIP axes PnAxisX/PnAxisY, four virtual masters) plus a CAM[5] and CAM_PROFILE[5]; control `motlit_n00`. `motlit_{maj,mapc,mccp,mag}_{tag,ilit,flit}` (REAL parameters as tags / integer literals / float literals) and `motlit_mam_{tag,litop}` (the old near-empty `litop_mam` shape on the realism floor). |
 | **Predictions (written before capture)** | per call over `_tag`: MAJ ilit +272 (6 literals), flit +24; MAPC ilit +184 (4), flit +16; MCCP ilit +96 (2), flit +8; MAG ilit +96 (2), flit +8; `mam_litop` +52. Note the captured-exact weights of MAJ, MAPC and MCCP were fitted on calls that already carry integer literals in REAL positions (MAJ lock position `0`; MAPC scaling `1,1`; MCCP slopes `1,1`) — if the law holds, those weights fall by the same amounts when it is wired. |
+| **CAPTURE** | not yet captured |
+
+---
+
+## 4. OQ-BLOCKSTR — block moves, strings and jumps in real context
+
+| | |
+|---|---|
+| **Evidence** | After OQ-LITREAL the category scale test leaves routine logic needing +6.5% ±3.1 (program logic +7.7% ±4.0, AOI logic +51% ±37). Three Studio-made transplants now price within 3% of their logic, so what is missing is what they lack. Against them, real program logic carries per 1,000 instructions COP 12.0 vs 5.3, CONCAT 5.6 vs 0, JMP 4.2 vs 0.9, LBL 3.5 vs 0.9, CPS 1.6 vs 0, DTOS 1.3 vs 0 — all weighted from near-empty calibration files. Real shapes: COP UDT→UDT 2,393 of 3,822 (length 1 in 2,931); FLL literal→UDT 849; CPS UDT→UDT 324; CONCAT STRING×3 1,778; DTOS DINT→STRING 260, literal→STRING 140. |
+| **Expected movement** | COP alone at +50 per call would be ~0.3 pp of the mean; the whole set bounded by the +7.7% program-logic gap. |
+| **Batch built** | `gen_block_string.py`, `samples/generated/blkstr/`, 19 files on one inventory (BkUdt arrays, DINT/REAL arrays, STRING arrays), 400 calls each, control `blkstr_n00`: `cop_{dint,udt,real,string}_l1`, `cop_{dint,udt}_l10`, `cop_udt_lentag`, `cps_{udt,dint}_l1`, `fll_{dint,real}_l10`, `fll_udt_{l1,l10}`, `concat`, `dtos_{dint,lit}`, `size_udt`, `jmplbl`. |
+| **CAPTURE** | not yet captured |
+
+## 5. OQ-AOILITARG — AOI Input arguments of another type
+
+| | |
+|---|---|
+| **Evidence** | AOI argument costs were measured on BOOL and DINT parameters only (`litop_bool_*`: tag or 12345 28, literal 0/1 16). Real Input arguments: REAL parameter ← integer literal 1,133, ← float literal 56, ← DINT tag 12. If the typed-call conversion applies (52), ~59 KB across the seventeen. |
+| **Batch built** | `gen_aoi_literal_args.py`, `samples/generated/aoilit/`, 9 files: one AOI with Required REAL/DINT/INT/SINT inputs, 400 instances, one call each; `aoilit_tag` control and `_r_ilit5`, `_r_ilit0`, `_r_flit`, `_r_dint`, `_i_ilit`, `_s_ilit`, `_d_ilit` (exactly one argument changed), plus `aoilit_n00`. |
 | **CAPTURE** | not yet captured |

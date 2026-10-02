@@ -72,3 +72,22 @@ def test_motion_structure_members_resolve():
     assert t.resolve("Vx.CommandVelocity") == "REAL"
     assert t.resolve("Mi.ERR") == "INT" and t.resolve("Mi.EXERR") == "SINT"
     assert t.resolve("Cm[2].Master") == "REAL"
+
+
+def test_module_io_operands_resolve_from_the_module_connection_tags():
+    import xml.etree.ElementTree as ET
+    from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
+    root = ET.fromstring(
+        '<RSLogix5000Content><Controller><Modules>'
+        '<Module Name="Pv" ParentModule="Local"><Ports><Port Id="1" Address="3" Upstream="true"/></Ports>'
+        '<Communications><Connections><Connection><InputTag><Data Format="Decorated">'
+        '<Structure DataType="AB:X:I:0"><DataValueMember Name="Fault" DataType="DINT"/>'
+        '<ArrayMember Name="Data" DataType="INT" Dimensions="8"/>'
+        '<DataValueMember Name="Ch0Data" DataType="REAL"/></Structure></Data></InputTag>'
+        '</Connection></Connections></Communications></Module>'
+        '</Modules><Tags/><Programs/></Controller></RSLogix5000Content>')
+    t = FileOperandTypes(root).for_program(None)
+    assert t.resolve("Pv:I.Data[2]") == "INT"
+    assert t.resolve("Local:3:I.Ch0Data") == "REAL"
+    assert t.resolve("Pv:I.Fault") == "DINT" and t.resolve("Pv:I.Fault.3") == "BOOL"
+    assert t.resolve("Nope:I.Data[0]") is None

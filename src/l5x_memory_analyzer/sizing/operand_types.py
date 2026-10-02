@@ -83,8 +83,10 @@ class OperandTypes:
 
     def resolve(self, operand: str, _depth: int = 0) -> str | None:
         operand = operand.strip()
-        if not operand or _depth > _MAX_ALIAS_DEPTH or ":" in operand:
+        if not operand or _depth > _MAX_ALIAS_DEPTH:
             return None
+        if ":" in operand:
+            return self._resolve_module(operand)
         if _NUMERIC_LITERAL.match(operand):
             return None
         path = _SUBSCRIPT.sub("", operand).split(".")
@@ -104,6 +106,54 @@ class OperandTypes:
                 return "BOOL"
             current = self._members.get(current, {}).get(step)
         return "BOOL" if current == "BIT" else current
+
+    def _resolve_module(self, operand: str) -> str | None:
+        """A module I/O operand -- `Mod:I.Ch0Data`, `Local:3:I.Data[2]` -- typed from
+        the member types the module's own connection tags declare in the file."""
+        modules = getattr(self, "_modules", None)
+        if not modules:
+            return None
+        head, _, rest = operand.partition(".")
+        members = modules.get(_SUBSCRIPT.sub("", head))
+        if members is None or not rest:
+            return None
+        steps = _SUBSCRIPT.sub("", rest).split(".")
+        current = members.get(steps[0])
+        for step in steps[1:]:
+            if current is None:
+                return None
+            if step.isdigit():
+                return "BOOL"
+            current = self._members.get(current, {}).get(step)
+        return "BOOL" if current == "BIT" else current
+
+
+def _module_io_types(root: ET.Element) -> dict[str, dict[str, str]]:
+    """`Mod:I` / `Parent:slot:I` (and :O, :C) -> {member: type}, read from each module's
+    Decorated InputTag / OutputTag / ConfigTag structure."""
+    table: dict[str, dict[str, str]] = {}
+    for mod in root.iter("Module"):
+        name = mod.get("Name")
+        if not name:
+            continue
+        slot = None
+        parent = mod.get("ParentModule")
+        for port in mod.iter("Port"):
+            if port.get("Upstream") == "true" and (port.get("Address") or "").isdigit():
+                slot = port.get("Address")
+        for tag_el, suffix in (("InputTag", "I"), ("OutputTag", "O"), ("ConfigTag", "C")):
+            for t in mod.iter(tag_el):
+                st = t.find("Data[@Format='Decorated']/Structure")
+                if st is None:
+                    continue
+                members = {m.get("Name"): m.get("DataType") for m in st
+                           if m.get("Name") and m.get("DataType")}
+                if not members:
+                    continue
+                table.setdefault(f"{name}:{suffix}", {}).update(members)
+                if parent and slot is not None:
+                    table.setdefault(f"{parent}:{slot}:{suffix}", {}).update(members)
+    return table
 
 
 class FileOperandTypes:
@@ -125,12 +175,15 @@ class FileOperandTypes:
         for aoi in root.iter("AddOnInstructionDefinition"):
             self._aoi[aoi.get("Name")] = OperandTypes([(members[aoi.get("Name")], {})], members)
         controller_scope = _tag_table(controller)
+        modules = _module_io_types(root)
         self._controller = OperandTypes([controller_scope], members)
+        self._controller._modules = modules
         self._programs: dict[str, OperandTypes] = {}
         if controller is not None:
             for program in controller.iter("Program"):
                 self._programs[program.get("Name")] = OperandTypes(
                     [_tag_table(program), controller_scope], members)
+                self._programs[program.get("Name")]._modules = modules
 
     def for_program(self, program_name: str | None) -> OperandTypes:
         return self._programs.get(program_name or "", self._controller)
