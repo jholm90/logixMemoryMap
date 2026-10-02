@@ -24,7 +24,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | question | state |
 |---|---|
 | **OQ-REALUNDER** | **1.29% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
-| **OQ-MOTIONLIT** | The literal law on the motion instructions not yet measured: MAPC (1,009 real integer literals), MCCP (155), MAJ (188), MAG (136). Spec in TASKS 0l, not built. |
+| **OQ-MOTIONLIT** | The literal law on MAJ, MAPC, MCCP, MAG (MAPC alone: 1,009 real integer literals). 15 `motlit_*` files built, predictions recorded, awaiting capture. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
@@ -243,5 +243,6 @@ generated files are this one law.
 | **Evidence** | MAM and MAS follow the typed-call literal law exactly (`realidiom_mam_*`, `realidiom_mas_*`): 52 for the first integer literal in a REAL parameter, 44 for each further one, +4 per float literal; keywords, move type, axis type and the event-distance / calculated-data arrays cost nothing. Wired for MAM and MAS only. |
 | **Expected movement** | Real integer literals in other motion instructions: MAPC 1,009, MCCP 155, MAJ 188, MAG 136, MAW 50, MAR 36 — about 1,600, ~70–80 KB across the seventeen at the measured rate if they follow the law, i.e. up to ~0.15 pp of the 1.29% mean. |
 | **Open discrepancy** | `litop_mam_tag` / `_lit` (near-empty controller, AXIS_VIRTUAL, `Disabled,Current`) read 12 per call over under the wired rule, where the realism-floor MAM files are exact. Two old files against eleven new; the realism floor wins until a file isolates the difference. |
-| **Spec** | TASKS 0l item 1. |
-| **CAPTURE** | not yet built |
+| **Batch built** | `gen_motion_literals.py`, `samples/generated/motlit/`, 15 files on the motop Kinetix inventory (bus supply + converter axis, 2198-D032-ERS3, CIP axes PnAxisX/PnAxisY, four virtual masters) plus a CAM[5] and CAM_PROFILE[5]; control `motlit_n00`. `motlit_{maj,mapc,mccp,mag}_{tag,ilit,flit}` (REAL parameters as tags / integer literals / float literals) and `motlit_mam_{tag,litop}` (the old near-empty `litop_mam` shape on the realism floor). |
+| **Predictions (written before capture)** | per call over `_tag`: MAJ ilit +272 (6 literals), flit +24; MAPC ilit +184 (4), flit +16; MCCP ilit +96 (2), flit +8; MAG ilit +96 (2), flit +8; `mam_litop` +52. Note the captured-exact weights of MAJ, MAPC and MCCP were fitted on calls that already carry integer literals in REAL positions (MAJ lock position `0`; MAPC scaling `1,1`; MCCP slopes `1,1`) — if the law holds, those weights fall by the same amounts when it is wired. |
+| **CAPTURE** | not yet captured |

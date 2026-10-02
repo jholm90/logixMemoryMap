@@ -359,6 +359,20 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
+## Current batch: literals in MAJ, MAPC, MCCP, MAG — 15 files, awaiting capture (OQ-MOTIONLIT)
+
+`gen_motion_literals.py`, `samples/generated/motlit/`. v35 / 1756-L81E, realism floor, the
+motop Kinetix inventory (P208 bus supply + converter axis, D032 drive, CIP axes on its
+channels, four virtual masters, 400 MOTION_INSTRUCTION tags) plus `MlCam` CAM[5] and
+`MlProf` CAM_PROFILE[5]. `check_proven_blocks.py`: 0 unproven.
+
+| files | n | differenced against |
+|---|---:|---|
+| `motlit_n00` | 1 | control |
+| `motlit_{maj,mapc,mccp,mag}_tag` | 4 | `motlit_n00` |
+| `motlit_{maj,mapc,mccp,mag}_{ilit,flit}` | 8 | the `_tag` of the same instruction |
+| `motlit_mam_tag`, `motlit_mam_litop` | 2 | each other (`realidiom_mam_tag` shape vs the old `litop_mam` shape) |
+
 ## Captured: real idioms at real density — 33 files, all exact against their controls (OQ-REALIDIOM closed)
 
 `gen_real_idioms.py`, `samples/generated/realidiom/`. v35 / 1756-L81E, realism floor.

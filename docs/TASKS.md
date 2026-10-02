@@ -77,7 +77,7 @@ logic (20.7% on the one with a source-protected AOI); six of seven removed routi
 cam-correction routine (520, 12.6%) and the bit-and-status rung (144).
 
 **Next batch — SPEC, not built (ask before generating):**
-1. **OQ-MOTIONLIT, ~12 files** on the captured motop inventory (control `motop_n00`, +1,330),
+1. **OQ-MOTIONLIT — BUILT, 15 `motlit_*` files, awaiting capture** (as specified) on the captured motop inventory (control `motop_n00`, +1,330),
    400 calls each, one MOTION_INSTRUCTION per call, alternating PnAxisX/PnAxisY:
    - MAJ: speed/accel/decel/jerk as REAL tags (control) / integer literals / float literals (3).
    - MAPC: slave and master scaling and the two lock positions as REAL tags / integer
