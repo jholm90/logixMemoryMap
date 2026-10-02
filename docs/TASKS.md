@@ -66,6 +66,28 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0o. Further tests — SPEC, not built (ask before generating)
+
+Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
+
+1. **AOI-internal logic in real shape (~8 files).** AOI logic ~2 MB predicted across the
+   seventeen; alone it needs +51% ±37, jointly +12% (~0.25 pp). Real AOIs operate on their
+   parameters, often InOut UDTs/axes (references, not copies); every AOI calibration file used
+   simple logic on Input/Local members. One AOI, 50 rungs of MOV/ADD/GRT/XIC/OTE on (a) Input
+   members, (b) Local members, (c) InOut UDT members, (d) InOut axis members; (e) with
+   EnableInFalse + Prescan routines; 1 vs 50 instances to re-confirm logic-once. Realism floor.
+2. **Studio transplants (from the user).** IPC_EdgerLine (export 27): its untransplanted
+   programs hold ~50 KB of its 69 KB residual — alarms, cam-control, junction-box programs next.
+   K3M16_Edgers (16) and CMU (06), 2nd/4th worst, never decomposed: their three largest
+   programs one at a time.
+3. **Public program tags (6 files, spec since 0k).** The captured `progscope_prog_{udt,arr}_n{010,050,200}`
+   with every tag `Usage="Public"`, differenced against them. Real: 83 / 41 / 23 public tags in
+   three programs, two among the worst five.
+4. **Near-empty-weighted small instructions on the realism floor (6 files, 400 calls):** NOP
+   (4,785 real), CTU, RES (876 / 957), AFI (627), GSV into a UDT member vs a DINT (521), TON/RTO
+   with literal presets.
+5. **ST routines (4 files), last:** ~40 real routines, 1,510 lines — likely below the floor.
+
 ### 0n. Deep pass, 2026-10-02 (before the motlit capture) — NEXT
 
 **1.27% mean, 3.08% worst** after module I/O operands were typed (code-only, no generated row
