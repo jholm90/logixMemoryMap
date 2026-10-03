@@ -366,6 +366,32 @@ arrays of 4,000, DINT/REAL arrays, STRING arrays of 400), 400 calls each, contro
 COP by type and length, COP/CPS across types in both directions (UDT↔DINT, UDT↔SINT; Length counts destination elements), CPS, FLL literal fills, CONCAT, DTOS, SIZE, JMP/LBL pairs. Each file
 differences against `blkstr_n00`.
 
+## Current batch: AOI-internal logic in real shape — 7 files, awaiting capture (OQ-AOIINTERNAL)
+
+`gen_aoi_internal_shape.py`, `samples/generated/aoiint/`: one AOI `AiOps` (Input BOOL/DINT/REAL,
+Locals, InOut `AiUdt` and InOut AXIS_VIRTUAL), 50 instances, a motion group and virtual axis
+`AiAx`; 50 rungs `XIC(b)GRT(d,r)MOV(d,LoDst)ADD(d,1,LoAcc)OTE(Qk)` over Input, Local, InOut UDT
+or InOut axis operands (`_in`, `_local`, `_inout`, `_axis`), `_eif` adds 10-rung EnableInFalse
+and Prescan routines, `_i50` calls 50 instances instead of 1. Control `aoiint_n00` (one rung).
+
+## Current batch: public program tags — 6 files, awaiting capture (OQ-PUBLICTAG)
+
+`gen_program_public.py`, `samples/generated/tags/progpub_{udt,arr}_n{010,050,200}`: the captured
+`progscope_prog_*` files with every program tag `Usage="Public"`, otherwise identical;
+each differences against its `progscope_prog_*` twin.
+
+## Current batch: small instructions on the realism floor — 10 files, awaiting capture (OQ-SMALLINSTR)
+
+`gen_small_instr.py`, `samples/generated/smallin/`: BOOL/DINT/COUNTER/TIMER arrays of 400 and a
+UDT array; 400 rungs each of NOP, CTU, RES, AFI, OTE (reference), GSV into a DINT and into a UDT
+member, TON with `?` and literal presets. Control `smallin_n00`.
+
+## Current batch: Structured Text on the realism floor — 4 files, awaiting capture (OQ-STREAL)
+
+`gen_st_realism.py`, `samples/generated/streal/`: one JSR-called ST routine of 1 assignment
+(`streal_n00`), 400 DINT assignments, 100 IF blocks, 400 `StR[i] := StD[i] * 2;`. The last is a
+coverage gap today (one-operator multiplicative class into REAL is unmeasured).
+
 ## Current batch: AOI arguments of another type — 9 files, awaiting capture (OQ-AOILITARG)
 
 `gen_aoi_literal_args.py`, `samples/generated/aoilit/`: AOI `LitArgs` (Required REAL, DINT,

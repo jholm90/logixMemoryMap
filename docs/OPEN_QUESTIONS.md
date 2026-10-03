@@ -27,6 +27,10 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-MOTIONLIT** | The literal law on MAJ, MAPC, MCCP, MAG (MAPC alone: 1,009 real integer literals). 15 `motlit_*` files built, predictions recorded, awaiting capture. |
 | **OQ-BLOCKSTR** | COP/CPS/FLL, CONCAT/DTOS/SIZE and JMP/LBL priced on near-empty files only; the exactly-priced transplants carry almost none, real logic thousands. 27 `blkstr_*` files built, including COP/CPS across types in both directions. |
 | **OQ-AOILITARG** | An AOI Input argument whose type differs from its parameter (1,133 real integer literals into REAL parameters). 9 `aoilit_*` files built. |
+| **OQ-AOIINTERNAL** | AOI-internal logic over Input / Local / InOut UDT / InOut axis operands, EnableInFalse+Prescan, 1 vs 50 calls. 7 `aoiint_*` files built. |
+| **OQ-PUBLICTAG** | `Usage="Public"` program tags against their captured non-public twins. 6 `progpub_*` files built. |
+| **OQ-SMALLINSTR** | NOP, CTU, RES, AFI, GSV, TON literal presets on the realism floor. 10 `smallin_*` files built. |
+| **OQ-STREAL** | ST routine rates on the realism floor. 4 `streal_*` files built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
@@ -266,4 +270,40 @@ generated files are this one law.
 |---|---|
 | **Evidence** | AOI argument costs were measured on BOOL and DINT parameters only (`litop_bool_*`: tag or 12345 28, literal 0/1 16). Real Input arguments: REAL parameter ← integer literal 1,133, ← float literal 56, ← DINT tag 12. If the typed-call conversion applies (52), ~59 KB across the seventeen. |
 | **Batch built** | `gen_aoi_literal_args.py`, `samples/generated/aoilit/`, 9 files: one AOI with Required REAL/DINT/INT/SINT inputs, 400 instances, one call each; `aoilit_tag` control and `_r_ilit5`, `_r_ilit0`, `_r_flit`, `_r_dint`, `_i_ilit`, `_s_ilit`, `_d_ilit` (exactly one argument changed), plus `aoilit_n00`. |
+| **CAPTURE** | not yet captured |
+
+## 6. OQ-AOIINTERNAL — AOI-internal logic in real shape
+
+| | |
+|---|---|
+| **Evidence** | AOI-internal logic is ~2 MB of the seventeen's prediction. Category scale test: alone it needs +51% ±37, jointly with program logic +12% (~0.25 pp of the mean). Logic is charged once per definition (`defscale_aoiinst`: 1,576 per instance, no logic term). Every AOI calibration file ran simple logic on Input and Local members; real AOIs operate on InOut UDTs and axes, which are references. |
+| **Batch built** | `gen_aoi_internal_shape.py`, `samples/generated/aoiint/`, 7 files: one AOI `AiOps`, 50 rungs `XIC(b)GRT(d,r)MOV(d,LoDst)ADD(d,1,LoAcc)OTE(Qk)` over `_in` Input, `_local` Local, `_inout` InOut UDT members, `_axis` InOut AXIS_VIRTUAL members; `_eif` adds 10-rung EnableInFalse and Prescan; `_i50` calls 50 instances. Control `aoiint_n00` (one rung). |
+| **Predictions (written before capture)** | `_in` = `_local` = `_inout` = `_axis` = 887,538 (+8,380 over `n00`): the engine prices an AOI operand the same whether parameter, local, or member of an InOut reference. `_eif` 888,498 (+960). `_i50` 894,986 (+7,448 over `_local`, 152 per extra call). Any spread between the four operand files is a term the engine lacks. |
+| **CAPTURE** | not yet captured |
+
+## 7. OQ-PUBLICTAG — public program tags
+
+| | |
+|---|---|
+| **Evidence** | Real: 83 / 41 / 23 `Usage="Public"` tags in three programs, two among the worst five. Program scope itself is free (OQ-PROGSCOPESTRUCT). |
+| **Batch built** | `gen_program_public.py`, `progpub_{udt,arr}_n{010,050,200}` in `samples/generated/tags/`: the captured `progscope_prog_*` files with every program tag Public. |
+| **Predictions (written before capture)** | identical to each `progscope_prog_*` twin (843,562 … 875,322): the engine charges nothing for Public. A per-tag slope across n010/n050/n200 is the cost. Below the 0.5% floor if it is under ~100 bytes per tag. |
+| **CAPTURE** | not yet captured |
+
+## 8. OQ-SMALLINSTR — small instructions on the realism floor
+
+| | |
+|---|---|
+| **Evidence** | Real: NOP 4,785, RES 957, CTU 876, AFI 627, GSV 521 (108 into a UDT member); weights from near-empty files only. |
+| **Batch built** | `gen_small_instr.py`, `samples/generated/smallin/`, 10 files, 400 rungs each: `nop`, `ctu`, `res`, `afi`, `ote` (reference), `gsv_dint`, `gsv_udtmem`, `ton_q`, `ton_lit`; control `smallin_n00`. |
+| **Predictions (written before capture)** | over `n00`: `nop` / `afi` / `ote` +7,984 (≈20/rung), `ctu` / `res` / `ton_q` / `ton_lit` +9,584 (≈24), `gsv_dint` / `gsv_udtmem` +33,584 (≈84). Equal pairs that capture unequal are terms the engine lacks. |
+| **CAPTURE** | not yet captured |
+
+## 9. OQ-STREAL — Structured Text on the realism floor
+
+| | |
+|---|---|
+| **Evidence** | ST rates measured on near-empty files. Real: ~40 ST routines, ~1,510 lines — probably below the 0.5% floor; built last for that reason. |
+| **Batch built** | `gen_st_realism.py`, `samples/generated/streal/`, 4 files: `n00` (one assignment), `assign400`, `if100`, `mixed400` (`StR[i] := StD[i] * 2;`). |
+| **Predictions (written before capture)** | 846,050 / 862,010 / 854,810 / 887,610. `mixed400` carries a coverage gap (one multiplicative operator into a REAL destination is unmeasured) — the engine reported it as an unpriced shape; generating it crashed the report code on that 3-field gap key, now fixed. |
 | **CAPTURE** | not yet captured |
