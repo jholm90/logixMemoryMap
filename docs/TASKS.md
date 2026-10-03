@@ -66,7 +66,7 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0o. Further tests — SPEC, not built (ask before generating)
+### 0o. Further tests — BUILT 2026-10-02 (1, 3, 4, 5); 2 is the user's Studio work
 
 Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
 
@@ -87,6 +87,11 @@ Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
    (4,785 real), CTU, RES (876 / 957), AFI (627), GSV into a UDT member vs a DINT (521), TON/RTO
    with literal presets.
 5. **ST routines (4 files), last:** ~40 real routines, 1,510 lines — likely below the floor.
+
+Built: 1 → `aoiint_*` 7 files (OQ-AOIINTERNAL); 3 → `progpub_*` 6 (OQ-PUBLICTAG); 4 →
+`smallin_*` 10 (OQ-SMALLINSTR); 5 → `streal_*` 4 (OQ-STREAL). Predictions written in each
+question before capture. Building `streal_mixed400` exposed a crash in the ST coverage message
+(the one-operator gap key has three fields); fixed in `sizing/report.py`.
 
 ### 0n. Deep pass, 2026-10-02 (before the motlit capture) — NEXT
 

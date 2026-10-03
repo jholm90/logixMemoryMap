@@ -607,15 +607,26 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 ),
             ))
         for shape in sorted(set(st_unmeasured)):
-            n_ops, is_real = shape.split("|")
-            errors.append(SizeError(
-                path=f"coverage/st_expression/{st_routine.program_name}/{st_routine.routine_name}",
-                message=(
+            parts = shape.split("|")
+            if len(parts) == 3:
+                # "1 operator|<dint|real>|<operator class>": one-operator class not measured.
+                message = (
+                    f"ST assignment with one {parts[2]} operator and "
+                    f"{'REAL' if parts[1] == 'real' else 'integer'} destination -- "
+                    f"operator class not in the measured one-operator table, so its cost "
+                    f"is unpriced. See OQ-STEXPR."
+                )
+            else:
+                n_ops, is_real = parts
+                message = (
                     f"ST assignment with {n_ops} operator(s) and "
                     f"{'REAL' if is_real == 'true' else 'integer'} destination -- "
                     f"shape not in the measured assignment_expression_cost table "
                     f"(only 5 shapes measured), so its cost is unpriced. See OQ-STEXPR."
-                ),
+                )
+            errors.append(SizeError(
+                path=f"coverage/st_expression/{st_routine.program_name}/{st_routine.routine_name}",
+                message=message,
             ))
         # Instruction calls AND assignment right-hand sides both go through
         # the shared rung sizer -- the ST/RLL pairs showed each costs the
