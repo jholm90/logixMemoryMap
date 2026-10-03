@@ -88,6 +88,9 @@ Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
    with literal presets.
 5. **ST routines (4 files), last:** ~40 real routines, 1,510 lines — likely below the floor.
 
+Item 1 extended: `aoicx_*` 14 files (OQ-AOICOMPLEX) — a drive-axis AOI as complex as the real
+ones, with a nested AOI call, GSV/SSV on the Axis class and motion on InOut-UDT members.
+
 Built: 1 → `aoiint_*` 7 files (OQ-AOIINTERNAL); 3 → `progpub_*` 6 (OQ-PUBLICTAG); 4 →
 `smallin_*` 10 (OQ-SMALLINSTR); 5 → `streal_*` 4 (OQ-STREAL). Predictions written in each
 question before capture. Building `streal_mixed400` exposed a crash in the ST coverage message

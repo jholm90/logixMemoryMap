@@ -366,6 +366,15 @@ arrays of 4,000, DINT/REAL arrays, STRING arrays of 400), 400 calls each, contro
 COP by type and length, COP/CPS across types in both directions (UDT↔DINT, UDT↔SINT; Length counts destination elements), CPS, FLL literal fills, CONCAT, DTOS, SIZE, JMP/LBL pairs. Each file
 differences against `blkstr_n00`.
 
+## Current batch: complex drive-axis AOI — 14 files, awaiting capture (OQ-AOICOMPLEX)
+
+`gen_aoi_complex.py`, `samples/generated/aoicx/`: a synthetic drive-axis AOI `DxAxis` sized like
+the real ones (InOut AXIS_CIP_DRIVE + InOut servo UDT, ~60 locals, 514 instructions when full)
+with a nested homing AOI `DxHome` called inside it; Kinetix bus supply + D032 drive, axes
+PnAxisX/PnAxisY. One file per feature block (bits, state-machine compares, GSV Axis, SSV Axis,
+motion, math, JMP/LBL, axis members, nested call on a local / on a UDT member), the full body,
+the full body in a program routine, and two full definitions. Control `aoicx_n00`.
+
 ## Current batch: AOI-internal logic in real shape — 7 files, awaiting capture (OQ-AOIINTERNAL)
 
 `gen_aoi_internal_shape.py`, `samples/generated/aoiint/`: one AOI `AiOps` (Input BOOL/DINT/REAL,
