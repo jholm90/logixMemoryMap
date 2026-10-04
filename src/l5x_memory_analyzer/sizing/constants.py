@@ -838,11 +838,20 @@ class LogicInstructionModel:
     # a rung. Positive value, subtracted. See memory_model.yaml series_output.
     series_output_extra_discount: int = 0
     aoi_internal_per_word_destination_confidence: str = "KNOWN"
+    # OQ-AOICOMPLEX: per AOI-internal instruction reading an InOut parameter.
+    aoi_internal_inout_operand_bytes: int = 0
+    aoi_internal_inout_operand_confidence: str = "FITTED"
+    # OQ-AOIROUTINES: per AOI scan-mode routine (EnableInFalse/Prescan) beyond Logic.
+    aoi_extra_routine_bytes: int = 0
     # Cost of one AOI call site: a base plus a rate per parameter passed (the
     # instance tag is not a parameter) -- see memory_model.yaml aoi_call_site.
     aoi_call_site_bytes: int = 0
     aoi_call_site_per_param_bytes: int = 0
     aoi_call_site_input_ref_extra_bytes: int = 0
+    # OQ-AOILITARG: argument into a REAL Input parameter, over a REAL tag there.
+    aoi_real_input_int_literal_bytes: int = 0
+    aoi_real_input_dint_tag_bytes: int = 0
+    aoi_real_input_float_literal_bytes: int = 0
 
 
 @dataclass(frozen=True)
@@ -1807,6 +1816,12 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 "aoi_call_site", {}).get("per_param_bytes", 0),
             aoi_call_site_input_ref_extra_bytes=raw.get(
                 "aoi_call_site", {}).get("input_ref_extra_bytes", 0),
+            aoi_real_input_int_literal_bytes=(raw.get("aoi_call_site", {}).get("real_input") or {}).get(
+                "integer_literal", 0),
+            aoi_real_input_dint_tag_bytes=(raw.get("aoi_call_site", {}).get("real_input") or {}).get(
+                "dint_tag", 0),
+            aoi_real_input_float_literal_bytes=(raw.get("aoi_call_site", {}).get("real_input") or {}).get(
+                "float_literal", 0),
             branch_bracket_confidence=raw["logic_instructions"]["branch_bracket_confidence"],
             aoi_logic_composite_surcharge_per_instr=raw["logic_instructions"]["aoi_logic_composite_surcharge_per_instr"],
             aoi_internal_per_rung=raw["logic_instructions"].get("aoi_internal_per_rung", 0),
@@ -1818,6 +1833,11 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 if raw.get("series_output", {}).get("apply", False) else 0),
             aoi_internal_per_word_destination_confidence=raw["logic_instructions"].get(
                 "aoi_internal_per_word_destination_confidence", "KNOWN"),
+            aoi_internal_inout_operand_bytes=raw["logic_instructions"].get(
+                "aoi_internal_inout_operand_bytes", 0),
+            aoi_internal_inout_operand_confidence=raw["logic_instructions"].get(
+                "aoi_internal_inout_operand_confidence", "FITTED"),
+            aoi_extra_routine_bytes=raw["logic_instructions"].get("aoi_extra_routine_bytes", 0),
             jsr_target_composite_surcharge_per_instr=raw["logic_instructions"]["jsr_target_composite_surcharge_per_instr"],
             composite_surcharge_confidence=raw["logic_instructions"]["composite_surcharge_confidence"],
             composite_surcharge_cap=raw["logic_instructions"]["composite_surcharge_cap"],

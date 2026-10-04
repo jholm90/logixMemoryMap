@@ -265,7 +265,7 @@ def string_array_tag_xml(name: str, count: int, max_len: int = 82, data_type: st
     or a custom string type by name) -- a genuinely different real shape
     from a scalar STRING tag, confirmed against two independent
     real corpus examples: a real export's
-    CMU_PackNames tag (built-in, `DataType="STRING" Dimensions="5"`) and
+    STRING-array tag (built-in, `DataType="STRING" Dimensions="5"`) and
     a real export's PrintStrings tag (custom type,
     `DataType="SortString" Dimensions="160"`) -- both follow the identical
     shape, only the DataType name differs. Unlike a scalar STRING tag's

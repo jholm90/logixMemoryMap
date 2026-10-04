@@ -11,7 +11,17 @@ in `OPEN_QUESTIONS.md`.
 Measured on the seventeen real production exports, which are the only accuracy
 evidence that counts.
 
-### Current — after the capture batch that followed the blind set
+### Current — after the 92-file capture of 2026-10-03
+
+**0.97% mean, 2.57% worst, 10 of 17 inside 1%, 15 of 17 inside 2%** (2026-10-04). Path since the
+series law: literals typed by spelling (1.74%), motion-structure members typed (1.41%), the
+literal law measured whole (1.29%), module I/O operands typed (1.27%), then AOI logic priced as
+real AOIs write it — InOut reads +8 per instruction, scan-mode routines +268, nested AOI calls
++264, REAL AOI arguments +52 — and the literal law on MAJ/MAPC/MCCP/MAG (0.97%). The mean half of
+the stopping rule is met; the max is not (export 27). The set still under-predicts overall
+(sum-weighted +0.95%). Next: TASKS 0p.
+
+### Earlier — after the capture batch that followed the blind set
 
 **Now 2.18% mean, 4.31% worst, all seventeen under**, since the series-output law was
 wired (option A, 2026-09-25; checkpoint tag `checkpoint-2026-09-25-pre-series-law`). The

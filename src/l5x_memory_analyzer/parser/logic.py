@@ -210,6 +210,10 @@ _TYPE_SENSITIVE_INSTRUCTIONS = frozenset({
     "ADD", "SUB", "MUL", "DIV", "MOD", "EQU", "GEQ", "GRT", "LEQ", "LES", "NEQ", "MOV", "LIM",
     # OQ-LITREAL: priced by one operand's type, or by literal REAL parameters.
     "CLR", "NEG", "ABS", "BTD", "TRN", "MAM", "MAS",
+    # OQ-MOTIONLIT: the same literal law on the other motion instructions.
+    "MAJ", "MAPC", "MCCP", "MAG",
+    # OQ-BLOCKSTR: FLL of an integer literal into a REAL array.
+    "FLL",
 })
 
 
@@ -365,6 +369,42 @@ def word_destination_count(rung_texts: list[str], types: dict[str, str]) -> int:
     return total
 
 
+
+
+_BIT_MNEMONICS = frozenset({"XIC", "XIO", "OTE", "OTL", "OTU", "ONS"})
+_ANY_NAMED_CALL = re.compile(r"\b([A-Za-z_]\w*)\(")
+
+
+def inout_operand_instruction_count(rung_texts: list[str], inout_names: frozenset[str]) -> int:
+    """AOI-internal instructions that READ an InOut parameter, or do a bit
+    operation on one (OQ-AOICOMPLEX / OQ-AOIINTERNAL). An InOut parameter is a
+    reference to the caller's tag; each such instruction costs
+    logic_instructions.aoi_internal_inout_operand_bytes more than the same
+    instruction on an Input or Local. Writing a word INTO an InOut costs
+    nothing extra (the word-destination cost already applies), and GSV/SSV
+    naming an InOut axis as the instance cost nothing extra (measured). Nested
+    AOI calls count like any other instruction."""
+    if not inout_names:
+        return 0
+    total = 0
+    for text in rung_texts:
+        for match in _ANY_NAMED_CALL.finditer(text):
+            mnemonic = match.group(1)
+            if mnemonic in ("GSV", "SSV"):
+                continue
+            args = _extract_call_args(text, match.end())
+            if not args:
+                continue
+            roots = [re.split(r"[.\[]", a.strip())[0] for a in args]
+            positions = range(len(args))
+            if mnemonic not in _BIT_MNEMONICS:
+                dest = _DESTINATION_ARG.get(mnemonic)
+                if dest is not None:
+                    dest_at = dest % len(args)
+                    positions = [i for i in positions if i != dest_at]
+            if any(roots[i] in inout_names for i in positions):
+                total += 1
+    return total
 
 
 def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]]]:
@@ -633,6 +673,9 @@ class RoutineLogic:
     # costs aoi_call_site.input_ref_extra_bytes on top of the per-parameter
     # rate. See aoi_call_sites.
     aoi_call_input_ref_count: int = 0
+    # Arguments bound to a REAL Input parameter (OQ-AOILITARG) -- see
+    # aoi_real_input_args.
+    aoi_real_input_args: tuple[str, ...] = ()
     # True if some OTHER routine in the same program JSRs to this one.
     # confirmed the target's own fixed shell cost (fixed_base_
     # per_routine) is already absorbed into the caller's jsr_fixed_base_
@@ -731,6 +774,9 @@ class RoutineLogic:
     # alike). Inside an AOI the same instructions cost 4 more each -- see
     # memory_model.yaml aoi_internal_per_word_destination.
     word_destination_count: int = 0
+    # AOI-internal only: instructions reading an InOut parameter (or a bit op on
+    # one) -- see inout_operand_instruction_count.
+    inout_operand_instruction_count: int = 0
 
     @property
     def path(self) -> str:
@@ -815,6 +861,42 @@ def aoi_input_positions(root: ET.Element) -> dict[str, tuple[bool, ...]]:
             if p.get("Required") == "true" and p.get("Name") not in ("EnableIn", "EnableOut")
         )
     return positions
+
+
+def aoi_real_input_slots(root: ET.Element) -> dict[str, tuple[bool, ...]]:
+    """AOI name -> for each call-site argument slot, whether it binds a REAL Input
+    parameter. Same slot order as aoi_input_positions."""
+    slots: dict[str, tuple[bool, ...]] = {}
+    for definition in root.iter("AddOnInstructionDefinition"):
+        name = definition.get("Name")
+        if not name:
+            continue
+        slots[name] = tuple(
+            p.get("Usage") == "Input" and p.get("DataType") == "REAL"
+            for p in definition.iter("Parameter")
+            if p.get("Required") == "true" and p.get("Name") not in ("EnableIn", "EnableOut")
+        )
+    return slots
+
+
+def aoi_real_input_args(rung_texts: list[str], aoi_names: frozenset[str],
+                        real_slots: dict[str, tuple[bool, ...]]) -> tuple[str, ...]:
+    """The arguments bound to a REAL Input parameter, across every AOI call in
+    these rungs (OQ-AOILITARG). Sizing prices an integer literal or an integer
+    tag there as a conversion, like the typed-call literal law."""
+    if not aoi_names or not real_slots:
+        return ()
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+    out: list[str] = []
+    for text in rung_texts:
+        for match in pattern.finditer(text):
+            slots = real_slots.get(match.group(1), ())
+            if not any(slots):
+                continue
+            args = _split_call_args(text, match.end() - 1)[1:]
+            out.extend(arg.strip() for is_real, arg in zip(slots, args) if is_real)
+    return tuple(out)
 
 
 def aoi_call_sites(
@@ -954,6 +1036,7 @@ def parse_rll_routines(
             if (name := el.get("Name"))
         )
     input_positions = aoi_input_positions(root)
+    real_slots = aoi_real_input_slots(root)
     routines: list[RoutineLogic] = []
     programs_el = root.find("Controller/Programs")
     if programs_el is None:
@@ -1013,6 +1096,7 @@ def parse_rll_routines(
                 aoi_call_count=aoi_calls,
                 aoi_call_param_count=aoi_call_params,
                 aoi_call_input_ref_count=aoi_input_refs,
+                aoi_real_input_args=aoi_real_input_args(rung_texts, aoi_names, real_slots),
                 is_jsr_target=routine_name in program_jsr_targets,
                 is_safety_program=is_safety_program,
                 cpt_calls=_cpt_calls(rung_texts),
@@ -1060,6 +1144,7 @@ def parse_aoi_internal_logic(
         name for el in root.iter("AddOnInstructionDefinition") if (name := el.get("Name"))
     )
     input_positions = aoi_input_positions(root)
+    real_slots = aoi_real_input_slots(root)
     result: dict[str, RoutineLogic] = {}
     aois_el = root.find("Controller/AddOnInstructionDefinitions")
     if aois_el is None:
@@ -1105,6 +1190,7 @@ def parse_aoi_internal_logic(
             aoi_call_count=aoi_calls,
             aoi_call_param_count=aoi_call_params,
             aoi_call_input_ref_count=aoi_input_refs,
+            aoi_real_input_args=aoi_real_input_args(rung_texts, declared_aoi_names, real_slots),
             cpt_calls=_cpt_calls(rung_texts),
             typed_calls=_typed_instruction_calls(rung_texts),
             indirect_index_kinds=_indirect_index_kinds(rung_texts),
@@ -1112,6 +1198,9 @@ def parse_aoi_internal_logic(
             cmp_calls=_cmp_calls(rung_texts),
             branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
             word_destination_count=word_destination_count(rung_texts, internal_types),
+            inout_operand_instruction_count=inout_operand_instruction_count(
+                rung_texts, frozenset(el.get("Name", "") for el in aoi_el.iter("Parameter")
+                                      if el.get("Usage") == "InOut")),
             series_output_extras=series_output_extra_count(rung_texts),
         )
     return result

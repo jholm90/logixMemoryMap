@@ -25,8 +25,13 @@ confidence levels exist here, and the code and docs must never blur them.**
 
 ## Where the project stands
 
-**Mean absolute error 1.27% on the seventeen standard-processor real programs counted,
-worst case 3.08%, 8/17 inside 1%, 15/17 inside 2%** since module I/O operands were typed from
+**Mean absolute error 0.97% on the seventeen standard-processor real programs counted,
+worst case 2.57%, 10/17 inside 1%, 15/17 inside 2%** since the 92-file capture of 2026-10-03
+was wired: an AOI-internal instruction reading an InOut parameter costs 8 more, each AOI
+scan-mode routine beyond Logic 268, a nested AOI call the 264 call-routine constant again, an
+integer literal or DINT tag into a REAL AOI Input 52, and the literal law now covers MAJ, MAPC,
+MCCP and MAG. Mean under 1% for the first time; the max still fails. Before that 1.27% / 3.08%,
+since module I/O operands were typed from
 the modules' own connection tags (542 of 584 real typed-call module operands). Before that
 1.29%, since OQ-LITREAL was measured whole
 (2026-10-02: per-literal conversion against REAL/INT/SINT, CLR/ABS/NEG/BTD/TRN by type,

@@ -33,6 +33,126 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 ---
 
+# The 92-file batch of 2026-10-03
+
+Eight questions closed on one capture: 91 rows clean, 1 with a build error. Five laws wired;
+real set **1.27% → 0.97% mean, 3.08% → 2.57% worst, 8 → 10 of 17 inside 1%**. By change
+(mean, percentage points): InOut operands in AOI logic −0.146, AOI REAL arguments −0.062,
+AOI scan-mode routines −0.027, the motion literal law −0.008, FLL literal into REAL +0.003, the
+nested AOI call constant the remainder. No row outside the families under test moved: 162
+other captured files with InOut AOI parameters, every FLL file, every MAJ/MAPC/MCCP/MAG file
+and the `composite_realistic_v4` sentinels were rechecked before and after.
+
+## OQ-AOICOMPLEX — a drive-axis AOI as complex as the real ones
+
+**SOLVED and wired, FITTED.** 14 `aoicx_*` files: a synthetic drive-axis AOI shaped like the
+real ones (16 Input / 2 Output, InOut AXIS_CIP_DRIVE + InOut servo UDT, ~60 locals, 514
+instructions when full) with a nested homing AOI, block by block, together, in a program
+routine and twice. The blocks add to the full body to the byte (sum +1,988 = full +1,988
+before wiring). Findings:
+
+- **An instruction that reads an InOut parameter, or does a bit operation on one, costs 8 more**
+  than on an Input or Local; one instruction reading two InOut operands pays once; a word
+  written INTO an InOut pays only the usual word-destination 4; GSV/SSV naming an InOut axis
+  as the instance pay nothing. Exact on `bits` (68 instructions → 544), `cmp` (72 → 576; its
+  36 MOVs into the UDT 0), `jmp` (0), `gsv` (0), `aoiint_inout` (200 → 1,600), `aoiint_axis`
+  (100 → 800). Wired: `logic_instructions.aoi_internal_inout_operand_bytes: 8`.
+- **An AOI whose own logic calls another AOI pays the one-time 264 call-routine cost again**,
+  although the file already paid it: `nested` +264 over its MOV, `nested_udt` +268. Wired:
+  charged once per calling AOI definition. This also settles the old per-file versus
+  per-calling-routine question for AOI routines.
+- **GSV and SSV on the Axis class are priced right** at their flat 84: 20 GSV → 0, 13 SSV → −36.
+  ~1,170 real calls, never measured before; no change.
+- **Same content in a program routine** (`full_prog`) prices within its one errored rung
+  (−860 against a 10-GSV rung that did not compile), so AOI-internal logic = program logic +
+  the word-destination 4 + the InOut 8 + the nested-call 264.
+- Left after wiring, not chased: `axmem` −72, `math` +128, `motion` +48, `ssv` −36 (net +68 on
+  514 instructions); a second full definition (`full_two`) reads −232 against `aoicx_n00` where twice the first
+  (+68 each) would be +136: −368 for the second definition, its instances and servo tags.
+
+**CAPTURE ERRORS: 1 row(s)** — `aoicx_full_prog`: "Rung 37, GSV, Operand 1: Invalid reference
+to unknown attribute." The same GSV compiled inside the AOI (on the InOut axis, which Studio does
+not check against a configured axis) and failed in the program on PnAxisX, an axis with no
+motor. The row reads low by about one 10-GSV rung; it is reported, used only as above, and not
+used to fit anything.
+
+## OQ-AOIROUTINES — AOI scan-mode routines (new, closed the same day)
+
+**SOLVED and wired, FITTED.** Each RLL routine an AOI carries beyond Logic (EnableInFalse,
+Prescan, Postscan) costs **268**, its content priced as usual on top. Four clean files from
+three generators: `aoistr_routines_n2` +272, `aoistr_routines_n3` +536 (two), `aoierr_tworoutine`
++272, `aoiint_eif` +536 (two). Supersedes "routine count does not matter", which was read off
+`aoi_multiroutine_*` — two rows that captured with 8 build errors each (they now read −92 / −88,
+consistent with each other). Wired: `logic_instructions.aoi_extra_routine_bytes: 268`.
+
+## OQ-AOIINTERNAL — AOI-internal logic over Input, Local, InOut and axis operands
+
+**SOLVED, folded into OQ-AOICOMPLEX.** `aoiint_*`, 7 files, one AOI with 50 identical rungs
+over different operand kinds: Input = Local (both +4/rung over the engine before and after); InOut
+UDT member +1,600 and InOut axis +800 are the InOut law; EnableInFalse + Prescan the routine law;
+50 calls versus 1 adds 4/call (logic charged once per definition, confirmed again).
+
+## OQ-AOILITARG — AOI Input arguments of another type
+
+**SOLVED and wired for REAL parameters, FITTED.** `aoilit_*`, one AOI with Required REAL / DINT /
+INT / SINT inputs, 400 calls, one argument varied against an all-tag control:
+
+| argument | per call vs a tag of the parameter's type |
+|---|---|
+| REAL ← integer literal 5 | +52 |
+| REAL ← integer literal 0 | +52 (0 is NOT the cheap case on a REAL parameter) |
+| REAL ← DINT tag | +52 |
+| REAL ← float literal | +4 |
+| DINT ← 12345 | 0 (as `litop_bool`) |
+| INT ← integer literal | −60 |
+| SINT ← integer literal | +52 |
+
+The typed-call literal law, at the argument copy. Wired for REAL (`aoi_call_site.real_input`);
+~1,235 real integer literals or DINT tags go into REAL parameters. INT and SINT parameters carry
+about fifty real arguments between them — below the floor, recorded, not wired. The all-tag
+control itself reads 20/call under the engine; which of the four argument types carries it is not
+separable from these files and not chased (below the floor).
+
+## OQ-MOTIONLIT — the literal law on MAJ, MAPC, MCCP and MAG
+
+**SOLVED and wired, KNOWN.** 15 `motlit_*` files, every one exact relative to `motlit_n00` once
+wired. The law measured on MAM and MAS holds on the other four exactly as predicted before
+capture: 52 for the first integer literal in a REAL parameter, 44 for each further one, +4 per
+float literal. REAL positions: MAJ speed, accel, decel, both jerks, lock position; MAPC both
+scalings, both lock positions; MCCP both slopes; MAG ratio, accel. The captured weights had been
+fitted on calls that already carried integer literals in those positions, and fall by exactly the
+law's charge: MAJ 236 → 184 (one literal), MAPC 260 → 164 (two), MCCP 204 → 108 (two); MAG
+unchanged. Every older MAJ/MAPC/MCCP/MAG capture keeps its residual. `motlit_mam_litop` exact:
+the 12/call the old near-empty `litop_mam_*` files read is a near-empty artefact, not a term.
+
+## OQ-BLOCKSTR — block moves, strings and jumps in real context
+
+**SOLVED, weights confirmed; one rule wired.** 27 `blkstr_*` files, 400 calls each: COP and CPS
+of every element type, length and direction (UDT↔DINT, UDT↔SINT, length 1/10/30/tag), CONCAT,
+DTOS (tag and literal), SIZE, JMP/LBL pairs and FLL — all exact relative to `blkstr_n00` but one.
+A copy costs the same whatever the element types on either side and whichever way it goes. The
+exception: **FLL of an integer literal into a REAL array pays the literal conversion once, +52**
+(`fll_real_l10`); into DINT or a UDT, 0. Wired (`single_operand.FLL`).
+
+## OQ-SMALLINSTR — small instructions on the realism floor
+
+**SOLVED negative.** All 10 `smallin_*` files exact: NOP = AFI = OTE (20/rung with the XIC), CTU =
+RES = TON (24), TON with literal presets = TON with `?`, GSV into a DINT = into a UDT member (84).
+The near-empty weights hold on a full controller.
+
+## OQ-PUBLICTAG — public program tags
+
+**SOLVED negative.** All six `progpub_*` files are byte-identical in Capacity to their captured
+`progscope_prog_*` twins: `Usage="Public"` costs nothing.
+
+## OQ-STREAL — Structured Text on the realism floor
+
+**SOLVED for the measured shapes; one shape closed on the floor.** `streal_n00`, `_assign400`,
+`_if100` exact relative to one another: ST rates hold on a full controller. `streal_mixed400`
+(`StR[i] := StD[i] * 2;`) reads 48/statement over; one file cannot separate a REAL-destination
+multiplicative class premium from a charge on the literal against a DINT source, and real
+programs carry ~1,510 ST lines in all — below the floor. Recorded, not wired.
+
 # Tags, UDTs and strings
 
 ## OQ-LITREAL — a literal operand's type

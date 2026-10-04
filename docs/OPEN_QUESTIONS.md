@@ -1,6 +1,6 @@
 # Open Questions
 
-**Five.** OQ-BLOCKSTR and OQ-AOILITARG opened from the deep pass of 2026-10-02 (TASKS 0n). OQ-LITREAL and OQ-REALIDIOM closed on 220 captured files, every one exact (RESOLVED_QUESTIONS); OQ-MOTIONLIT opened for the motion instructions they did not cover. OQ-MOTIONOP and OQ-DENSERUNG opened on export 27's routine and rung variants and closed negative on the 44-file `motop_*` batch (RESOLVED_QUESTIONS). OQ-BRIDGEPH and OQ-V36MNEMONIC closed on the 29-file batch after. The capture batch that followed export 43 closed eight at once: PROGSCOPESTRUCT, REALISMFLOOR, PIOADDR, TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE and L9PLATFORM. INDIRECTUDT and MIXEDTYPE were wired and took the real set from 1.79% to **0.77%** mean. Closed questions and their reasoning trails are in
+**Three.** The 92-file capture of 2026-10-03 closed eight at once — MOTIONLIT, BLOCKSTR, AOILITARG, AOIINTERNAL, PUBLICTAG, SMALLINSTR, STREAL and AOICOMPLEX — and wired five laws that took the real set from 1.27% to **0.97%** mean, 3.08% to **2.57%** worst (RESOLVED_QUESTIONS, top). OQ-AOIBOOLINST opened from that batch. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -23,20 +23,15 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state |
 |---|---|
-| **OQ-REALUNDER** | **1.27% mean, 3.08% worst, 8/17 inside 1%, 15/17 inside 2%** after OQ-LITREAL closed and module I/O operands were typed (2.18% / 4.31% on 2026-09-25 morning, export 33 excluded). Studio transplants now 2.9%, −1.0%, 0.2% of added logic (plus 20.7% on the one carrying a source-protected AOI). The plan is in TASKS 0l. Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
-| **OQ-MOTIONLIT** | The literal law on MAJ, MAPC, MCCP, MAG (MAPC alone: 1,009 real integer literals). 15 `motlit_*` files built, predictions recorded, awaiting capture. |
-| **OQ-BLOCKSTR** | COP/CPS/FLL, CONCAT/DTOS/SIZE and JMP/LBL priced on near-empty files only; the exactly-priced transplants carry almost none, real logic thousands. 27 `blkstr_*` files built, including COP/CPS across types in both directions. |
-| **OQ-AOILITARG** | An AOI Input argument whose type differs from its parameter (1,133 real integer literals into REAL parameters). 9 `aoilit_*` files built. |
-| **OQ-AOIINTERNAL** | AOI-internal logic over Input / Local / InOut UDT / InOut axis operands, EnableInFalse+Prescan, 1 vs 50 calls. 7 `aoiint_*` files built. |
-| **OQ-PUBLICTAG** | `Usage="Public"` program tags against their captured non-public twins. 6 `progpub_*` files built. |
-| **OQ-SMALLINSTR** | NOP, CTU, RES, AFI, GSV, TON literal presets on the realism floor. 10 `smallin_*` files built. |
-| **OQ-STREAL** | ST routine rates on the realism floor. 4 `streal_*` files built. |
-| **OQ-AOICOMPLEX** | A drive-axis AOI as complex as the real ones (514 instructions, InOut axis + servo UDT, GSV/SSV Axis, motion, nested AOI call), block by block, together, in a program routine, and twice. 14 `aoicx_*` files built. |
+| **OQ-REALUNDER** | **0.97% mean, 2.57% worst, 10/17 inside 1%, 15/17 inside 2%** after the 2026-10-03 batch (InOut operands in AOI logic, AOI REAL arguments, AOI scan-mode routines, nested AOI calls, the motion literal law). Mean under 1% for the first time; the stopping rule still fails on the max (export 27 2.57%, export 16 2.23%). Every real program but one still under-predicts (sum-weighted +0.95%). Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
+| **OQ-AOIBOOLINST** | `aoiint_n00` over-predicts by 12,198 before any logic: its AOI carries 55 BOOL members and 50 instances (engine 320 per instance). 672 real instances carry 40–47 BOOL members. Spec in TASKS 0p; not built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
 
 ---
 
 ## 1. OQ-REALUNDER — the residual itself
+
+**Now 0.97% mean, 2.57% worst, 10/17 inside 1%** (2026-10-04) after the 92-file batch: InOut operands in AOI logic (+8 per instruction), AOI REAL arguments, AOI scan-mode routines (+268 each), a nested AOI call (+264 per calling definition), the motion literal law on MAJ/MAPC/MCCP/MAG. Worst: export 27 2.57%, export 16 2.23%, export 06 1.70%. Sum-weighted still +0.95%: the set still under-predicts. History below.
 
 **Now 0.77% mean, 3.87% worst on eighteen programs** (export 43 added, with its reading, as a fitting input). The drop from 1.79% came from OQ-INDIRECTUDT (a member, BOOL or STRING element behind a tag-driven index costs 40 / 20 / 108 more than the calibrated 84) and OQ-MIXEDTYPE (DINT↔REAL and DINT↔INT conversions inside one call), both measured on the realism floor and wired with no generated exact row moving. Before that: 1.66% after operand spelling ("Spelling, not cost" below), and 2.86% in the history that follows.
 
@@ -241,79 +236,14 @@ generated files are this one law.
 | **Trial** | Counter extended with TON, `apply: true`: all 38 series files (`realism_srout_*`, `srsty_*`) exact. Real set, seventeen counted: **0.58% → 2.18%**, all seventeen under-predicting, 1.19% to 4.31%. Reverted, pending decision. The law is right on every file that isolates it, so the real set's agreement without it is a compensating error (CLAUDE.md failure mode 3): something real programs carry is under-charged by about the size of the discount. Wiring it means the headline reads ~2% until that is found |
 | **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
 
----
-
-## 3. OQ-MOTIONLIT — literals in the remaining motion instructions
-
-| | |
-|---|---|
-| **Evidence** | MAM and MAS follow the typed-call literal law exactly (`realidiom_mam_*`, `realidiom_mas_*`): 52 for the first integer literal in a REAL parameter, 44 for each further one, +4 per float literal; keywords, move type, axis type and the event-distance / calculated-data arrays cost nothing. Wired for MAM and MAS only. |
-| **Expected movement** | Real integer literals in other motion instructions: MAPC 1,009, MCCP 155, MAJ 188, MAG 136, MAW 50, MAR 36 — about 1,600, ~70–80 KB across the seventeen at the measured rate if they follow the law, i.e. up to ~0.15 pp of the 1.29% mean. |
-| **Open discrepancy** | `litop_mam_tag` / `_lit` (near-empty controller, AXIS_VIRTUAL, `Disabled,Current`) read 12 per call over under the wired rule, where the realism-floor MAM files are exact. Two old files against eleven new; the realism floor wins until a file isolates the difference. |
-| **Batch built** | `gen_motion_literals.py`, `samples/generated/motlit/`, 15 files on the motop Kinetix inventory (bus supply + converter axis, 2198-D032-ERS3, CIP axes PnAxisX/PnAxisY, four virtual masters) plus a CAM[5] and CAM_PROFILE[5]; control `motlit_n00`. `motlit_{maj,mapc,mccp,mag}_{tag,ilit,flit}` (REAL parameters as tags / integer literals / float literals) and `motlit_mam_{tag,litop}` (the old near-empty `litop_mam` shape on the realism floor). |
-| **Predictions (written before capture)** | per call over `_tag`: MAJ ilit +272 (6 literals), flit +24; MAPC ilit +184 (4), flit +16; MCCP ilit +96 (2), flit +8; MAG ilit +96 (2), flit +8; `mam_litop` +52. Note the captured-exact weights of MAJ, MAPC and MCCP were fitted on calls that already carry integer literals in REAL positions (MAJ lock position `0`; MAPC scaling `1,1`; MCCP slopes `1,1`) — if the law holds, those weights fall by the same amounts when it is wired. |
-| **CAPTURE** | not yet captured |
 
 ---
 
-## 4. OQ-BLOCKSTR — block moves, strings and jumps in real context
+## 3. OQ-AOIBOOLINST — AOI instances with many BOOL members
 
 | | |
 |---|---|
-| **Evidence** | After OQ-LITREAL the category scale test leaves routine logic needing +6.5% ±3.1 (program logic +7.7% ±4.0, AOI logic +51% ±37). Three Studio-made transplants now price within 3% of their logic, so what is missing is what they lack. Against them, real program logic carries per 1,000 instructions COP 12.0 vs 5.3, CONCAT 5.6 vs 0, JMP 4.2 vs 0.9, LBL 3.5 vs 0.9, CPS 1.6 vs 0, DTOS 1.3 vs 0 — all weighted from near-empty calibration files. Real shapes: COP UDT→UDT 2,393 of 3,822 (length 1 in 2,931); FLL literal→UDT 849; CPS UDT→UDT 324; CONCAT STRING×3 1,778; DTOS DINT→STRING 260, literal→STRING 140. |
-| **Expected movement** | COP alone at +50 per call would be ~0.3 pp of the mean; the whole set bounded by the +7.7% program-logic gap. |
-| **Batch built** | `gen_block_string.py`, `samples/generated/blkstr/`, 27 files on one inventory (BkUdt arrays, DINT/REAL arrays, STRING arrays), 400 calls each, control `blkstr_n00`: `cop_{dint,udt,real,string}_l1`, `cop_{dint,udt}_l10`, `cop_udt_lentag`, cross-type `cop_{udt2dint,dint2udt,udt2dint_l30,dint2udt_l10,udt2sint,sint2udt}` and `cps_{udt2dint,dint2udt}` (COP/CPS move bytes and Length counts destination elements, so one 12-byte UDT moves as 1 UDT or 3 DINTs or 12 SINTs — does direction or either side's element type change the instruction's size?), `cps_{udt,dint}_l1`, `fll_{dint,real}_l10`, `fll_udt_{l1,l10}`, `concat`, `dtos_{dint,lit}`, `size_udt`, `jmplbl`. |
-| **CAPTURE** | not yet captured |
-
-## 5. OQ-AOILITARG — AOI Input arguments of another type
-
-| | |
-|---|---|
-| **Evidence** | AOI argument costs were measured on BOOL and DINT parameters only (`litop_bool_*`: tag or 12345 28, literal 0/1 16). Real Input arguments: REAL parameter ← integer literal 1,133, ← float literal 56, ← DINT tag 12. If the typed-call conversion applies (52), ~59 KB across the seventeen. |
-| **Batch built** | `gen_aoi_literal_args.py`, `samples/generated/aoilit/`, 9 files: one AOI with Required REAL/DINT/INT/SINT inputs, 400 instances, one call each; `aoilit_tag` control and `_r_ilit5`, `_r_ilit0`, `_r_flit`, `_r_dint`, `_i_ilit`, `_s_ilit`, `_d_ilit` (exactly one argument changed), plus `aoilit_n00`. |
-| **CAPTURE** | not yet captured |
-
-## 6. OQ-AOIINTERNAL — AOI-internal logic in real shape
-
-| | |
-|---|---|
-| **Evidence** | AOI-internal logic is ~2 MB of the seventeen's prediction. Category scale test: alone it needs +51% ±37, jointly with program logic +12% (~0.25 pp of the mean). Logic is charged once per definition (`defscale_aoiinst`: 1,576 per instance, no logic term). Every AOI calibration file ran simple logic on Input and Local members; real AOIs operate on InOut UDTs and axes, which are references. |
-| **Batch built** | `gen_aoi_internal_shape.py`, `samples/generated/aoiint/`, 7 files: one AOI `AiOps`, 50 rungs `XIC(b)GRT(d,r)MOV(d,LoDst)ADD(d,1,LoAcc)OTE(Qk)` over `_in` Input, `_local` Local, `_inout` InOut UDT members, `_axis` InOut AXIS_VIRTUAL members; `_eif` adds 10-rung EnableInFalse and Prescan; `_i50` calls 50 instances. Control `aoiint_n00` (one rung). |
-| **Predictions (written before capture)** | `_in` = `_local` = `_inout` = `_axis` = 887,538 (+8,380 over `n00`): the engine prices an AOI operand the same whether parameter, local, or member of an InOut reference. `_eif` 888,498 (+960). `_i50` 894,986 (+7,448 over `_local`, 152 per extra call). Any spread between the four operand files is a term the engine lacks. |
-| **CAPTURE** | not yet captured |
-
-## 7. OQ-PUBLICTAG — public program tags
-
-| | |
-|---|---|
-| **Evidence** | Real: 83 / 41 / 23 `Usage="Public"` tags in three programs, two among the worst five. Program scope itself is free (OQ-PROGSCOPESTRUCT). |
-| **Batch built** | `gen_program_public.py`, `progpub_{udt,arr}_n{010,050,200}` in `samples/generated/tags/`: the captured `progscope_prog_*` files with every program tag Public. |
-| **Predictions (written before capture)** | identical to each `progscope_prog_*` twin (843,562 … 875,322): the engine charges nothing for Public. A per-tag slope across n010/n050/n200 is the cost. Below the 0.5% floor if it is under ~100 bytes per tag. |
-| **CAPTURE** | not yet captured |
-
-## 8. OQ-SMALLINSTR — small instructions on the realism floor
-
-| | |
-|---|---|
-| **Evidence** | Real: NOP 4,785, RES 957, CTU 876, AFI 627, GSV 521 (108 into a UDT member); weights from near-empty files only. |
-| **Batch built** | `gen_small_instr.py`, `samples/generated/smallin/`, 10 files, 400 rungs each: `nop`, `ctu`, `res`, `afi`, `ote` (reference), `gsv_dint`, `gsv_udtmem`, `ton_q`, `ton_lit`; control `smallin_n00`. |
-| **Predictions (written before capture)** | over `n00`: `nop` / `afi` / `ote` +7,984 (≈20/rung), `ctu` / `res` / `ton_q` / `ton_lit` +9,584 (≈24), `gsv_dint` / `gsv_udtmem` +33,584 (≈84). Equal pairs that capture unequal are terms the engine lacks. |
-| **CAPTURE** | not yet captured |
-
-## 9. OQ-STREAL — Structured Text on the realism floor
-
-| | |
-|---|---|
-| **Evidence** | ST rates measured on near-empty files. Real: ~40 ST routines, ~1,510 lines — probably below the 0.5% floor; built last for that reason. |
-| **Batch built** | `gen_st_realism.py`, `samples/generated/streal/`, 4 files: `n00` (one assignment), `assign400`, `if100`, `mixed400` (`StR[i] := StD[i] * 2;`). |
-| **Predictions (written before capture)** | 846,050 / 862,010 / 854,810 / 887,610. `mixed400` carries a coverage gap (one multiplicative operator into a REAL destination is unmeasured) — the engine reported it as an unpriced shape; generating it crashed the report code on that 3-field gap key, now fixed. |
-| **CAPTURE** | not yet captured |
-
-## 10. OQ-AOICOMPLEX — a drive-axis AOI as complex as the real ones
-
-| | |
-|---|---|
-| **Evidence** | Nearly every real program carries one large drive-axis AOI; its internal logic is predicted at 17–20 KB in each (the largest AOI-logic item in most), and AOI logic is 1.6–5.5% of predicted memory. Every AOI calibration file used short, simple logic on Input/Local members. Shape of the real ones (targets only, no rung copied): 16 Input / 2 Output, InOut AXIS_CIP_DRIVE + InOut servo UDT (BOOLs, REALs, 12 MOTION_INSTRUCTION, a nested homing-AOI instance), ~60 locals, ~53 rungs / ~509 instructions, rungs up to ~34 instructions and 9 branches, half the operands InOut members. Two features in it were never measured: **GSV/SSV on the Axis class** (~1,170 real calls; every GSV/SSV is priced at a flat 84 from three near-empty files) and **an AOI called inside another AOI's logic** (~300 real calls). |
-| **Batch built** | `gen_aoi_complex.py`, `samples/generated/aoicx/`, 14 files. `DxHome` (nested homing AOI: InOut axis, MOTION_INSTRUCTION[7], TIMERs, EnableInFalse, 21 rungs) and `DxAxis` (the drive-axis AOI; InOut parameters named `PnAxisX` / `SrvX`, so the same body text runs in a program on the same-named controller tags), two instances on the Kinetix axes PnAxisX / PnAxisY. Only DxAxis's Logic differs: `n00` one rung; blocks `bits`, `cmp` (state machine, wide rungs), `gsv` (20 GSV Axis), `ssv` (13 SSV Axis), `motion` (MSO/MSF/MAFR/MASR/MAH/MAJ/MAM×2/MAS×2 on InOut-UDT MOTION_INSTRUCTION members), `math` (TON, REAL math, CPT, COP), `jmp`, `axmem` (axis status bits and REAL/INT attributes), `nested` (DxHome on a DxAxis local), `nested_udt` (on the servo UDT's DxHome member, the real arrangement); `full` all blocks, 79 rungs / 514 instructions; `full_prog` the full body in MainRoutine instead; `full_two` a second definition DxAxisB with the full body too. `check_proven_blocks.py`: 0 unproven. |
-| **Predictions (written before capture)** | over `aoicx_n00` (941,998): `bits` +1,212, `cmp` +6,892, `gsv` +1,692, `ssv` +1,256, `motion` +1,996, `math` +1,684, `jmp` +404, `axmem` +556, `nested` +324, `nested_udt` +324, `full` +16,176, `full_prog` +15,836, `full_two` +38,380. Sum of the nine blocks +16,016 against `full` +16,176. The engine prices `nested` = `nested_udt`, `full_prog` within a few hundred bytes of `full` (AOI-internal = program logic + 4 per word destination), and the second definition at the first's cost. What each comparison tests: block vs prediction = that feature inside an AOI; `full` vs Σ blocks = additivity at real density; `full` vs `full_prog` = the AOI-vs-program equivalence on real-shape content (the category test says AOI logic is under-priced by +12% to +51%); `full_two` − `full` = whether a second large AOI costs the same. |
-| **CAPTURE** | not yet captured |
+| **Evidence** | `aoiint_n00` (one AOI `AiOps`: 3 inputs, 1 output, 55 BOOL locals; 50 controller instances; one virtual axis, one UDT tag) reads 12,198 under the engine before any logic, while every logic file built on it is exact relative to it. The virtual axis is priced exactly elsewhere (16,880 per axis, `axmarg_virtual_*`); the instances are charged 320 each and the definition 2,168, so the 12,198 sits in the instance data or the BOOL-heavy definition (-244 per instance if it is all instances). Real exposure: 672 instances of AOIs with 40–47 BOOL parameters and locals, 11 with 64+. |
+| **Expected movement** | If the instance figure is over-charged by ~240 for a 40+-BOOL AOI, ~160 KB across the seventeen in the over-prediction direction — on files that under-predict overall, so it would unmask under-charges elsewhere rather than improve the mean by itself. |
+| **Spec** | TASKS 0p. Not built. |
+| **CAPTURE** | not yet built |

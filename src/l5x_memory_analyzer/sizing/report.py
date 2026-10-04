@@ -271,6 +271,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         ]
         for aoi_el in root.iter("AddOnInstructionDefinition")
     }
+    # OQ-AOIROUTINES: RLL scan-mode routines (EnableInFalse, Prescan, Postscan)
+    # carrying at least one rung, beyond Logic.
+    extra_routines_by_aoi = {
+        aoi_el.get("Name"): sum(
+            1 for r in aoi_el.iter("Routine")
+            if (r.get("Type") or "RLL") == "RLL" and r.get("Name") != "Logic" and r.find(".//Rung") is not None
+        )
+        for aoi_el in root.iter("AddOnInstructionDefinition")
+    }
     for name in sorted(referenced_udts):
         # Custom STRING types (Family="StringFamily") have their own
         # confirmed cost model (OQ-CUSTOMSTRING: total ~= maxlen + 302,
@@ -347,6 +356,25 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                         content_basis,
                         model.logic_instructions.aoi_internal_per_word_destination_confidence,
                     )
+                # OQ-AOICOMPLEX: an instruction reading an InOut parameter (or
+                # a bit op on one) costs more than on an Input or Local -- the
+                # parameter is a reference. Exact on aoicx bits/cmp/jmp and
+                # aoiint inout/axis. See memory_model.yaml
+                # aoi_internal_inout_operand_bytes.
+                per_inout = model.logic_instructions.aoi_internal_inout_operand_bytes
+                if per_inout and internal_routine.inout_operand_instruction_count:
+                    content_bytes += per_inout * internal_routine.inout_operand_instruction_count
+                    content_basis = weakest(
+                        content_basis, model.logic_instructions.aoi_internal_inout_operand_confidence)
+                # OQ-AOICOMPLEX: an AOI whose own logic calls another AOI pays
+                # the one-time call-routine cost again, although the file has
+                # already paid it (aoicx_nested / _nested_udt: +264 / +268).
+                if internal_routine.aoi_call_count:
+                    content_bytes += model.structured_text.st_aoi_call_routine_bytes
+                # OQ-AOIROUTINES: each scan-mode routine beyond Logic.
+                extra_routines = extra_routines_by_aoi.get(name, 0)
+                if extra_routines and model.logic_instructions.aoi_extra_routine_bytes:
+                    content_bytes += extra_routines * model.logic_instructions.aoi_extra_routine_bytes
                 names = [n for n in rll_names_by_aoi.get(name, []) if n] or ["Logic"]
                 aoi_logic_entries.append((
                     f"aoi_definitions/{name}/{'+'.join(names)}", "routine_logic", "RLL",

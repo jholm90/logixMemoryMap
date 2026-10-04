@@ -359,14 +359,14 @@ added rungs each.
 | `opsp_ind_*_{idx,lit}` | 14 | OQ-INDIRECTUDT | the `_lit` twin |
 | `opsp_str_*` | 5 | OQ-STRINGMOV | `opsp_str_movdint` |
 
-## Current batch: block moves, strings, jumps — 27 files, awaiting capture (OQ-BLOCKSTR)
+## Captured 2026-10-03: block moves, strings, jumps — 27 files (OQ-BLOCKSTR, closed)
 
 `gen_block_string.py`, `samples/generated/blkstr/`: one inventory (BkUdt DINT/REAL/INT/4 BOOL
 arrays of 4,000, DINT/REAL arrays, STRING arrays of 400), 400 calls each, control `blkstr_n00`;
 COP by type and length, COP/CPS across types in both directions (UDT↔DINT, UDT↔SINT; Length counts destination elements), CPS, FLL literal fills, CONCAT, DTOS, SIZE, JMP/LBL pairs. Each file
 differences against `blkstr_n00`.
 
-## Current batch: complex drive-axis AOI — 14 files, awaiting capture (OQ-AOICOMPLEX)
+## Captured 2026-10-03: complex drive-axis AOI — 14 files (OQ-AOICOMPLEX, closed)
 
 `gen_aoi_complex.py`, `samples/generated/aoicx/`: a synthetic drive-axis AOI `DxAxis` sized like
 the real ones (InOut AXIS_CIP_DRIVE + InOut servo UDT, ~60 locals, 514 instructions when full)
@@ -375,7 +375,7 @@ PnAxisX/PnAxisY. One file per feature block (bits, state-machine compares, GSV A
 motion, math, JMP/LBL, axis members, nested call on a local / on a UDT member), the full body,
 the full body in a program routine, and two full definitions. Control `aoicx_n00`.
 
-## Current batch: AOI-internal logic in real shape — 7 files, awaiting capture (OQ-AOIINTERNAL)
+## Captured 2026-10-03: AOI-internal logic in real shape — 7 files (OQ-AOIINTERNAL, closed)
 
 `gen_aoi_internal_shape.py`, `samples/generated/aoiint/`: one AOI `AiOps` (Input BOOL/DINT/REAL,
 Locals, InOut `AiUdt` and InOut AXIS_VIRTUAL), 50 instances, a motion group and virtual axis
@@ -383,31 +383,31 @@ Locals, InOut `AiUdt` and InOut AXIS_VIRTUAL), 50 instances, a motion group and 
 or InOut axis operands (`_in`, `_local`, `_inout`, `_axis`), `_eif` adds 10-rung EnableInFalse
 and Prescan routines, `_i50` calls 50 instances instead of 1. Control `aoiint_n00` (one rung).
 
-## Current batch: public program tags — 6 files, awaiting capture (OQ-PUBLICTAG)
+## Captured 2026-10-03: public program tags — 6 files (OQ-PUBLICTAG, closed)
 
 `gen_program_public.py`, `samples/generated/tags/progpub_{udt,arr}_n{010,050,200}`: the captured
 `progscope_prog_*` files with every program tag `Usage="Public"`, otherwise identical;
 each differences against its `progscope_prog_*` twin.
 
-## Current batch: small instructions on the realism floor — 10 files, awaiting capture (OQ-SMALLINSTR)
+## Captured 2026-10-03: small instructions on the realism floor — 10 files (OQ-SMALLINSTR, closed)
 
 `gen_small_instr.py`, `samples/generated/smallin/`: BOOL/DINT/COUNTER/TIMER arrays of 400 and a
 UDT array; 400 rungs each of NOP, CTU, RES, AFI, OTE (reference), GSV into a DINT and into a UDT
 member, TON with `?` and literal presets. Control `smallin_n00`.
 
-## Current batch: Structured Text on the realism floor — 4 files, awaiting capture (OQ-STREAL)
+## Captured 2026-10-03: Structured Text on the realism floor — 4 files (OQ-STREAL, closed)
 
 `gen_st_realism.py`, `samples/generated/streal/`: one JSR-called ST routine of 1 assignment
 (`streal_n00`), 400 DINT assignments, 100 IF blocks, 400 `StR[i] := StD[i] * 2;`. The last is a
 coverage gap today (one-operator multiplicative class into REAL is unmeasured).
 
-## Current batch: AOI arguments of another type — 9 files, awaiting capture (OQ-AOILITARG)
+## Captured 2026-10-03: AOI arguments of another type — 9 files (OQ-AOILITARG, closed)
 
 `gen_aoi_literal_args.py`, `samples/generated/aoilit/`: AOI `LitArgs` (Required REAL, DINT,
 INT, SINT inputs), 400 instances, one call each; control `aoilit_tag` (and `aoilit_n00`);
 exactly one argument changed per file.
 
-## Current batch: literals in MAJ, MAPC, MCCP, MAG — 15 files, awaiting capture (OQ-MOTIONLIT)
+## Captured 2026-10-03: literals in MAJ, MAPC, MCCP, MAG — 15 files (OQ-MOTIONLIT, closed)
 
 `gen_motion_literals.py`, `samples/generated/motlit/`. v35 / 1756-L81E, realism floor, the
 motop Kinetix inventory (P208 bus supply + converter axis, D032 drive, CIP axes on its
