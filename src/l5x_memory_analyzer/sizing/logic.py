@@ -22,6 +22,8 @@ _BARE_TAG = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # OQ-MIXEDTYPE conversion against a REAL or INT operand.
 _INT_LITERAL = re.compile(r"^[-+]?\d+$")
 _FLOAT_LITERAL = re.compile(r"^[-+]?(\d+\.\d*|\.\d+|\d+(\.\d*)?[eE][-+]?\d+)$")
+# The literal 0 or 1 -- the cheap AOI Input argument (aoi_call_site).
+_CHEAP_ARG = re.compile(r"^[+-]?[01]$")
 
 
 def _operand_type(op: str, operand_types, literal_types: dict[str, str]) -> str | None:
@@ -215,7 +217,12 @@ def compute_routine_logic_bytes(
             if mnemonic in ots.single_operand:
                 idx = ots.single_operand[mnemonic]["operand"]
                 if operands and operand_types is not None:
-                    total += ots.single_operand_surcharge(mnemonic, operand_types.resolve(operands[idx]))
+                    op_type = operand_types.resolve(operands[idx])
+                    total += ots.single_operand_surcharge(mnemonic, op_type)
+                    src = ots.single_operand[mnemonic].get("int_literal_source")
+                    if (src is not None and op_type == "REAL" and src < len(operands)
+                            and _INT_LITERAL.match(operands[src].strip())):
+                        total += ots.mixed["real_int_literal_first"]
                 continue
             if operand_types is not None:
                 # A call mixing DINT with REAL or INT pays conversions
@@ -302,6 +309,19 @@ def compute_routine_logic_bytes(
     total += (routine.aoi_call_count * model.aoi_call_site_bytes
               + routine.aoi_call_param_count * model.aoi_call_site_per_param_bytes
               + routine.aoi_call_input_ref_count * model.aoi_call_site_input_ref_extra_bytes)
+    # OQ-AOILITARG: a REAL Input parameter given an integer literal (0 and 1
+    # included -- they are not the cheap case there, so they also pay back the
+    # input_ref extra they were excused) or a DINT tag pays a conversion; a
+    # float literal pays the float-literal premium.
+    for arg in routine.aoi_real_input_args:
+        if _INT_LITERAL.match(arg):
+            total += model.aoi_real_input_int_literal_bytes
+            if _CHEAP_ARG.match(arg):
+                total += model.aoi_call_site_input_ref_extra_bytes
+        elif _FLOAT_LITERAL.match(arg):
+            total += model.aoi_real_input_float_literal_bytes
+        elif operand_types is not None and operand_types.resolve(arg) == "DINT":
+            total += model.aoi_real_input_dint_tag_bytes
 
     # OQ-SERIESOUTPUT, wired: every writing instruction beyond the
     # first in a rung costs 12 LESS than the sum of its own weights. Subtracted

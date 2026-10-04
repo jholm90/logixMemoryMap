@@ -406,6 +406,22 @@ Cut maximum residual on the isolation sweep from 12.02% to 0.55%. A further
 composite-scale surcharge applies on top, `aoi_logic_composite_surcharge_per_instr
 = 20`.
 
+On top of the per-instruction weights (OQ-AOICOMPLEX / OQ-AOIROUTINES, 2026-10-04,
+`aoicx_*`, `aoiint_*`, `aoistr_routines_*`):
+
+| term | bytes | constant |
+|---|---:|---|
+| a non-BOOL destination written inside the AOI | +4 per instruction | `aoi_internal_per_word_destination` (KNOWN) |
+| an instruction that reads an InOut parameter, or a bit op on one | +8 per instruction | `aoi_internal_inout_operand_bytes` (FITTED) |
+| a word written INTO an InOut | +0 beyond the 4 above | — |
+| GSV / SSV naming an InOut axis as the instance | +0 | — |
+| each RLL scan-mode routine beyond Logic (EnableInFalse, Prescan, Postscan) | +268 per routine | `aoi_extra_routine_bytes` (FITTED) |
+| the AOI's own logic calls another AOI | +264 once per calling definition | `st_aoi_call_routine_bytes` |
+
+"Per-routine count does not matter" is superseded: it was read off two rows that
+captured with build errors. The InOut term is per instruction, not per operand:
+`GRT(IoU.D,IoU.R)` pays 8 once.
+
 ### Call site — FITTED
 
 **One AOI call site costs `120 + 16 per parameter passed`**, the instance tag not
@@ -434,6 +450,12 @@ and DINT parameters alike; `input_ref_extra_bytes = 12` is charged per such argu
 Output arguments stay at 16 (measured), InOut at 16 (not isolated). Real programs pass
 a tag to about 90% of their AOI Input arguments. ST call sites are unchanged — only RLL
 was measured.
+
+**Into a REAL Input parameter** (OQ-AOILITARG, `aoilit_*`), over a REAL tag there: an
+integer literal **+52** — the literal 0 or 1 included, which is not the cheap case on a
+REAL parameter, so it also pays back the 12 — a DINT tag **+52**, a float literal **+4**
+(`aoi_call_site.real_input`). INT and SINT parameters move too (integer literal −60 vs an
+INT tag, +52 vs a SINT tag) and are not wired: about fifty real arguments.
 
 **A file that calls an AOI from ladder carries a one-time 264** beyond its call sites —
 `dscale2_aoi_*`, `defscale_aoiinst` and `litop_bool_*` all read exactly +264 (+252)
@@ -1483,6 +1505,15 @@ Any statement that alarms are out of scope applies to the first only.
 ---
 
 ## Immediate literal operands — CLOSED ON REAL EXPOSURE
+
+> **Current law (OQ-LITREAL, OQ-MOTIONLIT, OQ-BLOCKSTR, OQ-AOILITARG).** The controller
+> handles every immediate as a DINT. Against a REAL operand an integer literal costs 52
+> for the first and 44 for each further one, a float literal 4. Wired on the typed math
+> and compare instructions, on the REAL parameters of MAM, MAS, MAJ, MAPC, MCCP and MAG
+> (`operand_type_surcharge.motion_real_params`), on FLL of an integer literal into REAL
+> (+52 once), and on an AOI REAL Input argument (+52, float +4). The weights of MAJ (184),
+> MAPC (164) and MCCP (108) are the all-tag cost; their old captured weights had literals
+> baked in. The summary below is the earlier, superseded closure.
 
 > **Superseded summary, read this first.** The literal-operand batch and a count
 > over eighteen real exports closed this: integer literals (DINT, LINT) are free;

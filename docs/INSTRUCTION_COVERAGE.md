@@ -79,7 +79,8 @@ error as a share of the instruction's own bytes, a stricter bound than the whole
 one. Twenty-nine instructions were credited this way, all at 0.0000%.
 
 **MAPC is Exact**, a named compiled-logic exception alongside the 0-parameter JSR:
-260 bytes per call, the step between one rung and ten landing on the wired weight
+260 bytes per call as captured, which is 164 for the instruction plus the literal law on its two
+scaling literals `1,1` (52 + 44; OQ-MOTIONLIT, 2026-10-04) — the wired form. 260 bytes per call, the step between one rung and ten landing on the wired weight
 with both files at the same +12 of file overhead. The third point,
 `instrfirst_mapc_v2_x100`, captured at exactly the 87,688 predicted before capture.
 
@@ -170,38 +171,38 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | ONS | 3.15% | 3,946 | 36 | 0.0064% / 0.0101% (2) |
 | TON | 2.13% | 2,665 | 20 | 0.0126% / 0.0186% (2) |
 | NEQ | 2.12% | 2,661 | 20 | 0.0022% / 0.0136% (8) |
-| NOP | 2.10% | 2,629 | 16 | 0.0094% / 0.0205% (3) |
+| NOP | 2.10% | 2,629 | 16 | 0.0094% / 0.0205% (3); realism floor exact (`smallin_nop`) |
 | GRT | 1.93% | 2,421 | 20 | 0.0025% / 0.0136% (7) |
 | CLR | 1.70% | 2,129 | 32 | 0.0095% / 0.0146% (2) |
 | LES | 1.60% | 2,005 | 20 | 0.0025% / 0.0136% (7) |
 | JSR | 1.25% | 1,567 | 68 | 0.0162% / 0.2886% (19) |
 | SUB | 1.14% | 1,432 | 40 | 0.0023% / 0.0127% (7) |
-| COP | 1.00% | 1,254 | 112 | 0.0102% / 0.0234% (3) |
+| COP | 1.00% | 1,254 | 112 | 0.0102% / 0.0234% (3); realism floor exact, every element type, length and direction (`blkstr_cop_*`) |
 | LEQ | 0.99% | 1,246 | 20 | 0.0025% / 0.0136% (7) |
 | GEQ | 0.93% | 1,160 | 20 | 0.0025% / 0.0136% (7) |
 | LIM | 0.62% | 781 | 52 | 0.0016% / 0.0088% (7) |
-| JMP | 0.60% | 747 | 40 | 0.0099% / 0.0229% (3) |
-| LBL | 0.56% | 697 | 64 | 0.0099% / 0.0229% (3) |
+| JMP | 0.60% | 747 | 40 | 0.0099% / 0.0229% (3); realism floor exact (`blkstr_jmplbl`) |
+| LBL | 0.56% | 697 | 64 | 0.0099% / 0.0229% (3); realism floor exact (`blkstr_jmplbl`) |
 | MUL | 0.54% | 675 | 56 | 0.0018% / 0.0101% (7) |
-| RES | 0.46% | 578 | 20 | 0.0126% / 0.0186% (2) |
+| RES | 0.46% | 578 | 20 | 0.0126% / 0.0186% (2); realism floor exact (`smallin_res`) |
 | DIV | 0.45% | 560 | 56 | 0.0018% / 0.0101% (7) |
-| CONCAT | 0.41% | 511 | 104 | 0.0106% / 0.0240% (3) |
-| FLL | 0.39% | 490 | 68 | 0.0055% / 0.0088% (2) |
-| CTU | 0.35% | 434 | 20 | 0.0126% / 0.0186% (2) |
-| CPS | 0.31% | 385 | 112 | 0.0102% / 0.0234% (3) |
+| CONCAT | 0.41% | 511 | 104 | 0.0106% / 0.0240% (3); realism floor exact (`blkstr_concat`) |
+| FLL | 0.39% | 490 | 68 | 0.0055% / 0.0088% (2); realism floor exact (`blkstr_fll_*`); integer literal into REAL +52 wired |
+| CTU | 0.35% | 434 | 20 | 0.0126% / 0.0186% (2); realism floor exact (`smallin_ctu`) |
+| CPS | 0.31% | 385 | 112 | 0.0102% / 0.0234% (3); realism floor exact, UDT↔DINT both ways (`blkstr_cps_*`) |
 | CPT | 0.27% | 341 | not a flat weight | 3.2725% / 119.6078% (164) |
 | MOD | 0.23% | 289 | 56 | 0.0018% / 0.0101% (7) |
 | RET | 0.20% | 246 | 0 | — |
-| MCCP | 0.16% | 200 | 204 | 0.0000% / 0.0000% (1) step |
-| AFI | 0.15% | 192 | 4 | 0.0126% / 0.0186% (2) |
+| MCCP | 0.16% | 200 | 108 | 0.0000% / 0.0000% (1) step; + literal law on both slopes (`motlit_mccp_*`, exact) |
+| AFI | 0.15% | 192 | 4 | 0.0126% / 0.0186% (2); realism floor exact (`smallin_afi`) |
 | MAS | 0.15% | 186 | 100 | — |
-| GSV | 0.15% | 182 | 84 | 0.0116% / 0.0255% (3) |
+| GSV | 0.15% | 182 | 84 | 0.0116% / 0.0255% (3); exact on the realism floor (`smallin_gsv_*`) and on the Axis class (`aoicx_gsv`, 20 attributes) |
 | BTD | 0.12% | 147 | 64 | 0.0058% / 0.0092% (2) |
-| SSV | 0.10% | 128 | 84 | 0.0116% / 0.0255% (3) |
+| SSV | 0.10% | 128 | 84 | 0.0116% / 0.0255% (3); Axis class 13 calls −36 in all (`aoicx_ssv`) |
 | MAM | 0.10% | 127 | 224 | 0.0244% / 0.0244% (1) |
-| MAPC | 0.10% | 126 | 260 | **Exact** — 260/call, step 1→10 at 0.0000% |
+| MAPC | 0.10% | 126 | 164 | **Exact** — 164 + literal law on 4 REAL parameters (`motlit_mapc_*`, exact; the old 260 carried the scaling literals 1,1) |
 | SBR | 0.10% | 121 | 0 | — |
-| DTOS | 0.09% | 114 | 72 | 0.0053% / 0.0084% (2) |
+| DTOS | 0.09% | 114 | 72 | 0.0053% / 0.0084% (2); realism floor exact, tag and literal (`blkstr_dtos_*`) |
 | TOF | 0.09% | 107 | 20 | 0.0126% / 0.0186% (2) |
 | MEQ | 0.06% | 78 | 32 | 0.0072% / 0.0113% (2) |
 | CMP | 0.06% | 77 | 76 | 0.0194% / 0.2380% (14) |
@@ -211,14 +212,14 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | ABS | 0.04% | 55 | 44 (+type surcharge; was 120 = ABS(DINT,REAL)) | 0.0099% / 0.0229% (3) |
 | BSL | 0.03% | 43 | 60 | 0.0067% / 0.0083% (2) |
 | MRP | 0.03% | 42 | 128 | — |
-| SIZE | 0.03% | 42 | 128 | 0.0096% / 0.0224% (3) |
+| SIZE | 0.03% | 42 | 128 | 0.0096% / 0.0224% (3); realism floor exact (`blkstr_size_udt`) |
 | MAG | 0.03% | 37 | 124 | 0.0000% / 0.0000% (1) |
 | MAW | 0.03% | 37 | 128 | — |
 | BSR | 0.03% | 34 | 60 | 0.0052% / 0.0083% (3) |
 | MDW | 0.03% | 34 | 60 | 0.0000% / 0.0000% (1) step |
 | MVM | 0.03% | 32 | 56 | 0.0064% / 0.0101% (2) |
 | MAH | 0.02% | 30 | 60 | — |
-| MAJ | 0.02% | 29 | 236 | 0.0240% / 0.0240% (1) |
+| MAJ | 0.02% | 29 | 184 | 0.0240% / 0.0240% (1); + literal law on 6 REAL parameters (`motlit_maj_*`, exact) |
 | MCSV | 0.02% | 25 | 96 | 0.0000% / 0.0000% (2) |
 | XOR | 0.02% | 23 | 40 | 0.0000% / 0.0000% (1) step |
 | AND | 0.02% | 23 | 40 | 0.0067% / 0.0067% (1) |

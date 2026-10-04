@@ -2398,11 +2398,23 @@ operand_type_surcharge:
     CLR: {operand: 0, types: {SINT: 52, INT: 52, DINT: 0, REAL: 0}}
     BTD: {operand: 0, types: {SINT: 108, INT: 128, DINT: 0}}
     TRN: {operand: -1, types: {REAL: 52, DINT: 0}}
+    # OQ-BLOCKSTR (blkstr_fll_*, exact): FLL costs nothing by type, but an integer
+    # literal source into a REAL destination pays the literal conversion once
+    # (real_int_literal_first, +52/call). Literal into DINT or a UDT: +0.
+    FLL: {operand: 1, types: {}, int_literal_source: 0}
   motion_real_params:
     # Operand positions taking a REAL value (0-based). Move type, keywords, the
     # event-distance and calculated-data arrays take no conversion (measured).
     MAM: [3, 4, 6, 8, 11, 12, 16]
     MAS: [4, 7]
+    # OQ-MOTIONLIT (motlit_*, 12 files, exact): the same law on four more. MAJ speed,
+    # accel, decel, accel jerk, decel jerk, lock position; MAPC slave scaling, master
+    # scaling, master lock position, cam lock position; MCCP start and end slope; MAG
+    # ratio and accel. 52 + 44 per further integer literal, +4 per float literal.
+    MAJ: [3, 5, 7, 10, 11, 15]
+    MAPC: [5, 6, 9, 10]
+    MCCP: [3, 4]
+    MAG: [4, 10]
   mixed:
     real_int_literal_first: 52
     real_int_literal_next: 44
@@ -2963,6 +2975,17 @@ aoi_call_site:
   bytes: 120
   per_param_bytes: 16
   input_ref_extra_bytes: 12
+  # OQ-AOILITARG (aoilit_*, one AOI with Required REAL/DINT/INT/SINT inputs, 400
+  # calls, one argument varied): into a REAL Input parameter, an integer literal
+  # costs 52 more than a REAL tag -- the literal 0 included, which is NOT the cheap
+  # case on a REAL parameter -- a DINT tag 52 more, a float literal 4 more. The
+  # typed-call literal law, applied at the argument copy. INT and SINT parameters
+  # move too (integer literal -60 vs an INT tag, +52 vs a SINT tag) but carry about
+  # fifty real arguments between them, below the floor: recorded, not wired.
+  real_input:
+    integer_literal: 52
+    dint_tag: 52
+    float_literal: 4
   confidence: FITTED
 
 # Series outputs (OQ-SERIESOUTPUT), SOLVED EXACTLY and wired. It had
@@ -3253,6 +3276,25 @@ logic_instructions:
   # negative control (Program routines) is exact at 5,000 instructions.
   aoi_internal_per_word_destination: 4
   aoi_internal_per_word_destination_confidence: KNOWN
+  # OQ-AOICOMPLEX (aoicx_*, aoiint_*): an AOI-internal instruction that READS an
+  # InOut parameter -- a member of an InOut UDT, an InOut axis attribute or status
+  # bit -- or does a bit operation (XIC/XIO/OTE/OTL/OTU/ONS) on one costs 8 more
+  # than the same instruction on an Input or Local. Per instruction, not per operand
+  # (GRT(IoU.D,IoU.R) pays once). Writing a word INTO an InOut pays only the usual
+  # word-destination 4. GSV/SSV naming an InOut axis as the instance: +0. Exact on
+  # aoicx_bits (68 -> 544), aoicx_cmp (72 -> 576), aoicx_jmp (0), aoicx_gsv (0),
+  # aoiint_inout (200 -> 1,600), aoiint_axis (100 -> 800). Residuals left on the
+  # other blocks: axmem -72, math +128, motion +48, ssv -36 (net +68 over 514
+  # instructions); a second large definition (aoicx_full_two) reads -368.
+  aoi_internal_inout_operand_bytes: 8
+  aoi_internal_inout_operand_confidence: FITTED
+  # OQ-AOIROUTINES: each RLL scan-mode routine an AOI carries beyond Logic
+  # (EnableInFalse, Prescan, Postscan) costs 268, content priced as usual on top.
+  # Four clean files, three generators: aoistr_routines_n2 +272, aoistr_routines_n3
+  # +536 (two), aoierr_tworoutine +272, aoiint_eif +536 (two) -- 268 each, every
+  # file inside 4. Supersedes "routine count does not matter", which was read off
+  # aoi_multiroutine_*, rows that captured with 8 build errors each.
+  aoi_extra_routine_bytes: 268
   jsr_target_composite_surcharge_per_instr: 0
   composite_surcharge_confidence: FITTED
   # composite_surcharge_cap, wired ("tweak something else
@@ -3568,7 +3610,9 @@ logic_instructions:
     # operand-4/5 patterns (`Absolute,Actual,0` vs `Absolute,0,Position`)
     # differ by 52 bytes, a real difference between those two call shapes.
     MAM: 224
-    MAJ: 236
+    # OQ-MOTIONLIT: 236 was fitted on calls carrying integer literals in REAL
+    # parameters; the literal law now prices those, so the weight is the all-tag cost.
+    MAJ: 184
     MAS: 100
     MRP: 128
     # 34 of the 36 gen_instruction_firstpass.py instructions'
@@ -3632,7 +3676,9 @@ logic_instructions:
     # real program using MCCP/MSG will still show a SizeError for that
     # tag's own data space until that's resolved, but the logic-side
     # weight below is correct and usable now.
-    MCCP: 204
+    # OQ-MOTIONLIT: 204 was fitted on calls carrying integer literals in REAL
+    # parameters; the literal law now prices those, so the weight is the all-tag cost.
+    MCCP: 108
     MSG: 48
     # MAPC: FIXED (see OQ-MAPC-COMPAT) -- the original generator
     # had two real bugs (undeclared Axis_Cip_Drive tag, same axis reused for
@@ -3644,7 +3690,9 @@ logic_instructions:
     # same confidence tier as MAH/MSO's confirmation. The AXIS_CIP_DRIVE/
     # AXIS_VIRTUAL tags' own data-space cost is still separately unmodeled
     # (OQ-PREDEFINED) -- this is the LOGIC weight only.
-    MAPC: 260
+    # OQ-MOTIONLIT: 260 was fitted on calls carrying integer literals in REAL
+    # parameters; the literal law now prices those, so the weight is the all-tag cost.
+    MAPC: 164
     # CROUT deliberately NOT included: real build failure on its x10
     # capture (80 errors/10 rungs) -- reclassified out of scope, requires a
     # Safety-task processor. See

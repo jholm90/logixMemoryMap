@@ -139,6 +139,24 @@ both the DINT-only case and a BOOL-Input-plus-InOut-AXIS shape.
 
 ---
 
+## Internal logic beyond the instruction weights (2026-10-04)
+
+Measured on a synthetic drive-axis AOI as complex as the real ones (`aoicx_*`, 514 instructions,
+InOut axis + servo UDT, nested homing AOI) and on `aoiint_*` / `aoistr_routines_*`:
+
+- **InOut reads cost 8 more per instruction** (bit ops on an InOut too); writing a word into an
+  InOut pays only the usual 4; GSV/SSV on an InOut axis pay nothing extra.
+- **Each scan-mode routine beyond Logic costs 268** (EnableInFalse, Prescan, Postscan). "Routine
+  count does not matter" was read off errored rows and is withdrawn.
+- **A nested AOI call inside an AOI pays the 264 call-routine constant again**, once per calling
+  definition.
+- **The blocks add**: nine feature blocks sum to the full 514-instruction body to the byte.
+- **The same body in a program routine** costs what the AOI does less those three AOI terms.
+- **A REAL Input argument** given an integer literal (0 and 1 included) or a DINT tag costs 52 more
+  than a REAL tag; a float literal 4 more.
+- **Open (OQ-AOIBOOLINST):** an AOI with 55 BOOL members and 50 instances reads 12,198 under the
+  engine with no logic at all.
+
 ## Refuted — do not re-derive these
 
 Each of these fitted its own data cleanly and is wrong. They are recorded because

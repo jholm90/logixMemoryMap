@@ -66,7 +66,36 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0o. Further tests — BUILT 2026-10-02 (1, 3, 4, 5); 2 is the user's Studio work
+### 0p. The 92-file capture, 2026-10-04 — DONE; next batch SPEC below (ask before generating)
+
+**Real set 1.27% → 0.97% mean, 3.08% → 2.57% worst, 10/17 inside 1%, 15/17 inside 2%.** Mean
+under 1% for the first time; the stopping rule still fails on the max (export 27 2.57%, export 16
+2.23%). Nine questions closed (RESOLVED_QUESTIONS, top): AOICOMPLEX, AOIROUTINES (opened and closed
+on the same evidence), AOIINTERNAL, AOILITARG, MOTIONLIT, BLOCKSTR, SMALLINSTR, PUBLICTAG, STREAL. Wired, by mean gain:
+InOut operands in AOI logic (+8 per instruction, −0.146 pp), AOI REAL arguments (+52 / +4,
+−0.062), AOI scan-mode routines (+268 each, −0.027), nested AOI call (+264 per calling definition),
+motion literal law on MAJ/MAPC/MCCP/MAG with their weights corrected (−0.008), FLL integer
+literal into REAL (+52, +0.003). Pinned by `tests/test_aoi_and_motion_laws.py`.
+
+Suspect row: `aoicx_full_prog` (1 build error: a GSV attribute the configured axis lacks), used only
+as reported in OQ-AOICOMPLEX.
+
+**Next batch — SPEC, not built:**
+
+1. **OQ-AOIBOOLINST (8 files).** Split `aoiint_n00`'s −12,198 between instance data and definition.
+   One AOI with 3 inputs + 1 output and k BOOL locals, k = 0, 16, 32, 55, each at 1 and 50 instances,
+   no logic, no axis, realism floor. Instance step (50 − 1) / 49 per k gives the per-instance figure
+   against the engine's (320 at k = 55); the 1-instance files give the definition. Differences
+   against each other only. Real exposure: 672 instances of 40–47-BOOL AOIs, 11 of 64+.
+2. **Studio transplants (the user's).** Unchanged from 0o item 2: export 27's untransplanted
+   programs; exports 16 and 06's three largest programs one at a time. With AOI logic now priced
+   much closer, a transplant's residual points at program logic alone.
+3. **AOI math block (+128) and second definition (−368), optional (4 files).** `aoicx_math` split
+   into its TON, CPT and REAL-math-with-float-literal rungs; `aoicx_full_two` with the second
+   definition's instances and servo tags but its Logic at one rung. Small; build only if 1 and 2
+   leave room.
+
+### 0o. Further tests — BUILT 2026-10-02, CAPTURED 2026-10-03 (see 0p); 2 is the user's Studio work
 
 Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
 
@@ -76,9 +105,9 @@ Ranked by plausible share of the remaining gap (1.27% mean, logic +6.5%):
    simple logic on Input/Local members. One AOI, 50 rungs of MOV/ADD/GRT/XIC/OTE on (a) Input
    members, (b) Local members, (c) InOut UDT members, (d) InOut axis members; (e) with
    EnableInFalse + Prescan routines; 1 vs 50 instances to re-confirm logic-once. Realism floor.
-2. **Studio transplants (from the user).** IPC_EdgerLine (export 27): its untransplanted
+2. **Studio transplants (from the user).** Export 27: its untransplanted
    programs hold ~50 KB of its 69 KB residual — alarms, cam-control, junction-box programs next.
-   K3M16_Edgers (16) and CMU (06), 2nd/4th worst, never decomposed: their three largest
+   Exports 16 and 06, 2nd/4th worst, never decomposed: their three largest
    programs one at a time.
 3. **Public program tags (6 files, spec since 0k).** The captured `progscope_prog_{udt,arr}_n{010,050,200}`
    with every tag `Usage="Public"`, differenced against them. Real: 83 / 41 / 23 public tags in
@@ -245,7 +274,7 @@ XIC/OTE/TON/compare/ADD/MOV mix are right. Per-file counts of rungs, instruction
 operands, literals, branches, routines and AOI calls all fit the gap about equally
 (0.45–0.6% mean), because all scale with size; 17 files cannot separate them.
 Program-scope operand references are a few percent of real references and do not fit
-(1.81%), though the two worst programs have the highest share (IPC 12%, export 18 25%).
+(1.81%), though the two worst programs have the highest share (export 27 12%, export 18 25%).
 Distinct operand paths per routine do not separate either: the plant has more (0.75 per
 reference) than real ladder (0.53) and still prices exactly.
 
@@ -299,7 +328,7 @@ Next, in order:
 1. **(Done) Studio-made variants of the two kept-rung files.** In the rung-7 file: (a) replace the four AOI-output reads with a plain controller BOOL; (b) replace the deep `Cell.Servo.*` references with plain tags of the same type. In the rung-3 file: (c) make the DINT compare limit a REAL tag and the literals `1`/`-1` REAL (`1.0`/`-1.0`). Read Capacity after each single change; each delta against the engine's delta for the same edit says which feature carries the rung's shortfall.
 2. **Spec, not built: split the motop inventory's +3,108** (RESOLVED, OQ-DENSERUNG note). Three files on the captured `l9v38_m_kinetix_l8v35` content, differenced against it: MOTION_INSTRUCTION[400] alone; 100 tags of a UDT holding four MOTION_INSTRUCTION members alone; 100 tags of a UDT holding five TIMER members alone. Expected payoff ~0.05 pp — below the floor unless the rate is far above 4 bytes; run only if item 1 comes back empty.
 
-1. **Studio-made variants of export 27 (IPC, 4.31%) — METHOD AGREED.** Subtractive,
+1. **Studio-made variants of export 27 (4.31%) — METHOD AGREED.** Subtractive,
    one program at a time, starting from the full project:
    - Delete ONE program in Logix Designer (its routines and program tags). Leave
      controller tags, UDTs, AOIs and modules alone, so only that program's logic and
