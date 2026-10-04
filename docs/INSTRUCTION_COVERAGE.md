@@ -18,6 +18,20 @@ Real logic is extremely top-heavy: **4 mnemonics cover half of all
 occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
 individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
 
+## How far "exact" reaches (2026-10-04)
+
+**98.6% of real instruction occurrences are mnemonics whose weight has been confirmed on a full
+controller** (realism floor, ±8 bytes per file): the 21 most-used, the typed math and compares,
+COP/CPS/FLL/CONCAT/DTOS/SIZE/JMP/LBL, NOP/AFI/CTU/RES/TON/GSV/SSV, CLR/ABS/NEG/BTD/TRN and the
+motion instructions MAM/MAS/MAJ/MAPC/MCCP/MAG. The other 1.4% (MOD 289, RET 246, SBR 121, TOF 107,
+MEQ 78, CMP 77, RTO 74, EVENT 57, AVE 57, BSL 43, MRP 42, ...) are weighted from near-empty files
+only, and 0.28% carry no weight at all.
+
+"Confirmed" covers the operand shapes tested, not every shape: the literal law and the AOI InOut
+cost were both found AFTER the weights they sit on were confirmed. The real set still
+under-predicts by +0.95% sum-weighted (16 of 17 under), so at least that much is still missing
+somewhere. Compiled logic remains a fitted model by construction (CLAUDE.md).
+
 ## On a full controller
 
 The 21 most-used real instructions (XIC OTE MOV XIO EQU OTU CLR OTL ADD ONS NEQ TON GRT
