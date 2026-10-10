@@ -66,6 +66,19 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0q. History reset — PROPOSED, awaiting the owner's decision
+
+Customer program names reached pushed history (one TASKS.md commit and one generator comment;
+both removed from the tree). A force-push alone does not purge them: GitHub keeps orphaned commits
+reachable by SHA, closed PRs #1–#3 pin refs, and four `james-*` branches carry the old history.
+Plan: one fresh root commit of the current tree (scanned 2026-10-10: zero customer names in 4,633
+text files), minus `samples/1756-rm018_-en-p.pdf` (a 15 MB Rockwell manual, against the help-docs
+rule), with the checkpoint references dropped from CLAUDE.md (commit `172f581` will not exist);
+the owner deletes and recreates the GitHub repository, then the one commit is pushed. Before
+re-cloning, the owner moves `samples/local/` (real exports, `aliases.csv` — gitignored, on the
+capture machine only) out of the old clone. Nothing in the reasoning trail is lost: the docs are
+the record by design; captures, manifest and convert log live in the tree.
+
 ### 0p. The 92-file capture, 2026-10-04 — DONE; next batch SPEC below (ask before generating)
 
 **Real set 1.27% → 0.97% mean, 3.08% → 2.57% worst, 10/17 inside 1%, 15/17 inside 2%.** Mean
