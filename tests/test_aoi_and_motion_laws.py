@@ -1,12 +1,21 @@
-"""Pins the laws wired from the 2026-10-04 capture batch against the captured files.
+"""Pins the laws wired from the 2026-10-04 capture batch against the controller.
 
-Each check differences two captured generated files and requires the engine's
-difference to equal the controller's, so a later change to any constant behind
-these laws fails here rather than silently on the real set.
+Each check differences two captured files and requires the engine's difference
+to equal the controller's (samples/captures.csv), so a later change to any
+constant behind these laws fails here rather than silently on the real set.
+
+The captured L5X files are no longer kept in the repository. Each one is rebuilt
+from its generator (tests/conftest.py) and must hash identically to the file
+the controller measured, date stamps aside (tests/captured_file_hashes.json,
+taken from the committed files before they were deleted). A generator that
+drifts fails here instead of being compared against a reading of other content.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from functools import lru_cache
@@ -22,19 +31,33 @@ from l5x_memory_analyzer.sizing.constants import load_memory_model  # noqa: E402
 from l5x_memory_analyzer.sizing.report import build_report  # noqa: E402
 from sample_gen.manifest_store import load_manifest  # noqa: E402
 
-GEN = ROOT / "samples" / "generated"
+HASHES = json.loads((Path(__file__).parent / "captured_file_hashes.json").read_text())
+GENERATORS = ("gen_motion_literals", "gen_block_string", "gen_aoi_literal_args", "gen_aoi_complex",
+              "gen_aoi_internal_shape", "gen_aoi_structure", "gen_aoi_internal_shape_isolation")
+_DATES = re.compile(rb'(ExportDate|ProjectCreationDate|LastModifiedDate)="[^"]*"')
 
 
 @lru_cache(maxsize=None)
-def _rows() -> dict[str, dict]:
-    return {r["sample_id"]: r for r in load_manifest()}
+def _actual() -> dict[str, int]:
+    return {r["sample_id"]: int(r["actual_bytes"]) for r in load_manifest() if r.get("actual_bytes")}
 
 
-@lru_cache(maxsize=None)
-def _residual(sample_id: str) -> int:
-    row = _rows()[sample_id]
-    entries, _ = build_report(ET.parse(ROOT / row["l5x_path"]).getroot(), load_memory_model())
-    return int(row["actual_bytes"]) - sum(e.bytes for e in entries)
+@pytest.fixture(scope="module")
+def residual(regenerate):
+    root = regenerate(*GENERATORS)
+    cache: dict[str, int] = {}
+
+    def _residual(sample_id: str) -> int:
+        if sample_id not in cache:
+            path = next(root.rglob(f"{sample_id}.L5X"))
+            body = _DATES.sub(rb'\1=""', path.read_bytes().replace(b"\r\n", b"\n"))
+            assert hashlib.sha256(body).hexdigest() == HASHES[sample_id]["sha256_dates_blanked"], (
+                f"{sample_id}: the generator no longer reproduces the captured file")
+            entries, _ = build_report(ET.parse(path).getroot(), load_memory_model())
+            cache[sample_id] = _actual()[sample_id] - sum(e.bytes for e in entries)
+        return cache[sample_id]
+
+    return _residual
 
 
 PAIRS = [
@@ -57,20 +80,16 @@ PAIRS = [
 
 
 @pytest.mark.parametrize("sample, control", PAIRS)
-def test_engine_difference_matches_the_controller(sample, control):
-    if not (_rows().get(sample, {}).get("actual_bytes") and _rows().get(control, {}).get("actual_bytes")):
-        pytest.skip("capture not present")
-    assert abs(_residual(sample) - _residual(control)) <= 8
+def test_engine_difference_matches_the_controller(residual, sample, control):
+    assert abs(residual(sample) - residual(control)) <= 8
 
 
 @pytest.mark.parametrize("sample, expected", [
     ("aoistr_routines_n1", 0), ("aoistr_routines_n2", 4), ("aoistr_routines_n3", 0),
     ("aoierr_tworoutine", 4),
 ])
-def test_extra_aoi_routines_are_exact(sample, expected):
-    if not _rows().get(sample, {}).get("actual_bytes"):
-        pytest.skip("capture not present")
-    assert _residual(sample) == expected
+def test_extra_aoi_routines_are_exact(residual, sample, expected):
+    assert residual(sample) == expected
 
 
 def test_inout_counter_reads_bits_and_sources_but_not_word_destinations():

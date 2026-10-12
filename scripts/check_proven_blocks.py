@@ -11,6 +11,7 @@ A block with no such match is not necessarily wrong, but it is unproven, and an
 unproven Kinetix block is the shape that has cost the most failed captures.
 
 Run: python scripts/check_proven_blocks.py <file.L5X> [...]
+     python scripts/check_proven_blocks.py --record   (before deleting a captured batch)
 Exit status is non-zero if any block has no clean match.
 """
 
@@ -59,9 +60,19 @@ def normalise(block: str) -> str:
     return re.sub(r"\s+", " ", block)
 
 
+PROVEN_FILE = REPO_ROOT / "samples" / "proven_blocks.json"
+
+
 def proven_blocks() -> dict[str, str]:
-    """Normalised block -> the first zero-error capture that contains it."""
-    proven: dict[str, str] = {}
+    """Normalised block -> the first zero-error capture that contains it.
+
+    The generated L5X files are deleted once their batch is captured and written
+    up, so the proven set lives in samples/proven_blocks.json. Any zero-error
+    capture still on disk (a batch not yet cleaned up) is added to it; run with
+    --record to write those back into the file before the batch is deleted.
+    """
+    import json
+    proven: dict[str, str] = dict(json.loads(PROVEN_FILE.read_text())["kinetix"]) if PROVEN_FILE.exists() else {}
     for row in load_manifest(resolve_local=False):
         if not (row.get("actual_bytes") or "").strip():
             continue
@@ -88,7 +99,18 @@ def check(paths: list[Path], proven: dict[str, str]) -> list[str]:
     return problems
 
 
+def record(proven: dict[str, str]) -> None:
+    import json
+    doc = json.loads(PROVEN_FILE.read_text()) if PROVEN_FILE.exists() else {"modules": {}}
+    doc["kinetix"] = dict(sorted(proven.items(), key=lambda kv: kv[1]))
+    PROVEN_FILE.write_text(json.dumps(doc, indent=1))
+    print(f"recorded {len(proven)} proven block shapes in {PROVEN_FILE.name}")
+
+
 def main(argv: list[str]) -> int:
+    if argv[1:] == ["--record"]:
+        record(proven_blocks())
+        return 0
     paths = [Path(a) for a in argv[1:]]
     if not paths:
         print(__doc__)

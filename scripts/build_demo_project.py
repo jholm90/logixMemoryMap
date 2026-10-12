@@ -41,6 +41,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+import json  # noqa: E402
 import re  # noqa: E402
 import xml.etree.ElementTree as ET  # noqa: E402
 
@@ -55,7 +56,7 @@ from sample_gen.gen_module_motion import (  # noqa: E402
 )
 from sample_gen.wrapper import build_l5x  # noqa: E402
 
-_GENERATED = REPO_ROOT / "samples" / "generated" / "modules"
+_PROVEN = REPO_ROOT / "samples" / "proven_blocks.json"
 
 # (station tag, program name, cylinders, servo axes on this station)
 STATIONS = [
@@ -98,8 +99,7 @@ SHIFT_T = [MemberSpec("GoodParts", "DINT"), MemberSpec("RejectParts", "DINT"),
 
 def _proven_module(sample: str, name: str, address: str) -> str:
     """The one non-controller Module of a zero-error capture, renamed and re-addressed."""
-    text = (_GENERATED / f"{sample}.L5X").read_text(encoding="utf-8-sig")
-    block = [m for m in re.findall(r"<Module\b.*?</Module>", text, re.S) if 'Name="Local"' not in m][0]
+    block = json.loads(_PROVEN.read_text())["modules"][sample]   # samples/proven_blocks.json
     block = re.sub(r'Name="[^"]+"', f'Name="{name}"', block, count=1)
     return re.sub(r'Address="\d+\.\d+\.\d+\.\d+"', f'Address="{address}"', block, count=1)
 

@@ -10,7 +10,7 @@
     2. Creates .venv in the repository folder and installs the analyzer into it
        (`pip install .`, as the README does). Nothing is installed system-wide apart
        from Python itself.
-    3. Sizes a committed sample file as a self-check.
+    3. Self-check: loads the sizing model and builds the UI application.
     4. Puts an "L5X Memory Analyzer" shortcut on the desktop (runs
        scripts\LaunchUI.pyw, no console window) and starts the UI.
 
@@ -39,7 +39,6 @@ $Venv = Join-Path $Repo '.venv'
 $VenvPy = Join-Path $Venv 'Scripts\python.exe'
 $VenvPyw = Join-Path $Venv 'Scripts\pythonw.exe'
 $Launcher = Join-Path $Repo 'scripts\LaunchUI.pyw'
-$Sample = Join-Path $Repo 'samples\generated\aoi\aoi_deepnest3_1_instance.L5X'
 
 function Step([string]$Message) { Write-Host "==> $Message" -ForegroundColor Cyan }
 
@@ -122,14 +121,12 @@ try {
     Invoke-Checked $VenvPy @('-m', 'pip', 'install', '--disable-pip-version-check', '--upgrade', 'pip') 'Upgrading pip'
     Invoke-Checked $VenvPy @('-m', 'pip', 'install', '--disable-pip-version-check', $Repo) 'Installing the analyzer'
 
-    Step 'Self-check: sizing a sample L5X'
-    Invoke-Checked $VenvPy @('-c', 'import l5x_memory_analyzer.ui.server, waitress, openpyxl') 'Importing the UI server'
-    $ErrorActionPreference = 'Continue'
-    $out = & $VenvPy -m l5x_memory_analyzer.cli size $Sample
-    $rc = $LASTEXITCODE
-    $ErrorActionPreference = 'Stop'
-    if ($rc -ne 0 -or -not ($out -match 'controller/TestInstance')) { $out | Write-Host; throw 'The self-check could not size the sample file.' }
-    Write-Host '    ok'
+    Step 'Self-check: loading the sizing model and building the UI'
+    $check = 'import waitress, openpyxl; ' +
+             'from l5x_memory_analyzer.sizing.constants import load_memory_model; ' +
+             'from l5x_memory_analyzer.ui.server import create_app; ' +
+             'load_memory_model(); create_app(None); print(''self-check ok'')'
+    Invoke-Checked $VenvPy @('-c', $check) 'The self-check'
 
     if (-not $NoShortcut) {
         Step 'Creating the desktop shortcut "L5X Memory Analyzer"'

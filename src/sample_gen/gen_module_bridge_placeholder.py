@@ -34,7 +34,6 @@ from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "modules"
-OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def _bridge_xml(name: str, ip_last_octet: int) -> str:

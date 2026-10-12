@@ -8,7 +8,6 @@ from l5x_memory_analyzer.parser.datatypes import parse_data_types
 from l5x_memory_analyzer.parser.load import L5XFormatError, load_l5x, load_l5x_bytes
 from l5x_memory_analyzer.parser.tags import parse_tags
 
-FIXTURE = Path(__file__).parent.parent / "samples/generated/tags/count_0001_dint.L5X"
 
 # A UDT with a BOOL member -- exercises the hidden-SINT + BIT-alias shape
 # Logix Designer itself emits, per docs/MEMORY_MODEL.md UDT packing.
@@ -42,8 +41,12 @@ _UDT_XML = """
 """
 
 
-def test_load_l5x_smoke_fixture():
-    doc = load_l5x(FIXTURE)
+def test_load_l5x_smoke_fixture(tmp_path):
+    from sample_gen.builders import tag_xml
+    from sample_gen.wrapper import build_l5x
+    fixture = tmp_path / "count_0001_dint.L5X"
+    fixture.write_text(build_l5x(target_name="Smoke", tags_xml=tag_xml("Count0001", "DINT")), encoding="utf-8")
+    doc = load_l5x(fixture)
     assert doc.root.tag == "RSLogix5000Content"
     assert doc.schema_revision == "1.0"
 
