@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
     One-time setup of the L5X Memory Analyzer UI on a Windows machine that has nothing
-    installed. Double-click setup_windows.cmd next to this file, which runs it.
+    installed. Double-click Setup.cmd in the repository root, which runs it.
 
 .DESCRIPTION
     1. Uses a Python 3.10+ already on the machine, or downloads the official Python
@@ -99,7 +99,7 @@ function Install-Python {
 
 try {
     if (-not (Test-Path (Join-Path $Repo 'pyproject.toml'))) {
-        throw "pyproject.toml not found in $Repo. Run this from the scripts folder of the extracted repository."
+        throw "pyproject.toml not found in $Repo. Double-click Setup.cmd in the root of the extracted repository."
     }
 
     Step 'Looking for Python 3.10 or newer'
