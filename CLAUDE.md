@@ -248,6 +248,28 @@ Run this sequence in order, without being asked.
 
 Only then ask about pushing.
 
+## Generated L5X files are deleted once their batch is written up
+
+A batch's `.L5X` files exist to be captured. Once the batch is reconciled, flagged,
+wired and written up (the sequence above), **its L5X files are deleted from
+`samples/generated/`**: every number they produced stays in `samples/manifest.csv` and
+`samples/captures.csv`, every finding in the docs, and every file can be rebuilt from its
+generator, which is kept. 5.3 GB of them were removed on 2026-10-12.
+
+Before deleting a batch:
+
+1. `python scripts/check_proven_blocks.py --record` writes any newly proven Kinetix block
+   into `samples/proven_blocks.json`, which is where the check and the generators read
+   proven device blocks from (`"kinetix"`, `"modules"`).
+2. A test that needs a batch file rebuilds it with the `regenerate` fixture
+   (`tests/conftest.py`). A test that compares the engine with a capture also records the
+   file's hash with its date stamps blanked in `tests/captured_file_hashes.json` while the
+   file still exists, so a generator that drifts fails the test instead of comparing
+   against a reading of different content.
+
+`quick_eval.py --family` and `--full` evaluate only the files present on disk; to
+re-check an old family, regenerate it first.
+
 ## Sample bookkeeping is split: two files, two writers, no merge battle
 
 `samples/manifest.csv` is the **SPEC** — `sample_id, description, category,
@@ -294,8 +316,10 @@ Treat a residual inside it as agreement, not as a term to chase.
 
 ## Cost of measurement
 
-The corpus is over 3,500 captured rows. A full recompute re-parses every one and
-takes minutes; a scoped one takes seconds.
+The corpus is over 3,500 captured rows. Their L5X files are no longer kept (see
+"Generated L5X files are deleted"), so a recompute covers what is on disk: the
+batch under test, plus anything regenerated for the purpose. A full regeneration
+and recompute takes many minutes; a scoped one takes seconds.
 
 **Use `scripts/quick_eval.py --family '<regex>'`** — it evaluates the rows under
 test, all seventeen real programs, and one sentinel per category to catch a change

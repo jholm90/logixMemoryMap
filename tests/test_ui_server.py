@@ -7,37 +7,31 @@ that stops summing to the report, a drill that dead-ends one level down.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
 from l5x_memory_analyzer.ui.server import create_app
 
-FIXTURE = Path("samples/generated")
-
-# One file from each family that exercises a different part of the tree:
-# alarms, AOI definitions, composite (modules + axes + UDTs), predefined
-# array structures. Picked by directory rather than by exact filename so a
-# regenerated corpus does not break the test, and skipped rather than
-# failed when a directory is absent.
-SAMPLE_DIRS = ("alarms", "aoi", "composite", "predefined", "udt", "modules")
-
-
-def _samples() -> list[str]:
-    out = []
-    for name in SAMPLE_DIRS:
-        files = sorted((FIXTURE / name).rglob("*.L5X"))
-        if files:
-            out.append(str(files[0]))
-    return out
+# Inputs that exercise different parts of the tree: the synthetic demo project
+# (modules, a Kinetix bus, UDTs, an AOI, programs), the tag-alarm batch and the
+# predefined-structure batch (CAM / CAM_PROFILE / MESSAGE arrays). The generated
+# batches are rebuilt from their generators (tests/conftest.py).
+SAMPLES = {
+    "demo": None,
+    "alarms": ("alarms", "gen_alarm_conditions"),
+    "predefined": ("predefined", "gen_predefined_probe"),
+}
 
 
-@pytest.fixture(scope="module", params=_samples() or ["__none__"])
-def client(request):
-    if request.param == "__none__":
-        pytest.skip("no generated samples present")
-    app = create_app(request.param)
-    return app.test_client()
+@pytest.fixture(scope="module", params=list(SAMPLES))
+def client(request, demo_l5x, regenerate):
+    spec = SAMPLES[request.param]
+    if spec is None:
+        path = demo_l5x
+    else:
+        folder, generator = spec
+        path = sorted((regenerate(generator) / folder).glob("*.L5X"))[0]
+    return create_app(str(path)).test_client()
 
 
 def _leaf_values(node, out):

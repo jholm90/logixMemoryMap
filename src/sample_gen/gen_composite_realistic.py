@@ -58,7 +58,6 @@ from sample_gen.manifest import append_manifest_row, write_sample, write_sample_
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
-OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
 # real: composite_realistic_v2 regenerated the exact same
 # already-known-bad-catalog import failures (5069-OB16/B, FANUC Robot

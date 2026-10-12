@@ -78,7 +78,6 @@ from sample_gen.manifest import append_manifest_row, write_sample_unmodeled
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
-OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
 _MODEL = load_memory_model()
 _TAG_FLAT_OVERHEAD_BASE = 84  # KNOWN, docs/MEMORY_MODEL.md "Per-tag flat overhead"

@@ -48,7 +48,6 @@ from sample_gen.manifest import append_manifest_row, write_sample, write_sample_
 from sample_gen.wrapper import build_l5x
 
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "composite"
-OUT_ROOT.mkdir(parents=True, exist_ok=True)
 
 # real, caught on re-conversion (of the FIRST
 # v2 batch, before this fix): "SINT/INT/DINT cannot be used for bit level

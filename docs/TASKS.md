@@ -66,14 +66,25 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0r. Repository cleanup, 2026-10-12 — DONE
+
+Tracked tree 5.34 GB → 17.6 MB. Removed: every generated `.L5X` (4,177 files, 5.3 GB; all
+captured, every number in manifest/captures, every finding in the docs, every generator kept),
+the 64 Rockwell sample programs in `samples/samplePrograms/` (used by nothing) and the Rockwell
+manual PDF. Kept and repointed: proven Kinetix and module blocks → `samples/proven_blocks.json`
+(`check_proven_blocks.py`, `gen_l9_v38.py`, `build_demo_project.py`); tests rebuild the batches
+they need from the generators (`tests/conftest.py`), and the engine-vs-controller law tests check
+each rebuilt file against the captured file's hash first (all 27 identical, date stamps aside).
+Real set unchanged at 0.97% / 2.57%. A fresh `git clone` still downloads the old history until
+the history reset (0q) is done; Download ZIP gets the 18 MB tree.
+
 ### 0q. History reset — PROPOSED, awaiting the owner's decision
 
 Customer program names reached pushed history (one TASKS.md commit and one generator comment;
 both removed from the tree). A force-push alone does not purge them: GitHub keeps orphaned commits
 reachable by SHA, closed PRs #1–#3 pin refs, and four `james-*` branches carry the old history.
 Plan: one fresh root commit of the current tree (scanned 2026-10-10: zero customer names in 4,633
-text files), minus `samples/1756-rm018_-en-p.pdf` (a 15 MB Rockwell manual, against the help-docs
-rule), with the checkpoint references dropped from CLAUDE.md (commit `172f581` will not exist);
+text files); the Rockwell manual PDF it mentioned was removed in the 2026-10-12 cleanup, with the checkpoint references dropped from CLAUDE.md (commit `172f581` will not exist);
 the owner deletes and recreates the GitHub repository, then the one commit is pushed. Before
 re-cloning, the owner moves `samples/local/` (real exports, `aliases.csv` — gitignored, on the
 capture machine only) out of the old clone. Nothing in the reasoning trail is lost: the docs are

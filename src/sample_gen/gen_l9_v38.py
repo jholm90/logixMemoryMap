@@ -61,7 +61,7 @@ from sample_gen.wrapper import build_l5x
 OUT_ROOT = Path(__file__).parent.parent.parent / "samples" / "generated" / "l9v38"
 CATEGORY = "l9v38"
 TARGET_PREFIX = "PlatNine"
-_MODULES = Path(__file__).parent.parent.parent / "samples" / "generated" / "modules"
+_PROVEN = Path(__file__).parent.parent.parent / "samples" / "proven_blocks.json"
 
 L9_CATALOG = "1756-L908TS"
 # (arm, processor, MajorRev, SoftwareRevision, v36+ spelling)
@@ -154,10 +154,11 @@ def _proven_module(sample: str, name: str, *, address: str | None = None,
                    slot: int | None = None) -> str:
     """The one non-controller Module of a zero-error capture, renamed and
     re-addressed (IP for a network module, slot for a chassis card)."""
-    text = (_MODULES / f"{sample}.L5X").read_text(encoding="utf-8-sig")
-    block = [m for m in re.findall(r"<Module\b.*?</Module>", text, re.S) if 'Name="Local"' not in m]
-    assert len(block) == 1, f"{sample}: expected one module, found {len(block)}"
-    block = re.sub(r'Name="[^"]+"', f'Name="{name}"', block[0], count=1)
+    # The capture files are deleted after their batch; the block is kept in
+    # samples/proven_blocks.json ("modules"), verbatim.
+    import json
+    block = json.loads(_PROVEN.read_text())["modules"][sample]
+    block = re.sub(r'Name="[^"]+"', f'Name="{name}"', block, count=1)
     if address is not None:
         block = re.sub(r'Address="\d+\.\d+\.\d+\.\d+"', f'Address="{address}"', block, count=1)
     if slot is not None:

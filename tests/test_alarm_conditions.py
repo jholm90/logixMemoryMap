@@ -21,9 +21,15 @@ from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.sizing.report import build_report
 
-GEN = Path(__file__).resolve().parent.parent / "samples" / "generated" / "alarms"
+GEN = Path()  # set by _regenerated: the batch is rebuilt from its generators
 MODEL = load_memory_model()
-_gen = pytest.mark.skipif(not GEN.is_dir(), reason="alarm batch not generated")
+_gen = pytest.mark.usefixtures("_regenerated")
+
+
+@pytest.fixture(scope="module")
+def _regenerated(regenerate):
+    global GEN
+    GEN = regenerate("gen_alarm_conditions", "gen_alarm_real_count") / "alarms"
 
 
 def _root(name: str) -> ET.Element:

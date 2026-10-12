@@ -54,7 +54,16 @@ python scripts/check_proven_blocks.py samples/generated/modules/<file>.L5X
 Every 2198 module and AXIS_CIP_DRIVE block in the file must match a block from a
 capture with zero build errors, with names, addresses, MotionModule and AxisID
 normalised. Non-zero exit on any unproven block. `tests/test_build_guards.py` runs it
-over every file waiting for capture.
+over every file waiting for capture. Proven blocks are read from
+`samples/proven_blocks.json` plus any zero-error capture still on disk.
+
+```powershell
+python scripts/check_proven_blocks.py --record    # before deleting a captured batch
+```
+
+Writes every proven block currently known into `samples/proven_blocks.json`, so it
+survives the batch's L5X files being deleted (CLAUDE.md, "Generated L5X files are
+deleted once their batch is written up").
 
 ### 3a. Convert L5X to ACD
 
