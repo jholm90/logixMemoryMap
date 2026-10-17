@@ -68,12 +68,11 @@ unwired (OQ-SERIESREAL).
 
 ### 0t. While the safety capture runs — ranked 2026-10-17
 
-1. **README**: the Windows double-click `Setup.cmd` is not mentioned; the quick start
-   only shows `pip install`.
-2. **Processor/firmware for the 1,863 `UNKNOWN` capture rows** (the capture script
-   never read them, fixed 2026-10-17): readers fall back to the `[catalog fw]` in the
-   row's `window_title`. `captures.csv` itself is not edited; only the capture script
-   writes it.
+1. **README** — DONE: the quick start now leads with `Setup.cmd` for Windows.
+2. **Processor/firmware of the `UNKNOWN` capture rows** — NO ACTION: their window titles
+   show 1,913 of 2,043 are 1756-L81E at v35, and the other 130 are exactly the platform
+   batches (L9/v38 side by side: 74 L81E v38 and 50 L9; five 5069 platform-equivalence
+   files; the one L83E Kinetix rack), each identifiable from its window title.
 3. **OQ-AOIBOOLINST**: spec in 0p, waiting on approval to generate.
 
 Blocked: **OQ-REALUNDER** needs the seventeen real exports back in `samples/local/` (the

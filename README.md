@@ -288,6 +288,16 @@ The full method, every constant, and every open question are published in
 
 ## Get started in one minute
 
+**On Windows with nothing installed:** download or clone the repository and
+double-click **`Setup.cmd`** in its root folder. It installs Python for your user
+account if none is found (no administrator rights), sets the analyzer up in a `.venv`
+folder, puts an **L5X Memory Analyzer** shortcut on the desktop and opens the tool.
+It needs internet access the first time and runs on Windows 10 or later. The shortcut
+runs one copy of the tool however often it is clicked, and that copy closes itself an
+hour after the last browser tab is closed.
+
+**Anywhere else, or if you already have Python 3.10+:**
+
 ```bash
 git clone https://github.com/jholm90/logixMemoryMap.git
 cd logixMemoryMap
