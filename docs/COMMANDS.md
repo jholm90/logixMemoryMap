@@ -31,7 +31,7 @@ l5x-memory-analyzer ui path/to/file.L5X --port 9000 --no-browser
 **Windows, nothing installed:** double-click `Setup.cmd` in the repository root
 (it runs `scripts/setup_windows.ps1`). It installs Python per-user if none is
 found, builds `.venv`, self-checks, adds a desktop shortcut and opens the UI.
-Works on a fresh Windows 10 install (2026-10-17). The shortcut runs one server however often it is clicked (a second click finds it and only opens the browser) and that server exits 5 minutes after the last browser tab closes; the page keeps it alive with a heartbeat every 30 s. Windows 7 is not supported:
+Works on a fresh Windows 10 install (2026-10-17). The shortcut runs one server however often it is clicked (a second click finds it and only opens the browser) and that server exits 60 minutes after the last browser tab closes; the page keeps it alive with a heartbeat every 30 s. Windows 7 is not supported:
 its PowerShell 2.0 has no `$PSScriptRoot`, and Python 3.9 and later do not run
 on it.
 
