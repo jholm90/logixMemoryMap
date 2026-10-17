@@ -112,3 +112,62 @@ def test_definition_instance_mode_drills_more_than_one_level(client):
             assert deeper.status_code == 200, deeper.get_json()
             return
     pytest.skip("no nested member in any declared type of this sample")
+
+
+def test_every_ladder_routine_opens_into_its_rungs(client):
+    """An RLL tile is drillable into its rungs, an AOI's own logic included.
+
+    An AOI's Logic tile offered a drill and then 400'd: the rung endpoint
+    accepted program routines only and the AOI's rung count was never sent.
+    """
+    report = client.get("/api/report").get_json()
+    routines: list[dict] = []
+
+    def walk(node):
+        for child in node.get("children") or []:
+            walk(child)
+        if node.get("data_type") == "RLL" and node.get("path"):
+            routines.append(node)
+
+    walk(report["hierarchy"])
+    failures = []
+    for node in routines:
+        path = node["path"]
+        count = report["rung_counts"].get(path)
+        if count is None:
+            failures.append((path, "no rung count"))
+            continue
+        res = client.get("/api/rungs", query_string={"path": path})
+        if res.status_code != 200 or len(res.get_json()["rungs"]) != count:
+            failures.append((path, res.status_code))
+    assert not failures, failures
+
+
+def test_aoi_rungs_name_their_routine_when_the_aoi_has_several():
+    import xml.etree.ElementTree as ET
+
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    from l5x_memory_analyzer.ui.server import _build_all_rungs
+
+    def routine(name, *texts):
+        rungs = "".join(
+            f'<Rung Number="{i}" Type="N"><Text><![CDATA[{t}]]></Text></Rung>'
+            for i, t in enumerate(texts))
+        return f'<Routine Name="{name}" Type="RLL"><RLLContent>{rungs}</RLLContent></Routine>'
+
+    def aoi(name, routines):
+        return (f'<AddOnInstructionDefinition Name="{name}"><Routines>{routines}'
+                f'</Routines></AddOnInstructionDefinition>')
+
+    root = ET.fromstring(
+        "<RSLogix5000Content><Controller><AddOnInstructionDefinitions>"
+        + aoi("Two", routine("Logic", "XIC(A)OTE(B);", "NOP();") + routine("Prescan", "OTU(B);"))
+        + aoi("One", routine("Logic", "XIC(A)OTE(B);"))
+        + aoi("Protected", "")
+        + "</AddOnInstructionDefinitions></Controller></RSLogix5000Content>")
+    rungs = _build_all_rungs(root, load_memory_model())
+
+    two = rungs["aoi_definitions/Two/Logic+Prescan"]
+    assert [(r["routine"], r["number"]) for r in two] == [("Logic", 0), ("Logic", 1), ("Prescan", 0)]
+    assert "routine" not in rungs["aoi_definitions/One/Logic"][0]
+    assert rungs["aoi_definitions/Protected/Logic"] == []
