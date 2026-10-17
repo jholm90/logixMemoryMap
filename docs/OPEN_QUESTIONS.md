@@ -1,6 +1,6 @@
 # Open Questions
 
-**Three.** The 92-file capture of 2026-10-03 closed eight at once — MOTIONLIT, BLOCKSTR, AOILITARG, AOIINTERNAL, PUBLICTAG, SMALLINSTR, STREAL and AOICOMPLEX — and wired five laws that took the real set from 1.27% to **0.97%** mean, 3.08% to **2.57%** worst (RESOLVED_QUESTIONS, top). OQ-AOIBOOLINST opened from that batch. Closed questions and their reasoning trails are in
+**Four.** OQ-SAFETYPARTITION opened 2026-10-17 (the safety memory partition, a separate quantity from the standard figure). The 92-file capture of 2026-10-03 closed eight at once — MOTIONLIT, BLOCKSTR, AOILITARG, AOIINTERNAL, PUBLICTAG, SMALLINSTR, STREAL and AOICOMPLEX — and wired five laws that took the real set from 1.27% to **0.97%** mean, 3.08% to **2.57%** worst (RESOLVED_QUESTIONS, top). OQ-AOIBOOLINST opened from that batch. Closed questions and their reasoning trails are in
 `RESOLVED_QUESTIONS.md`; the capture batch after the blind set closed five at once
 (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN).
 
@@ -26,6 +26,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-REALUNDER** | **0.97% mean, 2.57% worst, 10/17 inside 1%, 15/17 inside 2%** after the 2026-10-03 batch (InOut operands in AOI logic, AOI REAL arguments, AOI scan-mode routines, nested AOI calls, the motion literal law). Mean under 1% for the first time; the stopping rule still fails on the max (export 27 2.57%, export 16 2.23%). Every real program but one still under-predicts (sum-weighted +0.95%). Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
 | **OQ-AOIBOOLINST** | `aoiint_n00` over-predicts by 12,198 before any logic: its AOI carries 55 BOOL members and 50 instances (engine 320 per instance). 672 real instances carry 40–47 BOOL members. Spec in TASKS 0p; not built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
+| **OQ-SAFETYPARTITION** | Opened 2026-10-17. Safety tags and safety logic sit in a separate partition the model does not size. Moves **no** standard-processor figure: safety processors are excluded from accuracy. Seed file, Capacity screenshot and real safety exports requested; no batch specced. |
 
 ---
 
@@ -246,4 +247,16 @@ generated files are this one law.
 | **Evidence** | `aoiint_n00` (one AOI `AiOps`: 3 inputs, 1 output, 55 BOOL locals; 50 controller instances; one virtual axis, one UDT tag) reads 12,198 under the engine before any logic, while every logic file built on it is exact relative to it. The virtual axis is priced exactly elsewhere (16,880 per axis, `axmarg_virtual_*`); the instances are charged 320 each and the definition 2,168, so the 12,198 sits in the instance data or the BOOL-heavy definition (-244 per instance if it is all instances). Real exposure: 672 instances of AOIs with 40–47 BOOL parameters and locals, 11 with 64+. |
 | **Expected movement** | If the instance figure is over-charged by ~240 for a 40+-BOOL AOI, ~160 KB across the seventeen in the over-prediction direction — on files that under-predict overall, so it would unmask under-charges elsewhere rather than improve the mean by itself. |
 | **Spec** | TASKS 0p. Not built. |
+| **CAPTURE** | not yet built |
+
+---
+
+## 4. OQ-SAFETYPARTITION — sizing the safety memory partition
+
+| | |
+|---|---|
+| **Evidence** | A safety controller keeps safety tags and safety logic in a partition that standard Capacity does not count (MEMORY_MODEL, "Safety memory is a separate partition"). The engine prices nothing in that partition, and still folds Class="Safety" logic and tags into the standard total (6.7 KB to 22.8 KB on the seven safety files with readings; TASKS 2). The capture script reads one Capacity field, the standard value, so no safety-partition reading exists anywhere in `samples/captures.csv`. Safety-family instructions in the real set: ESTOP 4, ROUT 4, RIN 1 (INSTRUCTION_COVERAGE); the rest of the real safety logic is ordinary instructions in safety routines. |
+| **Expected movement** | **Zero on the seventeen-program headline**: safety processors are excluded from accuracy by rule. The payoff is a new reported number, safety memory used, for GuardLogix users, plus TASKS 2 (removing safety content from the standard total, 0.7 to 1.9 points on the seven safety files, toward under-prediction). |
+| **Needed before any spec** | 1. A screenshot of Controller Properties > Capacity on a safety project, and the Window Spy control names of its safety fields, so the capture script can record the safety reading next to the standard one. 2. A Studio-made seed project: 1756-L81ES at v35, File > New defaults, one Safety task/program/routine with one rung per instruction the safety routine offers, Studio-created backing tags, a few safety tags of each atomic type, verified with 0 errors, exported to L5X with both Capacity readings. It supplies syntax and backing-tag types and proves the L5X-to-ACD converter handles safety content; as one total it cannot separate per-instruction costs. 3. The real safety exports (13, 38 to 41, and the 5069-L306ERS2 program) back in `samples/local/`, to rank what real safety programs use before anything is built. |
+| **Method once those are in** | Count sweeps on the seed's shapes (each safety-routine instruction at several rung counts, each safety tag type at several counts, the safety task/program/routine shell, safety tags read from standard logic), each differenced against its own zero-content control, specced in TASKS and approved before generation. Safety files need a 1756-L81ES v35 exemption in `lint.py` and CLAUDE.md, the same narrow form as `PlatNine`. |
 | **CAPTURE** | not yet built |

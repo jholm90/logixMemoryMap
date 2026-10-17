@@ -66,6 +66,16 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0s. Safety partition — OPENED 2026-10-17, waiting on inputs (OQ-SAFETYPARTITION)
+
+No file is built and no batch is specced until three things arrive: the Capacity tab of
+a safety project (screenshot plus the safety fields' control names, so
+`logix_build_capture.ahk` can record the safety reading), a Studio-made 1756-L81ES v35
+seed project with one rung per safety-routine instruction, and the real safety exports
+back in `samples/local/`. The seed fixes syntax and backing-tag types; the costs come
+from count sweeps built on it, specced here and approved before generation. Moves no
+standard-processor accuracy figure.
+
 ### 0r. Repository cleanup, 2026-10-12 — DONE
 
 Tracked tree 5.34 GB → 17.6 MB. Removed: every generated `.L5X` (4,177 files, 5.3 GB; all
