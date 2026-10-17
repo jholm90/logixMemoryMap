@@ -1065,3 +1065,24 @@ def test_a_file_with_no_subroutine_call_has_no_shell_line():
     """
     entries, _ = build_report(ET.fromstring(xml), MODEL)
     assert not [e for e in entries if e.category == "subroutine_shell"]
+
+
+def test_safety_routine_rungs_count_one_instruction_each():
+    """Exported safety-routine shapes (OQ-SAFETYPARTITION): drop-down keywords
+    carry spaces and hyphens, THRSe has a lowercase letter, and the drive-safety
+    instructions end in output tags. Each rung is one instruction, nothing more."""
+    from l5x_memory_analyzer.parser.logic import count_instructions_in_text
+
+    rungs = {
+        "DCS": "DCS(DCS,EMERGENCY STOP,EQUIVALENT - ACTIVE HIGH,500,MANUAL,MANUAL,"
+               "DCS.ChannelA,DCS.ChannelB,DCS.InputStatus,DCS.Reset);",
+        "THRSe": "THRSe(THRSe,500,THRSe.Enable,THRSe.Disconnected,THRSe.RightButtonNormallyOpen,"
+                 "THRSe.RightButtonNormallyClosed,THRSe.LeftButtonNormallyOpen,"
+                 "THRSe.LeftButtonNormallyClosed,THRSe.InputStatus,THRSe.Reset);",
+        "AVC": "AVC(AVC,NEGATIVE,500,OFF,500,False,AVC.Actuate,AVC.DelayEnable,AVC.Feedback1,"
+               "AVC.InputStatus,AVC.OutputStatus,AVC.Reset);",
+        "SLS": "SLS(SLS,MANUAL,MANUAL,SLS.CheckDelay,SLS.ActiveLimit,SFX,SLS.Request,SLS.Reset,"
+               "SlsActive,SlsLimit,SlsFault);",
+    }
+    for mnemonic, text in rungs.items():
+        assert count_instructions_in_text([text]) == {mnemonic: 1}, mnemonic

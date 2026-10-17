@@ -66,13 +66,14 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0s. Safety partition — SEED IN, batch SPEC below (ask before generating) (OQ-SAFETYPARTITION)
+### 0s. Safety partition — SEEDS IN, batch SPEC below (ask before generating) (OQ-SAFETYPARTITION)
 
-The seed (two Studio-made 1756-L81ES v34 files, readings in OQ-SAFETYPARTITION) fixes
-the syntax of RIN, ROUT and FPMS and their backing types. Still missing before the
-batch can run end to end: the Window Spy ClassNN of the Capacity tab's safety field
-(the capture script records only the standard value), ESTOP's syntax (4 real uses;
-not in the seed), and the real safety exports for ranking what else real safety
+The seeds fix the syntax of every safety-routine instruction (`docs/SAFETY_INSTRUCTIONS.md`):
+the two v34 L81ES files (RIN, ROUT, FPMS, with readings) and a v35 routine with the other 36
+(no readings yet). Still missing before the batch can run end to end: the v35 project's
+whole export with its standard and safety Capacity values, an empty v35 L81ES's two values,
+the Window Spy ClassNN of the Capacity tab's safety field (the capture script records only
+the standard value), and the real safety exports for ranking what else real safety
 programs carry (safety I/O modules most of all).
 
 **Spec, `safe_*`, 38 files.** 1756-L81ES at v35, SIL2/PLd, the seed's controller,
