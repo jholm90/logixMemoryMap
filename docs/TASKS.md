@@ -66,6 +66,20 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0t. While the safety capture runs — ranked 2026-10-17
+
+1. **README**: the Windows double-click `Setup.cmd` is not mentioned; the quick start
+   only shows `pip install`.
+2. **Processor/firmware for the 1,863 `UNKNOWN` capture rows** (the capture script
+   never read them, fixed 2026-10-17): readers fall back to the `[catalog fw]` in the
+   row's `window_title`. `captures.csv` itself is not edited; only the capture script
+   writes it.
+3. **OQ-AOIBOOLINST**: spec in 0p, waiting on approval to generate.
+
+Blocked: **OQ-REALUNDER** needs the seventeen real exports back in `samples/local/` (the
+cloud container was reset). After the safety captures: the safety-partition estimate in
+the engine and UI, and safety content out of the standard total (TASKS 2).
+
 ### 0s. Safety partition — BATCH BUILT 2026-10-17, capture next (OQ-SAFETYPARTITION)
 
 **The owner lifted every restriction for this phase**: no noise-floor gate (every
