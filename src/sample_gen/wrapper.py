@@ -169,6 +169,14 @@ _PRODUCT_CODES = {
     "1756-L84E": "167",
     "1756-L85E": "168",
     "1756-L71": "92",
+    # GuardLogix 5580 has its own numbering, not the standard L8x's: L81ES 211 and
+    # L84ES 214 from real exports, L82ES/L83ES 212/213 converted and captured in the
+    # catalog matrix. A safety_partition file built with the L81E's 164 here failed
+    # conversion: "required property 'port' was missing" on the Local module.
+    "1756-L81ES": "211",
+    "1756-L82ES": "212",
+    "1756-L83ES": "213",
+    "1756-L84ES": "214",
     "1769-L16ER-BB1B": "153",
     "1769-L18ER-BB1B": "154",
     "1769-L18ERM-BB1B": "155",
@@ -189,6 +197,18 @@ _PRODUCT_CODES = {
     "5069-L340ER": "219",
     "5069-L3100ERM": "230",
 }
+
+
+def _local_product_code_1756(processor_type: str) -> str:
+    """The Local module's ProductCode for a 1756 controller. An unknown catalog is
+    refused rather than given the L81E's code: a wrong ProductCode imports as a
+    different module and fails conversion."""
+    try:
+        return _PRODUCT_CODES[processor_type]
+    except KeyError:
+        raise ValueError(
+            f"no confirmed Local-module ProductCode for {processor_type!r}; add it to "
+            f"_PRODUCT_CODES from a real export") from None
 
 
 def safety_partner_module_xml(
@@ -411,7 +431,7 @@ def build_l5x(
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1001_0002_0002">\n<Bus/>\n</Port>'
         )
-        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+        local_product_code = _local_product_code_1756(processor_type)
     elif safety_level == "SIL2":
         # BUG FOUND ("did a super in-depth memory
         # analysis... review the last batch of l5x conversions"):
@@ -446,7 +466,7 @@ def build_l5x(
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false" SafetyNetwork="16#0000_1002_0002_0002">\n<Bus/>\n</Port>'
         )
-        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+        local_product_code = _local_product_code_1756(processor_type)
     elif is_pre5580_1756:
         # See is_pre5580_1756's definition above for the real corpus
         # evidence -- ICP-only, no embedded Ethernet Port, matching
@@ -462,7 +482,7 @@ def build_l5x(
             f'<Bus Size="{_L7X_ICP_BUS_SIZE}"/>\n'
             f'</Port>'
         )
-        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+        local_product_code = _local_product_code_1756(processor_type)
     else:
         local_ports_xml = (
             f'<Port Id="1" Address="0" Type="ICP" Upstream="false">\n'
@@ -470,7 +490,7 @@ def build_l5x(
             f'</Port>\n'
             f'<Port Id="2" Type="Ethernet" Upstream="false">\n<Bus/>\n</Port>'
         )
-        local_product_code = _PRODUCT_CODES.get(processor_type, _PRODUCT_CODE)
+        local_product_code = _local_product_code_1756(processor_type)
     # REAL BUG FOUND: L8 safety files failed to generate ACD
     # files. SafetyLocked="true" with no
     # SafetySignature attribute is an invalid combination -- see the same

@@ -295,6 +295,27 @@ _NATIVE_ARG_COUNTS["ATAN2"] = 3
 _KNOWN_NATIVE_INSTRUCTIONS.update(_SAFETY_INSTRUCTION_ARG_COUNTS, {"ATAN2"})
 
 
+def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
+    """The Local module's ProductCode must be its catalog's own. GuardLogix 5580 is
+    numbered apart from the standard L8x (L81ES 211, L81E 164); a safety_partition
+    batch built with 164 on a 1756-L81ES failed conversion on every file with
+    "required property 'port' was missing"."""
+    from sample_gen.wrapper import _PRODUCT_CODES, L9X_PRODUCT_CODES
+    known = {**_PRODUCT_CODES, **{k: str(v) for k, v in L9X_PRODUCT_CODES.items()}}
+    findings: list[LintFinding] = []
+    for mod in root.iter("Module"):
+        if mod.get("Name") != "Local":
+            continue
+        catalog, code = mod.get("CatalogNumber") or "", mod.get("ProductCode")
+        want = known.get(catalog)
+        if want is not None and code != want:
+            findings.append(LintFinding(
+                "local_module_product_code",
+                f"Local module {catalog} carries ProductCode {code}; that catalog's is {want}",
+            ))
+    return findings
+
+
 def _safety_instruction_findings(root: ET.Element) -> list[LintFinding]:
     """A safety-routine instruction outside a safety program, or on a controller
     that is not a safety controller, does not build."""
@@ -1583,6 +1604,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
     findings.extend(_safety_instruction_findings(root))
+    findings.extend(_local_product_code_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
     findings.extend(_structure_tag_data_findings(root))

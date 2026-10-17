@@ -599,3 +599,27 @@ def test_safety_instruction_operand_counts_are_studios():
     assert len(_SAFETY_INSTRUCTION_ARG_COUNTS) == 39
     assert _NATIVE_ARG_COUNTS["SS2"] == 20 and _NATIVE_ARG_COUNTS["THRSe"] == 10
     assert _NATIVE_ARG_COUNTS["ATAN2"] == 3
+
+
+def test_local_module_product_code_must_be_its_catalogs():
+    """GuardLogix 5580 is numbered apart from the standard L8x: a 1756-L81ES Local
+    module with the L81E's 164 failed conversion on every safety_partition file."""
+    from sample_gen.lint import _local_product_code_findings
+    import xml.etree.ElementTree as ET
+
+    def kinds(catalog, code):
+        root = ET.fromstring(f'<Controller><Modules><Module Name="Local" CatalogNumber="{catalog}" '
+                             f'ProductCode="{code}"/></Modules></Controller>')
+        return {f.kind for f in _local_product_code_findings(root)}
+
+    assert kinds("1756-L81ES", "211") == set()
+    assert kinds("1756-L81ES", "164") == {"local_module_product_code"}
+    assert kinds("1756-L81E", "164") == set()
+
+
+def test_build_l5x_refuses_a_1756_catalog_it_has_no_product_code_for():
+    import pytest
+    from sample_gen.wrapper import build_l5x
+    assert 'ProductCode="211"' in build_l5x("SafeCodeProbe", "", processor_type="1756-L81ES", safety_level="SIL2")
+    with pytest.raises(ValueError):
+        build_l5x("SafeCodeProbe", "", processor_type="1756-L85ES", safety_level="SIL2")
