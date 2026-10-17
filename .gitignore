@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 .venv/
+.python-installed-by-setup
 venv/
 *.egg-info/
 dist/

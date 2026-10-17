@@ -294,7 +294,8 @@ account if none is found (no administrator rights), sets the analyzer up in a `.
 folder, puts an **L5X Memory Analyzer** shortcut on the desktop and opens the tool.
 It needs internet access the first time and runs on Windows 10 or later. The shortcut
 runs one copy of the tool however often it is clicked, and that copy closes itself an
-hour after the last browser tab is closed.
+hour after the last browser tab is closed. **`Uninstall.cmd`** removes the shortcut, the
+`.venv` folder, and Python too if `Setup.cmd` was what installed it.
 
 **Anywhere else, or if you already have Python 3.10+:**
 

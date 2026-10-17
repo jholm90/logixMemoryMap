@@ -39,6 +39,9 @@ $Venv = Join-Path $Repo '.venv'
 $VenvPy = Join-Path $Venv 'Scripts\python.exe'
 $VenvPyw = Join-Path $Venv 'Scripts\pythonw.exe'
 $Launcher = Join-Path $Repo 'scripts\LaunchUI.pyw'
+# Written only when this script installed Python itself; Uninstall.cmd removes Python
+# only when it is present, so a Python that was already on the machine is never touched.
+$PythonMarker = Join-Path $Repo '.python-installed-by-setup'
 
 function Step([string]$Message) { Write-Host "==> $Message" -ForegroundColor Cyan }
 
@@ -94,6 +97,7 @@ function Install-Python {
     $proc = Start-Process -FilePath $installer -ArgumentList $installArgs -Wait -PassThru
     Remove-Item $installer -ErrorAction SilentlyContinue
     if ($proc.ExitCode -ne 0) { throw "The Python installer exited with code $($proc.ExitCode)." }
+    Set-Content -Path $PythonMarker -Value $PythonVersion -Encoding ASCII
 }
 
 try {
