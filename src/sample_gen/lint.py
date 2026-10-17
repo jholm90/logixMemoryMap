@@ -276,6 +276,48 @@ def _aoi_call_arg_count(root: ET.Element) -> dict[str, int]:
 #            instruction".
 _NATIVE_ARG_COUNTS = {"ALMD": 5}
 
+# Safety-routine instructions (OQ-SAFETYPARTITION) with the operand count of
+# every call Studio itself wrote: a Studio-made v35 safety routine with each one
+# filled in, plus RIN/ROUT/FPMS from the v34 seed (docs/SAFETY_INSTRUCTIONS.md).
+# They run only in a safety program on a safety controller; CROUT on a standard
+# controller failed 80 times, once per rung (instrfirst_crout_x10).
+_SAFETY_INSTRUCTION_ARG_COUNTS = {
+    "FPMS": 7, "ESTOP": 6, "ROUT": 6, "RIN": 6, "ENPEN": 6, "DIN": 6, "LC": 8, "THRS": 8,
+    "DCS": 10, "DCST": 11, "DCSTL": 14, "DCSTM": 15, "DCSRT": 9, "DCM": 8, "SMAT": 7,
+    "TSAM": 14, "TSSM": 15, "FSBM": 19, "THRSe": 10, "CROUT": 9, "DCA": 11, "DCAF": 11,
+    "CPM": 10, "CBIM": 11, "CBSSM": 11, "CBCM": 14, "CSM": 8, "EPMS": 12, "AVC": 12,
+    "MMVC": 10, "MVC": 9, "SFX": 14, "SS1": 13, "SS2": 20, "SBC": 13, "SOS": 13, "SDI": 11,
+    "SLS": 11, "SLP": 12,
+}
+_NATIVE_ARG_COUNTS.update(_SAFETY_INSTRUCTION_ARG_COUNTS)
+# ATAN2 is a standard instruction; offered in the safety routine as well.
+_NATIVE_ARG_COUNTS["ATAN2"] = 3
+_KNOWN_NATIVE_INSTRUCTIONS.update(_SAFETY_INSTRUCTION_ARG_COUNTS, {"ATAN2"})
+
+
+def _safety_instruction_findings(root: ET.Element) -> list[LintFinding]:
+    """A safety-routine instruction outside a safety program, or on a controller
+    that is not a safety controller, does not build."""
+    findings: list[LintFinding] = []
+    info = root.find(".//SafetyInfo")
+    safety_controller = info is not None and info.get("SafetyLevel") is not None
+    for program in root.iter("Program"):
+        in_safety = program.get("Class") == "Safety"
+        for text in _all_rung_texts(program):
+            for mnemonic, _ in _call_sites(text):
+                if mnemonic not in _SAFETY_INSTRUCTION_ARG_COUNTS:
+                    continue
+                if not (in_safety and safety_controller):
+                    where = ("a standard program" if not in_safety
+                             else "a controller with no SafetyLevel")
+                    findings.append(LintFinding(
+                        "safety_instruction_outside_safety_program",
+                        f"'{mnemonic}(' is a safety-routine instruction but sits in {where} "
+                        f"(program {program.get('Name')!r}); it builds only in a Class=\"Safety\" "
+                        f"program on a safety controller: {text.strip()!r}",
+                    ))
+    return findings
+
 
 def _split_top_level_args(s: str) -> list[str]:
     """Splits a comma-separated argument list, respecting nested ()/[]
@@ -1057,6 +1099,14 @@ _PLATFORM_EXEMPT_NAME_PREFIXES = (
     "PlatNine",
 )
 
+# Narrower than an exemption: the prefix allows ONE other platform and refuses
+# everything else, the standard included.
+#
+#   SafePart -- gen_safety_partition.py (OQ-SAFETYPARTITION). The safety memory
+#     partition exists only on a safety controller, so that batch runs on the
+#     standard's safety twin, 1756-L81ES at v35, and on nothing else.
+_PLATFORM_PINNED_ALTERNATES = {"SafePart": ("1756-L81ES", "35")}
+
 
 def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
     """Generated test files must be 1756-L81E at MajorRev 35.
@@ -1073,27 +1123,31 @@ def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
     name = controller.get("Name") or ""
     if name.startswith(_PLATFORM_EXEMPT_NAME_PREFIXES):
         return findings
+    want_processor, want_major = STANDARD_PROCESSOR_TYPE, STANDARD_MAJOR_REV
+    for prefix, platform in _PLATFORM_PINNED_ALTERNATES.items():
+        if name.startswith(prefix):
+            want_processor, want_major = platform
 
     # Absent is not the same as wrong. A fragment that declares neither
     # field is not making a platform claim to check -- only a file that
     # states a processor or firmware can state the wrong one.
     processor = controller.get("ProcessorType")
     major = controller.get("MajorRev")
-    if processor is not None and processor != STANDARD_PROCESSOR_TYPE:
+    if processor is not None and processor != want_processor:
         findings.append(LintFinding(
             kind="non_standard_processor",
             detail=(
-                f"controller {name!r} is {processor}, but every generated test file "
-                f"must be {STANDARD_PROCESSOR_TYPE} so the batch differences cleanly "
+                f"controller {name!r} is {processor}, but this generated test file "
+                f"must be {want_processor} so the batch differences cleanly "
                 f"against the existing captures"
             ),
         ))
-    if major is not None and major != STANDARD_MAJOR_REV:
+    if major is not None and major != want_major:
         findings.append(LintFinding(
             kind="non_standard_firmware",
             detail=(
-                f"controller {name!r} is MajorRev {major}, but every generated test "
-                f"file must be MajorRev {STANDARD_MAJOR_REV}"
+                f"controller {name!r} is MajorRev {major}, but this generated test "
+                f"file must be MajorRev {want_major}"
             ),
         ))
     return findings
@@ -1528,6 +1582,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_module_configdata_findings(root))
     findings.extend(_invalid_logix_name_findings(root))
     findings.extend(_safety_module_findings(root))
+    findings.extend(_safety_instruction_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
     findings.extend(_structure_tag_data_findings(root))

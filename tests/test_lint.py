@@ -560,3 +560,42 @@ def test_integer_only_instruction_refuses_a_real_operand():
     assert _documented_type_findings(["BTD(R,0,D,0,4);"], types)
     assert _documented_type_findings(["SWPB(S,REVERSE,D);"], types)
     assert not _documented_type_findings(["BTD(S,0,D,0,4);", "SWPB(I,REVERSE,D);", "MVM(D,S,I);"], types)
+
+
+def test_safety_batch_is_pinned_to_the_safety_twin_of_the_standard():
+    """SafePart (gen_safety_partition.py) may be a 1756-L81ES at v35 and nothing
+    else -- not even the standard 1756-L81E, and not another safety catalog."""
+    assert _platform_kinds(name="SafePartN00", proc="1756-L81ES") == set()
+    assert "non_standard_processor" in _platform_kinds(name="SafePartN00", proc="1756-L81E")
+    assert "non_standard_processor" in _platform_kinds(name="SafePartN00", proc="1756-L83ES")
+    assert "non_standard_firmware" in _platform_kinds(name="SafePartN00", proc="1756-L81ES", major="34")
+    assert "non_standard_processor" in _platform_kinds(proc="1756-L81ES")
+
+
+def _safety_kinds(program_class, safety_level, rung):
+    from sample_gen.lint import _safety_instruction_findings
+    import xml.etree.ElementTree as ET
+    level = f' SafetyLevel="{safety_level}"' if safety_level else ""
+    cls = f' Class="{program_class}"' if program_class else ""
+    root = ET.fromstring(
+        f'<RSLogix5000Content><Controller><SafetyInfo{level}/><Programs>'
+        f'<Program Name="P"{cls}><Routines><Routine Name="R" Type="RLL"><RLLContent>'
+        f'<Rung Number="0" Type="N"><Text><![CDATA[{rung}]]></Text></Rung>'
+        f'</RLLContent></Routine></Routines></Program></Programs></Controller></RSLogix5000Content>')
+    return {f.kind for f in _safety_instruction_findings(root)}
+
+
+def test_safety_instruction_builds_only_in_a_safety_program_on_a_safety_controller():
+    rung = "ESTOP(E,MANUAL,E.ChannelA,E.ChannelB,E.CircuitReset,E.FaultReset);"
+    assert _safety_kinds("Safety", "SIL2/PLd", rung) == set()
+    assert _safety_kinds(None, "SIL2/PLd", rung) == {"safety_instruction_outside_safety_program"}
+    assert _safety_kinds("Safety", None, rung) == {"safety_instruction_outside_safety_program"}
+    # An ordinary instruction is not a safety one, wherever it sits.
+    assert _safety_kinds(None, None, "ATAN2(A,B,C);") == set()
+
+
+def test_safety_instruction_operand_counts_are_studios():
+    from sample_gen.lint import _NATIVE_ARG_COUNTS, _SAFETY_INSTRUCTION_ARG_COUNTS
+    assert len(_SAFETY_INSTRUCTION_ARG_COUNTS) == 39
+    assert _NATIVE_ARG_COUNTS["SS2"] == 20 and _NATIVE_ARG_COUNTS["THRSe"] == 10
+    assert _NATIVE_ARG_COUNTS["ATAN2"] == 3

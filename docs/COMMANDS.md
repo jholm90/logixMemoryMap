@@ -114,7 +114,7 @@ seconds per file against about 65 for a full close and reopen.
 |---|---|
 | `Ctrl+F1` | start the capture loop |
 | `Esc` | abort |
-| `F9` | debug helper — dump control text on the active window |
+| `F9` | debug helper — show the Capacity tab's Edit3 (standard used) and Edit6 (safety used) text |
 
 ### 3c. Capture memory readings
 
@@ -169,6 +169,19 @@ the end of the run.
 L5X's own `Controller/@ProcessorType` and
 `RSLogix5000Content/@SoftwareRevision`. A file whose head cannot be parsed records
 `UNKNOWN` with a `PROCTYPE-UNREAD` note rather than a guess.
+
+> Until 2026-10-17 every row came out `UNKNOWN` / `PROCTYPE-UNREAD` (1,863 rows): the
+> loop never assigned the L5X path it read from, and it cast the first 40 lines, a
+> fragment, to `[xml]`, which cannot parse. It now resolves the path from the repo root
+> and matches the two attributes as text.
+
+**Safety memory.** On a safety catalog (one ending in S, S2 or S3) the AHK script
+also reads the Capacity tab's safety used memory (`Edit6`) after a good standard read
+(`Edit3`), and the capture lands in the `safety_bytes` column of `captures.csv`. A
+blank or non-numeric safety value on a safety catalog keeps the standard reading,
+adds `SAFETY NOT READ` to the notes, and is retried on the next run like a
+zero-capacity row; a standard controller's `safety_bytes` is always blank. A missing
+`Edit6` never stops the AHK loop (OQ-SAFETYPARTITION).
 
 > They used to be mandatory switches, and whatever was typed on the command line
 > was stamped onto every row regardless of what the file declared — 1,926 of 1,959

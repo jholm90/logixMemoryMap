@@ -66,39 +66,38 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0s. Safety partition — SEEDS IN, batch SPEC below (ask before generating) (OQ-SAFETYPARTITION)
+### 0s. Safety partition — BATCH BUILT 2026-10-17, capture next (OQ-SAFETYPARTITION)
 
-The seeds fix the syntax of every safety-routine instruction (`docs/SAFETY_INSTRUCTIONS.md`):
-the two v34 L81ES files (RIN, ROUT, FPMS, with readings) and a v35 routine with the other 36
-(no readings yet). Still missing before the batch can run end to end: the v35 project's
-whole export with its standard and safety Capacity values, an empty v35 L81ES's two values,
-the Window Spy ClassNN of the Capacity tab's safety field (the capture script records only
-the standard value), and the real safety exports for ranking what else real safety
-programs carry (safety I/O modules most of all).
+**The owner lifted every restriction for this phase**: no noise-floor gate (every
+safety-routine instruction is measured, not only the four real programs use) and no
+file-size limit. The batch was asked for directly; no separate approval is pending.
 
-**Spec, `safe_*`, 38 files.** 1756-L81ES at v35, SIL2/PLd, the seed's controller,
-Local module and safety task/program/routine shell copied verbatim; standard partition
-on the realism floor (`realism.with_baseline()`); each file read for **both** the
-standard and the safety value. Needs a narrow `lint.py` platform exemption (prefix
-`safe_`, the `PlatNine` form) and the matching CLAUDE.md line. **Pilot first:**
-`safe_n00` and `safe_tag_dint_50` alone, to prove the L5X-to-ACD converter and the
-capture handle safety content, before the other 36.
+**Built:** `python -m sample_gen.gen_safety_partition`, 119 files in
+`samples/generated/safety/`, manifest rows `safe_*`. 1756-L81ES at v35, SIL2/PLd, File >
+New's SafetyTask/SafetyProgram/MainRoutine, realism floor. Every call shape is Studio's
+(`docs/SAFETY_INSTRUCTIONS.md`), every safety tag carries Studio's data block for its
+type (`samples/proven_blocks.json`, `safety_tags`), and lint pins the SafePart
+controller prefix to exactly that platform, refuses a safety instruction outside a
+safety program, and checks every safety call's operand count.
 
 | group | files | varies | held | discriminates |
-|---|---|---|---|---|
-| control | `safe_n00` | nothing | plant + empty safety shell | safety base on the plant (seed: 1,394); standard control |
-| safety tags | BOOL and DINT ×10/50/200; REAL, INT, SINT ×50 | type, count | no logic | per-tag cost in each partition; the standard-side 56-per-tag hypothesis |
-| name length | DINT ×50 at 4/12/20/40 characters (the ×50 point is the 12) | name length | count | whether the standard side follows 56 + 8 × floor(len / 8) |
-| program scope | DINT ×50 in SafetyProgram | scope | count, type | scope cost against the controller-scope ×50 |
-| backing structures | REDUNDANT_INPUT, REDUNDANT_OUTPUT ×10/50/200; FIVE_POS_MODE_SELECTOR ×10/50 | type, count | no logic | structure tag cost; the tag control for the instruction rows |
-| safety instructions | RIN, ROUT ×10/50/200; FPMS ×10/50, one rung and one own backing tag each | count | operand shape as in the seed | instruction weight per partition, against the matching structure row |
-| standard instructions in the safety routine | XIC+OTE ×10/50/200; TON ×50; MOV DINT ×50 | count, mnemonic | safety BOOL[256] / TIMER[64] / DINT[64] arrays declared at full size in every file | whether a safety rung costs its standard weight, and where |
-| safety tags read from standard logic | XIC(safety BOOL)+OTE(standard BOOL) in MainProgram ×10/50/200 | count | both arrays at full size | standard logic cost of a safety operand (expected: ordinary operand) |
+|---|---:|---|---|---|
+| control `safe_n00` | 1 | nothing | plant + empty safety shell | safety base on the plant (v34 seed: 1,394); standard control |
+| `safe_tag_<type>_<n>` | 9 | BOOL, DINT ×10/50/200; REAL, INT, SINT ×50 | controller scope, Class=Safety, no logic | per-tag cost in each partition; the standard-side 56-per-tag hypothesis |
+| `safe_tag_dint_50_len<k>` | 3 | name length 4/20/40 (12 is the ×50 file) | count | whether the standard side follows 56 + 8 × floor(len / 8) |
+| `safe_tag_dint_50_prog` | 1 | scope | count, type | program scope against controller scope |
+| `safe_<mn>_tags_<n>` / `safe_<mn>_<n>` | 94 | count; tags alone vs tags + one rung each | program scope, Studio's call shape | instruction cost per partition. ESTOP, RIN, ROUT, LC ×10/50/200; the other 35 ×20 |
+| `safe_std_ctl`, `safe_std_<x>` | 7 | XIC+OTE ×10/50/200, TON ×50, MOV ×50, ATAN2 ×20 | safety arrays in full in all | whether an ordinary rung in the safety routine costs its standard weight, and where |
+| `safe_ref_ctl`, `safe_ref_<n>` | 4 | XIC(safety)OTE(standard) ×10/50/200 in the standard MainRoutine | both arrays | standard cost of reading a safety tag |
 
-Each sweep is differenced against `safe_n00`, and each instruction row against its
-structure row at the same count, solved as simultaneous equations per partition.
-Output bits are distinct in every file (realism floor). Moves no standard-processor
-accuracy figure.
+**Capture:** convert as usual, then capture a few first with `-Limit 3` and check that
+`safety_bytes` fills and the error counts are 0 before running the rest. The updated
+`logix_build_capture.ahk` and `batch_memory_capture.ps1` must both be in use: an older
+AHK writes no `safety_value`, and every safety file would come back `SAFETY NOT READ`.
+
+**After capture:** each sweep differenced against its control in both columns, each
+instruction row against its tags row, solved per partition; then a safety-partition
+estimate in the engine and the standard side corrected (TASKS 2).
 
 ### 0r. Repository cleanup, 2026-10-12 — DONE
 

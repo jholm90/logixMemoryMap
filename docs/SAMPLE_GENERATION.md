@@ -62,6 +62,13 @@ matrix generators, for which sweeping those two fields *is* the variable under
 test, and one Kinetix rack that needs an L83E because three dual-axis drives plus
 two power supplies do not fit an L81E's 3 MB.
 
+One alternate is pinned rather than exempt: the safety-partition batch
+(`gen_safety_partition.py`, controller prefix `SafePart`, OQ-SAFETYPARTITION) must be
+1756-L81ES at v35 and nothing else, because the safety partition exists only on a safety
+controller. Its call shapes come from Studio-made seeds (`docs/SAFETY_INSTRUCTIONS.md`),
+its tag data blocks from `samples/proven_blocks.json`, and lint refuses a safety-routine
+instruction anywhere but a Class="Safety" program on a safety controller.
+
 ### The feedback loop
 
     generate → predict → convert → build → read actual → reconcile → adjust
