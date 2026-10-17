@@ -171,3 +171,40 @@ def test_aoi_rungs_name_their_routine_when_the_aoi_has_several():
     assert [(r["routine"], r["number"]) for r in two] == [("Logic", 0), ("Logic", 1), ("Prescan", 0)]
     assert "routine" not in rungs["aoi_definitions/One/Logic"][0]
     assert rungs["aoi_definitions/Protected/Logic"] == []
+
+
+def test_instance_and_heartbeat_endpoints():
+    app = create_app(None)
+    c = app.test_client()
+    assert c.get("/api/instance").get_json()["app"] == "l5x-memory-analyzer"
+    before = app.config["last_seen"]
+    assert c.post("/api/heartbeat").status_code == 204
+    assert app.config["last_seen"] >= before
+
+
+def test_a_second_launch_on_the_same_port_returns_instead_of_serving():
+    """Each click on the desktop shortcut used to start one more server on the port
+    (Windows lets waitress's SO_REUSEADDR socket bind it twice). A second run() finds
+    the first and returns."""
+    import socket
+    import threading
+    import time
+    from l5x_memory_analyzer.ui import server
+
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    first = threading.Thread(target=server.run, args=(None,), kwargs={"port": port}, daemon=True)
+    first.start()
+    for _ in range(100):
+        if server.running_instance("127.0.0.1", port):
+            break
+        time.sleep(0.05)
+    assert server.running_instance("127.0.0.1", port)
+
+    second = threading.Thread(target=server.run, args=(None,), kwargs={"port": port}, daemon=True)
+    second.start()
+    second.join(timeout=10)
+    assert not second.is_alive()
+    # The port is held exclusively: a plain bind by anything else fails.
+    assert server._bind_exclusive("127.0.0.1", port) is None

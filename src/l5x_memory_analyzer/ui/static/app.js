@@ -2440,6 +2440,9 @@ function renderTypeSummaryInto(elId) {
   }
 }
 
+// While this page is open the local server stays up; started from the desktop
+// shortcut it exits a few minutes after the last tab closes.
+setInterval(() => fetch("/api/heartbeat", { method: "POST" }).catch(() => {}), 30000);
 main();
 
 

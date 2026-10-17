@@ -12,5 +12,7 @@ shortcut just opens your browser straight to the tool.
 
 from l5x_memory_analyzer.ui.server import run
 
+# One server however many times the shortcut is clicked; it exits 5 minutes after
+# the last browser tab closes.
 if __name__ == "__main__":
-    run(None, open_browser=True)
+    run(None, open_browser=True, idle_exit_minutes=5)

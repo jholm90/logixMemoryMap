@@ -12,7 +12,12 @@ airgapped.
 
 from __future__ import annotations
 
+import json
+import os
 import re
+import socket
+import threading
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -535,9 +540,28 @@ def _child_confidence(child, state):
         return None
     return {**acc, "total": sum(acc.values())}
 
+
+# What /api/instance answers, so a second launch can tell this server from anything
+# else listening on the port.
+APP_ID = "l5x-memory-analyzer"
+
+
 def create_app(l5x_path: str | Path | None = None) -> Flask:
     app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="")
     app.config["state"] = _load_state(l5x_path, str(l5x_path), from_bytes=False) if l5x_path else None
+    app.config["last_seen"] = time.monotonic()
+
+    @app.before_request
+    def _seen():
+        app.config["last_seen"] = time.monotonic()
+
+    @app.get("/api/instance")
+    def instance():
+        return jsonify({"app": APP_ID, "pid": os.getpid()})
+
+    @app.post("/api/heartbeat")
+    def heartbeat():
+        return "", 204
 
     @app.get("/")
     def index():
@@ -819,17 +843,73 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
     return app
 
 
-def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, open_browser: bool = False) -> None:
+def running_instance(host: str, port: int, timeout: float = 0.5) -> bool:
+    """True when this analyzer is already serving on host:port. Asked directly, with
+    no proxy: a system proxy setting must not answer for 127.0.0.1."""
+    import urllib.request
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    try:
+        with opener.open(f"http://{host}:{port}/api/instance", timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8")).get("app") == APP_ID
+    except Exception:
+        return False
+
+
+def _bind_exclusive(host: str, port: int) -> socket.socket | None:
+    """The listening socket, or None when the port is taken.
+
+    Exclusive on Windows: waitress's own SO_REUSEADDR lets a second process bind the
+    same port there, which is how every click on the desktop shortcut started one more
+    server that never exited. SO_REUSEADDR on POSIX only allows a quick restart."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+    else:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind((host, port))
+    except OSError:
+        sock.close()
+        return None
+    sock.listen(64)
+    return sock
+
+
+def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, open_browser: bool = False,
+        idle_exit_minutes: float | None = None) -> None:
+    """Serve the UI. If this analyzer is already serving on the port, point the browser
+    at it and return. With `idle_exit_minutes` the process exits once no page has
+    pinged /api/heartbeat for that long (the desktop shortcut uses it)."""
+    import webbrowser
+
+    url = f"http://{host}:{port}"
+    already = running_instance(host, port)
+    sock = None if already else _bind_exclusive(host, port)
+    if sock is None:
+        if not already:
+            time.sleep(2)   # another launch may have won the port a moment ago
+            already = running_instance(host, port)
+        if not already:
+            raise SystemExit(f"error: {host}:{port} is in use by another program; choose another --port")
+        if open_browser:
+            webbrowser.open(url)
+        return
+
     try:
         app = create_app(l5x_path)
     except (L5XFormatError, OSError) as exc:
+        sock.close()
         raise SystemExit(f"error: {exc}") from exc
 
+    if idle_exit_minutes:
+        def exit_when_idle():
+            while True:
+                time.sleep(15)
+                if time.monotonic() - app.config["last_seen"] > idle_exit_minutes * 60:
+                    os._exit(0)   # nothing to save: the server only holds a parsed copy
+        threading.Thread(target=exit_when_idle, daemon=True).start()
     if open_browser:
-        import threading
-        import webbrowser
-
-        threading.Timer(0.75, lambda: webbrowser.open(f"http://{host}:{port}")).start()
+        threading.Timer(0.75, lambda: webbrowser.open(url)).start()
 
     # Waitress, not Flask's built-in server. The built-in one prints a
     # warning on every start telling you not to deploy it, and it is right:
@@ -848,6 +928,8 @@ def run(l5x_path: str | Path | None, host: str = "127.0.0.1", port: int = 8765, 
     except ImportError:
         # Still runnable from a source checkout without the dependency. The
         # warning it prints is accurate, so it is left alone.
+        sock.close()
         app.run(host=host, port=port, debug=False, threaded=True)
         return
-    _serve(app, host=host, port=port, threads=8, ident=None)
+    # On the socket bound above, so the port stays this process's alone.
+    _serve(app, sockets=[sock], threads=8, ident=None)
