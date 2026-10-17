@@ -291,7 +291,7 @@ Six mnemonics, 353 occurrences, 0.282% of all real logic.
 | CPT | 341 | **Not a flat weight by design.** Priced per call from its own expression's operator tokens. Deliberately absent from the weight table so the per-mnemonic loop cannot double-count it. |
 | ESTOP | 4 | Safety-family instruction. Out of scope. |
 | ROUT | 4 | Safety-family instruction. Out of scope. |
-| LC | 2 | Never tested. Below the noise floor. |
+| LC | 2 | Safety-family instruction (Light Curtain). OQ-SAFETYPARTITION. |
 | SCP | 1 | Never tested. Below the noise floor. |
 | RIN | 1 | Safety-family instruction. Out of scope. |
 
@@ -300,13 +300,13 @@ whose cost genuinely cannot be a flat per-rung number. Its expression model is i
 `MEMORY_MODEL.md`. The known defect there is narrow-integer widening, which reads
 as the worst measured accuracy of any instruction in the table.
 
-**SCP and LC are the only genuinely untested mnemonics in real use**, at three
-occurrences between them. Deliberately not worked: a precise number on a negligible
+**SCP is the only genuinely untested standard mnemonic in real use**, at one
+occurrence (LC is the safety Light Curtain instruction, OQ-SAFETYPARTITION). Deliberately not worked: a precise number on a negligible
 feature is a day not spent on the residual.
 
 ## Instructions that are out of scope or will not build
 
-**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN. These require a safety CPU. Not
+**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN, LC and the rest of the safety-routine set. These require a safety CPU; their safety-partition cost is OQ-SAFETYPARTITION. Not
 weight-table gaps; there is nothing to fix on a standard controller. **Ignored, not
 parked:** no test file is built for any of them, and `instrfirst_crout_x10`'s failed
 build is not pursued.
