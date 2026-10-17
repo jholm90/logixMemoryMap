@@ -66,15 +66,38 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0s. Safety partition — OPENED 2026-10-17, waiting on inputs (OQ-SAFETYPARTITION)
+### 0s. Safety partition — SEED IN, batch SPEC below (ask before generating) (OQ-SAFETYPARTITION)
 
-No file is built and no batch is specced until three things arrive: the Capacity tab of
-a safety project (screenshot plus the safety fields' control names, so
-`logix_build_capture.ahk` can record the safety reading), a Studio-made 1756-L81ES v35
-seed project with one rung per safety-routine instruction, and the real safety exports
-back in `samples/local/`. The seed fixes syntax and backing-tag types; the costs come
-from count sweeps built on it, specced here and approved before generation. Moves no
-standard-processor accuracy figure.
+The seed (two Studio-made 1756-L81ES v34 files, readings in OQ-SAFETYPARTITION) fixes
+the syntax of RIN, ROUT and FPMS and their backing types. Still missing before the
+batch can run end to end: the Window Spy ClassNN of the Capacity tab's safety field
+(the capture script records only the standard value), ESTOP's syntax (4 real uses;
+not in the seed), and the real safety exports for ranking what else real safety
+programs carry (safety I/O modules most of all).
+
+**Spec, `safe_*`, 38 files.** 1756-L81ES at v35, SIL2/PLd, the seed's controller,
+Local module and safety task/program/routine shell copied verbatim; standard partition
+on the realism floor (`realism.with_baseline()`); each file read for **both** the
+standard and the safety value. Needs a narrow `lint.py` platform exemption (prefix
+`safe_`, the `PlatNine` form) and the matching CLAUDE.md line. **Pilot first:**
+`safe_n00` and `safe_tag_dint_50` alone, to prove the L5X-to-ACD converter and the
+capture handle safety content, before the other 36.
+
+| group | files | varies | held | discriminates |
+|---|---|---|---|---|
+| control | `safe_n00` | nothing | plant + empty safety shell | safety base on the plant (seed: 1,394); standard control |
+| safety tags | BOOL and DINT ×10/50/200; REAL, INT, SINT ×50 | type, count | no logic | per-tag cost in each partition; the standard-side 56-per-tag hypothesis |
+| name length | DINT ×50 at 4/12/20/40 characters (the ×50 point is the 12) | name length | count | whether the standard side follows 56 + 8 × floor(len / 8) |
+| program scope | DINT ×50 in SafetyProgram | scope | count, type | scope cost against the controller-scope ×50 |
+| backing structures | REDUNDANT_INPUT, REDUNDANT_OUTPUT ×10/50/200; FIVE_POS_MODE_SELECTOR ×10/50 | type, count | no logic | structure tag cost; the tag control for the instruction rows |
+| safety instructions | RIN, ROUT ×10/50/200; FPMS ×10/50, one rung and one own backing tag each | count | operand shape as in the seed | instruction weight per partition, against the matching structure row |
+| standard instructions in the safety routine | XIC+OTE ×10/50/200; TON ×50; MOV DINT ×50 | count, mnemonic | safety BOOL[256] / TIMER[64] / DINT[64] arrays declared at full size in every file | whether a safety rung costs its standard weight, and where |
+| safety tags read from standard logic | XIC(safety BOOL)+OTE(standard BOOL) in MainProgram ×10/50/200 | count | both arrays at full size | standard logic cost of a safety operand (expected: ordinary operand) |
+
+Each sweep is differenced against `safe_n00`, and each instruction row against its
+structure row at the same count, solved as simultaneous equations per partition.
+Output bits are distinct in every file (realism floor). Moves no standard-processor
+accuracy figure.
 
 ### 0r. Repository cleanup, 2026-10-12 — DONE
 
