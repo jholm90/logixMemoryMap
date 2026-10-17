@@ -28,6 +28,13 @@ from anywhere:
 l5x-memory-analyzer ui path/to/file.L5X --port 9000 --no-browser
 ```
 
+**Windows, nothing installed:** double-click `Setup.cmd` in the repository root
+(it runs `scripts/setup_windows.ps1`). It installs Python per-user if none is
+found, builds `.venv`, self-checks, adds a desktop shortcut and opens the UI.
+Works on a fresh Windows 10 install (2026-10-17). Windows 7 is not supported:
+its PowerShell 2.0 has no `$PSScriptRoot`, and Python 3.9 and later do not run
+on it.
+
 ## 2. Tests
 
 ```bash

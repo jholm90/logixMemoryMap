@@ -296,6 +296,11 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     # that went back to the XML on every call. Measured on a 33 MB real export:
     # rungs 0.06s for 6,550 of them, alarms 0.04s, xref 0.64s for 193 types.
     rungs_cache = _build_all_rungs(doc.root, model)
+    # An AOI's RLL tile drills into its rungs exactly as a program routine
+    # does; parse_rll_routines above covers program routines only.
+    for path, rows in rungs_cache.items():
+        if path.startswith("aoi_definitions/"):
+            rung_counts[path] = len(rows)
 
     # A routine's confidence, byte-weighted over its OWN rungs -- the identical
     # calculation the client does once a routine has been expanded.
@@ -443,6 +448,12 @@ def _build_all_rungs(root, model) -> dict:
             names = [r.get("Name") for r in owner.iter("Routine")
                      if (r.get("Type") or "RLL") == "RLL" and r.get("Name")] or ["Logic"]
             aoi_key = f"aoi_definitions/{owner_name}/{'+'.join(names)}"
+            # Present even with no rungs (a source-protected AOI), so its
+            # count reads 0 and the tile is not offered as drillable.
+            out.setdefault(aoi_key, [])
+            # One tile holds every RLL routine of the AOI, and each routine
+            # numbers its rungs from 0, so the rung carries its routine's name.
+            label_routine = len(names) > 1
         for routine_el in owner.iter("Routine"):
             if is_aoi and (routine_el.get("Type") or "RLL") != "RLL":
                 continue
@@ -472,7 +483,10 @@ def _build_all_rungs(root, model) -> dict:
                     ),
                 })
             if aoi_key:
-                out.setdefault(aoi_key, []).extend(rows)
+                if label_routine:
+                    for r in rows:
+                        r["routine"] = routine_el.get("Name") or ""
+                out[aoi_key].extend(rows)
             else:
                 out[f"program:{owner_name}/{routine_el.get('Name') or ''}"] = rows
     return out
@@ -603,7 +617,7 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
         if state is None:
             return jsonify({"error": "no file loaded"}), 400
         path = request.args.get("path", "")
-        if not path.startswith("program:") or "/" not in path:
+        if not path.startswith(("program:", "aoi_definitions/")) or "/" not in path:
             return jsonify({"error": f"not a routine path: {path!r}"}), 400
         rows = state.rungs_cache.get(path)
         if rows is None:

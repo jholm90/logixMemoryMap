@@ -1089,8 +1089,10 @@ async function ensureChildren(node) {
       return null;
     }
     const data = await res.json();
+    // An AOI with more than one RLL routine is one tile, so each of its rungs
+    // names its routine; a program routine's rungs carry no routine field.
     node.children = data.rungs.map(r => ({
-      name: `Rung ${r.number}`,
+      name: r.routine ? `${r.routine} rung ${r.number}` : `Rung ${r.number}`,
       value: r.value,
       data_type: "Rung",
       basis: node.basis,
@@ -1098,7 +1100,7 @@ async function ensureChildren(node) {
       has_children: false,
       rung_text: r.text,
       rung_instructions: r.instructions,
-      path: `${node.path}#${r.number}`,
+      path: r.routine ? `${node.path}#${r.routine}:${r.number}` : `${node.path}#${r.number}`,
     }));
     return node.children;
   }
@@ -1745,17 +1747,41 @@ function paintNested(svg, g, node, r, headerH, depth, ancestors) {
       clabel.setAttribute("x", ir.x + 3);
       clabel.setAttribute("y", ir.y + 10);
       clabel.classList.add("tm-label", "tm-label-nested");
-      clabel.textContent = truncateLabel(displayName(cnode), ir.w);
+      clabel.textContent = truncateLabel(displayName(cnode), ir.w, NESTED_CHAR_PX);
       g.appendChild(clabel);
       usedH = 11;
+
+      // Second line when it fits: the same description a top-level tile
+      // shows under its name (DINT[7] for a member, the rung count for a
+      // routine), without the size, which stays on hover at this depth. A
+      // tile that nests further only gets it when its header strip is tall
+      // enough to hold both lines, or its own children would paint over it.
+      const lines = subLabelFor(cnode);
+      const nestsFurther = depth + 1 < NEST_DEPTH && isDrillable(cnode) &&
+        !!(cnode.children && cnode.children.length);
+      const room = nestsFurther ? ir.h * NEST_HEADER_MAX_FRACTION >= 21 : ir.h > 24;
+      if (lines.length > 1 && room) {
+        const csub = document.createElementNS(svgNS, "text");
+        csub.setAttribute("x", ir.x + 3);
+        csub.setAttribute("y", ir.y + 20);
+        csub.classList.add("tm-label", "tm-label-nested", "tm-label-nested-sub");
+        csub.textContent = truncateLabel(lines[0], ir.w, NESTED_CHAR_PX);
+        g.appendChild(csub);
+        usedH = 21;
+      }
     }
     paintNested(svg, g, cnode, ir, nestHeaderH(usedH, ir.h), depth + 1,
                 [...ancestors, cnode]);
   }
 }
 
-function truncateLabel(name, widthPx) {
-  const maxChars = Math.max(3, Math.floor(widthPx / 6.5));
+// Average glyph width per label size: 6.5 px at the 11 px tile label, about
+// 5 px at the 8-8.5 px nested labels. Measuring nested labels with the
+// tile-label width cut "Recipe_t" to "Recipe..." in a tile that holds it.
+const NESTED_CHAR_PX = 5;
+
+function truncateLabel(name, widthPx, charPx = 6.5) {
+  const maxChars = Math.max(3, Math.floor(widthPx / charPx));
   return name.length > maxChars ? name.slice(0, maxChars - 1) + "…" : name;
 }
 
