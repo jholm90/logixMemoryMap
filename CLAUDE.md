@@ -539,6 +539,7 @@ than trusted.
 | `docs/FUTURE_TESTS.md` | tests that would improve the model |
 | `docs/IO_MODULES.md` | module and I/O reference |
 | `docs/CMP_CPT_REFERENCE.md` | real CMP and CPT syntax |
+| `docs/SAFETY_INSTRUCTIONS.md` | every safety-routine instruction's operands, in order, as Studio exports them |
 | `docs/COMMANDS.md` | every script and command |
 | `samples/manifest.csv` | the spec: every tracked sample and its prediction |
 | `samples/captures.csv` | the result: every real controller reading |

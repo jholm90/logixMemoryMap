@@ -28,7 +28,12 @@ from dataclasses import dataclass, field
 # ALL-CAPS AOI name still matches this regex too, but that is harmless: `weights`
 # has no entry for an AOI name, so it contributes zero here and is not
 # double-charged.
-_INSTRUCTION_CALL = re.compile(r"\b([A-Z][A-Z0-9_]*)\(")
+#
+# THRSe (two-hand run station, enhanced) is the one built-in mnemonic with a
+# lowercase letter; the uppercase pattern alone left every THRSe rung uncounted
+# (OQ-SAFETYPARTITION). It is named explicitly rather than widening the pattern
+# to mixed case, which would count every mixed-case AOI call as an instruction.
+_INSTRUCTION_CALL = re.compile(r"\b(THRSe|[A-Z][A-Z0-9_]*)\(")
 
 # v36+ ladder mnemonics (OQ-V36MNEMONIC). From v36 sixteen ladder instructions
 # are spelled differently, and a v36+ project does not accept the old spelling:
