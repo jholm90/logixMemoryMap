@@ -3,7 +3,8 @@
 ; path to open (file existence at -OpenRequestPath = "go" signal, content +
 ; clipboard both carry the path) and polls for this script's results
 ; (-HandoffPath: error_count,warning_count,message_value,ocd_value,
-; window_title, overwritten every cycle, consumed on read). This script
+; window_title,error_log,safety_value, overwritten every cycle, consumed on
+; read). This script
 ; never launches or closes Logix Designer -- it drives File > Open inside
 ; the same already-running instance (confirmed ~5s vs ~65s for a full
 ; close/reopen cycle).
@@ -51,6 +52,7 @@ DirCreate A_ScriptDir "\ahk_runtime"
 LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; confirmed via Window Spy
 
 global OCDValue := ""
+global SafetyValue := ""
 global ErrorValue := ""
 global WarningValue := ""
 global MessageValue := ""
@@ -303,6 +305,31 @@ CsvQuote(text) {
     return '"' StrReplace(text, '"', '""') '"'
 }
 
+; Safety memory (OQ-SAFETYPARTITION). A safety controller's Capacity tab shows
+; its safety partition's used memory in Edit6, beside the standard used memory
+; in Edit3 (confirmed on the machine). Read only for a safety catalog and only
+; after a good standard read, by a plain control read with no keystrokes, so it
+; cannot disturb the standard value; a missing or unreadable field records ""
+; and the loop carries on.
+global SAFETY_CTRL := "Edit6"
+
+; True when the catalog in the main window title's trailing brackets ends in
+; S, S2 or S3: "[1756-L81ES 35.11]", "[5069-L320ERMS2 35.11]". A standard
+; controller's Edit6, whatever it holds there, is never read as safety memory.
+IsSafetyCatalogTitle(title) {
+    return RegExMatch(title, "\[\S*S[23]?\s+[\d.]+\]") ? true : false
+}
+
+ReadSafetyUsed() {
+    v := ""
+    try {
+        v := StripCommas(Trim(ControlGetText(SAFETY_CTRL, "A")))
+    } catch {
+        return ""
+    }
+    return (v != "" && IsNumber(v)) ? v : ""
+}
+
 StatusGui := Gui("+AlwaysOnTop +ToolWindow", "Loop Status.  Press ESC to Abort")
 StatusGui.SetFont("s12 Bold")
 StatusText := StatusGui.AddText("w320", "IDLE - press Ctrl+F1 in Logix window")
@@ -317,6 +344,7 @@ Status(msg) {
     Status("STARTED")
     Loop {
         global OCDValue := ""
+        global SafetyValue := ""
         global ErrorValue := ""
         global WarningValue := ""
         global MessageValue := ""
@@ -649,6 +677,15 @@ Status(msg) {
 				
         Status("~ Read OCD value: " OCDValue)
 
+        ; Safety partition, still on the Capacity tab: kept only when the
+        ; standard read above succeeded. WindowTitle is the main window's,
+        ; captured before this dialog opened, so it carries the catalog.
+        if IsSafetyCatalogTitle(WindowTitle) && IsNumber(OCDValue) && OCDValue != "0" {
+            SafetyValue := ReadSafetyUsed()
+            Status("Read safety value (" SAFETY_CTRL "): {{" SafetyValue "}}")
+            Sleep 100
+        }
+
         Send "!{F4}"
         Sleep 25
 
@@ -668,8 +705,8 @@ Status(msg) {
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
         ErrorLog := CountNote ReadErrorLog()
-        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log`n")
-        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "`n")
+        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log,safety_value`n")
+        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "," SafetyValue "`n")
         handoffFile.Close()
 
         Status("Looping -- waiting for next file...")
@@ -686,5 +723,8 @@ F9:: {
     title := WinGetTitle("A")
     hwnd := ControlGetHwnd("Edit3", "A")
     txt := ControlGetText("Edit3", "A")
+    safety := "(no " SAFETY_CTRL ")"
+    try safety := ControlGetText(SAFETY_CTRL, "A")
     MsgBox "Active window: " title "`nEdit3 HWND: " hwnd "`nEdit3 text: [" txt "]"
+        . "`n" SAFETY_CTRL " text (safety used): [" safety "]"
 }

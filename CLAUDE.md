@@ -121,7 +121,11 @@ user memory (OQ-L9BUDGET). No further L9 work is planned.
 **Accuracy is measured on STANDARD processors only.** A safety processor (catalog
 ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags and safety
 logic in a separate memory partition that standard Capacity does not count, so its
-reading is not the quantity the model predicts. Safety-processor rows, real and
+reading is not the quantity the model predicts. **The safety partition itself is being
+measured (OQ-SAFETYPARTITION):** the capture tooling records it as `safety_bytes`, and the
+`safe_*` batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart
+controller prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
+gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and
 generated, are excluded from every accuracy figure — enforced in
 `scripts/quick_eval.py` (`--include-safety` to report them).
 
@@ -133,6 +137,9 @@ lint rather than left to each generator's defaults — **it has been violated tw
 and both times the deviation looked justified at the moment it was made.** The
 exemptions are the firmware and catalog matrix generators and the L9/v38 side-by-side
 batch (`PlatNine`), for which sweeping those fields is the variable under test.
+
+The `safe_*` safety batch is the one pinned alternate: 1756-L81ES at v35 and nothing
+else.
 
 **From v36, sixteen ladder instructions are renamed and a v36+ project does NOT accept
 the old name:** EQU→EQ, NEQ→NE, GRT→GT, GEQ→GE, LES→LT, LEQ→LE, MOV→MOVE, LIM→LIMIT,

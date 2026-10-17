@@ -19,7 +19,10 @@ touches the other's:
                            sample_id, actual_bytes, controller_model,
                            firmware_rev, date_tested, notes, error_count,
                            warning_count, message_value, window_title,
-                           error_log. Written by the capture tooling only.
+                           error_log, safety_bytes. Written by the capture
+                           tooling only. safety_bytes is a safety
+                           controller's safety-partition used memory
+                           (OQ-SAFETYPARTITION), blank on any other.
 
 `delta` and `delta_pct` are GONE, not moved. CLAUDE.md already forbids
 trusting a stored delta -- it goes stale the moment any constant changes, and
@@ -47,6 +50,7 @@ SPEC_COLUMNS = ["sample_id", "description", "category", "l5x_path", "predicted_b
 CAPTURE_COLUMNS = [
     "sample_id", "actual_bytes", "controller_model", "firmware_rev", "date_tested",
     "notes", "error_count", "warning_count", "message_value", "window_title", "error_log",
+    "safety_bytes",
 ]
 # What a joined row looks like, so a reader that wants every key gets them all
 # even for a sample that has never been captured.

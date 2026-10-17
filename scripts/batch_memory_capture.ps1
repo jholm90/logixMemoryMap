@@ -16,7 +16,7 @@
                        the request (consumed) once read.
     -HandoffPath        AHK -> PowerShell. AHK overwrites this with
                        error_count,warning_count,message_value,ocd_value,
-                       window_title once its build/verify/Capacity-read
+                       window_title,error_log,safety_value once its build/verify/Capacity-read
                        cycle finishes for whatever file it just opened;
                        this script polls for it (see -TimeoutSeconds),
                        reads, deletes it (consumed), and logs. window_title
@@ -27,7 +27,11 @@
                        -- a real Capacity reading is never
                        actually 0, so a 0 read is a bad-read symptom, not
                        real data; flagged ZERO CAPACITY and auto-retried
-                       next run, never silently counted.
+                       next run, never silently counted. safety_value is
+                       a safety controller's safety-partition used memory
+                       (Capacity tab Edit6), logged as safety_bytes; blank on
+                       a safety catalog is flagged SAFETY NOT READ and
+                       retried, and a standard controller never has one.
 
   Per file:
     1. Write the ACD path to -OpenRequestPath.
@@ -55,7 +59,8 @@
   -OpenRequestPath to appear, reads+deletes it, opens that path via Ctrl+O
   in the existing Logix Designer window, does its build/verify/Capacity
   read, then writes -HandoffPath (header + one data row:
-  error_count,warning_count,message_value,ocd_value,window_title) before
+  error_count,warning_count,message_value,ocd_value,window_title,error_log,
+  safety_value) before
   looping back to wait for the next request.
 
   ManifestPath/HandoffPath/OpenRequestPath all default to locations relative
@@ -196,7 +201,7 @@ function Get-RelPath($fullPath) {
 # moment any sizing constant changes, every reader recomputes it live, and it
 # was a derived value sitting in the one file two writers fought over.
 $CaptureColumns = "sample_id,actual_bytes,controller_model,firmware_rev,date_tested," +
-    "notes,error_count,warning_count,message_value,window_title,error_log"
+    "notes,error_count,warning_count,message_value,window_title,error_log,safety_bytes"
 
 if (-not (Test-Path $CapturesPath)) {
     $CaptureColumns | Out-File -FilePath $CapturesPath -Encoding utf8
@@ -204,6 +209,14 @@ if (-not (Test-Path $CapturesPath)) {
 # The spec side is still READ, to resolve sample_id and category for each file.
 $manifest = @(Import-Csv $ManifestPath)
 $captures = @(Import-Csv $CapturesPath)
+# safety_bytes arrived after captures.csv already held thousands of rows.
+# Export-Csv takes its header from the FIRST object it writes, so a column that
+# only the new rows carried would be dropped silently; every row gets it here.
+foreach ($c in $captures) {
+    if ($c.PSObject.Properties.Name -notcontains 'safety_bytes') {
+        $c | Add-Member -NotePropertyName safety_bytes -NotePropertyValue ""
+    }
+}
 $alreadyLogged = @{}
 # "any test that fails for window title mismatch should
 # be rerun... make sure you can rerun those tests next time without me
@@ -221,10 +234,10 @@ $alreadyLogged = @{}
 # back to a path through the spec side.
 $pathById = @{}
 $manifest | ForEach-Object { $pathById[$_.sample_id] = $_.l5x_path }
-$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC') } |
+$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ') } |
     ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true } }
 $mismatchFlagged = @{}
-$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC' } |
+$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ' } |
     ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
@@ -267,7 +280,13 @@ foreach ($row in $remaining) {
     $idx++
     $relPath = Get-RelPath $row.l5x_path
     $meta = Get-SampleIdAndDescription $row.l5x_path
-    $category = Get-Category $row.l5x_path
+    # The L5X this ACD was converted from. convert_log.csv records it relative
+    # to the repo root; the processor/firmware read below needs the file. It
+    # was never assigned, so that read threw on every file and logged
+    # UNKNOWN with PROCTYPE-UNREAD.
+    $l5xPath = if ([System.IO.Path]::IsPathRooted($row.l5x_path)) { $row.l5x_path } `
+               else { Join-Path (Split-Path $PSScriptRoot -Parent) $row.l5x_path }
+    $category = Get-Category $l5xPath
     $existing = $captures | Where-Object { $_.sample_id -eq $meta.Id } | Select-Object -First 1
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
@@ -329,6 +348,8 @@ foreach ($row in $remaining) {
     # before truncating, so a partial read announces itself here rather than
     # arriving as plausible-looking text.
     $errorLog = if ($result.PSObject.Properties.Name -contains 'error_log') { $result.error_log } else { "" }
+    # Absent from a handoff written by an older AHK script; blank then.
+    $safetyValue = if ($result.PSObject.Properties.Name -contains 'safety_value') { $result.safety_value } else { "" }
     Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
     # Independent cross-check ("window title is valid
@@ -404,19 +425,41 @@ foreach ($row in $remaining) {
     $declaredProc = "UNKNOWN"
     $declaredFw   = "UNKNOWN"
     try {
-        [xml]$l5xHead = Get-Content -LiteralPath $l5xPath -TotalCount 40 -ErrorAction Stop
-        if ($l5xHead.RSLogix5000Content.SoftwareRevision) {
-            $declaredFw = $l5xHead.RSLogix5000Content.SoftwareRevision
+        # Matched as text: the first 40 lines are a fragment, never a whole XML
+        # document, so casting them to [xml] threw on every file.
+        $l5xHead = (Get-Content -LiteralPath $l5xPath -TotalCount 40 -ErrorAction Stop) -join "`n"
+        if ($l5xHead -match '<RSLogix5000Content\b[^>]*\bSoftwareRevision="([^"]+)"') {
+            $declaredFw = $Matches[1]
         }
-        if ($l5xHead.RSLogix5000Content.Controller.ProcessorType) {
-            $declaredProc = $l5xHead.RSLogix5000Content.Controller.ProcessorType
+        if ($l5xHead -match '<Controller\b[^>]*\bProcessorType="([^"]+)"') {
+            $declaredProc = $Matches[1]
         }
+        if ($declaredProc -eq "UNKNOWN") { throw "no ProcessorType in the first 40 lines" }
     } catch {
         # Truncated read or malformed head. Record UNKNOWN and flag the row
         # rather than inventing a value -- there is no operator-supplied
         # fallback any more, deliberately: a guessed processor is worse than
         # an admitted gap, because it looks like data.
         $notes = ($notes + " PROCTYPE-UNREAD").Trim()
+    }
+
+    # A safety controller reports its safety partition separately
+    # (OQ-SAFETYPARTITION): AHK reads it only after a good standard value. Blank
+    # or non-numeric on a safety catalog means that read failed: the standard
+    # value is still logged, and the row is retried next run like a ZERO
+    # CAPACITY one. A standard controller has no safety figure at all.
+    # The catalog from the L5X, or from the title's "[1756-L81ES 35.11]" when the
+    # L5X could not be read.
+    $catalog = $declaredProc
+    if ($catalog -eq "UNKNOWN" -and $windowTitle -match '\[(\S+)\s+[\d.]+\]') { $catalog = $Matches[1] }
+    $isSafetyCatalog = $catalog -cmatch 'S[23]?$'
+    if (-not $isSafetyCatalog) {
+        $safetyValue = ""
+    } elseif ($safetyValue -notmatch '^\d+$') {
+        Write-Warning "Safety memory not read for $($meta.Id) ('$safetyValue') -- standard value kept, flagged for retry."
+        $flag = "SAFETY NOT READ: '$safetyValue' -- retried next run"
+        $notes = if ($notes) { "$notes; $flag" } else { $flag }
+        $safetyValue = ""
     }
 
     # a non-zero error count, or an error-log read that failed its
@@ -447,19 +490,21 @@ foreach ($row in $remaining) {
         } else {
             $existing | Add-Member -NotePropertyName error_log -NotePropertyValue $errorLog
         }
+        $existing.safety_bytes = $safetyValue
     } else {
         $captures += [pscustomobject]@{
             sample_id = $meta.Id; actual_bytes = $blocksUsed
             controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
-            window_title = $windowTitle; error_log = $errorLog
+            window_title = $windowTitle; error_log = $errorLog; safety_bytes = $safetyValue
         }
     }
     $captures | Export-Csv -Path $CapturesPath -NoTypeInformation -Encoding utf8
     $fileSw.Stop()
     $fileSeconds = [math]::Round($fileSw.Elapsed.TotalSeconds, 1)
     $fileTimes += $fileSeconds
-    Write-Host "Logged: ${fileSeconds}s Actual_Bytes=$blocksUsed errors=$errorCount Warnings=$warningCount Message=$messageValue Title=$windowTitle"
+    $safetyNote = if ($safetyValue) { " Safety_Bytes=$safetyValue" } else { "" }
+    Write-Host "Logged: ${fileSeconds}s Actual_Bytes=$blocksUsed$safetyNote errors=$errorCount Warnings=$warningCount Message=$messageValue Title=$windowTitle"
 }
 
 $batchSw.Stop()
