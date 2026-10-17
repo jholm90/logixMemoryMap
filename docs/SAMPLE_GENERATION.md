@@ -82,6 +82,14 @@ that prompted it.
 
 ## Rules that decide whether a file imports
 
+### The Local module's ProductCode is its catalog's own
+
+A controller catalog and its Local module's `ProductCode` must agree, and the safety
+twins are numbered apart from the standard parts (1756-L81E 164, 1756-L81ES 211).
+`build_l5x` refuses a 1756 catalog with no confirmed code and lint refuses a mismatch
+(`local_module_product_code`); a wrong code fails conversion as a missing port
+(OPEN_BUILD_ERRORS, rule 5).
+
 ### Logix identifier rules — a hard requirement on everything
 
 **Every** name in the file: tags, programs, routines, tasks, modules, UDT members,

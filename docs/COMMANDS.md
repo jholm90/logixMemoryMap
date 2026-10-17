@@ -246,6 +246,20 @@ takes seconds.
 Other flags: `--worst N`, `--lenient`, `--include-dead` (1756-L7x and 1769 rows,
 excluded by default as dead architecture).
 
+### `safety_eval.py` — reconcile the safe_* batch
+
+```bash
+python scripts/safety_eval.py            # both partitions, every sweep against its control
+python scripts/safety_eval.py --engine   # plus the engine's live standard prediction
+```
+
+Differences every `safe_*` capture against its own control in both columns
+(`actual_bytes` standard, `safety_bytes` safety): per-tag cost by type and count, name
+length against the standard-side hypothesis 56 + 8 × floor(len / 8), scope, each
+instruction's backing tag and its rung, ordinary instructions in the safety routine, and
+standard logic reading safety tags. Rows that captured with errors or carry a capture flag
+are listed and left out of every figure (OQ-SAFETYPARTITION).
+
 ### `capture_errors.py` — the error gate
 
 Routes every capture that errored to the open question that asked for the test,

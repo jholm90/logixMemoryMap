@@ -115,6 +115,14 @@ Rebuilding on a real catalog fixed it. L83E rather than L81E for the one part of
 the original reasoning that did hold: three dual-axis drives plus two power
 supplies do not fit an L81E's 3 MB.
 
+**A wrong ProductCode can also read as a missing port.** The first `safe_*` batch
+(2026-10-17) failed conversion on every file with *"required property 'port' was
+missing"* at the Local module's `</Ports>`: `build_l5x` had no code for 1756-L81ES and
+fell back to the 1756-L81E's 164, while GuardLogix 5580 is numbered apart (L81ES 211).
+Studio's own re-export of one file showed the single change. `build_l5x` now refuses a
+1756 catalog it has no code for, and lint's `local_module_product_code` refuses a Local
+module whose code is not its catalog's.
+
 ### 6. Conversion success does not mean the program compiles
 
 The SDK only opens and parses. It performs no ladder verification. A file with a
