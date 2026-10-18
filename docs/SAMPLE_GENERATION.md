@@ -62,12 +62,18 @@ matrix generators, for which sweeping those two fields *is* the variable under
 test, and one Kinetix rack that needs an L83E because three dual-axis drives plus
 two power supplies do not fit an L81E's 3 MB.
 
-One alternate is pinned rather than exempt: the safety-partition batch
-(`gen_safety_partition.py`, controller prefix `SafePart`, OQ-SAFETYPARTITION) must be
+One alternate is pinned rather than exempt: the safety-partition batches
+(`gen_safety_partition.py` and `gen_safety_round2.py`, controller prefix `SafePart`,
+OQ-SAFETYPARTITION) must be
 1756-L81ES at v35 and nothing else, because the safety partition exists only on a safety
 controller. Its call shapes come from Studio-made seeds (`docs/SAFETY_INSTRUCTIONS.md`),
 its tag data blocks from `samples/proven_blocks.json`, and lint refuses a safety-routine
-instruction anywhere but a Class="Safety" program on a safety controller.
+instruction anywhere but a Class="Safety" program on a safety controller. Round 2 (TASKS
+0u) builds through a generalisation of round 1's builder (several safety programs and
+routines, UDTs, aliases) that is byte-identical to it for one program and one routine,
+which a test pins, so every round-2 file differences against round 1's captured
+`safe_n00`. Its four `safe_comp_*` files carry both partitions' predictions in their
+manifest description, written at generation: blind tests.
 
 ### The feedback loop
 

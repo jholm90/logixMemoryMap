@@ -125,6 +125,21 @@ def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -
     for n in (10, 50, 200):
         p(f"  x{n:<3} {_per(diff(good, f'safe_ref_{n}', 'safe_ref_ctl'), n)}")
 
+    p("\nround 2 (TASKS 0u), per unit, against its control:")
+    for label, a, b, n in ROUND2_DIFFS:
+        if a in good and b in good:
+            p(f"  {label:34} {_per(diff(good, a, b), n)}")
+    comp = [r for r in rows if r["sample_id"].startswith("safe_comp_") and r["sample_id"] in good]
+    for r in comp:
+        m = re.search(r"standard ([\d,]+), safety ([\d,]+)", r.get("description") or "")
+        if m:
+            ps, pf = (int(x.replace(",", "")) for x in m.groups())
+            a_std, a_saf = good[r["sample_id"]]
+            line = f"  BLIND {r['sample_id']}: standard {a_std:,} vs {ps:,} ({(a_std - ps) / a_std * 100:+.2f}%)"
+            if a_saf is not None:
+                line += f", safety {a_saf:,} vs {pf:,} ({(a_saf - pf) / a_saf * 100:+.2f}%)"
+            p(line)
+
     if engine:
         p("\nengine against every clean capture (actual - engine), standard | safety:")
         std_res: dict[int, list[str]] = {}
@@ -140,6 +155,35 @@ def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -
             for r, sids in sorted(res.items(), key=lambda kv: -len(kv[1])):
                 p(f"  {label:8} {r:+7,}: {len(sids):3} file(s)" + ("" if len(sids) > 6 else f"  {', '.join(sids)}"))
     return "\n".join(out)
+
+
+def _round2_diffs() -> list[tuple[str, str, str, int]]:
+    """(label, file, control, units) for every round-2 difference."""
+    out = [(f"prog DINT name len {k}", f"safe_ptag_dint_50_len{k}", "safe_n00", 50) for k in (4, 8, 16, 24, 40)]
+    for shape in ("dint2", "dint3", "dint64", "int3", "sint10", "real10", "bool64", "bool96", "dint4x4", "timer4"):
+        out += [(f"array {shape} {sc}", f"safe_arr_{shape}_{sc}", "safe_n00", 20) for sc in ("ctl", "prog")]
+    for typ in ("timer", "counter", "control", "lint"):
+        out += [(f"{typ} {sc}", f"safe_struct_{typ}_{sc}", "safe_n00", 20) for sc in ("ctl", "prog")]
+    for size in ("s", "l"):
+        out += [(f"udt {size} definition", f"safe_udt_{size}_def", "safe_n00", 1),
+                (f"udt {size} ctl tag", f"safe_udt_{size}_ctl20", f"safe_udt_{size}_def", 20),
+                (f"udt {size} prog tag", f"safe_udt_{size}_prog20", f"safe_udt_{size}_def", 20)]
+    out += [("alias ctl -> ctl", "safe_alias_tctl_actl", "safe_alias_tctl", 20),
+            ("alias prog -> ctl", "safe_alias_tctl_aprog", "safe_alias_tctl", 20),
+            ("alias prog -> prog", "safe_alias_tprog_aprog", "safe_alias_tprog", 20)]
+    out += [(f"JSR'd subroutines x{n}", f"safe_rtn_jsr_{n}", "safe_n00", n) for n in (1, 2, 5, 10)]
+    out += [(f"uncalled routines x{n}", f"safe_rtn_idle_{n}", "safe_n00", n) for n in (1, 5)]
+    out += [(f"safety programs x{n} (per extra)", f"safe_prg_{n}", "safe_n00", n - 1) for n in (2, 3, 5)]
+    out += [("2nd program name 40 vs 11", "safe_prg_2_len40", "safe_prg_2", 1),
+            ("DINT in 2nd program", "safe_prg_2_tags50", "safe_prg_2", 50)]
+    for form in ("estop_opprog", "estop_opctl", "estop_oparr", "estop_bctl", "rin_bctl"):
+        out += [(f"{form} tags", f"safe_{form}_tags_20", "safe_n00", 20),
+                (f"{form} rung", f"safe_{form}_20", f"safe_{form}_tags_20", 20)]
+    out += [(f"standard rung, {w}", f"safe_sref_{w}_50", "safe_sref_ctl", 50) for w in ("two", "scalar", "mov", "std")]
+    return out
+
+
+ROUND2_DIFFS = _round2_diffs()
 
 
 def engine_predictions() -> dict[str, tuple[int, int]]:

@@ -262,7 +262,8 @@ are listed and left out of every figure (OQ-SAFETYPARTITION). `--engine` parses 
 `safe_*` file on disk (about ten minutes) and groups the files by their residual in each
 partition.
 
-The batch itself: `python -m sample_gen.gen_safety_partition [--only REGEX]`. Use
+The batches: `python -m sample_gen.gen_safety_partition [--only REGEX]` (round 1) and
+`python -m sample_gen.gen_safety_round2 [--only REGEX]` (round 2, TASKS 0u). Use
 `--only` for a partial rebuild: a full one restamps every file's dates, which changes its
 hash and queues every captured file for reconversion.
 

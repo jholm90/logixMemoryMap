@@ -66,6 +66,46 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0u. Safety round 2 — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_*`, 74 files)
+
+Asked for directly: enough rounds to be confident in whole safety programs, safety tags
+at controller and program scope alike. Every file is 1756-L81ES v35 on the realism plant,
+built by `gen_safety_round2.py` with the round-1 builder, so each one differences against
+`safe_n00` (captured) or a control in its own family. Round 1's 112 files are not touched.
+
+| group | files | varies | control | discriminates |
+|---|---:|---|---|---|
+| `safe_ptag_dint_50_len<k>` | 5 | program-scope name length 4/8/16/24/40 (12 is `safe_tag_dint_50_prog`) | `safe_n00` | whether a safety-program tag's name entry follows 56 + 8 × floor(len / 8) in the safety partition |
+| `safe_arr_<shape>_<ctl\|prog>` | 20 | DINT[2], DINT[3], DINT[64], INT[3], SINT[10], REAL[10], BOOL[64], BOOL[96], DINT[4,4], TIMER[4]; 20 tags each, both scopes | `safe_n00` | the data block 8 × ceil((28 + data) / 8) on arrays; that a controller array still pays only its name entry standard |
+| `safe_struct_<type>_<ctl\|prog>` | 8 | TIMER, COUNTER, CONTROL, LINT; 20 tags, both scopes | `safe_n00` | the data block on the ordinary structures and LINT, and whether Studio accepts CONTROL and LINT as safety types |
+| `safe_udt_<s\|l>_<def\|ctl20\|prog20>` | 6 | a 12-byte and a 40-byte safety UDT: definition alone, then 20 tags at each scope | `safe_n00`, then its `_def` | which partition pays a UDT definition used by safety tags; the data block on a UDT |
+| `safe_alias_*` | 5 | 20 aliases: controller → controller, program → controller, program → program | the 20 targets alone, each scope | what a safety alias costs, and where |
+| `safe_rtn_<jsr\|idle>_<n>` | 6 | 1/2/5/10 JSR-called safety subroutines; 1/5 uncalled ones | `safe_n00` | a safety routine's shell in each partition, apart from its JSR rung |
+| `safe_prg_*` | 5 | 2/3/5 safety programs; a 40-character second name; 50 tags in the second program | `safe_n00`, `safe_prg_2` | a safety program's shell and name in each partition; program-scope tags in any safety program |
+| `safe_<estop\|rin>_<op\|b>*_20` | 10 | ESTOP inputs as program BOOLs, controller safety BOOLs, BOOL-array elements; ESTOP and RIN backing tags at controller scope; each with its tags-only file | its tags-only file | whether a safety rung's cost depends on where its operands and backing tag live |
+| `safe_sref_*` | 5 | 50 standard rungs: two safety operands, a scalar safety BOOL, MOV from a safety DINT, and the all-standard twin | `safe_sref_ctl` | the +8 per safety operand: per operand or per rung, scalar or array, BOOL or DINT, against the engine's own standard rung |
+| `safe_comp_<1..4>` | 4 | whole safety programs: two to five programs, subroutines, ESTOP/RIN/ROUT/LC and drive safety, tags at both scopes, arrays, UDTs, standard logic reading safety status | none (blind) | **blind test**: both partitions predicted and written down before capture |
+
+**Built 2026-10-18:** 74 files, lint clean, `samples/generated/safety/`. **Blind
+predictions, written before any reading** (engine of 2026-10-18; the standard figures
+include the realism plant's −1,794, so read the standard residual net of it):
+
+| file | standard predicted | safety predicted |
+|---|---:|---:|
+| `safe_comp_1` | 844,930 | 12,322 |
+| `safe_comp_2` | 847,022 | 16,778 |
+| `safe_comp_3` | 845,302 | 53,814 |
+| `safe_comp_4` | 842,474 | 15,994 |
+
+Known gaps already inside those predictions: an extra safety routine or program's shell
+is charged nothing (comp 1, 2, 3 and 4 have them) and an alias nothing in the safety
+partition (comp 2).
+
+Not in this round: ordinary instructions inside a safety routine (the seven
+`safe_std_*_r2`, already built, convert with this round); safety I/O modules (no Studio
+block exists for one — a Studio-made seed with a 1734-AENTR, one IB8S and one OB8S is
+needed first).
+
 ### 0t. While the safety capture runs — ranked 2026-10-17
 
 1. **README** — DONE: the quick start now leads with `Setup.cmd` for Windows.
