@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartMap1" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:34:57 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="SafePartMap1" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:34:57 2026" LastModifiedDate="Sun Oct 18 21:34:57 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartMap1" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:49:25 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="SafePartMap1" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:49:25 2026" LastModifiedDate="Sun Oct 18 21:49:25 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="false" SafetyLevel="SIL2/PLd">
@@ -2260,604 +2260,604 @@
 
 </AddOnInstructionDefinitions>
 <Tags>
-      <Tag Name="StdMap000" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap000" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap001" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap001" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap002" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap002" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap003" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap003" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap004" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap004" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap005" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap005" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap006" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap006" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap007" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap007" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap008" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap008" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap009" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap009" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap010" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap010" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap011" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap011" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap012" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap012" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap013" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap013" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap014" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap014" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap015" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap015" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap016" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap016" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap017" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap017" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap018" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap018" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap019" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap019" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap020" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap020" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap021" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap021" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap022" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap022" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap023" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap023" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap024" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap024" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap025" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap025" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap026" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap026" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap027" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap027" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap028" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap028" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap029" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap029" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap030" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap030" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap031" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap031" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap032" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap032" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap033" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap033" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap034" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap034" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap035" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap035" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap036" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap036" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap037" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap037" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap038" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap038" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap039" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap039" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap040" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap040" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap041" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap041" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap042" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap042" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap043" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap043" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap044" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap044" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap045" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap045" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap046" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap046" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap047" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap047" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap048" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap048" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap049" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap049" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap050" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap050" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap051" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap051" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap052" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap052" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap053" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap053" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap054" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap054" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap055" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap055" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap056" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap056" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap057" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap057" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap058" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap058" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap059" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap059" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap060" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap060" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap061" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap061" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap062" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap062" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap063" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap063" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap064" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap064" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap065" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap065" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap066" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap066" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap067" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap067" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap068" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap068" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap069" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap069" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap070" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap070" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap071" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap071" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap072" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap072" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap073" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap073" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap074" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap074" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap075" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap075" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap076" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap076" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap077" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap077" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap078" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap078" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap079" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap079" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap080" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap080" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap081" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap081" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap082" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap082" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap083" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap083" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap084" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap084" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap085" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap085" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap086" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap086" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap087" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap087" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap088" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap088" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap089" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap089" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap090" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap090" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap091" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap091" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap092" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap092" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap093" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap093" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap094" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap094" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap095" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap095" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap096" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap096" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap097" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap097" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap098" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap098" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap099" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap099" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap100" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap100" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap101" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap101" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap102" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap102" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap103" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap103" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap104" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap104" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap105" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap105" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap106" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap106" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap107" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap107" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap108" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap108" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap109" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap109" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap110" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap110" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap111" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap111" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap112" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap112" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap113" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap113" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap114" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap114" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap115" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap115" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap116" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap116" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap117" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap117" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap118" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap118" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap119" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap119" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap120" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap120" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap121" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap121" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap122" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap122" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap123" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap123" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap124" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap124" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap125" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap125" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap126" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap126" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap127" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap127" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap128" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap128" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap129" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap129" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap130" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap130" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap131" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap131" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap132" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap132" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap133" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap133" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap134" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap134" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap135" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap135" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap136" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap136" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap137" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap137" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap138" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap138" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap139" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap139" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap140" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap140" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap141" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap141" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap142" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap142" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap143" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap143" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap144" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap144" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap145" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap145" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap146" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap146" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap147" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap147" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap148" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap148" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap149" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap149" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap150" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap150" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap151" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap151" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap152" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap152" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap153" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap153" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap154" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap154" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap155" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap155" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap156" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap156" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap157" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap157" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap158" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap158" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap159" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap159" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap160" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap160" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap161" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap161" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap162" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap162" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap163" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap163" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap164" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap164" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap165" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap165" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap166" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap166" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap167" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap167" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap168" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap168" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap169" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap169" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap170" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap170" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap171" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap171" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap172" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap172" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap173" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap173" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap174" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap174" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap175" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap175" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap176" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap176" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap177" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap177" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap178" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap178" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap179" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap179" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap180" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap180" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap181" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap181" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap182" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap182" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap183" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap183" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap184" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap184" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap185" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap185" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap186" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap186" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap187" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap187" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap188" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap188" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap189" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap189" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap190" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap190" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap191" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap191" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap192" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap192" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap193" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap193" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap194" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap194" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap195" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap195" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap196" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap196" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap197" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap197" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap198" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap198" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
-      <Tag Name="StdMap199" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
+      <Tag Name="StdMap199" Class="Standard" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">
         <Data Format="Decorated"><DataValue DataType="DINT" Radix="Decimal" Value="0" /></Data>
       </Tag>
       <Tag Name="SafMap000" Class="Safety" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read/Write">

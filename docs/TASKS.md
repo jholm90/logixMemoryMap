@@ -66,21 +66,33 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0x. Safety round 4 — 33 BUILT 2026-10-18 (items 2 and 4–8); items 1 and 3 wait (OQ-SAFETYPARTITION)
+### 0x. Safety round 4 — 32 BUILT 2026-10-18 (items 2 and 4–8); items 1 and 3 wait (OQ-SAFETYPARTITION)
 
-**Built, asked for directly:** `gen_safety_round4.py`, 33 files in `samples/generated/safety/`,
+**Built, asked for directly:** `gen_safety_round4.py`, 32 files in `samples/generated/safety/`,
 lint clean, on the plant, each differenced in `safety_eval.py` (round 4): tag mapping at
-0 / 1 / 10 / 50 / 200 pairs (`safe_map_*`, the `SafetyTagMap` form `Std=Safety, ...`,
-standard first); `safe_lock_trial` (an import trial of SafetyLocked="true", item 3's half
-that can be generated; a signature is computed by Studio and cannot be); AOI instances and
+0 / 1 / 10 / 50 / 200 pairs (`safe_map_*`, the `SafetyTagMap` form ` Std=Safety, ...`,
+standard first, the standard tags `Class="Standard"` as in every real safety export); AOI instances and
 calls at 5 and 60, AOIs with 6 and 12 parameters, 10 rungs without locals and 9 locals
 with one rung; subroutines named with 16, 24 and 40 characters; ATAN2, COP and FLL at 100
 rungs; a standard MOV of a scalar safety DINT; 1756-L81E twins of `safe_udt_s_def`,
 `safe_udt_l_def` and `safe_sref_ctl` (against the captured L81E plant `realism_base_f25`);
 and the safety base with one content step on 5069-L330ERMS2 and 5069-L320ERMS2 at v35 and
 1756-L81ES at v34 and v32 (controller prefix `SafeBase`, exempt from the platform pin
-because the platform is the variable). **Item 1 (safety I/O) waits on Studio seeds; item
-3's signature on a Studio session.**
+because the platform is the variable). **Item 1 (safety I/O) waits on Studio seeds.**
+
+**Checked against the real exports before handover** (OPEN_BUILD_ERRORS rule 7): four
+defects fixed and the files rebuilt (5069-L320ERMS2 ProductCode 222; 1734-AENTR/C revision
+6 below v35; the 5069 A1/A2 port pair; `Class="Standard"` on mapped tags), and lint now
+refuses a module on a port its parent lacks. The v32 / v34 bases carry revision 6 adapters
+where v35 carries 7; both have the same connection data types, so any difference in what
+the adapter costs would sit inside that base's firmware delta.
+
+**Item 3, signature and lock: a Studio-made variant, not a generated file.** The import
+trial `safe_lock_trial` was withdrawn unbuilt: every real locked export (8 of 8) also
+carries a safety signature, so SafetyLocked="true" without one has no compiled
+precedent. Open the captured `safe_n00` in Logix Designer, read Capacity; generate the
+safety signature, read Capacity; safety-lock, read Capacity; export after each step.
+Three readings difference the signature and the lock directly.
 
 Rounds 1 to 3 are wired and exact on all 271 captures.
 

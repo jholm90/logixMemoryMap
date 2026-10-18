@@ -219,7 +219,6 @@ ROUND3_DIFFS = _round3_diffs()
 
 def _round4_diffs() -> list[tuple[str, str, str, int]]:
     out = [(f"tag-map pair x{n}", f"safe_map_{n}", "safe_map_0", n) for n in (1, 10, 50, 200)]
-    out += [("SafetyLocked=true", "safe_lock_trial", "safe_n00", 1)]
     for n in (5, 60):
         out += [(f"safety AOI instance + I/O x{n}", f"safe_aoi_inst_prog{n}", "safe_aoi_def", n),
                 (f"safety AOI call x{n}", f"safe_aoi_call_{n}", f"safe_aoi_inst_prog{n}", n)]

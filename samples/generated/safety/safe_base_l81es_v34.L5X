@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="34.01" TargetName="SafeBaseL81esV34" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:35:15 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="SafeBaseL81esV34" ProcessorType="1756-L81ES" MajorRev="34" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:35:15 2026" LastModifiedDate="Sun Oct 18 21:35:15 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="34.01" TargetName="SafeBaseL81esV34" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:49:28 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="SafeBaseL81esV34" ProcessorType="1756-L81ES" MajorRev="34" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:49:28 2026" LastModifiedDate="Sun Oct 18 21:49:28 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="false" SafetyLevel="SIL2/PLd"/>
@@ -43,7 +43,7 @@
 </Port>
 </Ports>
 </Module>
-<Module Name="RACK_1" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="RACK_1" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
@@ -485,7 +485,7 @@
 </Connections>
 </Communications>
 </Module>
-<Module Name="RACK_2" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="RACK_2" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
@@ -927,7 +927,7 @@
 </Connections>
 </Communications>
 </Module>
-<Module Name="RACK_3" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="RACK_3" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
@@ -1369,7 +1369,7 @@
 </Connections>
 </Communications>
 </Module>
-<Module Name="RACK_4" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="RACK_4" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">
@@ -1811,7 +1811,7 @@
 </Connections>
 </Communications>
 </Module>
-<Module Name="RACK_5" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="7" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
+<Module Name="RACK_5" CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="6" Minor="1" ParentModule="Local" ParentModPortId="2" Inhibited="false" MajorFault="false">
 <EKey State="CompatibleModule" />
 <Ports>
 <Port Id="1" Address="0" Type="PointIO" Upstream="false">

@@ -5,8 +5,6 @@ Spec: TASKS 0x. Same platform, plant and builder as rounds 2 and 3 (gen_safety_r
 its own family, except the twins and bases, which are the platform under test.
 
   safe_map_<n>                  n standard -> safety tag-mapping pairs over 200 + 200 DINTs
-  safe_lock_trial               safe_n00 with SafetyLocked="true": does a locked project
-                                import, and does locking move either reading
   safe_aoi_<inst|call>_<n>      safety AOI instances and calls at 5 and 60 (20 in round 3)
   safe_aoi_p<k>_def             safety AOIs with 6 and 12 parameters (4 in round 3)
   safe_aoi_r10_def, _l9_def     10 internal rungs and no locals; 9 locals and one rung
@@ -18,7 +16,12 @@ its own family, except the twins and bases, which are the platform under test.
   SafeBase*                     the safety base and one content step on 5069-L330ERMS2 and
                                 5069-L320ERMS2 at v35 and 1756-L81ES at v34 and v32
 
-Safety I/O, signature: not here (Studio seeds; a signature cannot be generated).
+Safety I/O, signature, safety lock: not here (Studio seeds; a signature is computed by
+Studio, and every real locked export carries one, so a lock without it has no precedent).
+
+Checked against the real exports in samples/local/ (structure only): controller, Local
+module, ports and SafetyInfo per platform; the 1734 adapter's revision per firmware; the
+tag map's form and its tags' attributes; safety AOI definitions and instances.
 
 Run: python -m sample_gen.gen_safety_round4 [--only REGEX]
 """
@@ -69,6 +72,18 @@ def build_twin(name: str, controller_tags: list[str] = (), datatypes_xml: str = 
     return build_l5x(name, **with_baseline(**arm))
 
 
+def std_ctl_tag(name: str, data_type: str, **kw) -> str:
+    """A standard controller tag as a safety controller exports it: Class="Standard"
+    (every real safety export; a mapped pair is only seen in that form)."""
+    return tag_xml(name, data_type, **kw).replace(f'<Tag Name="{name}"', f'<Tag Name="{name}" Class="Standard"', 1)
+
+
+# The plant's 1734-AENTR/C is revision 7, seen only at v35. Revision 6 has compiled at
+# v32 (the one real v32 1756-L81ES export) and at v35 (the captured rack_pointio_* files);
+# no real v33/v34 export carries the adapter. Below v35 the bases use 6. Both revisions
+# carry the same connection data types (AB:1734_<n>SLOT:I:0 / :O:0).
+AENTR_C_MAJOR_BELOW_V35 = "6"
+
 # (sample_id stem, ProcessorType, MajorRev, SoftwareRevision)
 BASE_PLATFORMS = (("5069l330_v35", "5069-L330ERMS2", "35", "35.05"),
                   ("5069l320_v35", "5069-L320ERMS2", "35", "35.05"),
@@ -92,6 +107,10 @@ def build_base(name: str, processor: str, major: str, software: str, content: bo
     if int(major) < 33:
         # v32 exports carry neither attribute (gen_fw_catalog_matrix FIRMWARE_TABLE).
         l5x = l5x.replace(' AutoDiagsEnabled="true" WebServerEnabled="false"', "", 1)
+    if int(major) < 35:
+        l5x, n = re.subn(r'(CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196") Major="7"',
+                         rf'\1 Major="{AENTR_C_MAJOR_BELOW_V35}"', l5x)
+        assert n == 5, n
     return l5x
 
 
@@ -101,14 +120,12 @@ def plan() -> list[tuple[str, str, dict]]:
     files: list[tuple[str, str, dict]] = []
     std = [f"StdMap{i:03d}" for i in range(200)]
     saf = [f"SafMap{i:03d}" for i in range(200)]
-    map_tags = [tag_xml(n, "DINT") for n in std] + [R.ctl_tag(n, "DINT") for n in saf]
+    map_tags = [std_ctl_tag(n, "DINT") for n in std] + [R.ctl_tag(n, "DINT") for n in saf]
     files.append(("safe_map_0", "control for safe_map_*: 200 standard and 200 controller safety DINTs, unmapped",
                   {"kind": "safety", "controller_tags": map_tags, "map": []}))
     for n in (1, 10, 50, 200):
         files.append((f"safe_map_{n}", f"the same tags, {n} standard -> safety tag-mapping pair(s)",
                       {"kind": "safety", "controller_tags": map_tags, "map": list(zip(std[:n], saf[:n]))}))
-    files.append(("safe_lock_trial", "safe_n00 with SafetyLocked=\"true\": a locked project, imported",
-                  {"kind": "safety", "locked": True}))
 
     definition, storage = R3.safety_aoi()
     for n in (5, 60):
@@ -184,12 +201,8 @@ def make(sample_id: str, kw: dict) -> str:
         return build_twin(_name(sample_id, "Twin"), **kw)
     if kind == "base":
         return build_base(_name(sample_id, "SafeBase"), kw["processor"], kw["major"], kw["software"], kw["content"])
-    pairs, locked = kw.pop("map", []), kw.pop("locked", False)
-    l5x = R.build(sample_id, **kw)
-    l5x = with_tag_map(l5x, pairs)
-    if locked:
-        l5x = l5x.replace('SafetyLocked="false"', 'SafetyLocked="true"', 1)
-    return l5x
+    pairs = kw.pop("map", [])
+    return with_tag_map(R.build(sample_id, **kw), pairs)
 
 
 def _make(job: tuple[str, dict]) -> int:

@@ -127,9 +127,9 @@ def test_the_safety_aoi_is_class_safety_and_lints_clean():
 from sample_gen import gen_safety_round4 as R4
 
 
-def test_round_4_is_33_new_files():
+def test_round_4_is_32_new_files():
     ids = [sid for sid, _, _ in R4.plan()]
-    assert len(ids) == len(set(ids)) == 33
+    assert len(ids) == len(set(ids)) == 32
     assert not set(ids) & ({s for s, _, _ in R3.plan()} | {s for s, _, _ in R.plan()} | {s for s, _, _ in G.plan()})
 
 
@@ -144,6 +144,25 @@ def test_a_5069_base_parents_its_racks_to_port_4_and_lints_clean():
     l5x = R4.make("safe_base_5069l330_v35", plan["safe_base_5069l330_v35"])
     assert 'ProcessorType="5069-L330ERMS2"' in l5x and 'ParentModPortId="2"' not in l5x
     assert not lint_l5x(l5x)
+
+
+def test_each_base_carries_what_its_platform_and_firmware_are_known_to_compile():
+    plan = {sid: kw for sid, _, kw in R4.plan()}
+    want = {"l81es_v32": ("1756-L81ES", "211", "6"), "l81es_v34": ("1756-L81ES", "211", "6"),
+            "5069l320_v35": ("5069-L320ERMS2", "222", "7"), "5069l330_v35": ("5069-L330ERMS2", "223", "7")}
+    for stem, (catalog, code, aentr) in want.items():
+        l5x = R4.make(f"safe_base_{stem}", plan[f"safe_base_{stem}"])
+        assert f'CatalogNumber="{catalog}" Vendor="1" ProductType="14" ProductCode="{code}"' in l5x, stem
+        assert l5x.count(f'CatalogNumber="1734-AENTR/C" Vendor="1" ProductType="12" ProductCode="196" Major="{aentr}"') == 5, stem
+        assert ("AutoDiagsEnabled" in l5x) == (stem != "l81es_v32"), stem
+
+
+def test_a_mapped_standard_tag_is_class_standard_and_nothing_is_locked():
+    plan = {sid: kw for sid, _, kw in R4.plan()}
+    l5x = R4.make("safe_map_10", plan["safe_map_10"])
+    assert l5x.count('Class="Standard"') == 200 and '<Tag Name="StdMap000" Class="Standard"' in l5x
+    assert not any('SafetyLocked="true"' in R4.make(sid, kw) for sid, kw in plan.items() if sid.startswith("safe_map"))
+    assert "safe_lock_trial" not in plan
 
 
 def test_every_round_4_difference_names_known_files():

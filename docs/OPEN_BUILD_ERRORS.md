@@ -130,6 +130,32 @@ missing array subscript on an array-typed operand **converts cleanly and never
 builds at scale** — which is why every affected instruction came back at an
 identical byte count regardless of rung count.
 
+### 7. A platform or firmware no capture has built is checked against a real export first
+
+Before safety round 4 (TASKS 0x) went out, its first files on 5069 safety controllers and
+on 1756-L81ES v32 / v34 were compared, structure only, with the real safety exports of
+the same catalog and firmware: controller attributes, Local module and its ports,
+`SafetyInfo`, `EthernetPorts`, every module by catalog, revision and parent port, the tag
+map and its tags, and the safety AOI definitions and instances. Four defects that no
+capture could have shown, because no generated file had used these shapes before:
+
+| defect | real shape | fix |
+|---|---|---|
+| 5069-L320ERMS2 Local module ProductCode 223 (the L330ERMS2's, by default) | 222 | `build_l5x` refuses a 5069 catalog it has no code for; lint `local_module_product_code` refuses one with no confirmed code |
+| 1734-AENTR/C revision 7 at v32 and v34 | 6 in the one real v32 1756-L81ES; 7 only at v35 | the v32 / v34 bases carry 6, which has also built at v35 (`rack_pointio_*`) |
+| a 5069 listing one embedded Ethernet port, labelled `1` | A1 and A2, both enabled, in all 7 real 5069 exports (v31 to v35) | `build_l5x` writes the pair for every 5069 |
+| a mapped standard tag with no `Class` | `Class="Standard"` on every standard controller tag of a real safety project | `safe_map_*` writes it on its 200 standard tags |
+
+A 5069's Local ports depend on its EtherNet/IP mode: Dual-IP has 1, 3 and 4, and every
+real Dual-IP program puts its Ethernet modules on 4; Linear/DLR has 1 and 2. A module on a
+port its parent lacks does not import ("No port was found with the given port number"),
+and lint `parent_port_missing` now refuses it. No real export trips it (23 checked), and
+neither does any generated file on disk.
+
+`safe_lock_trial` (SafetyLocked="true" with no signature) was withdrawn before handover:
+every real locked export (8 of 8) carries a safety signature, so the shape has no
+compiled precedent. Locking is measured from a Studio-made variant instead (TASKS 0x).
+
 ---
 
 ## Root causes found and fixed, kept as a reference

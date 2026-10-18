@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafeBase5069l320V35Content" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:35:14 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="SafeBase5069l320V35Content" ProcessorType="5069-L320ERMS2" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:35:14 2026" LastModifiedDate="Sun Oct 18 21:35:14 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" EtherNetIPMode="A1/A2: Dual-IP" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafeBase5069l320V35Content" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 21:53:41 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="SafeBase5069l320V35Content" ProcessorType="5069-L320ERMS2" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 21:53:41 2026" LastModifiedDate="Sun Oct 18 21:53:41 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" EtherNetIPMode="A1/A2: Dual-IP" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="false" SafetyLevel="SIL2/PLd"/>
@@ -32,7 +32,7 @@
     </DataType>
 </DataTypes>
 <Modules>
-<Module Name="Local" CatalogNumber="5069-L320ERMS2" Vendor="1" ProductType="14" ProductCode="223" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<Module Name="Local" CatalogNumber="5069-L320ERMS2" Vendor="1" ProductType="14" ProductCode="222" Major="35" Minor="11" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
 <EKey State="Disabled"/>
 <Ports>
 <Port Id="1" Address="0" Type="5069" Upstream="false" SafetyNetwork="16#0000_1003_0001_0001">
@@ -50995,7 +50995,8 @@
 <DataLogs/>
 <TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
 <EthernetPorts>
-<EthernetPort Port="1" Label="1" PortEnabled="true"/>
+<EthernetPort Port="1" Label="A1" PortEnabled="true"/>
+<EthernetPort Port="2" Label="A2" PortEnabled="true"/>
 </EthernetPorts>
 </Controller>
 </RSLogix5000Content>

@@ -346,10 +346,35 @@ def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
             continue
         catalog, code = mod.get("CatalogNumber") or "", mod.get("ProductCode")
         want = known.get(catalog)
-        if want is not None and code != want:
+        if want is None and catalog.startswith("5069"):
+            findings.append(LintFinding(
+                "local_module_product_code",
+                f"Local module {catalog} has no confirmed ProductCode in wrapper._PRODUCT_CODES",
+            ))
+        elif want is not None and code != want:
             findings.append(LintFinding(
                 "local_module_product_code",
                 f"Local module {catalog} carries ProductCode {code}; that catalog's is {want}",
+            ))
+    return findings
+
+
+def _parent_port_findings(root: ET.Element) -> list[LintFinding]:
+    """A module's ParentModPortId must be a port its parent module has. Studio refuses
+    one that is not ("No port was found with the given port number"; the module sweep's
+    nine re-parented chains). A 5069 in Dual-IP mode has Local ports 1, 3 and 4, no 2."""
+    modules = {m.get("Name"): m for m in root.iter("Module") if m.get("Name")}
+    findings: list[LintFinding] = []
+    for mod in root.iter("Module"):
+        parent, port = mod.get("ParentModule"), mod.get("ParentModPortId")
+        if not parent or port is None or mod.get("Name") == parent or parent not in modules:
+            continue
+        ports = {p.get("Id") for p in modules[parent].findall("Ports/Port")}
+        if port not in ports:
+            findings.append(LintFinding(
+                "parent_port_missing",
+                f"Module {mod.get('Name') or mod.get('CatalogNumber')} is parented to port {port} of "
+                f"{parent}, which has ports {sorted(ports)}",
             ))
     return findings
 
@@ -1673,6 +1698,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_safety_module_findings(root))
     findings.extend(_safety_instruction_findings(root))
     findings.extend(_local_product_code_findings(root))
+    findings.extend(_parent_port_findings(root))
     findings.extend(_safety_tag_write_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))

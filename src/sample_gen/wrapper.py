@@ -191,6 +191,13 @@ _PRODUCT_CODES = {
     "5069-L306ERMS2": "226",
     "5069-L306ERMS3": "243",
     "5069-L306ERS2": "235",
+    # Compact GuardLogix 5380: each from a real export's Local module (L310ERS2 236,
+    # L320ERMS2 222, L320ERMS3 245, L330ERMS2 223, L340ERS2 239). A safety base built
+    # for an L320ERMS2 took the silent default 223, the L330ERMS2's.
+    "5069-L310ERS2": "236",
+    "5069-L320ERMS2": "222",
+    "5069-L320ERMS3": "245",
+    "5069-L340ERS2": "239",
     "5069-L320ER": "217",
     "5069-L330ER": "218",
     "5069-L330ERMS2": "223",
@@ -413,7 +420,13 @@ def build_l5x(
             f'<Port Id="3" Type="Ethernet" Upstream="false"{safety_net_attrs[1]}>\n<Bus/>\n</Port>\n'
             f'<Port Id="4" Type="Ethernet" Upstream="false"{safety_net_attrs[2]}>\n<Bus/>\n</Port>'
         )
-        local_product_code = _PRODUCT_CODES.get(processor_type, "223")
+        # No default: a 5069 catalog without its own confirmed code would import as
+        # another model's (an L320ERMS2 built with the L330ERMS2's 223).
+        if processor_type not in _PRODUCT_CODES:
+            raise ValueError(
+                f"no confirmed Local-module ProductCode for {processor_type}; add it to "
+                f"_PRODUCT_CODES from a real export")
+        local_product_code = _PRODUCT_CODES[processor_type]
     elif safety_level == "SIL3":
         # Redundant pairing: the primary's own local backplane Port needs
         # Width="2" (spans its own slot AND the partner's, confirmed real)
@@ -536,15 +549,19 @@ def build_l5x(
     ethernet_ports_xml = "" if is_pre5580_1756 else (
         '<EthernetPorts>\n<EthernetPort Port="1" Label="1" PortEnabled="true"/>\n</EthernetPorts>\n'
     )
-    # The real L9 exports: an A1/A2 port pair, <OpcUaInfo>, and no <DataLogs>.
+    # Two embedded ports, A1 and A2: every real 5069 export (7 of 7, v31 to v35, Dual-IP
+    # and Linear/DLR alike) and the real L9 exports, which add <OpcUaInfo> and drop
+    # <DataLogs>.
     datalogs_xml = "<DataLogs/>\n"
-    if is_l9:
+    if is_5069 or is_l9:
         ethernet_ports_xml = (
             '<EthernetPorts>\n'
             '<EthernetPort Port="1" Label="A1" PortEnabled="true"/>\n'
             '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>\n'
-            '</EthernetPorts>\n<OpcUaInfo EnabledPorts=""/>\n'
+            '</EthernetPorts>\n'
         )
+    if is_l9:
+        ethernet_ports_xml += '<OpcUaInfo EnabledPorts=""/>\n'
         datalogs_xml = ""
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="{software_revision}" TargetName="{target_name}" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="{now}" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">

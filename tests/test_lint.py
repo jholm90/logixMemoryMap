@@ -669,3 +669,32 @@ def test_safety_tags_are_read_only_outside_the_safety_task():
     assert kinds("XIC(Std.0)OTE(SafeBit);") == written
     assert kinds("MOV(Std,SafeWord);") == written
     assert kinds("XIC(Std.0)OTE(SafeBit);", program_class="Safety") == set()
+
+
+def test_a_5069_local_module_must_carry_its_own_product_code():
+    # A safety base built for 5069-L320ERMS2 took the L330ERMS2's 223 by default;
+    # its real Local module is 222.
+    l5x = build_l5x("Plat320", tags_xml="", processor_type="5069-L320ERMS2", safety_level="SIL2")
+    assert 'ProductCode="222"' in l5x
+    assert not [f for f in lint_l5x(l5x) if f.kind == "local_module_product_code"]
+    bad = l5x.replace('ProductCode="222"', 'ProductCode="223"', 1)
+    assert [f for f in lint_l5x(bad) if f.kind == "local_module_product_code"]
+    with pytest.raises(ValueError, match="no confirmed Local-module ProductCode"):
+        build_l5x("Plat350", tags_xml="", processor_type="5069-L350ERS2", safety_level="SIL2")
+
+
+def test_a_module_parented_to_a_port_its_parent_lacks_is_refused():
+    # A Dual-IP 5069 has Local ports 1, 3 and 4: an Ethernet child on port 2 does not import.
+    from sample_gen.realism import with_baseline
+    l5x = build_l5x("Plat330", processor_type="5069-L330ERMS2", safety_level="SIL2", **with_baseline())
+    assert [f for f in lint_l5x(l5x) if f.kind == "parent_port_missing"]
+    moved = l5x.replace('ParentModule="Local" ParentModPortId="2"', 'ParentModule="Local" ParentModPortId="4"')
+    assert not [f for f in lint_l5x(moved) if f.kind == "parent_port_missing"]
+
+
+def test_a_5069_lists_both_embedded_ports_as_every_real_export_does():
+    l5x = build_l5x("Plat330", tags_xml="", processor_type="5069-L330ERMS2", safety_level="SIL2")
+    assert ('<EthernetPort Port="1" Label="A1" PortEnabled="true"/>\n'
+            '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>') in l5x and "OpcUaInfo" not in l5x
+    l81 = build_l5x("PlatL81", tags_xml="", processor_type="1756-L81ES", safety_level="SIL2")
+    assert '<EthernetPort Port="1" Label="1" PortEnabled="true"/>' in l81 and 'Label="A1"' not in l81

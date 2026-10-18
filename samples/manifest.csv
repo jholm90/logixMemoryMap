@@ -4548,7 +4548,6 @@
 "safe_map_10","OQ-SAFETYPARTITION: the same tags, 10 standard -> safety tag-mapping pair(s)","safety","samples/generated/safety/safe_map_10.L5X","874474"
 "safe_map_50","OQ-SAFETYPARTITION: the same tags, 50 standard -> safety tag-mapping pair(s)","safety","samples/generated/safety/safe_map_50.L5X","874474"
 "safe_map_200","OQ-SAFETYPARTITION: the same tags, 200 standard -> safety tag-mapping pair(s)","safety","samples/generated/safety/safe_map_200.L5X","874474"
-"safe_lock_trial","OQ-SAFETYPARTITION: safe_n00 with SafetyLocked=""true"": a locked project, imported","safety","samples/generated/safety/safe_lock_trial.L5X","842474"
 "safe_aoi_inst_prog5","OQ-SAFETYPARTITION: round 3's safety AOI, 5 SafetyProgram instances and their I/O arrays","safety","samples/generated/safety/safe_aoi_inst_prog5.L5X","842890"
 "safe_aoi_call_5","OQ-SAFETYPARTITION: the same and 5 calls of the safety AOI","safety","samples/generated/safety/safe_aoi_call_5.L5X","842890"
 "safe_aoi_inst_prog60","OQ-SAFETYPARTITION: round 3's safety AOI, 60 SafetyProgram instances and their I/O arrays","safety","samples/generated/safety/safe_aoi_inst_prog60.L5X","842890"
