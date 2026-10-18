@@ -43,7 +43,9 @@ def readings(rows: list[dict]) -> tuple[dict[str, tuple[int, int | None]], list[
     suspect: list[tuple[str, str]] = []
     for r in rows:
         sid = r["sample_id"]
-        if not sid.startswith("safe_") or not r.get("actual_bytes"):
+        # safe_* files, their 1756-L81E twins, and the L81E plant alone the twins
+        # difference against (realism_base_f25).
+        if not sid.startswith(("safe_", "safetwin_", "realism_base_f25")) or not r.get("actual_bytes"):
             continue
         why = []
         if (r.get("error_count") or "") != "0":
@@ -126,7 +128,8 @@ def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -
     for n in (10, 50, 200):
         p(f"  x{n:<3} {_per(diff(good, f'safe_ref_{n}', 'safe_ref_ctl'), n)}")
 
-    for title, diffs in (("round 2 (TASKS 0u)", ROUND2_DIFFS), ("round 3, logic (TASKS 0v)", ROUND3_DIFFS)):
+    for title, diffs in (("round 2 (TASKS 0u)", ROUND2_DIFFS), ("round 3, logic (TASKS 0v)", ROUND3_DIFFS),
+                         ("round 4 (TASKS 0x)", ROUND4_DIFFS)):
         p(f"\n{title}, per unit, against its control" + (" | engine per unit" if engine else "") + ":")
         for label, a, b, n in diffs:
             if a in good and b in good:
@@ -212,6 +215,28 @@ def _round3_diffs() -> list[tuple[str, str, str, int]]:
 
 
 ROUND3_DIFFS = _round3_diffs()
+
+
+def _round4_diffs() -> list[tuple[str, str, str, int]]:
+    out = [(f"tag-map pair x{n}", f"safe_map_{n}", "safe_map_0", n) for n in (1, 10, 50, 200)]
+    out += [("SafetyLocked=true", "safe_lock_trial", "safe_n00", 1)]
+    for n in (5, 60):
+        out += [(f"safety AOI instance + I/O x{n}", f"safe_aoi_inst_prog{n}", "safe_aoi_def", n),
+                (f"safety AOI call x{n}", f"safe_aoi_call_{n}", f"safe_aoi_inst_prog{n}", n)]
+    out += [(f"safety AOI, {k} parameters vs 4", f"safe_aoi_p{k}_def", "safe_aoi_def", 1) for k in (6, 12)]
+    out += [("safety AOI, per extra rung, no locals", "safe_aoi_r10_def", "safe_aoi_def", 9),
+            ("safety AOI, per local BOOL", "safe_aoi_l9_def", "safe_aoi_def", 9)]
+    out += [(f"routine name {k} chars vs 8", f"safe_rtn_name{k}", "safe_rtn_idle_1", 1) for k in (16, 24, 40)]
+    out += [(f"lg_{mn}_100", f"safe_lg_{mn}_100", "safe_lg_ctl", 100) for mn in ("atan2", "cop", "fll")]
+    out += [("standard MOV of a scalar safety DINT", "safe_sref2_mov_50", "safe_sref2_ctl", 50)]
+    out += [(f"L81E twin: {t}", f"safetwin_{t}", "realism_base_f25", 1) for t in ("udt_s_def", "udt_l_def", "sref_ctl")]
+    for stem in ("5069l330_v35", "5069l320_v35", "l81es_v34", "l81es_v32"):
+        out += [(f"base {stem} vs L81ES v35", f"safe_base_{stem}", "safe_n00", 1),
+                (f"content step on {stem}", f"safe_base_{stem}_content", f"safe_base_{stem}", 1)]
+    return out
+
+
+ROUND4_DIFFS = _round4_diffs()
 
 
 _MODEL = None

@@ -137,8 +137,9 @@ against the existing captures without first subtracting a baseline difference th
 is itself only approximately known, which defeats the isolation test. Enforced by
 lint rather than left to each generator's defaults — **it has been violated twice,
 and both times the deviation looked justified at the moment it was made.** The
-exemptions are the firmware and catalog matrix generators and the L9/v38 side-by-side
-batch (`PlatNine`), for which sweeping those fields is the variable under test.
+exemptions are the firmware and catalog matrix generators, the L9/v38 side-by-side
+batch (`PlatNine`) and the safety bases (`SafeBase`, 5069 safety controllers and L81ES
+below v35), for which sweeping those fields is the variable under test.
 
 The `safe_*` safety batch is the one pinned alternate: 1756-L81ES at v35 and nothing
 else.

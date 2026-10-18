@@ -1178,6 +1178,10 @@ _PLATFORM_EXEMPT_NAME_PREFIXES = (
     # 1756-L81E at v35 and v38, content held -- processor and firmware are
     # the variables under test. Its l8v35 arm is the standard.
     "PlatNine",
+    # gen_safety_round4.py's safety bases: the safety File > New shell on 5069-L330ERMS2
+    # and 5069-L320ERMS2 at v35 and 1756-L81ES at v34 and v32. The platform and
+    # firmware are the variable under test (OQ-SAFETYPARTITION, TASKS 0x item 8).
+    "SafeBase",
 )
 
 # Narrower than an exemption: the prefix allows ONE other platform and refuses

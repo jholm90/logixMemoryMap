@@ -120,3 +120,40 @@ def test_the_safety_aoi_is_class_safety_and_lints_clean():
     for sid, _, kw in R3.plan():
         if sid in ("safe_aoi_call_20", "safe_aoi_inst_ctl20"):
             assert not lint_l5x(R.build(sid, **kw)), sid
+
+
+# --- round 4 (TASKS 0x) ------------------------------------------------------------------
+
+from sample_gen import gen_safety_round4 as R4
+
+
+def test_round_4_is_33_new_files():
+    ids = [sid for sid, _, _ in R4.plan()]
+    assert len(ids) == len(set(ids)) == 33
+    assert not set(ids) & ({s for s, _, _ in R3.plan()} | {s for s, _, _ in R.plan()} | {s for s, _, _ in G.plan()})
+
+
+def test_the_tag_map_is_written_standard_first_inside_safety_info():
+    l5x = R4.with_tag_map('<SafetyInfo SafetyLocked="false" SafetyLevel="SIL2/PLd"/>', [("StdA", "SafA"), ("StdB", "SafB")])
+    assert l5x == ('<SafetyInfo SafetyLocked="false" SafetyLevel="SIL2/PLd">\n'
+                   '<SafetyTagMap> StdA=SafA, StdB=SafB</SafetyTagMap>\n</SafetyInfo>')
+
+
+def test_a_5069_base_parents_its_racks_to_port_4_and_lints_clean():
+    plan = {sid: kw for sid, _, kw in R4.plan()}
+    l5x = R4.make("safe_base_5069l330_v35", plan["safe_base_5069l330_v35"])
+    assert 'ProcessorType="5069-L330ERMS2"' in l5x and 'ParentModPortId="2"' not in l5x
+    assert not lint_l5x(l5x)
+
+
+def test_every_round_4_difference_names_known_files():
+    import importlib.util
+    from pathlib import Path
+    spec = importlib.util.spec_from_file_location(
+        "safety_eval", Path(__file__).resolve().parent.parent / "scripts" / "safety_eval.py")
+    ev = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ev)
+    known = {s for s, _, _ in R4.plan()} | {s for s, _, _ in R3.plan()} | {s for s, _, _ in R.plan()} | {
+        s for s, _, _ in G.plan()} | {"realism_base_f25"}
+    for _, a, b, _ in ev.ROUND4_DIFFS:
+        assert a in known and b in known, (a, b)

@@ -76,6 +76,9 @@ which a test pins, so every round-2 file differences against round 1's captured
 manifest description, written at generation: blind tests. Round 3 (TASKS 0v) puts every
 ordinary instruction of the safety-routine palette alone on one fixed SafetyProgram tag
 pool declared in full by every file, so each differences against `safe_lg_ctl` alone.
+Round 4 (`gen_safety_round4.py`, TASKS 0x) adds tag mapping, a lock trial, AOI and routine
+sweeps, standard twins on 1756-L81E, and safety bases on other platforms under the
+`SafeBase` prefix, which lint exempts from the platform pin.
 
 ### The feedback loop
 
