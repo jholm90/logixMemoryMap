@@ -77,7 +77,7 @@ because none of these shapes exists anywhere in the repository to build from.
 | **Safety signature** | whether generating the safety task signature moves the standard or the safety reading, and by how much | one project exported and read before and after Generate Safety Signature, both Capacity values each time |
 | **Safety locking** | whether a safety-locked project (`SafetyLocked="true"`) reads differently from the same project unlocked | the same project read unlocked and locked, both values each time, and its export while locked |
 | **Safety tag mapping** | what each standard → safety mapping pair costs, in each partition, at several counts | one Studio-made mapping exported (the exact `SafetyTagMap` form), then generated count sweeps over the same tags unmapped and mapped |
-| **Safety I/O** | what a CIP Safety module and its connection cost in each partition, per family | one Studio-made export per family with its Capacity values: 1734 POINT Guard I/O, 1756 safety I/O, 5069 Compact safety I/O, PointMax, FLEX 5000, and Balluff BNI00HN and other third-party CIP Safety devices |
+| **Safety I/O** | what a CIP Safety module and its connection cost in each partition, per family | one Studio-made export per family with its Capacity values: 1734 POINT Guard I/O, 1756 safety I/O, 5069 Compact safety I/O, PointMax, FLEX 5000, and Balluff BNI00HN and other third-party CIP Safety devices. No safety device or safety AOI sample is on hand: the one Balluff file in `samples/local/` is a standard (Class="User") IO-Link master AOI, not safety |
 
 **Order:** after rounds 2 and 3 (and the seven `safe_std_*_r2`) are read and wired; I/O
 last, as asked. Signature and locking are two readings of one project each; tag mapping

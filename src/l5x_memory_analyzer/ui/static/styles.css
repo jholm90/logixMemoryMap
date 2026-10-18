@@ -111,13 +111,27 @@ body {
 }
 #empty-state.hidden { display: none; }
 
-#meters { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 320px; }
-#budget-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+/* One grid for both meters: tag | bar | label. The label column takes the wider of the
+   two labels, so the Standard and Safety bars are always the same width. */
+#meters {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto;
+  column-gap: 0.5rem;
+  row-gap: 0.3rem;
+  align-items: center;
+  flex: 1;
+  /* Never narrower than tag + bar minimum + label: past that the header wraps the
+     meters onto their own line rather than clipping the labels. */
+  min-width: min-content;
+}
+#budget-bar-wrap, #safety-bar-wrap { display: contents; }
+#meters .bar-tag { grid-column: 1; }
+#budget-bar, #safety-bar { grid-column: 2; }
+#budget-label, #safety-label { grid-column: 3; }
 .bar-tag { font-size: 0.75rem; color: var(--text-dim); width: 3.6rem; }
 #budget-tag { display: none; }
 #meters.with-safety #budget-tag { display: inline; }
 #budget-bar {
-  flex: 1;
   height: 10px;
   background: var(--border);
   border-radius: 5px;
@@ -126,10 +140,8 @@ body {
 #budget-bar-fill { height: 100%; background: var(--accent); }
 #budget-bar-fill.over { background: var(--danger); }
 #budget-label { font-size: 0.8rem; color: var(--text-dim); white-space: nowrap; }
-#safety-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
 #safety-bar-wrap.hidden { display: none; }
 #safety-bar {
-  flex: 1;
   height: 10px;
   background: var(--border);
   border-radius: 5px;
