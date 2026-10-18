@@ -83,7 +83,7 @@ because none of these shapes exists anywhere in the repository to build from.
 last, as asked. Signature and locking are two readings of one project each; tag mapping
 and each I/O family become count sweeps once their seed fixes the XML.
 
-### 0v. Safety round 3, logic — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_lg*`, 73 files)
+### 0v. Safety round 3, logic — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_lg*` and `safe_aoi_*`, 78 files)
 
 Asked for directly: confidence in safety LOGIC and its handling before any I/O. Real
 safety programs are mostly ordinary instructions in safety routines, and the engine
@@ -104,6 +104,7 @@ against `safe_lg_ctl` alone. Built by `gen_safety_round3.py` on the round-2 buil
 | `safe_lgc_<x>_20` | 3 | XIC+OTE, MOV, ADD on controller-scope safety tags | `safe_lgc_ctl` | logic on controller-scope operands against program-scope |
 | `safe_lg_<shape>_20` | 5 | four inputs in series; two- and three-leg branches; two outputs; a seal-in | `safe_lg_ctl` | rung composition: branch brackets and the series-output law in safety |
 | `safe_lg_<x>_100` | 5 | OTE, XIO+OTE, MOV, EQU+OTE, TON at 100 rungs | `safe_lg_ctl` | linearity, beside the 20-rung files |
+| `safe_aoi_*` | 5 | a Class="Safety" AOI (required BOOL in and out): definition alone; with 10 internal rungs; 20 instances in the safety program; the same and 20 calls; 20 instances at controller scope | `safe_n00`, then `safe_aoi_def` and `safe_aoi_inst_prog20` | which partition pays a safety AOI's definition, its internal logic, its instances at each scope and its call sites |
 
 Not in this round: FAL and FSC (their captured standard shape leaves operands as `?`,
 which is not a shape to transplant), GSV, SSV, EVENT and TND. Every file's standard

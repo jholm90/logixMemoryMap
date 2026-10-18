@@ -197,8 +197,13 @@ def _round3_diffs() -> list[tuple[str, str, str, int]]:
     sys.path.insert(0, str(REPO / "src"))
     from sample_gen import gen_safety_round3 as R3
     out = [("program pool", "safe_lg_ctl", "safe_n00", 1), ("controller pool", "safe_lgc_ctl", "safe_n00", 1)]
+    out += [("safety AOI definition", "safe_aoi_def", "safe_n00", 1),
+            ("safety AOI, per extra internal rung", "safe_aoi_big_def", "safe_aoi_def", 9),
+            ("safety AOI instance + I/O arrays, prog", "safe_aoi_inst_prog20", "safe_aoi_def", 20),
+            ("safety AOI call", "safe_aoi_call_20", "safe_aoi_inst_prog20", 20),
+            ("safety AOI instance, controller", "safe_aoi_inst_ctl20", "safe_aoi_def", 20)]
     for sid, _, kw in R3.plan():
-        if sid.endswith("_ctl"):
+        if sid.endswith("_ctl") or sid.startswith("safe_aoi_"):
             continue
         n = int(sid.rsplit("_", 1)[1])
         ctl = "safe_lgc_ctl" if sid.startswith("safe_lgc_") else "safe_lg_ctl"

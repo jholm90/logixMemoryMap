@@ -91,7 +91,7 @@ Program = tuple[str, list[str], list[tuple[str, list[str]]]]
 
 
 def build(sample_id: str, controller_tags: list[str] = (), programs: list[Program] | None = None,
-          standard_rungs: list[str] = (), datatypes_xml: str = "") -> str:
+          standard_rungs: list[str] = (), datatypes_xml: str = "", aoi_defs_xml: str = "") -> str:
     """Round 1's build, generalised to several safety programs and routines and to UDTs."""
     programs = programs or [(MAIN, [], [("MainRoutine", [])])]
     name = "SafePart" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
@@ -103,6 +103,8 @@ def build(sample_id: str, controller_tags: list[str] = (), programs: list[Progra
     }
     if datatypes_xml:
         arm["extra_datatypes_xml"] = datatypes_xml
+    if aoi_defs_xml:
+        arm["extra_aoi_xml"] = aoi_defs_xml
     l5x = build_l5x(name, processor_type=G.PROCESSOR, safety_level="SIL2", **with_baseline(**arm))
     return l5x.replace('ConfigureSafetyIOAlways="true"', 'ConfigureSafetyIOAlways="false"', 1)
 

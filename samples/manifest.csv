@@ -4538,3 +4538,8 @@
 "safe_lg_mov_100","OQ-SAFETYPARTITION: 100 safety-routine rungs: MOV(LgDa[i],LgDb[i])","safety","samples/generated/safety/safe_lg_mov_100.L5X","842474"
 "safe_lg_equ_100","OQ-SAFETYPARTITION: 100 safety-routine rungs: EQU(LgDa[i],LgDb[i])OTE(LgO[i])","safety","samples/generated/safety/safe_lg_equ_100.L5X","842474"
 "safe_lg_ton_100","OQ-SAFETYPARTITION: 100 safety-routine rungs: TON(LgT[i],1000,0)","safety","samples/generated/safety/safe_lg_ton_100.L5X","842474"
+"safe_aoi_def","OQ-SAFETYPARTITION: a Class=Safety AOI definition (In BOOL, Out BOOL, one rung), no instances","safety","samples/generated/safety/safe_aoi_def.L5X","843710"
+"safe_aoi_big_def","OQ-SAFETYPARTITION: the same safety AOI with 10 internal rungs and 9 local BOOLs, no instances","safety","samples/generated/safety/safe_aoi_big_def.L5X","844034"
+"safe_aoi_inst_prog20","OQ-SAFETYPARTITION: the safety AOI, 20 SafetyProgram-scope instances and its I/O BOOL arrays, no calls","safety","samples/generated/safety/safe_aoi_inst_prog20.L5X","843710"
+"safe_aoi_call_20","OQ-SAFETYPARTITION: the same and 20 calls of the safety AOI in the safety routine","safety","samples/generated/safety/safe_aoi_call_20.L5X","843710"
+"safe_aoi_inst_ctl20","OQ-SAFETYPARTITION: the safety AOI and 20 controller-scope Class=Safety instances, no calls","safety","samples/generated/safety/safe_aoi_inst_ctl20.L5X","844990"

@@ -21,6 +21,7 @@ import re
 
 from sample_gen import gen_safety_partition as G
 from sample_gen import gen_safety_round2 as R
+from sample_gen.builders import MemberSpec, aoi_xml, rung_xml
 from sample_gen.manifest import append_manifest_row, write_sample
 from sample_gen.progress import run
 
@@ -100,6 +101,44 @@ SECOND_COUNT = {"ote": OUTPUTS["ote"], "xio": INPUTS["xio"], "mov": OUTPUTS["mov
                 "equ": INPUTS["equ"], "ton": OUTPUTS["ton"]}
 
 
+SAFE_AOI = "SafeAoiA"
+
+
+def safety_aoi(internal_rungs: int = 1) -> tuple[str, list[MemberSpec]]:
+    """A Class="Safety" AOI: a required BOOL in and out, XIC(In)OTE(Out) inside, and
+    with more internal rungs, as many local BOOLs each written once. Same parameter
+    shape as the captured standard AOI families (required In, required Out)."""
+    locals_ = [MemberSpec(f"Loc{k}", "BOOL") for k in range(internal_rungs - 1)]
+    rungs = ["XIC(InA)OTE(OutQ);"] + [f"XIC(InA)OTE(Loc{k});" for k in range(internal_rungs - 1)]
+    xml, storage = aoi_xml(SAFE_AOI, input_params=[MemberSpec("InA", "BOOL", required=True)],
+                           output_params=[MemberSpec("OutQ", "BOOL", required=True)], local_tags=locals_,
+                           logic_rungs_xml="\n".join(rung_xml(i, r) for i, r in enumerate(rungs)))
+    return xml.replace(f'<AddOnInstructionDefinition Name="{SAFE_AOI}"',
+                       f'<AddOnInstructionDefinition Name="{SAFE_AOI}" Class="Safety"', 1), storage
+
+
+def _aoi_files() -> list[tuple[str, str, dict]]:
+    """Safety AOIs: the definition, its instances at both scopes, its calls, its logic."""
+    definition, storage = safety_aoi()
+    big, _ = safety_aoi(10)
+    insts = [f"SafeAoi_{i:03d}" for i in range(20)]
+    io = [R.prog_tag("AiIn", "BOOL", (32,)), R.prog_tag("AiOut", "BOOL", (32,))]
+    prog_insts = [R.prog_tag(n, SAFE_AOI, udt_members=storage) for n in insts]
+    calls = [f"{SAFE_AOI}({n},AiIn[{i}],AiOut[{i}]);" for i, n in enumerate(insts)]
+    return [
+        ("safe_aoi_def", "a Class=Safety AOI definition (In BOOL, Out BOOL, one rung), no instances",
+         {"aoi_defs_xml": definition}),
+        ("safe_aoi_big_def", "the same safety AOI with 10 internal rungs and 9 local BOOLs, no instances",
+         {"aoi_defs_xml": big}),
+        ("safe_aoi_inst_prog20", "the safety AOI, 20 SafetyProgram-scope instances and its I/O BOOL arrays, no calls",
+         {"aoi_defs_xml": definition, "programs": [R.main_program(prog_insts + io)]}),
+        ("safe_aoi_call_20", "the same and 20 calls of the safety AOI in the safety routine",
+         {"aoi_defs_xml": definition, "programs": [R.main_program(prog_insts + io, calls)]}),
+        ("safe_aoi_inst_ctl20", "the safety AOI and 20 controller-scope Class=Safety instances, no calls",
+         {"aoi_defs_xml": definition, "controller_tags": [R.ctl_tag(n, SAFE_AOI, udt_members=storage) for n in insts]}),
+    ]
+
+
 def _rungs(template: str, n: int) -> list[str]:
     return [template.format(i=i, j1=100 + i, j2=200 + i, j3=300 + i, k=256 + i) + ";" for i in range(n)]
 
@@ -133,6 +172,7 @@ def plan() -> list[tuple[str, str, dict]]:
         files.append(_file(f"safe_lg_{name}_{COUNT}", f"{COUNT} safety-routine rungs, {what}", _rungs(tpl, COUNT)))
     for name, tpl in SECOND_COUNT.items():
         files.append(_file(f"safe_lg_{name}_100", f"100 safety-routine rungs: {tpl.format(i='i')}", _rungs(tpl, 100)))
+    files += [(sid, f"{OQ}: {desc}", kw) for sid, desc, kw in _aoi_files()]
     return files
 
 

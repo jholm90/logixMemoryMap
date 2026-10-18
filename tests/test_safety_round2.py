@@ -57,10 +57,10 @@ def test_both_scopes_are_covered_for_every_tag_shape():
 from sample_gen import gen_safety_round3 as R3
 
 
-def test_round_3_is_73_new_files_on_one_pool():
+def test_round_3_is_78_new_files_on_one_pool():
     plan = R3.plan()
     ids = [sid for sid, _, _ in plan]
-    assert len(ids) == len(set(ids)) == 73
+    assert len(ids) == len(set(ids)) == 78
     assert not set(ids) & ({sid for sid, _, _ in R.plan()} | {sid for sid, _, _ in G.plan()})
     pool = R3._pool()
     for sid, _, kw in plan:
@@ -70,6 +70,8 @@ def test_round_3_is_73_new_files_on_one_pool():
 
 def test_no_round_3_rung_writes_an_output_bit_twice():
     for sid, _, kw in R3.plan():
+        if "programs" not in kw:
+            continue
         rungs = kw["programs"][0][2][0][1]
         writes = [m for r in rungs for m in re.findall(r"(?:OTE|OTL|OTU)\((\w+\[\d+\]|\w+)\)", r)]
         writes += [m for r in rungs for m in re.findall(r"OS[RF]\(\w+\[\d+\],(\w+\[\d+\])\)", r)]
@@ -109,3 +111,12 @@ def test_the_palette_is_58_ordinary_instructions_without_pid():
     from sample_gen.lint import _SAFETY_ROUTINE_ORDINARY
     assert len(_SAFETY_ROUTINE_ORDINARY) == 58
     assert "PID" not in _SAFETY_ROUTINE_ORDINARY and "NEQ" in _SAFETY_ROUTINE_ORDINARY
+
+
+def test_the_safety_aoi_is_class_safety_and_lints_clean():
+    xml, storage = R3.safety_aoi(10)
+    assert 'Name="SafeAoiA" Class="Safety"' in xml
+    assert [m.name for m in storage][:4] == ["EnableIn", "EnableOut", "InA", "OutQ"]
+    for sid, _, kw in R3.plan():
+        if sid in ("safe_aoi_call_20", "safe_aoi_inst_ctl20"):
+            assert not lint_l5x(R.build(sid, **kw)), sid
