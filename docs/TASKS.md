@@ -82,15 +82,17 @@ each real module only its catalog-defined structure (element and attribute layou
 connection and data-type shape, the catalog's own default configuration) and writes it
 with every customer value replaced (module and tag names, addresses, safety network
 numbers, signatures, descriptions, vendor text), checked by lint for any string from the
-source file. **Needs the owner's decision before any file is built**, because it relaxes
-a written rule. What is left is what every real
+source file. **Decided 2026-10-18: Studio seeds only.** The rule stands as written: the
+real files are read for which safety I/O families exist and how often (the ranking
+above), never as a source of module XML; each family's shape comes from one Studio-made
+export with both Capacity values, and the generators build from that. What is left is what every real
 safety program carries and no file has measured, ranked by its weight in the 16 real
 safety programs predicted blind (OPEN_QUESTIONS, OQ-SAFETYPARTITION). **Nothing here is
 generated until it is approved; the first three need Studio-made seeds first.**
 
 | # | item | real weight | seed first | then generate | discriminates |
 |---|---|---|---|---|---|
-| 1 | **Safety I/O** | all 16 programs, 2 to 25 safety modules | one Studio export per family with both Capacity values: 1734-AENTR + IB8S + OB8S; 5069-IB8S + OBV8S; 1756-IB16S + OBV8S; one Kinetix 2198 ERS3 axis; PowerFlex 527 STO; BNI00HN | per family 1, 2 and 4 modules on the L81ES plant, each against the plant alone (~18 files) | what a safety module and its connection cost in each partition |
+| 1 | **Safety I/O** | all 17 programs, 2 to 25 safety modules | one Studio export per family (order by real use: 1734 IB8S/OB8S, Kinetix 2198-H008, 2198-D0xx-ERS3, 5069 IB8S/OBV8S, 1756 IB16S/OBV8S, PowerFlex 527, BNI00HN) with both Capacity values: 1734-AENTR + IB8S + OB8S; 5069-IB8S + OBV8S; 1756-IB16S + OBV8S; one Kinetix 2198 ERS3 axis; PowerFlex 527 STO; BNI00HN | per family 1, 2 and 4 modules on the L81ES plant, each against the plant alone (~18 files) | what a safety module and its connection cost in each partition |
 | 2 | **Safety tag mapping** | 8 of 16 | one Studio-made mapping pair, exported, to fix the `SafetyTagMap` form | 0 / 10 / 50 / 200 pairs over the same tags (4 files) | cost per mapping pair, each partition |
 | 3 | **Signature and locking** | 9 of 16 | one project read unsigned, signed, then locked, both values each time | none | whether either moves a reading |
 | 4 | AOI calls and definitions | 2 of 16 (encoded, safety-locked) | none | calls at 5 / 20 / 60; AOIs with 2 / 6 / 12 parameters; 10 rungs with no locals and 9 locals with one rung (8 files) | the call's per-call and one-time split; whether the 800 moves with parameters; locals against rungs |
