@@ -125,10 +125,15 @@ def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -
     for n in (10, 50, 200):
         p(f"  x{n:<3} {_per(diff(good, f'safe_ref_{n}', 'safe_ref_ctl'), n)}")
 
-    p("\nround 2 (TASKS 0u), per unit, against its control:")
-    for label, a, b, n in ROUND2_DIFFS:
-        if a in good and b in good:
-            p(f"  {label:34} {_per(diff(good, a, b), n)}")
+    for title, diffs in (("round 2 (TASKS 0u)", ROUND2_DIFFS), ("round 3, logic (TASKS 0v)", ROUND3_DIFFS)):
+        p(f"\n{title}, per unit, against its control" + (" | engine per unit" if engine else "") + ":")
+        for label, a, b, n in diffs:
+            if a in good and b in good:
+                line = f"  {label:34} {_per(diff(good, a, b), n)}"
+                if engine and a in engine and b in engine:
+                    es, ef = engine[a][0] - engine[b][0], engine[a][1] - engine[b][1]
+                    line += f" | engine std {es / n:+.2f}, safety {ef / n:+.2f}"
+                p(line)
     comp = [r for r in rows if r["sample_id"].startswith("safe_comp_") and r["sample_id"] in good]
     for r in comp:
         m = re.search(r"standard ([\d,]+), safety ([\d,]+)", r.get("description") or "")
@@ -184,6 +189,23 @@ def _round2_diffs() -> list[tuple[str, str, str, int]]:
 
 
 ROUND2_DIFFS = _round2_diffs()
+
+
+def _round3_diffs() -> list[tuple[str, str, str, int]]:
+    """(label, file, control, rungs) for every round-3 file, read from its generator."""
+    sys.path.insert(0, str(REPO / "src"))
+    from sample_gen import gen_safety_round3 as R3
+    out = [("program pool", "safe_lg_ctl", "safe_n00", 1), ("controller pool", "safe_lgc_ctl", "safe_n00", 1)]
+    for sid, _, kw in R3.plan():
+        if sid.endswith("_ctl"):
+            continue
+        n = int(sid.rsplit("_", 1)[1])
+        ctl = "safe_lgc_ctl" if sid.startswith("safe_lgc_") else "safe_lg_ctl"
+        out.append((sid[len("safe_"):], sid, ctl, n))
+    return out
+
+
+ROUND3_DIFFS = _round3_diffs()
 
 
 def engine_predictions() -> dict[str, tuple[int, int]]:

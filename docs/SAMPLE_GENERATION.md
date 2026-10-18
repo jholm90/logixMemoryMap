@@ -63,7 +63,7 @@ test, and one Kinetix rack that needs an L83E because three dual-axis drives plu
 two power supplies do not fit an L81E's 3 MB.
 
 One alternate is pinned rather than exempt: the safety-partition batches
-(`gen_safety_partition.py` and `gen_safety_round2.py`, controller prefix `SafePart`,
+(`gen_safety_partition.py`, `gen_safety_round2.py` and `gen_safety_round3.py`, controller prefix `SafePart`,
 OQ-SAFETYPARTITION) must be
 1756-L81ES at v35 and nothing else, because the safety partition exists only on a safety
 controller. Its call shapes come from Studio-made seeds (`docs/SAFETY_INSTRUCTIONS.md`),
@@ -73,7 +73,9 @@ instruction anywhere but a Class="Safety" program on a safety controller. Round 
 routines, UDTs, aliases) that is byte-identical to it for one program and one routine,
 which a test pins, so every round-2 file differences against round 1's captured
 `safe_n00`. Its four `safe_comp_*` files carry both partitions' predictions in their
-manifest description, written at generation: blind tests.
+manifest description, written at generation: blind tests. Round 3 (TASKS 0v) puts every
+ordinary instruction of the safety-routine palette alone on one fixed SafetyProgram tag
+pool declared in full by every file, so each differences against `safe_lg_ctl` alone.
 
 ### The feedback loop
 

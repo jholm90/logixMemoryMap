@@ -66,6 +66,49 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0w. Safety items logged for testing — 2026-10-18, after rounds 2 and 3 read (OQ-SAFETYPARTITION)
+
+Asked for: each of these goes into a later round, once the logic and tag handling of
+rounds 2 and 3 have read clean. None is specced yet. Each needs a Studio-made seed first,
+because none of these shapes exists anywhere in the repository to build from.
+
+| item | what to measure | seed needed |
+|---|---|---|
+| **Safety signature** | whether generating the safety task signature moves the standard or the safety reading, and by how much | one project exported and read before and after Generate Safety Signature, both Capacity values each time |
+| **Safety locking** | whether a safety-locked project (`SafetyLocked="true"`) reads differently from the same project unlocked | the same project read unlocked and locked, both values each time, and its export while locked |
+| **Safety tag mapping** | what each standard → safety mapping pair costs, in each partition, at several counts | one Studio-made mapping exported (the exact `SafetyTagMap` form), then generated count sweeps over the same tags unmapped and mapped |
+| **Safety I/O** | what a CIP Safety module and its connection cost in each partition, per family | one Studio-made export per family with its Capacity values: 1734 POINT Guard I/O, 1756 safety I/O, 5069 Compact safety I/O, PointMax, FLEX 5000, and Balluff BNI00HN and other third-party CIP Safety devices |
+
+**Order:** after rounds 2 and 3 (and the seven `safe_std_*_r2`) are read and wired; I/O
+last, as asked. Signature and locking are two readings of one project each; tag mapping
+and each I/O family become count sweeps once their seed fixes the XML.
+
+### 0v. Safety round 3, logic — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_lg*`, 73 files)
+
+Asked for directly: confidence in safety LOGIC and its handling before any I/O. Real
+safety programs are mostly ordinary instructions in safety routines, and the engine
+charges those their standard weight in the safety partition, ASSUMED. This round
+measures every ordinary instruction Studio offers in a safety routine (the 58 in the
+safety-routine instruction palette — the Studio scrap that holds every one, and nothing
+outside it is ever used; lint refuses anything else — less the ones below), each alone, 20 rungs, on one
+fixed pool of SafetyProgram tags held in full by every file, so each file differences
+against `safe_lg_ctl` alone. Built by `gen_safety_round3.py` on the round-2 builder.
+
+| group | files | varies | control | discriminates |
+|---|---:|---|---|---|
+| `safe_lg_ctl`, `safe_lgc_ctl` | 2 | nothing | `safe_n00` | the pools themselves (program and controller scope) |
+| `safe_lg_<input>_20` | 15 | XIC, XIO, ONS, OSR, OSF, EQU, NEQ, GRT, GEQ, LES, LEQ, LIM, MEQ, CMP, AFI, each with its OTE (OSR, OSF alone) | `safe_lg_ctl` | each input instruction's safety cost, net of OTE |
+| `safe_lg_<output>_20` | 30 | OTE, OTL, OTU, TON, TOF, RTO, RES, CTU, CTD, MOV, ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, NEG, ABS, NOT, SQR, ATAN2, CPT, CLR, MVM, SWPB, COP, FLL, SIZE, alone | `safe_lg_ctl` | each output instruction's safety cost, against its standard weight |
+| `safe_lg_mcr_20`, `safe_lg_jmplbl_20` | 2 | 10 MCR zones; 10 JMP/LBL pairs | `safe_lg_ctl` | program-control instructions |
+| `safe_lg_<op>_20` | 11 | literal DINT and REAL sources, literal compare and add; DINT+REAL, DINT→REAL, INT→DINT; a tag-driven index on XIC and MOV; a timer's .DN; scalar BOOLs | `safe_lg_ctl` | whether the standard operand laws (OQ-LITREAL, OQ-MIXEDTYPE, OQ-INDIRECT) hold in safety |
+| `safe_lgc_<x>_20` | 3 | XIC+OTE, MOV, ADD on controller-scope safety tags | `safe_lgc_ctl` | logic on controller-scope operands against program-scope |
+| `safe_lg_<shape>_20` | 5 | four inputs in series; two- and three-leg branches; two outputs; a seal-in | `safe_lg_ctl` | rung composition: branch brackets and the series-output law in safety |
+| `safe_lg_<x>_100` | 5 | OTE, XIO+OTE, MOV, EQU+OTE, TON at 100 rungs | `safe_lg_ctl` | linearity, beside the 20-rung files |
+
+Not in this round: FAL and FSC (their captured standard shape leaves operands as `?`,
+which is not a shape to transplant), GSV, SSV, EVENT and TND. Every file's standard
+reading is also a test: safety-routine logic is expected to cost 0 standard.
+
 ### 0u. Safety round 2 — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_*`, 74 files)
 
 Asked for directly: enough rounds to be confident in whole safety programs, safety tags

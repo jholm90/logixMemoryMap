@@ -129,3 +129,18 @@ SLP(SLP,MANUAL,MANUAL,SLP.CheckDelay,SLP.PositiveTravelLimit,SLP.NegativeTravelL
 
 ATAN2 is also offered in a safety routine and is a standard instruction:
 `ATAN2(SourceA,SourceB,Dest)` on REAL tags.
+
+## The safety-routine palette
+
+A v35 safety routine offers 97 instructions: the 39 safety instructions above and 58
+ordinary ones. That is the whole set — a Studio scrap holding every instruction the
+safety-routine palette offers — and nothing outside it builds in a safety routine (PID,
+for one, is not offered; NEQ is). The 58 ordinary ones:
+
+ABS, ADD, AFI, AND, ATAN2, CLR, CMP, COP, CPT, CTD, CTU, DIV, EQU, EVENT, FAL, FLL, FSC,
+GEQ, GRT, GSV, JMP, JSR, LBL, LEQ, LES, LIM, MCR, MEQ, MOD, MOV, MUL, MVM, NEG, NEQ, NOP,
+NOT, ONS, OR, OSF, OSR, OTE, OTL, OTU, RES, RET, RTO, SBR, SIZE, SQR, SSV, SUB, SWPB, TND,
+TOF, TON, XIC, XIO, XOR.
+
+Lint (`instruction_not_in_safety_palette`) refuses any other instruction in a
+Class="Safety" program; the v36+ spellings of the renamed ones are accepted.

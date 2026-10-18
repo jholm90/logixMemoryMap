@@ -354,17 +354,39 @@ def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
+# Every instruction a safety routine offers: the Studio instruction palette of a v35
+# safety routine, copied whole into a scrap and exported: the safety instructions above
+# plus these 58 ordinary ones. Nothing else builds in a safety routine (PID, for one, is
+# not offered). v36+ spellings of the renamed ones are accepted through V36_SPELLINGS.
+_SAFETY_ROUTINE_ORDINARY = frozenset({
+    'ABS', 'ADD', 'AFI', 'AND', 'ATAN2', 'CLR', 'CMP', 'COP', 'CPT', 'CTD',
+    'CTU', 'DIV', 'EQU', 'EVENT', 'FAL', 'FLL', 'FSC', 'GEQ', 'GRT', 'GSV',
+    'JMP', 'JSR', 'LBL', 'LEQ', 'LES', 'LIM', 'MCR', 'MEQ', 'MOD', 'MOV',
+    'MUL', 'MVM', 'NEG', 'NEQ', 'NOP', 'NOT', 'ONS', 'OR', 'OSF', 'OSR',
+    'OTE', 'OTL', 'OTU', 'RES', 'RET', 'RTO', 'SBR', 'SIZE', 'SQR', 'SSV',
+    'SUB', 'SWPB', 'TND', 'TOF', 'TON', 'XIC', 'XIO', 'XOR',
+})
+
+
 def _safety_instruction_findings(root: ET.Element) -> list[LintFinding]:
     """A safety-routine instruction outside a safety program, or on a controller
     that is not a safety controller, does not build."""
     findings: list[LintFinding] = []
     info = root.find(".//SafetyInfo")
     safety_controller = info is not None and info.get("SafetyLevel") is not None
+    aoi_names = {a.get("Name") for a in root.iter("AddOnInstructionDefinition")}
     for program in root.iter("Program"):
         in_safety = program.get("Class") == "Safety"
         for text in _all_rung_texts(program):
             for mnemonic, _ in _call_sites(text):
                 if mnemonic not in _SAFETY_INSTRUCTION_ARG_COUNTS:
+                    if (in_safety and mnemonic not in aoi_names
+                            and V36_SPELLINGS.get(mnemonic, mnemonic) not in _SAFETY_ROUTINE_ORDINARY):
+                        findings.append(LintFinding(
+                            "instruction_not_in_safety_palette",
+                            f"'{mnemonic}(' is not in the safety-routine instruction palette, so it does "
+                            f"not build in safety program {program.get('Name')!r}: {text.strip()!r}",
+                        ))
                     continue
                 if not (in_safety and safety_controller):
                     where = ("a standard program" if not in_safety
