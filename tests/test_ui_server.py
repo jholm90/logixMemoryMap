@@ -208,3 +208,22 @@ def test_a_second_launch_on_the_same_port_returns_instead_of_serving():
     assert not second.is_alive()
     # The port is held exclusively: a plain bind by anything else fails.
     assert server._bind_exclusive("127.0.0.1", port) is None
+
+
+def test_a_safety_project_gets_a_safety_bar_not_a_warning(tmp_path):
+    # The safety partition is its own figure with its own budget (OQ-SAFETYPARTITION);
+    # the page no longer carries a "safety is not sized" banner.
+    from sample_gen import gen_safety_round2 as R
+    from sample_gen import gen_safety_partition as G
+    from sample_gen.wrapper import build_l5x
+    tags, rungs = G.instruction_pair("RIN", 3)
+    l5x = build_l5x("SafeUi", tags_xml="", processor_type="1756-L81ES", safety_level="SIL2",
+                    extra_programs_xml=R._program("SafetyProgram", tags, [("MainRoutine", rungs)]),
+                    extra_tasks_xml=R._task(["SafetyProgram"]))
+    path = tmp_path / "safe_ui.L5X"
+    path.write_text(l5x, encoding="utf-8")
+    report = create_app(str(path)).test_client().get("/api/report").get_json()
+    assert report["safety_bytes"] == 1394 + 3 * (56 + 80) + 3 * 360
+    assert report["safety_budget_bytes"] == 1572864
+    page = create_app(str(path)).test_client().get("/").get_data(as_text=True)
+    assert "safety-warning" not in page and "safety-bar-wrap" in page

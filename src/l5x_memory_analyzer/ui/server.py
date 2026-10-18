@@ -154,9 +154,13 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     tag_index = {t.path: (t.data_type, t.dimensions) for t in tags if not t.is_alias}
 
     entries, errors = build_report(doc.root, model)
-    safety_entries, _ = build_safety_report(doc.root, model)
+    # The safety partition (OQ-SAFETYPARTITION): its own figure and bar. Anything in it
+    # the engine cannot price is listed with the other coverage gaps, not in a banner.
+    safety_entries, safety_errors = build_safety_report(doc.root, model)
+    errors = list(errors) + list(safety_errors)
 
     budget = _BUDGET_TABLE.lookup(doc.processor_type)
+    safety_budget = _BUDGET_TABLE.lookup_safety(doc.processor_type) if safety_entries else None
 
     # JSR call-tree info (Phase 5). Byte totals already avoid
     # double-counting a JSR target's cost (RoutineLogic.is_jsr_target --
@@ -212,6 +216,8 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         # The safety partition, a figure separate from the standard total
         # (OQ-SAFETYPARTITION); None for a project without a safety program.
         "safety_bytes": sum(e.bytes for e in safety_entries) if safety_entries else None,
+        "safety_budget_bytes": safety_budget.total_bytes if safety_budget else None,
+        "safety_budget_confidence": safety_budget.confidence if safety_budget else None,
         # Declared UDT/AOI names, so the UI can tell a type it can
         # cross-reference from an atomic it cannot.
         "type_names": sorted(data_types),

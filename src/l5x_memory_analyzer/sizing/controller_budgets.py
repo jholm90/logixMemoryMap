@@ -9,7 +9,7 @@ sourcing and confidence tags.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -42,6 +42,15 @@ class ProcessorBudget:
 @dataclass(frozen=True)
 class ControllerBudgetTable:
     entries: dict[str, ProcessorBudget]
+    # The safety partition's size on a safety controller (OQ-SAFETYPARTITION).
+    safety_entries: dict[str, ProcessorBudget] = field(default_factory=dict)
+
+    def lookup_safety(self, processor_type: str | None) -> ProcessorBudget | None:
+        """The safety-memory budget, by the same longest-prefix match."""
+        if not processor_type:
+            return None
+        candidates = [b for prefix, b in self.safety_entries.items() if processor_type.startswith(prefix)]
+        return max(candidates, key=lambda b: len(b.catalog_prefix)) if candidates else None
 
     def lookup(self, processor_type: str | None) -> ProcessorBudget | None:
         """Matches by catalog PREFIX, longest match first, since L5X
@@ -76,4 +85,9 @@ def load_controller_budgets(path: str | Path | None = None) -> ControllerBudgetT
             data_logic_bytes=v.get("data_logic_bytes"),
             io_bytes=v.get("io_bytes"),
         )
-    return ControllerBudgetTable(entries=entries)
+    safety_entries = {
+        prefix: ProcessorBudget(catalog_prefix=prefix, architecture=UNIFIED,
+                                confidence=v["confidence"], total_bytes=v["bytes"])
+        for prefix, v in raw.get("safety_processors", {}).items()
+    }
+    return ControllerBudgetTable(entries=entries, safety_entries=safety_entries)

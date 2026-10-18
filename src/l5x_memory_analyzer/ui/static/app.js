@@ -72,7 +72,7 @@ function renderAll() {
   if (!loaded) {
     document.getElementById("file-info").textContent = "No file loaded";
     document.getElementById("export-warning").classList.add("hidden");
-    document.getElementById("safety-warning").classList.add("hidden");
+    document.getElementById("safety-bar-wrap").classList.add("hidden");
     document.getElementById("export-buttons").classList.add("hidden");
     return;
   }
@@ -84,18 +84,7 @@ function renderAll() {
     `${REPORT.file_name}  (${infoParts.join(", ")})`;
   document.getElementById("export-buttons").classList.remove("hidden");
 
-  const safetyWarn = document.getElementById("safety-warning");
-  if (REPORT.is_safety_project) {
-    safetyWarn.classList.remove("hidden");
-    safetyWarn.textContent = REPORT.safety_bytes != null
-      ? `Safety-rated project (${REPORT.safety_level}). Safety tags and safety logic live in the ` +
-        `safety partition, sized separately: ${REPORT.safety_bytes.toLocaleString()} bytes of safety ` +
-        `memory (logic estimated). The map below is the standard partition.`
-      : `Safety-rated project (${REPORT.safety_level}) with no safety program. The map below is the ` +
-        `standard partition.`;
-  } else {
-    safetyWarn.classList.add("hidden");
-  }
+  renderSafetyBar();
 
   const warn = document.getElementById("export-warning");
   if (!REPORT.is_controller_export) {
@@ -344,6 +333,32 @@ function renderErrors() {
       ).join("") +
       `</tbody></table></section>`
     ).join("");
+}
+
+// The safety partition (OQ-SAFETYPARTITION) is its own memory, sized separately: a
+// second bar beside the standard one, not a warning. The treemap is the standard
+// partition; anything in the safety partition the engine cannot price is listed on the
+// Errors tab with every other coverage gap.
+function renderSafetyBar() {
+  const wrap = document.getElementById("safety-bar-wrap");
+  const used = REPORT.safety_bytes;
+  wrap.classList.toggle("hidden", used == null);
+  document.getElementById("meters").classList.toggle("with-safety", used != null);
+  if (used == null) return;
+  const fill = document.getElementById("safety-bar-fill");
+  const label = document.getElementById("safety-label");
+  const budget = REPORT.safety_budget_bytes;
+  if (budget) {
+    const pct = (used / budget) * 100;
+    fill.style.width = `${Math.min(pct, 100)}%`;
+    fill.classList.toggle("over", pct > 100);
+    label.textContent = `${fmtBytes(used)} / ${fmtBytes(budget)} (${pct.toFixed(2)}%)  ·  ` +
+      `${fmtBlocks(used)} / ${fmtBlocks(budget)} blocks`;
+  } else {
+    fill.style.width = "0%";
+    label.textContent = `${fmtBytes(used)} (${fmtBlocks(used)} blocks) -- safety memory size unknown ` +
+      `for "${REPORT.processor_type || "?"}"`;
+  }
 }
 
 function fmtBlocks(n) {

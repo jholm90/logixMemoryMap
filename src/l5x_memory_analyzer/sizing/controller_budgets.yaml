@@ -71,3 +71,23 @@ processors:
   "1756-L72": { data_logic_bytes: 4194304, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 4MB
   "1756-L73": { data_logic_bytes: 8388608, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 8MB
   "1756-L75": { data_logic_bytes: 33554432, io_bytes: 1028096, confidence: ASSUMED, architecture: divided } # 32MB
+
+# Safety memory: the separate safety partition of a safety controller
+# (OQ-SAFETYPARTITION), the denominator of the UI's safety bar. Published GuardLogix
+# 5580 and Compact GuardLogix 5380 figures (half the user memory on 5380, a fixed
+# step on 5580), the same secondary-source basis as the rows above: ASSUMED until a
+# Capacity tab's safety Total confirms one. Prefix-matched like `processors`, and only
+# looked up for a project with a safety program.
+safety_processors:
+  "1756-L81E": { bytes: 1572864, confidence: ASSUMED }    # 1.5 MB
+  "1756-L82E": { bytes: 2621440, confidence: ASSUMED }    # 2.5 MB
+  "1756-L83E": { bytes: 5242880, confidence: ASSUMED }    # 5 MB
+  "1756-L84E": { bytes: 6291456, confidence: ASSUMED }    # 6 MB
+  "5069-L306ER": { bytes: 314573, confidence: ASSUMED }   # 0.3 MB
+  "5069-L310ER": { bytes: 524288, confidence: ASSUMED }   # 0.5 MB
+  "5069-L320ER": { bytes: 1048576, confidence: ASSUMED }  # 1 MB
+  "5069-L330ER": { bytes: 1572864, confidence: ASSUMED }  # 1.5 MB
+  "5069-L340ER": { bytes: 2097152, confidence: ASSUMED }  # 2 MB
+  "5069-L350ER": { bytes: 2621440, confidence: ASSUMED }  # 2.5 MB
+  "5069-L380ER": { bytes: 4194304, confidence: ASSUMED }  # 4 MB
+  "5069-L3100ER": { bytes: 5242880, confidence: ASSUMED } # 5 MB

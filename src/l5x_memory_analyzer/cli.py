@@ -25,6 +25,7 @@ from l5x_memory_analyzer.parser.export_scope import (
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
 from l5x_memory_analyzer.sizing.safety import build_safety_report
+from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 
 
 def _cmd_dump(args: argparse.Namespace) -> int:
@@ -56,14 +57,12 @@ def _cmd_size(args: argparse.Namespace) -> int:
     entries = sorted(entries, key=lambda e: e.bytes, reverse=True)
     safety_entries, safety_errors = build_safety_report(doc.root, model)
     if safety_entries:
-        print(
-            f"safety: Safety-rated project ({doc.safety_level}) -- safety tags and safety logic are "
-            f"the safety partition, a separate figure from the standard total below: "
-            f"{sum(e.bytes for e in safety_entries):,} bytes (logic estimated; OQ-SAFETYPARTITION)",
-            file=sys.stderr,
-        )
-        for err in safety_errors:
-            print(f"  {err.path}: {err.message}", file=sys.stderr)
+        used = sum(e.bytes for e in safety_entries)
+        budget = load_controller_budgets().lookup_safety(doc.processor_type)
+        of = f" of {budget.total_bytes:,} ({used / budget.total_bytes * 100:.2f}%)" if budget else ""
+        print(f"safety memory ({doc.safety_level}): {used:,}{of} -- the safety partition, separate "
+              f"from the standard total below", file=sys.stderr)
+        errors = list(errors) + list(safety_errors)
 
     # Export scope up front, before any number. A partial
     # export's total is not comparable to a controller Capacity reading,
