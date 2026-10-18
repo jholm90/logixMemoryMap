@@ -66,6 +66,39 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0x. Safety round 4 — SPEC, not built (OQ-SAFETYPARTITION, after rounds 2 and 3 were wired)
+
+Rounds 1 to 3 are wired and exact on all 271 captures.
+
+**Safety I/O reference (asked for 2026-10-18):** the real safety programs in
+`samples/local/` hold most of item 1's families (1734 IB8S/OB8S in 10 programs, Kinetix
+2198 H008-ERS/ERS2 and D0xx/S086/C4004-ERS3, 5069 IB8S/OBV8S, 1756 IB16S/OBV8S,
+PowerFlex 527 STO, a FANUC robot, generic Ethernet and catalog-less devices). The
+generators are to use them as the reference for each family's module shape instead of
+waiting on a Studio seed per family. Doing so meets the rule that nothing derived from
+customer content is committed: a generated module built from a real one carries that
+module's structure into `samples/generated/`. The proposal: a reader that takes from
+each real module only its catalog-defined structure (element and attribute layout,
+connection and data-type shape, the catalog's own default configuration) and writes it
+with every customer value replaced (module and tag names, addresses, safety network
+numbers, signatures, descriptions, vendor text), checked by lint for any string from the
+source file. **Needs the owner's decision before any file is built**, because it relaxes
+a written rule. What is left is what every real
+safety program carries and no file has measured, ranked by its weight in the 16 real
+safety programs predicted blind (OPEN_QUESTIONS, OQ-SAFETYPARTITION). **Nothing here is
+generated until it is approved; the first three need Studio-made seeds first.**
+
+| # | item | real weight | seed first | then generate | discriminates |
+|---|---|---|---|---|---|
+| 1 | **Safety I/O** | all 16 programs, 2 to 25 safety modules | one Studio export per family with both Capacity values: 1734-AENTR + IB8S + OB8S; 5069-IB8S + OBV8S; 1756-IB16S + OBV8S; one Kinetix 2198 ERS3 axis; PowerFlex 527 STO; BNI00HN | per family 1, 2 and 4 modules on the L81ES plant, each against the plant alone (~18 files) | what a safety module and its connection cost in each partition |
+| 2 | **Safety tag mapping** | 8 of 16 | one Studio-made mapping pair, exported, to fix the `SafetyTagMap` form | 0 / 10 / 50 / 200 pairs over the same tags (4 files) | cost per mapping pair, each partition |
+| 3 | **Signature and locking** | 9 of 16 | one project read unsigned, signed, then locked, both values each time | none | whether either moves a reading |
+| 4 | AOI calls and definitions | 2 of 16 (encoded, safety-locked) | none | calls at 5 / 20 / 60; AOIs with 2 / 6 / 12 parameters; 10 rungs with no locals and 9 locals with one rung (8 files) | the call's per-call and one-time split; whether the 800 moves with parameters; locals against rungs |
+| 5 | Routine names | all | none | subroutines named with 16, 24 and 40 characters (3 files) | the routine-name law past two buckets |
+| 6 | ATAN2, COP, FLL | COP/FLL in 2 | none | each at 100 rungs (3 files) | their corrections at a second count |
+| 7 | Standard-side residuals | all | none | 1756-L81E twins of `safe_udt_s_def`, `safe_udt_l_def` and `safe_sref_ctl`; MOV from a scalar safety DINT in standard logic (4 files) | whether −16 / −32 and +4 are the safety controller's or the engine's; 8 or 4 for a scalar word |
+| 8 | Other bases | 12 of 16 not L81ES v34/v35 | Studio File > New, both values: 5069-L330ERS2 v35, 1756-L81ES v32 | none | the safety base off the measured platform |
+
 ### 0w. Safety items logged for testing — 2026-10-18, after rounds 2 and 3 read (OQ-SAFETYPARTITION)
 
 Asked for: each of these goes into a later round, once the logic and tag handling of
@@ -83,7 +116,7 @@ because none of these shapes exists anywhere in the repository to build from.
 last, as asked. Signature and locking are two readings of one project each; tag mapping
 and each I/O family become count sweeps once their seed fixes the XML.
 
-### 0v. Safety round 3, logic — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_lg*` and `safe_aoi_*`, 78 files)
+### 0v. Safety round 3, logic — DONE: 78 captured, wired 2026-10-18 (OQ-SAFETYPARTITION, `safe_lg*` and `safe_aoi_*`)
 
 Asked for directly: confidence in safety LOGIC and its handling before any I/O. Real
 safety programs are mostly ordinary instructions in safety routines, and the engine
@@ -110,7 +143,7 @@ Not in this round: FAL and FSC (their captured standard shape leaves operands as
 which is not a shape to transplant), GSV, SSV, EVENT and TND. Every file's standard
 reading is also a test: safety-routine logic is expected to cost 0 standard.
 
-### 0u. Safety round 2 — asked for 2026-10-18 (OQ-SAFETYPARTITION, `safe_*`, 74 files)
+### 0u. Safety round 2 — DONE: 74 captured, wired 2026-10-18 (OQ-SAFETYPARTITION, `safe_*`)
 
 Asked for directly: enough rounds to be confident in whole safety programs, safety tags
 at controller and program scope alike. Every file is 1756-L81ES v35 on the realism plant,

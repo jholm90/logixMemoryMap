@@ -1822,39 +1822,66 @@ alias_overhead:
   confidence: KNOWN
 
 # The safety partition (OQ-SAFETYPARTITION; MEMORY_MODEL.md, "Safety memory is a
-# separate partition"). Measured on the 112-file safe_* batch (1756-L81ES, v35,
-# 2026-10-18, zero build errors, standard and safety reading on every row); every
-# figure is exact on every file that tests it.
+# separate partition"). Measured on 271 safe_* files (1756-L81ES, v35, 2026-10-18,
+# zero build errors, standard and safety reading on every row); each law is exact on
+# every file that tests it unless its confidence says otherwise.
 #
-# A safety tag is a name entry (alias_overhead above, 56 + 8 x floor(len/8)) plus
-# a data block, 8 x ceil((data_header_bytes + data) / 8). A Class="Safety"
-# controller tag pays the name entry in STANDARD memory and the block in safety;
-# a tag of a Class="Safety" program pays both in safety and nothing in standard.
-# Exact on five atomic types x three counts, four name lengths, a BOOL[256], and
-# all 39 safety-instruction backing structures.
+# A safety tag is a name entry (alias_overhead above, 56 + 8 x floor(len/8)) plus a
+# data block: 8 x ceil((data_header_bytes + data) / 8) for a scalar or structure, with
+# array_header_extra_bytes more for an array; an AOI instance's data is the engine's
+# AOI instance size plus aoi_instance_extra. A Class="Safety" controller tag pays the
+# name entry in STANDARD memory and the block in safety; a tag of a Class="Safety"
+# program pays both in safety. An alias is its name entry alone, on the same side.
 #
-# Safety-routine logic costs nothing in standard memory; in the safety partition
-# each rung costs its instruction's rung_bytes. ESTOP, RIN, ROUT and LC are exact
-# at 10/50/200 rungs (KNOWN); the rest at 20 rungs against their own tags-only
-# file. Ordinary instructions in a safety routine other than NOP are not yet
-# measured (safe_std_*_r2) and are charged their standard weight, ASSUMED.
+# Safety-routine logic costs nothing in standard memory. In the safety partition a
+# safety instruction costs its rung_bytes (ESTOP, RIN, ROUT, LC exact at 10/50/200
+# rungs and with their operands and backing tags anywhere; the rest at 20); any other
+# instruction costs its standard engine cost plus operand_bytes per tag operand
+# (bit_operand_bytes for an XIC / XIO / OTE / OTL / OTU operand, index_operand_bytes
+# for a tag used as a subscript), exact on 64 of 67 round-3 files, with
+# ordinary_delta_bytes for the three it does not fit (one count each). Each safety
+# routine beyond the first costs routine_bytes plus routine_name_per_8_chars x
+# floor(len(name) / 8) (SubRtn01 and MainRoutine 272, Inputs and Outputs 264: the
+# uncalled, JSR-called and extra-program routines and the 12 subroutines of two
+# composites; two name buckets, so FITTED), each safety program beyond the first
+# program_bytes in safety and extra_program_standard_bytes plus its name in STANDARD
+# memory. A Class="Safety" AOI costs what a standard AOI costs: its logic and
+# aoi_definition_moved_bytes of its definition in safety, the rest standard (two
+# files, +-8); a call of it in a safety routine its standard call cost plus
+# aoi_call_extra_bytes, and the file the standard one-time AOI call-routine cost (one
+# count).
 #
-# base_bytes: File > New's SafetyTask/SafetyProgram/MainRoutine with no rungs,
-# the same at v34 (Studio seed) and v35 (safe_n00 = 1,394 + one NOP rung).
+# base_bytes: File > New's SafetyTask/SafetyProgram/MainRoutine with no rungs, the
+# same at v34 (Studio seed) and v35 (safe_n00 = 1,394 + one NOP rung).
 #
-# standard_operand_bytes: standard logic reading a safety tag, per safety-tag
-# operand: XIC(safety BOOL)OTE(standard BOOL) reads 28 a rung at 10/50/200 rungs
-# against 20 for the same rung on standard tags. One rung shape, one safety
-# operand a rung, so per operand and per rung are not separated.
+# Standard logic reading a safety tag pays standard_operand_bytes per safety operand,
+# standard_bit_operand_bytes when it is a bit instruction's (XIC+OTE at 10/50/200,
+# two safety XICs, a scalar, MOV from a safety DINT).
 safety_partition:
   base_bytes: 1394
   base_confidence: KNOWN
-  data_header_bytes: 28
+  data_header_bytes: 24
+  array_header_extra_bytes: 8
   data_alignment: 8
   data_block_confidence: KNOWN
-  standard_operand_bytes: 8
-  standard_operand_confidence: FITTED
-  ordinary_instruction_confidence: ASSUMED
+  routine_bytes: 264
+  routine_name_per_8_chars: 8
+  routine_name_confidence: FITTED
+  program_bytes: 404
+  extra_program_standard_bytes: 64
+  shell_confidence: KNOWN
+  operand_bytes: 4
+  bit_operand_bytes: 8
+  index_operand_bytes: 8
+  ordinary_instruction_confidence: KNOWN
+  ordinary_delta_bytes: { ATAN2: 64, COP: 4, FLL: -4 }
+  ordinary_delta_confidence: FITTED
+  aoi_definition_moved_bytes: 800
+  aoi_call_extra_bytes: 44
+  aoi_confidence: FITTED
+  standard_operand_bytes: 4
+  standard_bit_operand_bytes: 8
+  standard_operand_confidence: KNOWN
   rung_bytes_known: [ESTOP, RIN, ROUT, LC, NOP]
   rung_bytes:
     ESTOP: 360

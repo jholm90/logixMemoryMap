@@ -306,7 +306,7 @@ feature is a day not spent on the residual.
 
 ## Instructions that are out of scope or will not build
 
-**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN, LC and the rest of the safety-routine set. These require a safety CPU. **Measured 2026-10-18:** every one costs 0 standard, and its safety-partition rung cost is in MEMORY_MODEL ("Safety memory is a separate partition"), wired in `sizing/safety.py` (OQ-SAFETYPARTITION). Every call shape is in `SAFETY_INSTRUCTIONS.md`. THRSe was invisible to the instruction scanner until 2026-10-17 (the only lowercase mnemonic), so the real-use counts here could not have included it. Not
+**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN, LC and the rest of the safety-routine set. These require a safety CPU. **Measured 2026-10-18:** every one costs 0 standard, and its safety-partition rung cost is in MEMORY_MODEL ("Safety memory is a separate partition"), wired in `sizing/safety.py` (OQ-SAFETYPARTITION). **Ordinary instructions in a safety routine** (the 58 of the safety-routine palette) cost their standard engine cost plus 8 per bit operand, 4 per other tag operand and 8 per index tag in the safety partition, and 0 standard: exact on 64 of 67 round-3 files, ATAN2 / COP / FLL corrected. Every call shape is in `SAFETY_INSTRUCTIONS.md`. THRSe was invisible to the instruction scanner until 2026-10-17 (the only lowercase mnemonic), so the real-use counts here could not have included it. Not
 weight-table gaps; there is nothing to fix on a standard controller. **Ignored, not
 parked:** no test file is built for any of them, and `instrfirst_crout_x10`'s failed
 build is not pursued.

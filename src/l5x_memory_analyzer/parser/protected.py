@@ -57,11 +57,11 @@ def add_protected_aoi_standins(root: ET.Element) -> int:
         name = enc.get("Name")
         if not name or name in existing:
             continue
-        standin = ET.SubElement(container, "AddOnInstructionDefinition", {
-            "Name": name,
-            "Revision": enc.get("Revision", ""),
-            STANDIN_ATTR: "true",
-        })
+        attrs = {"Name": name, "Revision": enc.get("Revision", ""), STANDIN_ATTR: "true"}
+        # A protected safety AOI keeps its class: its share is the safety partition's.
+        if enc.get("Class"):
+            attrs["Class"] = enc.get("Class")
+        standin = ET.SubElement(container, "AddOnInstructionDefinition", attrs)
         params = enc.find("Parameters")
         if params is not None:
             standin.append(copy.deepcopy(params))

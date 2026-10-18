@@ -4,6 +4,7 @@ capture column that carries the safety reading."""
 from __future__ import annotations
 
 from sample_gen import gen_safety_partition as G
+from sample_gen import gen_safety_round2 as R
 from sample_gen.lint import lint_l5x
 
 
@@ -85,7 +86,7 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
-from l5x_memory_analyzer.parser.logic import _operand_roots
+from l5x_memory_analyzer.parser.logic import _operand_refs
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
 from l5x_memory_analyzer.sizing.safety import build_safety_report
@@ -118,7 +119,11 @@ def _delta(a: ET.Element, b: ET.Element) -> tuple[int, int]:
 
 def test_the_measured_constants():
     sp = _MODEL.safety_partition
-    assert (sp.base_bytes, sp.data_header_bytes, sp.data_alignment) == (1394, 28, 8)
+    assert (sp.base_bytes, sp.data_header_bytes, sp.array_header_extra_bytes, sp.data_alignment) == (1394, 24, 8, 8)
+    assert (sp.routine_bytes, sp.routine_name_per_8_chars, sp.program_bytes, sp.extra_program_standard_bytes) == (
+        264, 8, 404, 64)
+    assert (sp.operand_bytes, sp.bit_operand_bytes, sp.index_operand_bytes) == (4, 8, 8)
+    assert (sp.standard_operand_bytes, sp.standard_bit_operand_bytes) == (4, 8)
     assert {mn: sp.rung_bytes[mn] for mn in ("ESTOP", "RIN", "ROUT", "LC", "NOP")} == {
         "ESTOP": 360, "RIN": 360, "ROUT": 360, "LC": 436, "NOP": 16}
     assert all(sp.rung_confidence(mn) == "KNOWN" for mn in ("ESTOP", "RIN", "ROUT", "LC"))
@@ -164,6 +169,63 @@ def test_a_project_without_a_safety_program_has_no_safety_partition():
     assert build_safety_report(root, _MODEL) == ([], [])
 
 
-def test_operand_roots_are_each_operands_root_tag():
-    # Member names are not roots; a tag used as an index is.
-    assert _operand_roots(["XIC(SRefIn[3].Ok)OTE(Out.Bit[Idx]);"]) == ("SRefIn", "Out", "Idx")
+def test_operand_refs_carry_each_root_and_its_kind():
+    # Member names are not roots; a tag used as an index is, as an index.
+    assert _operand_refs(["XIC(SRefIn[3].Ok)OTE(Out.Bit[Idx]);", "MOV(Da,Db);"]) == (
+        ("XIC", "SRefIn", "bit"), ("OTE", "Out", "bit"), ("OTE", "Idx", "index"),
+        ("MOV", "Da", "word"), ("MOV", "Db", "word"))
+
+
+@pytest.mark.parametrize("data_type,dims,safety", [
+    ("DINT", (2,), 40), ("DINT", (3,), 48), ("DINT", (64,), 288), ("INT", (3,), 40), ("SINT", (10,), 48),
+    ("REAL", (10,), 72), ("BOOL", (96,), 48), ("DINT", (4, 4), 96), ("TIMER", (4,), 80),
+    ("TIMER", (), 40), ("CONTROL", (), 40), ("LINT", (), 32)])
+def test_the_data_block_on_arrays_and_structures(data_type, dims, safety):
+    # safe_arr_* and safe_struct_*: 20 tags of each, controller scope, 12-character names.
+    tags = [G._controller_safety_tag(f"SafeArr{i:05d}", data_type, dims) for i in range(20)]
+    assert _delta(_small(controller_tags=tags), _small()) == (20 * 64, 20 * safety)
+
+
+def test_an_alias_is_its_name_entry_on_its_own_side():
+    targets = [G._controller_safety_tag(f"SafeTgt{i:05d}", "DINT") for i in range(5)]
+    ctl_alias = [R.ctl_alias(f"SafeAls{i:05d}", f"SafeTgt{i:05d}") for i in range(5)]
+    from sample_gen.builders import alias_tag_xml
+    prog_alias = [alias_tag_xml(f"SafeAls{i:05d}", f"SafeTgt{i:05d}") for i in range(5)]
+    assert _delta(_small(controller_tags=targets + ctl_alias), _small(controller_tags=targets)) == (5 * 64, 0)
+    assert _delta(_small(controller_tags=targets, safety_tags=prog_alias), _small(controller_tags=targets)) == (0, 5 * 64)
+
+
+def _with(programs) -> ET.Element:
+    return ET.fromstring(build_l5x("SafeTest", tags_xml="", processor_type=G.PROCESSOR, safety_level="SIL2",
+                                   extra_programs_xml="\n".join(R._program(*p) for p in programs),
+                                   extra_tasks_xml=R._task([p[0] for p in programs])))
+
+
+def test_safety_routines_and_programs_beyond_the_first():
+    one = _with([R.main_program()])
+    subs = _with([R.main_program(subs=[("SubRtn01", []), ("Inputs", [])])])
+    # 264 + 8 per full 8 characters of name, plus each routine's NOP rung (16).
+    assert _delta(subs, one) == (0, (264 + 8 + 16) + (264 + 16))
+    two = _with([R.main_program(), ("SafetyPrg02", [], [("MainRoutine", [])])])
+    # Standard: 64 + the program-name law; safety: 404 + its MainRoutine (264 + 8) + NOP.
+    assert _delta(two, one) == (64 + _MODEL.identifier_name_length.bytes_for("SafetyPrg02"), 404 + 272 + 16)
+
+
+@pytest.mark.parametrize("rung,per_rung", [
+    ("XIC(Pa[{i}])OTE(Po[{i}]);", 36), ("OTE(Po[{i}]);", 24), ("MOV(Da[{i}],Db[{i}]);", 44),
+    ("ADD(Da[{i}],Db[{i}],Dc[{i}]);", 52), ("EQU(Da[{i}],5)OTE(Po[{i}]);", 48), ("XIC(Pa[Ix])OTE(Po[{i}]);", 148),
+    ("[XIC(Pa[{i}]),XIC(Pa[{j}])]OTE(Po[{i}]);", 60)])
+def test_ordinary_logic_in_a_safety_routine_is_its_standard_cost_plus_its_operands(rung, per_rung):
+    # safe_lg_*: per rung, beside the routine's NOP rung (16) that the rungs replace.
+    pool = [R.prog_tag("Pa", "BOOL", (64,)), R.prog_tag("Po", "BOOL", (64,)), R.prog_tag("Ix", "DINT")] + [
+        R.prog_tag(n, "DINT", (32,)) for n in ("Da", "Db", "Dc")]
+    rungs = [rung.format(i=i, j=32 + i) for i in range(10)]
+    assert _delta(_with([R.main_program(pool, rungs)]), _with([R.main_program(pool)])) == (0, 10 * per_rung - 16)
+
+
+def test_standard_logic_reading_a_safety_word_pays_four():
+    ref = [G._controller_safety_tag("SRefD", "DINT", (64,)), G.tag_xml("StdD", "DINT", dimensions=(64,)),
+           G.tag_xml("StdE", "DINT", dimensions=(64,))]
+    safe = _small(controller_tags=ref, standard_rungs=[f"MOV(SRefD[{i}],StdD[{i}]);" for i in range(10)])
+    plain = _small(controller_tags=ref, standard_rungs=[f"MOV(StdE[{i}],StdD[{i}]);" for i in range(10)])
+    assert _delta(safe, plain) == (10 * 4, 0)

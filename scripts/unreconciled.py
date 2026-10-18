@@ -54,6 +54,21 @@ def _family(sample_id: str) -> str:
     return stem or sample_id
 
 
+_MODEL = None
+
+
+def _price(path: str) -> tuple[int, str]:
+    """One file's live prediction, in a worker process; a failure is reported, not raised."""
+    global _MODEL
+    _MODEL = _MODEL or load_memory_model()
+    try:
+        root = ET.parse(path).getroot()
+        entries, _errors = build_report(root, _MODEL)
+        return split_totals(entries, context_names(root, detect_export_scope(root)))["total"], ""
+    except Exception as exc:  # noqa: BLE001 - report, never abort the sweep
+        return 0, f"{type(exc).__name__}: {exc}"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--threshold", type=int, default=8,
@@ -66,6 +81,7 @@ def main() -> int:
     rows = load_manifest()
 
     out: list[dict] = []
+    jobs = []
     for r in rows:
         if not r["actual_bytes"]:
             continue
@@ -75,20 +91,17 @@ def main() -> int:
                         "actual": int(r["actual_bytes"]), "predicted": 0, "delta": 0,
                         "note": "FILE MISSING"})
             continue
-        try:
-            root = ET.parse(path).getroot()
-            entries, _errors = build_report(root, model)
-            predicted = split_totals(
-                entries, context_names(root, detect_export_scope(root)))["total"]
-        except Exception as exc:  # noqa: BLE001 - report, never abort the sweep
-            out.append({"sample_id": r["sample_id"], "family": _family(r["sample_id"]),
-                        "actual": int(r["actual_bytes"]), "predicted": 0, "delta": 0,
-                        "note": f"{type(exc).__name__}: {exc}"})
-            continue
+        jobs.append(r)
+    # Every core, a progress line per file, a watchdog (sample_gen.progress).
+    from sample_gen.progress import run
+    priced = run(((r["sample_id"], str(REPO_ROOT / r["l5x_path"])) for r in jobs), _price,
+                 label="unreconciled", item_timeout=120, total_timeout=1800)
+    for r in jobs:
+        predicted, note = priced[r["sample_id"]]
         actual = int(r["actual_bytes"])
         out.append({"sample_id": r["sample_id"], "family": _family(r["sample_id"]),
                     "actual": actual, "predicted": predicted,
-                    "delta": predicted - actual, "note": ""})
+                    "delta": predicted - actual if not note else 0, "note": note})
 
     off = [o for o in out if o["note"] or abs(o["delta"]) > args.threshold]
     by_family: dict[str, list[dict]] = collections.defaultdict(list)

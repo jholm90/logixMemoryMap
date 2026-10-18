@@ -82,7 +82,12 @@ class SizeError:
     message: str
 
 
-def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry], list[SizeError]]:
+def build_report(root: ET.Element, model: MemoryModel,
+                 safety_out: dict | None = None) -> tuple[list[SizeEntry], list[SizeError]]:
+    """The standard partition's line items. safety_out, when given, receives what this
+    pass prices for the SAFETY partition and leaves out of the standard total: each
+    Class="Safety" AOI's moved definition share and its logic, under "aoi"
+    (sizing/safety.py, OQ-SAFETYPARTITION)."""
     # Kept separate (not merged yet) so the udt_definition-cost pass below
     # can tell a real UDT from an AOI -- an AOI-typed tag still sizes
     # exactly like a UDT-typed one (merged dict below), but AOI *definition*
@@ -183,6 +188,10 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 sized.append((tag.path, category, tag.data_type or "", model.alias_overhead.bytes_for(tag.name),
                               model.safety_partition.data_block_confidence))
             continue
+        if tag.is_alias and tag.is_safety and tag.scope != CONTROLLER_SCOPE:
+            # An alias inside a safety program is the safety partition's
+            # (OQ-SAFETYPARTITION): its name entry is charged by sizing/safety.py.
+            continue
         if tag.is_alias:
             # An Alias tag is a pointer/rename onto another tag or module I/O
             # point -- it has no DataType/data space of its own in the L5X,
@@ -274,6 +283,8 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # the tree as an unexplained "Unitemized definition cost", and could not
     # be given its rungs' measured confidence.
     aoi_logic_entries: list[tuple[str, str, str, int, str]] = []
+    safety_aois = {a.get("Name") for a in root.iter("AddOnInstructionDefinition") if a.get("Class") == "Safety"}
+    safety_aoi_logic: dict[str, tuple[int, str]] = {}
     rll_names_by_aoi = {
         aoi_el.get("Name"): [
             r.get("Name") for r in aoi_el.iter("Routine") if (r.get("Type") or "RLL") == "RLL"
@@ -385,10 +396,22 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
                 if extra_routines and model.logic_instructions.aoi_extra_routine_bytes:
                     content_bytes += extra_routines * model.logic_instructions.aoi_extra_routine_bytes
                 names = [n for n in rll_names_by_aoi.get(name, []) if n] or ["Logic"]
-                aoi_logic_entries.append((
-                    f"aoi_definitions/{name}/{'+'.join(names)}", "routine_logic", "RLL",
-                    content_bytes, content_basis,
-                ))
+                if name in safety_aois:
+                    safety_aoi_logic[name] = (content_bytes, content_basis)
+                else:
+                    aoi_logic_entries.append((
+                        f"aoi_definitions/{name}/{'+'.join(names)}", "routine_logic", "RLL",
+                        content_bytes, content_basis,
+                    ))
+            # A Class="Safety" AOI (OQ-SAFETYPARTITION): its logic and a fixed share of
+            # its definition are the safety partition's; the rest of the definition stays.
+            if name in safety_aois:
+                moved = min(def_bytes, model.safety_partition.aoi_definition_moved_bytes)
+                def_bytes -= moved
+                def_basis = weakest(def_basis, model.safety_partition.aoi_confidence)
+                if safety_out is not None:
+                    logic, logic_basis = safety_aoi_logic.get(name, (0, "KNOWN"))
+                    safety_out.setdefault("aoi", {})[name] = (moved, logic, weakest(def_basis, logic_basis))
             definition_entries.append((
                 f"udt_definitions/{name}", "udt_definition", name, def_bytes, def_basis,
             ))
@@ -621,12 +644,14 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             logic_bytes += model.structured_text.st_aoi_call_routine_bytes
             rll_aoi_file_charged = True
         if safety_tag_names:
+            sp = model.safety_partition
             local = program_tag_names.get(routine.program_name or "", set())
-            n_safety_refs = sum(1 for root_name in routine.operand_roots
-                                if root_name in safety_tag_names and root_name not in local)
-            if n_safety_refs:
-                logic_bytes += n_safety_refs * model.safety_partition.standard_operand_bytes
-                logic_basis = weakest(logic_basis, model.safety_partition.standard_operand_confidence)
+            surcharge = sum(sp.standard_bit_operand_bytes if kind == "bit" else sp.standard_operand_bytes
+                            for _mn, root_name, kind in routine.operand_refs
+                            if root_name in safety_tag_names and root_name not in local)
+            if surcharge:
+                logic_bytes += surcharge
+                logic_basis = weakest(logic_basis, sp.standard_operand_confidence)
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
         if not is_plain:
             n_jsr_caller_routines += 1
@@ -788,6 +813,12 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
             for program_el in named[1:]:
                 shell_bytes += model.identifier_name_length.bytes_for(
                     program_el.get("Name") or "")
+            # Each safety program beyond the first leaves a fixed entry and its name in
+            # standard memory (OQ-SAFETYPARTITION: safe_prg_2/3/5 +64 each beside the
+            # name, safe_prg_2_len40 the name law); the first is inside the safety shell.
+            for program_el in [p for p in all_program_els if p.get("Class") == "Safety"][1:]:
+                shell_bytes += (model.safety_partition.extra_program_standard_bytes
+                                + model.identifier_name_length.bytes_for(program_el.get("Name") or ""))
         # A TASK's own name costs too, and had no term at all -- the five
         # identnamelen_task_* rows were the ones segment 9 closed without. Same
         # n-1 convention as task_extra: the first task's name is inside the

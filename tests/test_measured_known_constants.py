@@ -157,11 +157,29 @@ KNOWN_REGISTER = [
         "safe_* file exact on it; OQ-SAFETYPARTITION",
     ),
     (
-        "safety_partition.data_header_bytes", 28,
-        "safety_partition.data_block_confidence", 54,
-        "safe_tag_<bool|dint>_<10|50|200>, safe_tag_<real|int|sint>_50, the three name "
-        "lengths, _prog, safe_ref_ctl's BOOL[256] and all 39 safe_<mn>_tags_<n> backing "
-        "structures (28 to 132 data bytes), zero residual; OQ-SAFETYPARTITION",
+        "safety_partition.data_header_bytes", 24,
+        "safety_partition.data_block_confidence", 102,
+        "round 1's 54 tag files, round 2's 20 safe_arr_*, 8 safe_struct_*, 6 safe_udt_*, 5 "
+        "safe_ptag_*, the safe_alias_* and ESTOP/RIN form files: scalars, structures, LINT, "
+        "UDTs and AOI instances at 24, arrays at 24 + 8, zero residual; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.routine_bytes", 264,
+        "safety_partition.shell_confidence", 13,
+        "safe_rtn_jsr_1/2/5/10, safe_rtn_idle_1/5, safe_prg_2/3/5/_len40/_tags50 and the "
+        "subroutines of safe_comp_1 and _3, with the routine-name term; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.bit_operand_bytes", 8,
+        "safety_partition.ordinary_instruction_confidence", 64,
+        "64 of the 67 safe_lg_* / safe_lgc_* logic files: standard engine cost + 8 a bit "
+        "operand, 4 a word operand, 8 an index tag, zero residual; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.standard_bit_operand_bytes", 8,
+        "safety_partition.standard_operand_confidence", 7,
+        "safe_ref_10/50/200 and safe_sref_two/scalar (+8 a bit operand), safe_sref_mov (+4 a "
+        "word operand), against their all-standard twins; OQ-SAFETYPARTITION",
     ),
 ]
 

@@ -431,23 +431,37 @@ def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]
 
 
 _OPERAND_ROOT = re.compile(r"(?<![\w.\]])([A-Za-z_][A-Za-z0-9_]*)(?![\w(])")
+# Bit instructions: their one operand is a bit reference (OQ-SAFETYPARTITION prices it
+# apart from a word operand).
+BIT_INSTRUCTIONS = frozenset({"XIC", "XIO", "OTE", "OTL", "OTU"})
 
 
-def _operand_roots(rung_texts: list[str]) -> tuple[str, ...]:
-    """The root tag name of every operand of every instruction call, once per
-    occurrence: 'XIC(SRefIn[3].Ok)' -> ('SRefIn',). Member names are skipped; a
-    tag used as an index and a keyword operand are returned too, and the sizer
-    keeps only the roots that name a tag it is pricing (OQ-SAFETYPARTITION:
-    standard logic reading a safety tag)."""
-    roots: list[str] = []
+def _operand_refs(rung_texts: list[str]) -> tuple[tuple[str, str, str], ...]:
+    """(mnemonic, root tag name, kind) for every operand of every instruction call, once per
+    occurrence. kind is "index" for a name inside an array subscript, else "bit" for a
+    bit instruction's operand and "word" for any other: 'XIC(B[Idx].Ok)' ->
+    (("XIC", "B", "bit"), ("XIC", "Idx", "index")). Member names are skipped; keyword and
+    label operands come back too, and the sizer keeps only the roots that name a tag."""
+    refs: list[tuple[str, str, str]] = []
     for text in rung_texts:
         for m in _INSTRUCTION_CALL.finditer(text):
             args = _extract_call_args(text, m.end())
             if args is None:
                 continue
+            mnemonic = m.group(1)
+            outer = "bit" if mnemonic in BIT_INSTRUCTIONS else "word"
             for arg in args:
-                roots.extend(_OPERAND_ROOT.findall(arg))
-    return tuple(roots)
+                depth = [0] * (len(arg) + 1)
+                d = 0
+                for i, ch in enumerate(arg):
+                    if ch == "[":
+                        d += 1
+                    elif ch == "]":
+                        d -= 1
+                    depth[i] = d
+                for root in _OPERAND_ROOT.finditer(arg):
+                    refs.append((mnemonic, root.group(1), "index" if depth[root.start()] > 0 else outer))
+    return tuple(refs)
 
 
 def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
@@ -776,9 +790,9 @@ class RoutineLogic:
     # A(n) is NOT yet adjusted for output param count, see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
     jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
-    # Root tag name of every operand of every instruction call (RLL only), see
-    # _operand_roots. Used to price standard logic that reads a safety tag.
-    operand_roots: tuple[str, ...] = ()
+    # (mnemonic, root tag name, kind) of every operand of every instruction call (RLL
+    # only), see _operand_refs. Prices safety-tag operands (OQ-SAFETYPARTITION).
+    operand_refs: tuple[tuple[str, str, str], ...] = ()
     # The parameter ARGUMENTS of each of those calls (inputs then outputs),
     # target and count excluded, so the sizer can tell an atomic argument from
     # a structure or STRING one. See memory_model.yaml jsr_param_cost.
@@ -1134,7 +1148,7 @@ def parse_rll_routines(
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
-                operand_roots=_operand_roots(rung_texts),
+                operand_refs=_operand_refs(rung_texts),
                 jsr_call_args=jsr_call_args(rung_texts),
                 ret_operand_counts=ret_operand_counts(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),

@@ -677,38 +677,56 @@ content.
 Accuracy is measured on standard processors only; safety-processor rows are excluded
 from every accuracy figure (`quick_eval.py`). A safety controller keeps safety tags and
 safety logic in its own partition, read on the Capacity tab as **safety used memory**
-beside the standard figure. Measured on the 112-file `safe_*` batch (1756-L81ES, v35,
-2026-10-18; zero build errors, both readings on every row), each sweep differenced
-against its own control. Every figure below is exact, to the byte, on every file that
-tests it.
+beside the standard figure. Measured on 271 `safe_*` files in three rounds (1756-L81ES,
+v35, 2026-10-18; zero build errors, both readings on every row), each sweep differenced
+against its own control. **The engine reproduces the safety reading of all 271 to the
+byte**, and the standard reading of 249 to the byte (the rest within 32 bytes; below).
 
 **A safety tag is a name entry plus a data block.**
 
-    safety_name_entry(name_len) = 56 + 8 × floor(name_len / 8)      (= alias_overhead)
-    safety_data_block(data)     = 8 × ceil((28 + data_bytes) / 8)
+    name_entry(len)   = 56 + 8 × floor(len / 8)                         (= alias_overhead)
+    block(data)       = 8 × ceil((24 + data) / 8)        scalar, structure, UDT, AOI instance
+    block(data)       = 8 × ceil((32 + data) / 8)        array (8 more header)
 
-`data_bytes` is the tag's ordinary data size (an atomic is its own size, an array
-element size × count, a structure its packed size). Which partition pays each half
-depends only on scope:
+`data` is the ordinary data size (`compute_array_size`; an AOI instance's less the 8 of
+`aoi_instance_extra`). Which partition pays each part depends only on scope:
 
 | tag | standard | safety |
 |---|---|---|
-| controller scope, `Class="Safety"` | name entry | data block |
-| program scope, in a `Class="Safety"` program | 0 | name entry + data block |
+| controller scope, `Class="Safety"` | name entry | block |
+| any tag of a `Class="Safety"` program | 0 | name entry + block |
+| alias of a safety tag, controller scope | name entry | 0 |
+| alias inside a safety program | 0 | name entry |
 
-Controller scope: BOOL, SINT, INT, DINT and REAL alike at 10, 50 and 200 tags read 64
-standard and 32 safety per tag (12-character names); names of 4, 20 and 40 characters
-move the standard half by exactly 8 × floor(len / 8) and leave the safety half alone; a
-`BOOL[256]` pays 64 in safety. Program scope: a DINT reads 0 standard and 96 safety, and
-all 39 safety-instruction backing structures (28 to 132 bytes of data, names of 6 to 9
-characters) land on name entry + data block with zero residual, the drive-safety
-instructions' output BOOLs and shared SFX tag included.
+Exact on BOOL/SINT/INT/DINT/REAL/LINT, TIMER/COUNTER/CONTROL, two UDTs, all 39
+safety-instruction structures and ten array shapes (`DINT[2]` … `DINT[4,4]`,
+`TIMER[4]`, `BOOL[96]`), at both scopes, names of 4 to 40 characters. A UDT's
+**definition** costs standard memory only.
 
-**Safety-routine logic costs nothing in standard memory.** Every rung of every safety
-instruction, and the routine's `NOP`, reads 0 on the standard side. In the safety
-partition a rung costs:
+**Shells.** The base, 1,394, is File > New's SafetyTask/SafetyProgram/MainRoutine with
+no rungs (v34 and v35 alike). Each further safety routine costs **264 + 8 × floor(len /
+8)** of its name (8-character names 272, 6- and 7-character 264), called or not. Each
+further safety program costs **404** in safety, plus its routines, and **64 + the
+program-name law** in standard memory; its name costs nothing in safety. The standard
+296 safety task/program shell stays.
 
-| instruction | bytes / rung | | instruction | bytes / rung |
+**Safety-routine logic costs nothing in standard memory.** In the safety partition:
+
+- a **safety instruction** costs its measured per-rung figure (table below), wherever its
+  operands and backing tag live (ESTOP and RIN measured with inputs on program BOOLs,
+  controller BOOLs, array elements and members, backing tags at both scopes: all 360);
+- **any other instruction** costs its **standard engine cost** (weights, operand-type,
+  literal, mixed-type and index laws, branches, the series-output law, all as standard)
+  **plus 8 per bit-instruction operand** (XIC, XIO, OTE, OTL, OTU), **4 per other tag
+  operand**, and **8 per tag used as a subscript**; literals, keywords, labels and
+  routine names add nothing. Exact on 64 of the 67 round-3 logic files (every compare,
+  math, move, timer, counter, one-shot, MCR, JMP/LBL, literal, mixed-type, indexed,
+  member, scalar, controller-scope, series, branch, two-output and seal-in shape, at 20
+  and 100 rungs). ATAN2 (no standard weight), COP and FLL carry a measured correction
+  (+64, +4, −4), one count each;
+- a **JSR** costs 72, its standard weight; the subroutine its shell.
+
+| safety instruction | bytes / rung | | safety instruction | bytes / rung |
 |---|---:|---|---|---:|
 | ESTOP, RIN, ROUT | 360 | | LC | 436 |
 | DIN, ENPEN | 360 | | FPMS | 432 |
@@ -728,26 +746,24 @@ partition a rung costs:
 | SBC | 176 | | SFX | 180 |
 | SS2 | 216 | | NOP | 16 |
 
-ESTOP, RIN, ROUT and LC (the four real programs use) are exact at 10, 50 and 200 rungs;
-the rest at 20, each against its own tags-only file. The drive-safety instructions are
-cheap per rung because their state lives in the backing structure and the SFX tag.
-Ordinary instructions in a safety routine (beyond `NOP`): `safe_std_*_r2`, not yet
-captured; the estimate charges them their standard weight, ASSUMED.
+**Safety AOIs** (`Class="Safety"`). The total is what the engine prices for the same
+AOI as a standard one; the split is its logic and **800** of its definition in safety,
+the rest of the definition standard (definition alone: 1,228 against 1,236; with ten
+internal rungs and nine locals: 1,560 to the byte). A call in a safety routine costs its
+standard call cost plus **44**, and a file whose safety routines call an AOI the
+standard one-time 264 (one count: FITTED). A safety AOI exported encoded (sealed, safety-locked) is priced
+from its visible parameters, its logic at a minimum, and the engine says so.
 
-**Safety base: 1,394** for a File > New project's SafetyTask/SafetyProgram/MainRoutine
-with no rungs. The same at v34 (Studio seed) and v35 (`safe_n00`, 1,410 = 1,394 + its
-one `NOP` rung). The Studio seed with three controller-scope safety tags and one FPMS,
-ROUT and RIN rung reads 2,754 safety: 1,394 + (64 + 80 + 64) + (432 + 360 + 360), exact.
+**Standard logic reading a safety tag** pays its standard cost plus **8 per safety
+bit-instruction operand** and **4 per other safety operand** (XIC+OTE at 10/50/200, two
+safety XICs, a scalar, MOV from a safety DINT array, each against its all-standard
+twin). The safety partition does not move with standard content.
 
-**Standard logic reading a safety tag** costs 28 per `XIC(safety BOOL)OTE(standard BOOL)`
-rung at 10, 50 and 200 rungs, where the engine charges 20 for the same rung on standard
-tags: **+8 per safety-tag operand** in standard logic. Measured on one shape, where a
-rung holds exactly one safety operand, so per operand and per rung are not separated.
-Not in the safety partition (it reads 0 there).
-
-The 296-byte safety task/program shell stays on the standard side: the empty Studio
-seed is exact with it. The safety `NOP` the engine used to charge 16 on the standard side
-was wrong: it is 0 there.
+**Standard-side residuals still open** (beyond the realism plant's own −1,794, which every
+file shares): a safety AOI's definition −8 (noise floor); +4 per standard array tag in a
+safety project (`safe_ref_ctl`, `safe_sref_*`); UDT definitions −16 and −32; and +52 in
+`safe_comp_2`, consistent with a scalar safety DINT read by a standard MOV costing 8, not
+4. OQ-SAFETYPARTITION, "Still open".
 
 ## Operand shape — measured, free
 

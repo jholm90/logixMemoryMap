@@ -248,17 +248,42 @@ class SafetyPartitionModel:
     base_bytes: int
     base_confidence: str
     data_header_bytes: int
+    array_header_extra_bytes: int
     data_alignment: int
     data_block_confidence: str
-    standard_operand_bytes: int
-    standard_operand_confidence: str
+    routine_bytes: int
+    routine_name_per_8_chars: int
+    routine_name_confidence: str
+    program_bytes: int
+    extra_program_standard_bytes: int
+    shell_confidence: str
+    operand_bytes: int
+    bit_operand_bytes: int
+    index_operand_bytes: int
     ordinary_instruction_confidence: str
+    ordinary_delta_bytes: dict[str, int]
+    ordinary_delta_confidence: str
+    aoi_definition_moved_bytes: int
+    aoi_call_extra_bytes: int
+    aoi_confidence: str
+    standard_operand_bytes: int
+    standard_bit_operand_bytes: int
+    standard_operand_confidence: str
     rung_bytes: dict[str, int]
     rung_bytes_known: frozenset[str]
 
-    def data_block(self, data_bytes: int) -> int:
+    def data_block(self, data_bytes: int, is_array: bool = False) -> int:
         a = self.data_alignment
-        return a * -(-(self.data_header_bytes + data_bytes) // a)
+        header = self.data_header_bytes + (self.array_header_extra_bytes if is_array else 0)
+        return a * -(-(header + data_bytes) // a)
+
+    def operand_cost(self, kind: str) -> int:
+        """A tag operand of an ordinary instruction in a safety routine, by kind."""
+        return {"bit": self.bit_operand_bytes, "index": self.index_operand_bytes}.get(kind, self.operand_bytes)
+
+    def routine_shell(self, name: str) -> int:
+        """A safety routine beyond the first: its shell and its name."""
+        return self.routine_bytes + self.routine_name_per_8_chars * (len(name) // 8)
 
     def rung_confidence(self, mnemonic: str) -> str:
         return "KNOWN" if mnemonic in self.rung_bytes_known else "FITTED"
@@ -1737,11 +1762,27 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             base_bytes=raw["safety_partition"]["base_bytes"],
             base_confidence=raw["safety_partition"]["base_confidence"],
             data_header_bytes=raw["safety_partition"]["data_header_bytes"],
+            array_header_extra_bytes=raw["safety_partition"]["array_header_extra_bytes"],
             data_alignment=raw["safety_partition"]["data_alignment"],
             data_block_confidence=raw["safety_partition"]["data_block_confidence"],
-            standard_operand_bytes=raw["safety_partition"]["standard_operand_bytes"],
-            standard_operand_confidence=raw["safety_partition"]["standard_operand_confidence"],
+            routine_bytes=raw["safety_partition"]["routine_bytes"],
+            routine_name_per_8_chars=raw["safety_partition"]["routine_name_per_8_chars"],
+            routine_name_confidence=raw["safety_partition"]["routine_name_confidence"],
+            program_bytes=raw["safety_partition"]["program_bytes"],
+            extra_program_standard_bytes=raw["safety_partition"]["extra_program_standard_bytes"],
+            shell_confidence=raw["safety_partition"]["shell_confidence"],
+            operand_bytes=raw["safety_partition"]["operand_bytes"],
+            bit_operand_bytes=raw["safety_partition"]["bit_operand_bytes"],
+            index_operand_bytes=raw["safety_partition"]["index_operand_bytes"],
             ordinary_instruction_confidence=raw["safety_partition"]["ordinary_instruction_confidence"],
+            ordinary_delta_confidence=raw["safety_partition"]["ordinary_delta_confidence"],
+            aoi_definition_moved_bytes=raw["safety_partition"]["aoi_definition_moved_bytes"],
+            aoi_call_extra_bytes=raw["safety_partition"]["aoi_call_extra_bytes"],
+            aoi_confidence=raw["safety_partition"]["aoi_confidence"],
+            standard_operand_bytes=raw["safety_partition"]["standard_operand_bytes"],
+            standard_bit_operand_bytes=raw["safety_partition"]["standard_bit_operand_bytes"],
+            standard_operand_confidence=raw["safety_partition"]["standard_operand_confidence"],
+            ordinary_delta_bytes=dict(raw["safety_partition"]["ordinary_delta_bytes"]),
             rung_bytes=dict(raw["safety_partition"]["rung_bytes"]),
             rung_bytes_known=frozenset(raw["safety_partition"]["rung_bytes_known"]),
         ),
