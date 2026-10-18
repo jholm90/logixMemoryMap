@@ -295,6 +295,43 @@ _NATIVE_ARG_COUNTS["ATAN2"] = 3
 _KNOWN_NATIVE_INSTRUCTIONS.update(_SAFETY_INSTRUCTION_ARG_COUNTS, {"ATAN2"})
 
 
+_STRUCTURE_WRITERS = {"OTE", "OTL", "OTU", "ONS", "TON", "TOF", "RTO", "CTU", "CTD", "RES"}
+
+
+def _safety_tag_write_findings(root: ET.Element) -> list[LintFinding]:
+    """A safety tag is read-only outside the safety task: standard logic may read a
+    controller-scope Class="Safety" tag (XIC, a MOV source) but never write one."""
+    from l5x_memory_analyzer.parser.logic import _DESTINATION_ARG
+    controller = root.find("Controller")
+    if controller is None:
+        return []
+    safety_tags = {t.get("Name") for t in controller.findall("Tags/Tag") if t.get("Class") == "Safety"}
+    if not safety_tags:
+        return []
+    findings: list[LintFinding] = []
+    for program in controller.findall("Programs/Program"):
+        if program.get("Class") == "Safety":
+            continue
+        for text in _all_rung_texts(program):
+            for mnemonic, args_str in _call_sites(text):
+                args = _split_top_level_args(args_str)
+                if mnemonic in _STRUCTURE_WRITERS:
+                    written = args[:1]
+                elif mnemonic in _DESTINATION_ARG and args:
+                    written = [args[_DESTINATION_ARG[mnemonic]]]
+                else:
+                    continue
+                for operand in written:
+                    m = re.match(r"\s*([A-Za-z_]\w*)", operand)
+                    if m and m.group(1) in safety_tags:
+                        findings.append(LintFinding(
+                            "safety_tag_written_outside_safety_task",
+                            f"'{mnemonic}(' in standard program {program.get('Name')!r} writes safety tag "
+                            f"{m.group(1)!r}; safety tags are read-only outside the safety task: {text.strip()!r}",
+                        ))
+    return findings
+
+
 def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
     """The Local module's ProductCode must be its catalog's own. GuardLogix 5580 is
     numbered apart from the standard L8x (L81ES 211, L81E 164); a safety_partition
@@ -1605,6 +1642,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_safety_module_findings(root))
     findings.extend(_safety_instruction_findings(root))
     findings.extend(_local_product_code_findings(root))
+    findings.extend(_safety_tag_write_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
     findings.extend(_structure_tag_data_findings(root))

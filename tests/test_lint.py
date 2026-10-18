@@ -623,3 +623,25 @@ def test_build_l5x_refuses_a_1756_catalog_it_has_no_product_code_for():
     assert 'ProductCode="211"' in build_l5x("SafeCodeProbe", "", processor_type="1756-L81ES", safety_level="SIL2")
     with pytest.raises(ValueError):
         build_l5x("SafeCodeProbe", "", processor_type="1756-L85ES", safety_level="SIL2")
+
+
+def test_safety_tags_are_read_only_outside_the_safety_task():
+    from sample_gen.lint import _safety_tag_write_findings
+    import xml.etree.ElementTree as ET
+
+    def kinds(rung, program_class=""):
+        cls = f' Class="{program_class}"' if program_class else ""
+        root = ET.fromstring(
+            '<RSLogix5000Content><Controller><Tags><Tag Name="SafeBit" Class="Safety" DataType="BOOL"/>'
+            '<Tag Name="SafeWord" Class="Safety" DataType="DINT"/><Tag Name="Std" DataType="DINT"/></Tags>'
+            f'<Programs><Program Name="P"{cls}><Routines><Routine Name="R" Type="RLL"><RLLContent>'
+            f'<Rung Number="0" Type="N"><Text><![CDATA[{rung}]]></Text></Rung>'
+            '</RLLContent></Routine></Routines></Program></Programs></Controller></RSLogix5000Content>')
+        return {f.kind for f in _safety_tag_write_findings(root)}
+
+    written = {"safety_tag_written_outside_safety_task"}
+    assert kinds("XIC(SafeBit)OTE(Std.0);") == set()
+    assert kinds("MOV(SafeWord,Std);") == set()
+    assert kinds("XIC(Std.0)OTE(SafeBit);") == written
+    assert kinds("MOV(Std,SafeWord);") == written
+    assert kinds("XIC(Std.0)OTE(SafeBit);", program_class="Safety") == set()
