@@ -1,3 +1,5 @@
+import pytest
+
 from sample_gen.builders import MemberSpec, aoi_xml, rung_xml, tag_xml
 from sample_gen.lint import lint_l5x
 from sample_gen.wrapper import build_l5x
@@ -327,6 +329,28 @@ def test_does_not_flag_an_aoi_revision_version_string():
       </Controller>
     </RSLogix5000Content>
     """
+    assert not any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+@pytest.mark.parametrize("name", ["SIn", "SIN", "sin", "Mod", "Atan", "SQRT"])
+def test_flags_a_name_that_is_an_expression_function(name):
+    # Real conversion failure: a safety BOOL array named `SIn` was rejected
+    # as an invalid tag name -- it is SIN -- and took all seven safe_std_*
+    # files with it.
+    l5x = _BAD_NAME_WRAPPER.format(target="T", tag=name)
+    assert any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
+
+
+@pytest.mark.parametrize("name", ["SIn", "cos", "Xor"])
+def test_validate_logix_name_refuses_an_expression_function(name):
+    from sample_gen.builders import InvalidLogixNameError, validate_logix_name
+    with pytest.raises(InvalidLogixNameError, match="expression function"):
+        validate_logix_name(name, "tag")
+
+
+@pytest.mark.parametrize("name", ["SfIn", "SinA", "Cosine", "RIN", "ModeSel"])
+def test_a_name_merely_containing_a_function_name_is_valid(name):
+    l5x = _BAD_NAME_WRAPPER.format(target="T", tag=name)
     assert not any(f.kind == "invalid_logix_name" for f in lint_l5x(l5x))
 
 

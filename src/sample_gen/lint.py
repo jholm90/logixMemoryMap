@@ -107,6 +107,7 @@ from sample_gen.data.kinetix import (
 from dataclasses import dataclass
 
 from l5x_memory_analyzer.parser.logic import V36_MNEMONIC_ALIASES
+from sample_gen.builders import RESERVED_EXPRESSION_NAMES
 
 # Every native instruction mnemonic this project has confirmed real via
 # the corpus scan (gen_logic_sweep.py's INSTRUCTIONS dict) plus JSR/LBL/JMP
@@ -1223,6 +1224,8 @@ def _name_rule_violation(name: str) -> str | None:
       - no SEQUENTIAL underscores -- the earlier `stringoverhead_namelen32`
         failure, where name-length filler abutted a numeric suffix
       - no LEADING digit
+      - not an expression function or operator, in any case -- `SIn`
+        failed every safe_std_* conversion as the SIN function
     """
     if not name:
         return None
@@ -1232,6 +1235,8 @@ def _name_rule_violation(name: str) -> str | None:
         return "contains sequential underscores"
     if name[0].isdigit():
         return "starts with a digit"
+    if name.upper() in RESERVED_EXPRESSION_NAMES:
+        return f"is the expression function or operator {name.upper()}"
     return None
 
 

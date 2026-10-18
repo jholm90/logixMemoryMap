@@ -26,6 +26,20 @@ class InvalidLogixNameError(ValueError):
     """A name Studio 5000 will reject on import as "Invalid name."."""
 
 
+# Names an identifier may not take, compared case-insensitively: the
+# expression functions and operators CPT, CMP and Structured Text parse.
+# `SIn` (a safety BOOL array) failed conversion as the SIN function, and
+# took all seven safe_std_* files with it. The rest of the set is refused on
+# the same basis: same parser, same class of word; a generator loses nothing
+# by picking another name. The v36 spellings are included.
+RESERVED_EXPRESSION_NAMES = frozenset({
+    "ABS", "ACS", "ASN", "ATN", "COS", "DEG", "FRD", "LN", "LOG", "MOD",
+    "RAD", "SIN", "SQR", "TAN", "TOD", "TRN",
+    "AND", "OR", "XOR", "NOT",
+    "ACOS", "ASIN", "ATAN", "SQRT", "TRUNC",
+})
+
+
 def validate_logix_name(name: str, what: str) -> str:
     """Raise unless `name` is a legal Logix identifier.
 
@@ -34,7 +48,8 @@ def validate_logix_name(name: str, what: str) -> str:
     may not end in an underscore, may not contain two underscores in a
     row, and may not start with a digit. Real Studio 5000 rejects all
     three with "Invalid name." and aborts the whole import, so one bad
-    name costs the entire file.
+    name costs the entire file. Nor may it be an expression function or
+    operator in any case (RESERVED_EXPRESSION_NAMES): `SIn` is SIN.
 
     Checked here, at the point a name enters a file, rather than only in
     sample_gen.lint -- the lint catch comes after a batch is written and
@@ -52,6 +67,8 @@ def validate_logix_name(name: str, what: str) -> str:
         reason = "contains sequential underscores"
     elif name[0].isdigit():
         reason = "starts with a digit"
+    elif name.upper() in RESERVED_EXPRESSION_NAMES:
+        reason = f"is the expression function or operator {name.upper()}"
     else:
         return name
     raise InvalidLogixNameError(

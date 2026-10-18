@@ -99,9 +99,12 @@ header's `TargetName`.
 - **No trailing underscore.**
 - **No sequential underscores.**
 - **No leading digit.**
+- **Not an expression function or operator, in any case** (`SIN`, `COS`, `ABS`,
+  `MOD`, `AND`, ... and the v36 spellings; `builders.RESERVED_EXPRESSION_NAMES`).
+  A safety BOOL array named `SIn` failed conversion as SIN. A name that merely
+  contains one (`SfIn`, `Cosine`) is fine.
 
-All three fail with "Invalid name." and abort the whole import. One bad name costs
-the entire file.
+All four fail the import. One bad name costs the entire file.
 
 **Pad a name to a target length with filler letters, never underscores.**
 

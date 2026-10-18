@@ -301,17 +301,17 @@ def plan() -> list[tuple[str, str, dict]]:
                           {"safety_tags": tags, "safety_rungs": rungs}))
 
     std_tags = [
-        _program_safety_tag("SIn", "BOOL", (256,)), _program_safety_tag("SOut", "BOOL", (256,)),
-        _program_safety_tag("STmr", "TIMER", (64,)),
-        _program_safety_tag("SDa", "DINT", (64,)), _program_safety_tag("SDb", "DINT", (64,)),
-        _program_safety_tag("SRa", "REAL", (32,)), _program_safety_tag("SRb", "REAL", (32,)),
-        _program_safety_tag("SRc", "REAL", (32,)),
+        _program_safety_tag("SfIn", "BOOL", (256,)), _program_safety_tag("SfOut", "BOOL", (256,)),
+        _program_safety_tag("SfTmr", "TIMER", (64,)),
+        _program_safety_tag("SfDa", "DINT", (64,)), _program_safety_tag("SfDb", "DINT", (64,)),
+        _program_safety_tag("SfRa", "REAL", (32,)), _program_safety_tag("SfRb", "REAL", (32,)),
+        _program_safety_tag("SfRc", "REAL", (32,)),
     ]
     files.append(("safe_std_ctl", f"{tag}: control for safe_std_* -- the safety arrays, no logic",
                   {"safety_tags": std_tags}))
-    std_arms = [("xicote_10", 10, "XIC(SIn[{i}])OTE(SOut[{i}])"), ("xicote_50", 50, "XIC(SIn[{i}])OTE(SOut[{i}])"),
-                ("xicote_200", 200, "XIC(SIn[{i}])OTE(SOut[{i}])"), ("ton_50", 50, "TON(STmr[{i}],1000,0)"),
-                ("mov_50", 50, "MOV(SDa[{i}],SDb[{i}])"), ("atan2_20", 20, "ATAN2(SRa[{i}],SRb[{i}],SRc[{i}])")]
+    std_arms = [("xicote_10", 10, "XIC(SfIn[{i}])OTE(SfOut[{i}])"), ("xicote_50", 50, "XIC(SfIn[{i}])OTE(SfOut[{i}])"),
+                ("xicote_200", 200, "XIC(SfIn[{i}])OTE(SfOut[{i}])"), ("ton_50", 50, "TON(SfTmr[{i}],1000,0)"),
+                ("mov_50", 50, "MOV(SfDa[{i}],SfDb[{i}])"), ("atan2_20", 20, "ATAN2(SfRa[{i}],SfRb[{i}],SfRc[{i}])")]
     for suffix, n, call in std_arms:
         files.append((f"safe_std_{suffix}", f"{tag}: {n} rungs of {call.split('(')[0]} in the safety routine "
                       f"on safety arrays", {"safety_tags": std_tags,

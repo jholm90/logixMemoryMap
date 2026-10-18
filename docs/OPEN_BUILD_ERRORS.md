@@ -141,7 +141,11 @@ at build time rather than caught after a capture run.
 
 Logix rejects a name that **ends in an underscore, contains two consecutive
 underscores, or starts with a digit** — with "Invalid name." and an aborted
-import. One bad name costs the entire file.
+import. One bad name costs the entire file. **A name equal to an expression
+function or operator, in any case, fails too:** the safety array `SIn` was
+rejected as an invalid tag name (it is SIN) and took all seven `safe_std_*` files
+with it. `validate_logix_name` and lint refuse the whole set
+(`builders.RESERVED_EXPRESSION_NAMES`).
 
 Both real instances came from a helper composing a name out of parts, which is
 exactly the case a generator author cannot see by reading their own call site:
