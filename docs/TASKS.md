@@ -100,12 +100,12 @@ safety program, and checks every safety call's operand count.
 | `safe_tag_dint_50_len<k>` | 3 | name length 4/20/40 (12 is the ×50 file) | count | whether the standard side follows 56 + 8 × floor(len / 8) |
 | `safe_tag_dint_50_prog` | 1 | scope | count, type | program scope against controller scope |
 | `safe_<mn>_tags_<n>` / `safe_<mn>_<n>` | 94 | count; tags alone vs tags + one rung each | program scope, Studio's call shape | instruction cost per partition. ESTOP, RIN, ROUT, LC ×10/50/200; the other 35 ×20 |
-| `safe_std_ctl`, `safe_std_<x>` | 7 | XIC+OTE ×10/50/200, TON ×50, MOV ×50, ATAN2 ×20 | safety arrays in full in all | whether an ordinary rung in the safety routine costs its standard weight, and where |
+| `safe_std_ctl_r2`, `safe_std_<x>_r2` | 7 | XIC+OTE ×10/50/200, TON ×50, MOV ×50, ATAN2 ×20 | safety arrays in full in all | whether an ordinary rung in the safety routine costs its standard weight, and where |
 | `safe_ref_ctl`, `safe_ref_<n>` | 4 | XIC(safety)OTE(standard) ×10/50/200 in the standard MainRoutine | both arrays | standard cost of reading a safety tag |
 
 **Rebuilt 2026-10-17** after every file failed conversion with "required property 'port' was missing": `build_l5x` had no ProductCode for 1756-L81ES and gave the Local module the L81E's 164 (GuardLogix 5580's is 211). The wrapper now refuses a 1756 catalog it has no code for, and lint (`local_module_product_code`) refuses a mismatched Local module. Reconvert the whole folder.
 
-**`safe_std_*` rebuilt 2026-10-18**: all seven failed conversion on the safety BOOL array `SIn`, rejected as an invalid tag name because it is the SIN function. The arrays are now `SfIn`, `SfOut`, `SfTmr`, `SfDa`, `SfDb`, `SfRa`, `SfRb`, `SfRc`, and `validate_logix_name` and lint refuse any name equal to an expression function or operator. Only those seven files changed; reconvert them alone.
+**`safe_std_*` rebuilt 2026-10-18**: all seven failed conversion on the safety BOOL array `SIn`, rejected as an invalid tag name because it is the SIN function. The arrays are now `SfIn`, `SfOut`, `SfTmr`, `SfDa`, `SfDb`, `SfRa`, `SfRb`, `SfRc`, and `validate_logix_name` and lint refuse any name equal to an expression function or operator. The seven failed files are abandoned (deleted with their manifest rows; none was captured) and rebuilt as `safe_std_*_r2`, built alone with `--only '^safe_std_'` so the 112 captured files keep their hashes.
 
 **Capture:** convert as usual, then capture a few first with `-Limit 3` and check that
 `safety_bytes` fills and the error counts are 0 before running the rest. The updated

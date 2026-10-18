@@ -26,12 +26,12 @@ Files (sample ids, all differenced against their own control):
                                  10/50/200, every other safety-routine instruction at 20. The
                                  drive-safety instructions also carry one shared SFX tag and
                                  their output tags in both files of the pair.
-  safe_std_ctl, safe_std_<x>     XIC+OTE at 10/50/200, TON 50, MOV 50 and ATAN2 20 inside the
+  safe_std_ctl_r2, safe_std_<x>_r2  XIC+OTE at 10/50/200, TON 50, MOV 50 and ATAN2 20 inside the
                                  safety routine, on safety arrays declared in full in all six
   safe_ref_ctl, safe_ref_<n>     the standard MainRoutine reading safety BOOLs,
                                  XIC(safety)OTE(standard), at 10/50/200
 
-Run: python -m sample_gen.gen_safety_partition
+Run: python -m sample_gen.gen_safety_partition [--only REGEX]
 """
 
 from __future__ import annotations
@@ -307,13 +307,17 @@ def plan() -> list[tuple[str, str, dict]]:
         _program_safety_tag("SfRa", "REAL", (32,)), _program_safety_tag("SfRb", "REAL", (32,)),
         _program_safety_tag("SfRc", "REAL", (32,)),
     ]
-    files.append(("safe_std_ctl", f"{tag}: control for safe_std_* -- the safety arrays, no logic",
+    # The first build of these seven named a safety BOOL array `SIn`, which
+    # Studio rejects as the SIN function; all seven failed conversion and none
+    # was captured. Rebuilt under _r2 names, the old ones abandoned, so the
+    # conversion and capture tooling treat them as new work.
+    files.append(("safe_std_ctl_r2", f"{tag}: control for safe_std_*_r2 -- the safety arrays, no logic",
                   {"safety_tags": std_tags}))
     std_arms = [("xicote_10", 10, "XIC(SfIn[{i}])OTE(SfOut[{i}])"), ("xicote_50", 50, "XIC(SfIn[{i}])OTE(SfOut[{i}])"),
                 ("xicote_200", 200, "XIC(SfIn[{i}])OTE(SfOut[{i}])"), ("ton_50", 50, "TON(SfTmr[{i}],1000,0)"),
                 ("mov_50", 50, "MOV(SfDa[{i}],SfDb[{i}])"), ("atan2_20", 20, "ATAN2(SfRa[{i}],SfRb[{i}],SfRc[{i}])")]
     for suffix, n, call in std_arms:
-        files.append((f"safe_std_{suffix}", f"{tag}: {n} rungs of {call.split('(')[0]} in the safety routine "
+        files.append((f"safe_std_{suffix}_r2", f"{tag}: {n} rungs of {call.split('(')[0]} in the safety routine "
                       f"on safety arrays", {"safety_tags": std_tags,
                                             "safety_rungs": [call.format(i=i) + ";" for i in range(n)]}))
 
@@ -328,8 +332,16 @@ def plan() -> list[tuple[str, str, dict]]:
 
 
 def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", metavar="REGEX",
+                    help="build only the sample_ids this matches; a full rebuild restamps every "
+                         "file's dates and queues the captured ones for reconversion")
+    args = ap.parse_args()
     check_shapes()
     for sample_id, description, kwargs in plan():
+        if args.only and not re.search(args.only, sample_id):
+            continue
         out = OUT_ROOT / f"{sample_id}.L5X"
         predicted = write_sample(build(sample_id, **kwargs), out)
         append_manifest_row(sample_id, description, CATEGORY, out, predicted)

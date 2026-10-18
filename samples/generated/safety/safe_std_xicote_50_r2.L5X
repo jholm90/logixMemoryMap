@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartStdAtan220" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 01:29:49 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="SafePartStdAtan220" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 01:29:49 2026" LastModifiedDate="Sun Oct 18 01:29:49 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartStdXicote50R2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 01:38:29 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="SafePartStdXicote50R2" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 01:38:29 2026" LastModifiedDate="Sun Oct 18 01:38:29 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="false" SafetyLevel="SIL2/PLd"/>
@@ -11263,64 +11263,154 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[0],SfRb[0],SfRc[0]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[0])OTE(SfOut[0]);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[1],SfRb[1],SfRc[1]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[1])OTE(SfOut[1]);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[2],SfRb[2],SfRc[2]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[2])OTE(SfOut[2]);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[3],SfRb[3],SfRc[3]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[3])OTE(SfOut[3]);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[4],SfRb[4],SfRc[4]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[4])OTE(SfOut[4]);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[5],SfRb[5],SfRc[5]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[5])OTE(SfOut[5]);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[6],SfRb[6],SfRc[6]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[6])OTE(SfOut[6]);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[7],SfRb[7],SfRc[7]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[7])OTE(SfOut[7]);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[8],SfRb[8],SfRc[8]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[8])OTE(SfOut[8]);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[9],SfRb[9],SfRc[9]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[9])OTE(SfOut[9]);]]></Text>
               </Rung>
               <Rung Number="10" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[10],SfRb[10],SfRc[10]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[10])OTE(SfOut[10]);]]></Text>
               </Rung>
               <Rung Number="11" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[11],SfRb[11],SfRc[11]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[11])OTE(SfOut[11]);]]></Text>
               </Rung>
               <Rung Number="12" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[12],SfRb[12],SfRc[12]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[12])OTE(SfOut[12]);]]></Text>
               </Rung>
               <Rung Number="13" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[13],SfRb[13],SfRc[13]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[13])OTE(SfOut[13]);]]></Text>
               </Rung>
               <Rung Number="14" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[14],SfRb[14],SfRc[14]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[14])OTE(SfOut[14]);]]></Text>
               </Rung>
               <Rung Number="15" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[15],SfRb[15],SfRc[15]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[15])OTE(SfOut[15]);]]></Text>
               </Rung>
               <Rung Number="16" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[16],SfRb[16],SfRc[16]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[16])OTE(SfOut[16]);]]></Text>
               </Rung>
               <Rung Number="17" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[17],SfRb[17],SfRc[17]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[17])OTE(SfOut[17]);]]></Text>
               </Rung>
               <Rung Number="18" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[18],SfRb[18],SfRc[18]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[18])OTE(SfOut[18]);]]></Text>
               </Rung>
               <Rung Number="19" Type="N">
-                <Text><![CDATA[ATAN2(SfRa[19],SfRb[19],SfRc[19]);]]></Text>
+                <Text><![CDATA[XIC(SfIn[19])OTE(SfOut[19]);]]></Text>
+              </Rung>
+              <Rung Number="20" Type="N">
+                <Text><![CDATA[XIC(SfIn[20])OTE(SfOut[20]);]]></Text>
+              </Rung>
+              <Rung Number="21" Type="N">
+                <Text><![CDATA[XIC(SfIn[21])OTE(SfOut[21]);]]></Text>
+              </Rung>
+              <Rung Number="22" Type="N">
+                <Text><![CDATA[XIC(SfIn[22])OTE(SfOut[22]);]]></Text>
+              </Rung>
+              <Rung Number="23" Type="N">
+                <Text><![CDATA[XIC(SfIn[23])OTE(SfOut[23]);]]></Text>
+              </Rung>
+              <Rung Number="24" Type="N">
+                <Text><![CDATA[XIC(SfIn[24])OTE(SfOut[24]);]]></Text>
+              </Rung>
+              <Rung Number="25" Type="N">
+                <Text><![CDATA[XIC(SfIn[25])OTE(SfOut[25]);]]></Text>
+              </Rung>
+              <Rung Number="26" Type="N">
+                <Text><![CDATA[XIC(SfIn[26])OTE(SfOut[26]);]]></Text>
+              </Rung>
+              <Rung Number="27" Type="N">
+                <Text><![CDATA[XIC(SfIn[27])OTE(SfOut[27]);]]></Text>
+              </Rung>
+              <Rung Number="28" Type="N">
+                <Text><![CDATA[XIC(SfIn[28])OTE(SfOut[28]);]]></Text>
+              </Rung>
+              <Rung Number="29" Type="N">
+                <Text><![CDATA[XIC(SfIn[29])OTE(SfOut[29]);]]></Text>
+              </Rung>
+              <Rung Number="30" Type="N">
+                <Text><![CDATA[XIC(SfIn[30])OTE(SfOut[30]);]]></Text>
+              </Rung>
+              <Rung Number="31" Type="N">
+                <Text><![CDATA[XIC(SfIn[31])OTE(SfOut[31]);]]></Text>
+              </Rung>
+              <Rung Number="32" Type="N">
+                <Text><![CDATA[XIC(SfIn[32])OTE(SfOut[32]);]]></Text>
+              </Rung>
+              <Rung Number="33" Type="N">
+                <Text><![CDATA[XIC(SfIn[33])OTE(SfOut[33]);]]></Text>
+              </Rung>
+              <Rung Number="34" Type="N">
+                <Text><![CDATA[XIC(SfIn[34])OTE(SfOut[34]);]]></Text>
+              </Rung>
+              <Rung Number="35" Type="N">
+                <Text><![CDATA[XIC(SfIn[35])OTE(SfOut[35]);]]></Text>
+              </Rung>
+              <Rung Number="36" Type="N">
+                <Text><![CDATA[XIC(SfIn[36])OTE(SfOut[36]);]]></Text>
+              </Rung>
+              <Rung Number="37" Type="N">
+                <Text><![CDATA[XIC(SfIn[37])OTE(SfOut[37]);]]></Text>
+              </Rung>
+              <Rung Number="38" Type="N">
+                <Text><![CDATA[XIC(SfIn[38])OTE(SfOut[38]);]]></Text>
+              </Rung>
+              <Rung Number="39" Type="N">
+                <Text><![CDATA[XIC(SfIn[39])OTE(SfOut[39]);]]></Text>
+              </Rung>
+              <Rung Number="40" Type="N">
+                <Text><![CDATA[XIC(SfIn[40])OTE(SfOut[40]);]]></Text>
+              </Rung>
+              <Rung Number="41" Type="N">
+                <Text><![CDATA[XIC(SfIn[41])OTE(SfOut[41]);]]></Text>
+              </Rung>
+              <Rung Number="42" Type="N">
+                <Text><![CDATA[XIC(SfIn[42])OTE(SfOut[42]);]]></Text>
+              </Rung>
+              <Rung Number="43" Type="N">
+                <Text><![CDATA[XIC(SfIn[43])OTE(SfOut[43]);]]></Text>
+              </Rung>
+              <Rung Number="44" Type="N">
+                <Text><![CDATA[XIC(SfIn[44])OTE(SfOut[44]);]]></Text>
+              </Rung>
+              <Rung Number="45" Type="N">
+                <Text><![CDATA[XIC(SfIn[45])OTE(SfOut[45]);]]></Text>
+              </Rung>
+              <Rung Number="46" Type="N">
+                <Text><![CDATA[XIC(SfIn[46])OTE(SfOut[46]);]]></Text>
+              </Rung>
+              <Rung Number="47" Type="N">
+                <Text><![CDATA[XIC(SfIn[47])OTE(SfOut[47]);]]></Text>
+              </Rung>
+              <Rung Number="48" Type="N">
+                <Text><![CDATA[XIC(SfIn[48])OTE(SfOut[48]);]]></Text>
+              </Rung>
+              <Rung Number="49" Type="N">
+                <Text><![CDATA[XIC(SfIn[49])OTE(SfOut[49]);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartStdTon50" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 01:29:43 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
-<Controller Use="Target" Name="SafePartStdTon50" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 01:29:43 2026" LastModifiedDate="Sun Oct 18 01:29:43 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.05" TargetName="SafePartStdMov50R2" TargetType="Controller" ContainsContext="false" Owner="Admin" ExportDate="Sun Oct 18 01:38:37 2026" ExportOptions="NoRawData L5KData DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="SafePartStdMov50R2" ProcessorType="1756-L81ES" MajorRev="35" MinorRev="11" ProjectCreationDate="Sun Oct 18 01:38:37 2026" LastModifiedDate="Sun Oct 18 01:38:37 2026" SFCExecutionControl="CurrentActive" SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0" PassThroughConfiguration="EnabledWithAppend" DownloadProjectDocumentationAndExtendedProperties="true" DownloadProjectCustomProperties="true" ReportMinorOverflow="false" AutoDiagsEnabled="true" WebServerEnabled="false">
 <RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false"/>
 <Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
 <SafetyInfo SafetyLocked="false" SignatureRunModeProtect="false" ConfigureSafetyIOAlways="false" SafetyLevel="SIL2/PLd"/>
@@ -11263,154 +11263,154 @@
 <Routine Name="MainRoutine" Type="RLL">
 <RLLContent>
               <Rung Number="0" Type="N">
-                <Text><![CDATA[TON(SfTmr[0],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[0],SfDb[0]);]]></Text>
               </Rung>
               <Rung Number="1" Type="N">
-                <Text><![CDATA[TON(SfTmr[1],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[1],SfDb[1]);]]></Text>
               </Rung>
               <Rung Number="2" Type="N">
-                <Text><![CDATA[TON(SfTmr[2],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[2],SfDb[2]);]]></Text>
               </Rung>
               <Rung Number="3" Type="N">
-                <Text><![CDATA[TON(SfTmr[3],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[3],SfDb[3]);]]></Text>
               </Rung>
               <Rung Number="4" Type="N">
-                <Text><![CDATA[TON(SfTmr[4],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[4],SfDb[4]);]]></Text>
               </Rung>
               <Rung Number="5" Type="N">
-                <Text><![CDATA[TON(SfTmr[5],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[5],SfDb[5]);]]></Text>
               </Rung>
               <Rung Number="6" Type="N">
-                <Text><![CDATA[TON(SfTmr[6],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[6],SfDb[6]);]]></Text>
               </Rung>
               <Rung Number="7" Type="N">
-                <Text><![CDATA[TON(SfTmr[7],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[7],SfDb[7]);]]></Text>
               </Rung>
               <Rung Number="8" Type="N">
-                <Text><![CDATA[TON(SfTmr[8],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[8],SfDb[8]);]]></Text>
               </Rung>
               <Rung Number="9" Type="N">
-                <Text><![CDATA[TON(SfTmr[9],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[9],SfDb[9]);]]></Text>
               </Rung>
               <Rung Number="10" Type="N">
-                <Text><![CDATA[TON(SfTmr[10],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[10],SfDb[10]);]]></Text>
               </Rung>
               <Rung Number="11" Type="N">
-                <Text><![CDATA[TON(SfTmr[11],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[11],SfDb[11]);]]></Text>
               </Rung>
               <Rung Number="12" Type="N">
-                <Text><![CDATA[TON(SfTmr[12],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[12],SfDb[12]);]]></Text>
               </Rung>
               <Rung Number="13" Type="N">
-                <Text><![CDATA[TON(SfTmr[13],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[13],SfDb[13]);]]></Text>
               </Rung>
               <Rung Number="14" Type="N">
-                <Text><![CDATA[TON(SfTmr[14],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[14],SfDb[14]);]]></Text>
               </Rung>
               <Rung Number="15" Type="N">
-                <Text><![CDATA[TON(SfTmr[15],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[15],SfDb[15]);]]></Text>
               </Rung>
               <Rung Number="16" Type="N">
-                <Text><![CDATA[TON(SfTmr[16],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[16],SfDb[16]);]]></Text>
               </Rung>
               <Rung Number="17" Type="N">
-                <Text><![CDATA[TON(SfTmr[17],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[17],SfDb[17]);]]></Text>
               </Rung>
               <Rung Number="18" Type="N">
-                <Text><![CDATA[TON(SfTmr[18],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[18],SfDb[18]);]]></Text>
               </Rung>
               <Rung Number="19" Type="N">
-                <Text><![CDATA[TON(SfTmr[19],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[19],SfDb[19]);]]></Text>
               </Rung>
               <Rung Number="20" Type="N">
-                <Text><![CDATA[TON(SfTmr[20],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[20],SfDb[20]);]]></Text>
               </Rung>
               <Rung Number="21" Type="N">
-                <Text><![CDATA[TON(SfTmr[21],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[21],SfDb[21]);]]></Text>
               </Rung>
               <Rung Number="22" Type="N">
-                <Text><![CDATA[TON(SfTmr[22],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[22],SfDb[22]);]]></Text>
               </Rung>
               <Rung Number="23" Type="N">
-                <Text><![CDATA[TON(SfTmr[23],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[23],SfDb[23]);]]></Text>
               </Rung>
               <Rung Number="24" Type="N">
-                <Text><![CDATA[TON(SfTmr[24],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[24],SfDb[24]);]]></Text>
               </Rung>
               <Rung Number="25" Type="N">
-                <Text><![CDATA[TON(SfTmr[25],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[25],SfDb[25]);]]></Text>
               </Rung>
               <Rung Number="26" Type="N">
-                <Text><![CDATA[TON(SfTmr[26],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[26],SfDb[26]);]]></Text>
               </Rung>
               <Rung Number="27" Type="N">
-                <Text><![CDATA[TON(SfTmr[27],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[27],SfDb[27]);]]></Text>
               </Rung>
               <Rung Number="28" Type="N">
-                <Text><![CDATA[TON(SfTmr[28],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[28],SfDb[28]);]]></Text>
               </Rung>
               <Rung Number="29" Type="N">
-                <Text><![CDATA[TON(SfTmr[29],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[29],SfDb[29]);]]></Text>
               </Rung>
               <Rung Number="30" Type="N">
-                <Text><![CDATA[TON(SfTmr[30],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[30],SfDb[30]);]]></Text>
               </Rung>
               <Rung Number="31" Type="N">
-                <Text><![CDATA[TON(SfTmr[31],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[31],SfDb[31]);]]></Text>
               </Rung>
               <Rung Number="32" Type="N">
-                <Text><![CDATA[TON(SfTmr[32],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[32],SfDb[32]);]]></Text>
               </Rung>
               <Rung Number="33" Type="N">
-                <Text><![CDATA[TON(SfTmr[33],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[33],SfDb[33]);]]></Text>
               </Rung>
               <Rung Number="34" Type="N">
-                <Text><![CDATA[TON(SfTmr[34],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[34],SfDb[34]);]]></Text>
               </Rung>
               <Rung Number="35" Type="N">
-                <Text><![CDATA[TON(SfTmr[35],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[35],SfDb[35]);]]></Text>
               </Rung>
               <Rung Number="36" Type="N">
-                <Text><![CDATA[TON(SfTmr[36],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[36],SfDb[36]);]]></Text>
               </Rung>
               <Rung Number="37" Type="N">
-                <Text><![CDATA[TON(SfTmr[37],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[37],SfDb[37]);]]></Text>
               </Rung>
               <Rung Number="38" Type="N">
-                <Text><![CDATA[TON(SfTmr[38],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[38],SfDb[38]);]]></Text>
               </Rung>
               <Rung Number="39" Type="N">
-                <Text><![CDATA[TON(SfTmr[39],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[39],SfDb[39]);]]></Text>
               </Rung>
               <Rung Number="40" Type="N">
-                <Text><![CDATA[TON(SfTmr[40],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[40],SfDb[40]);]]></Text>
               </Rung>
               <Rung Number="41" Type="N">
-                <Text><![CDATA[TON(SfTmr[41],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[41],SfDb[41]);]]></Text>
               </Rung>
               <Rung Number="42" Type="N">
-                <Text><![CDATA[TON(SfTmr[42],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[42],SfDb[42]);]]></Text>
               </Rung>
               <Rung Number="43" Type="N">
-                <Text><![CDATA[TON(SfTmr[43],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[43],SfDb[43]);]]></Text>
               </Rung>
               <Rung Number="44" Type="N">
-                <Text><![CDATA[TON(SfTmr[44],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[44],SfDb[44]);]]></Text>
               </Rung>
               <Rung Number="45" Type="N">
-                <Text><![CDATA[TON(SfTmr[45],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[45],SfDb[45]);]]></Text>
               </Rung>
               <Rung Number="46" Type="N">
-                <Text><![CDATA[TON(SfTmr[46],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[46],SfDb[46]);]]></Text>
               </Rung>
               <Rung Number="47" Type="N">
-                <Text><![CDATA[TON(SfTmr[47],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[47],SfDb[47]);]]></Text>
               </Rung>
               <Rung Number="48" Type="N">
-                <Text><![CDATA[TON(SfTmr[48],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[48],SfDb[48]);]]></Text>
               </Rung>
               <Rung Number="49" Type="N">
-                <Text><![CDATA[TON(SfTmr[49],1000,0);]]></Text>
+                <Text><![CDATA[MOV(SfDa[49],SfDb[49]);]]></Text>
               </Rung>
 </RLLContent>
 </Routine>

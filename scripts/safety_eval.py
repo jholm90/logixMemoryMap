@@ -10,7 +10,7 @@ in both columns, and per-tag / per-rung costs come out of the differences:
   scope        safe_tag_dint_50_prog - safe_tag_dint_50
   instruction  safe_<mn>_tags_<n> - safe_n00 per backing tag; safe_<mn>_<n> -
                safe_<mn>_tags_<n> per rung; the slope across counts where there are three
-  ordinary     safe_std_<x> - safe_std_ctl per rung, beside the engine's standard weight
+  ordinary     safe_std_<x>_r2 - safe_std_ctl_r2 per rung, beside the engine's standard weight
   reference    safe_ref_<n> - safe_ref_ctl per rung
 
 A row that captured with build errors, or carries a capture flag, is listed and left out of
@@ -115,10 +115,10 @@ def report(rows: list[dict], engine: dict[str, int] | None = None) -> str:
             if a and b:
                 p(f"  {'':6} rung slope 10->200: {_per((a[0] - b[0], (a[1] - b[1]) if a[1] is not None and b[1] is not None else None), 190)}")
 
-    p("\nordinary instructions in the safety routine, against safe_std_ctl:")
-    for sid in sorted(s for s in good if s.startswith("safe_std_") and s != "safe_std_ctl"):
-        n = int(sid.rsplit("_", 1)[1])
-        p(f"  {sid[9:]:11} {_per(diff(good, sid, 'safe_std_ctl'), n)}")
+    p("\nordinary instructions in the safety routine, against safe_std_ctl_r2:")
+    for sid in sorted(s for s in good if re.match(r"safe_std_.+_\d+_r2$", s)):
+        n = int(sid.rsplit("_", 2)[1])
+        p(f"  {sid[9:-3]:11} {_per(diff(good, sid, 'safe_std_ctl_r2'), n)}")
 
     p("\nstandard logic reading safety BOOLs, against safe_ref_ctl:")
     for n in (10, 50, 200):
