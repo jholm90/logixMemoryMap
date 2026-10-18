@@ -672,21 +672,82 @@ content.
 
 ---
 
-## Safety memory is a separate partition — requirement, not yet wired
+## Safety memory is a separate partition — KNOWN (OQ-SAFETYPARTITION)
 
 Accuracy is measured on standard processors only; safety-processor rows are excluded
-from every accuracy figure (`quick_eval.py`).
+from every accuracy figure (`quick_eval.py`). A safety controller keeps safety tags and
+safety logic in its own partition, read on the Capacity tab as **safety used memory**
+beside the standard figure. Measured on the 112-file `safe_*` batch (1756-L81ES, v35,
+2026-10-18; zero build errors, both readings on every row), each sweep differenced
+against its own control. Every figure below is exact, to the byte, on every file that
+tests it.
 
-**Safety memory is a separate partition.** A safety controller keeps safety tags and
-safety logic in its own memory, which does not count toward the standard memory that
-Capacity reports for standard logic and data. Non-safety tags may not be used in a
-safety program; safety tags MAY be used in standard programs, where they cost standard
-**logic** (the reference) but not standard **tag** memory. The engine still sizes safety
-routine logic (Class="Safety" programs) and Class="Safety" controller tags into the
-standard total — 6.7 KB to 22.8 KB on the seven safety files with readings. The measured
-296-byte safety task/program shell stays: it was fitted against real standard-memory
-readings. Excluding the rest is the correct model and moves those files 0.7 to 1.9
-points further under, so it is not the source of the gap.
+**A safety tag is a name entry plus a data block.**
+
+    safety_name_entry(name_len) = 56 + 8 × floor(name_len / 8)      (= alias_overhead)
+    safety_data_block(data)     = 8 × ceil((28 + data_bytes) / 8)
+
+`data_bytes` is the tag's ordinary data size (an atomic is its own size, an array
+element size × count, a structure its packed size). Which partition pays each half
+depends only on scope:
+
+| tag | standard | safety |
+|---|---|---|
+| controller scope, `Class="Safety"` | name entry | data block |
+| program scope, in a `Class="Safety"` program | 0 | name entry + data block |
+
+Controller scope: BOOL, SINT, INT, DINT and REAL alike at 10, 50 and 200 tags read 64
+standard and 32 safety per tag (12-character names); names of 4, 20 and 40 characters
+move the standard half by exactly 8 × floor(len / 8) and leave the safety half alone; a
+`BOOL[256]` pays 64 in safety. Program scope: a DINT reads 0 standard and 96 safety, and
+all 39 safety-instruction backing structures (28 to 132 bytes of data, names of 6 to 9
+characters) land on name entry + data block with zero residual, the drive-safety
+instructions' output BOOLs and shared SFX tag included.
+
+**Safety-routine logic costs nothing in standard memory.** Every rung of every safety
+instruction, and the routine's `NOP`, reads 0 on the standard side. In the safety
+partition a rung costs:
+
+| instruction | bytes / rung | | instruction | bytes / rung |
+|---|---:|---|---|---:|
+| ESTOP, RIN, ROUT | 360 | | LC | 436 |
+| DIN, ENPEN | 360 | | FPMS | 432 |
+| SMAT, DCM | 380 | | CSM | 432 |
+| DCSRT | 436 | | DCA | 448 |
+| DCAF | 456 | | DCS | 460 |
+| THRS | 472 | | CROUT, MVC | 492 |
+| DCST | 516 | | THRSe | 568 |
+| CBIM | 580 | | CPM | 592 |
+| AVC | 600 | | CBSSM | 604 |
+| MMVC | 608 | | DCSTM | 676 |
+| TSAM | 680 | | DCSTL | 696 |
+| TSSM | 700 | | EPMS | 728 |
+| CBCM | 744 | | FSBM | 892 |
+| SDI, SLS | 140 | | SLP | 148 |
+| SS1 | 156 | | SOS | 160 |
+| SBC | 176 | | SFX | 180 |
+| SS2 | 216 | | NOP | 16 |
+
+ESTOP, RIN, ROUT and LC (the four real programs use) are exact at 10, 50 and 200 rungs;
+the rest at 20, each against its own tags-only file. The drive-safety instructions are
+cheap per rung because their state lives in the backing structure and the SFX tag.
+Ordinary instructions in a safety routine (beyond `NOP`): `safe_std_*_r2`, not yet
+captured; the estimate charges them their standard weight, ASSUMED.
+
+**Safety base: 1,394** for a File > New project's SafetyTask/SafetyProgram/MainRoutine
+with no rungs. The same at v34 (Studio seed) and v35 (`safe_n00`, 1,410 = 1,394 + its
+one `NOP` rung). The Studio seed with three controller-scope safety tags and one FPMS,
+ROUT and RIN rung reads 2,754 safety: 1,394 + (64 + 80 + 64) + (432 + 360 + 360), exact.
+
+**Standard logic reading a safety tag** costs 28 per `XIC(safety BOOL)OTE(standard BOOL)`
+rung at 10, 50 and 200 rungs, where the engine charges 20 for the same rung on standard
+tags: **+8 per safety-tag operand** in standard logic. Measured on one shape, where a
+rung holds exactly one safety operand, so per operand and per rung are not separated.
+Not in the safety partition (it reads 0 there).
+
+The 296-byte safety task/program shell stays on the standard side: the empty Studio
+seed is exact with it. The safety `NOP` the engine used to charge 16 on the standard side
+was wrong: it is 0 there.
 
 ## Operand shape — measured, free
 

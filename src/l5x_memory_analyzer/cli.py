@@ -24,6 +24,7 @@ from l5x_memory_analyzer.parser.export_scope import (
 )
 from l5x_memory_analyzer.sizing.constants import load_memory_model
 from l5x_memory_analyzer.sizing.report import build_report
+from l5x_memory_analyzer.sizing.safety import build_safety_report
 
 
 def _cmd_dump(args: argparse.Namespace) -> int:
@@ -50,17 +51,19 @@ def _cmd_size(args: argparse.Namespace) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    if doc.is_safety_project:
-        print(
-            f"warning: this is a Safety-rated project ({doc.safety_level}) -- Safety Task/Program "
-            f"content is NOT sized by this tool at all. The total below is understated, not a full "
-            f"picture. Treat it as informational only until Safety content sizing is built (OQ-SAFETY).",
-            file=sys.stderr,
-        )
-
     model = load_memory_model()
     entries, errors = build_report(doc.root, model)
     entries = sorted(entries, key=lambda e: e.bytes, reverse=True)
+    safety_entries, safety_errors = build_safety_report(doc.root, model)
+    if safety_entries:
+        print(
+            f"safety: Safety-rated project ({doc.safety_level}) -- safety tags and safety logic are "
+            f"the safety partition, a separate figure from the standard total below: "
+            f"{sum(e.bytes for e in safety_entries):,} bytes (logic estimated; OQ-SAFETYPARTITION)",
+            file=sys.stderr,
+        )
+        for err in safety_errors:
+            print(f"  {err.path}: {err.message}", file=sys.stderr)
 
     # Export scope up front, before any number. A partial
     # export's total is not comparable to a controller Capacity reading,
@@ -102,9 +105,8 @@ def _cmd_export(args: argparse.Namespace) -> int:
 
     if doc.is_safety_project:
         print(
-            f"warning: this is a Safety-rated project ({doc.safety_level}) -- Safety Task/Program "
-            f"content is NOT sized by this tool at all. The exported total is understated, not a "
-            f"full picture.",
+            f"note: this is a Safety-rated project ({doc.safety_level}) -- the export is the "
+            f"standard partition; safety tags and safety logic are sized separately by `size`.",
             file=sys.stderr,
         )
 

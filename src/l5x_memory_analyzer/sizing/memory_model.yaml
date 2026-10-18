@@ -1821,6 +1821,83 @@ alias_overhead:
   per_8_chars: 8
   confidence: KNOWN
 
+# The safety partition (OQ-SAFETYPARTITION; MEMORY_MODEL.md, "Safety memory is a
+# separate partition"). Measured on the 112-file safe_* batch (1756-L81ES, v35,
+# 2026-10-18, zero build errors, standard and safety reading on every row); every
+# figure is exact on every file that tests it.
+#
+# A safety tag is a name entry (alias_overhead above, 56 + 8 x floor(len/8)) plus
+# a data block, 8 x ceil((data_header_bytes + data) / 8). A Class="Safety"
+# controller tag pays the name entry in STANDARD memory and the block in safety;
+# a tag of a Class="Safety" program pays both in safety and nothing in standard.
+# Exact on five atomic types x three counts, four name lengths, a BOOL[256], and
+# all 39 safety-instruction backing structures.
+#
+# Safety-routine logic costs nothing in standard memory; in the safety partition
+# each rung costs its instruction's rung_bytes. ESTOP, RIN, ROUT and LC are exact
+# at 10/50/200 rungs (KNOWN); the rest at 20 rungs against their own tags-only
+# file. Ordinary instructions in a safety routine other than NOP are not yet
+# measured (safe_std_*_r2) and are charged their standard weight, ASSUMED.
+#
+# base_bytes: File > New's SafetyTask/SafetyProgram/MainRoutine with no rungs,
+# the same at v34 (Studio seed) and v35 (safe_n00 = 1,394 + one NOP rung).
+#
+# standard_operand_bytes: standard logic reading a safety tag, per safety-tag
+# operand: XIC(safety BOOL)OTE(standard BOOL) reads 28 a rung at 10/50/200 rungs
+# against 20 for the same rung on standard tags. One rung shape, one safety
+# operand a rung, so per operand and per rung are not separated.
+safety_partition:
+  base_bytes: 1394
+  base_confidence: KNOWN
+  data_header_bytes: 28
+  data_alignment: 8
+  data_block_confidence: KNOWN
+  standard_operand_bytes: 8
+  standard_operand_confidence: FITTED
+  ordinary_instruction_confidence: ASSUMED
+  rung_bytes_known: [ESTOP, RIN, ROUT, LC, NOP]
+  rung_bytes:
+    ESTOP: 360
+    RIN: 360
+    ROUT: 360
+    LC: 436
+    NOP: 16
+    DIN: 360
+    ENPEN: 360
+    SMAT: 380
+    DCM: 380
+    FPMS: 432
+    CSM: 432
+    DCSRT: 436
+    DCA: 448
+    DCAF: 456
+    DCS: 460
+    THRS: 472
+    CROUT: 492
+    MVC: 492
+    DCST: 516
+    THRSe: 568
+    CBIM: 580
+    CPM: 592
+    AVC: 600
+    CBSSM: 604
+    MMVC: 608
+    DCSTM: 676
+    TSAM: 680
+    DCSTL: 696
+    TSSM: 700
+    EPMS: 728
+    CBCM: 744
+    FSBM: 892
+    SDI: 140
+    SLS: 140
+    SLP: 148
+    SS1: 156
+    SOS: 160
+    SBC: 176
+    SFX: 180
+    SS2: 216
+
 # UDT DataType *definition* cost -- a ONE-TIME cost per distinct UDT type
 # actually referenced (not per instance/tag), separate from and additive
 # with tag_overhead above (which is per-Tag) and the tight-packed member

@@ -121,10 +121,12 @@ user memory (OQ-L9BUDGET). No further L9 work is planned.
 **Accuracy is measured on STANDARD processors only.** A safety processor (catalog
 ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags and safety
 logic in a separate memory partition that standard Capacity does not count, so its
-reading is not the quantity the model predicts. **The safety partition itself is being
-measured (OQ-SAFETYPARTITION):** the capture tooling records it as `safety_bytes`, and the
-`safe_*` batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart
-controller prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
+reading is not the quantity the model predicts. **The safety partition is measured and
+wired (OQ-SAFETYPARTITION, 2026-10-18):** the capture tooling records it as `safety_bytes`,
+`sizing/safety.py` prices it as its own figure, exact on all 112 captured `safe_*` files;
+ordinary instructions in a safety routine are the one term still ASSUMED. The `safe_*`
+batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart controller
+prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
 gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and
 generated, are excluded from every accuracy figure — enforced in
 `scripts/quick_eval.py` (`--include-safety` to report them).

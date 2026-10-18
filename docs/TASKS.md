@@ -76,10 +76,22 @@ unwired (OQ-SERIESREAL).
 3. **OQ-AOIBOOLINST**: spec in 0p, waiting on approval to generate.
 
 Blocked: **OQ-REALUNDER** needs the seventeen real exports back in `samples/local/` (the
-cloud container was reset). After the safety captures: the safety-partition estimate in
-the engine and UI, and safety content out of the standard total (TASKS 2).
+cloud container was reset). The safety-partition estimate and TASKS 2 are DONE (0s).
 
-### 0s. Safety partition — BATCH BUILT 2026-10-17, capture next (OQ-SAFETYPARTITION)
+### 0s. Safety partition — 112 CAPTURED AND WIRED 2026-10-18; seven `_r2` to convert (OQ-SAFETYPARTITION)
+
+**Captured 2026-10-18:** all 112 converted files, zero build errors, standard and safety
+reading on every row. Every sweep exact; the laws are in MEMORY_MODEL ("Safety memory is
+a separate partition") and wired: `sizing/report.py` takes safety content out of the
+standard total (TASKS 2), `sizing/safety.py` prices the safety partition, and the CLI and
+UI show it. Against the captures: standard −1,794 on 108 files (the realism plant's own
+constant) and −1,790 on the four `safe_ref_*`; safety exact on all 112. Both Studio seeds
+exact on both partitions. `python scripts/safety_eval.py --engine` reproduces it.
+
+**Next:** convert and capture the seven `safe_std_*_r2` (ordinary instructions in a
+safety routine, the one wired term still ASSUMED), then difference them against
+`safe_std_ctl_r2`. **No further batch is specced:** the shapes still open (OQ, "Still
+open") have to be ranked on the real safety exports, which are not in `samples/local/`.
 
 **The owner lifted every restriction for this phase**: no noise-floor gate (every
 safety-routine instruction is measured, not only the four real programs use) and no
@@ -593,16 +605,13 @@ generated tag names) waits on OQ-SERIESREAL and OQ-REALISMFLOOR: if the plant re
 the real under-prediction, the skeleton batch is built on the same baseline; if it lands
 exact, fill is eliminated and the skeletons are the next discriminator.
 
-### 2. Take safety content out of the standard total (engine correctness only)
+### 2. Take safety content out of the standard total — DONE 2026-10-18 (0s)
 
-Safety processors are out of scope for accuracy, so this no longer moves any headline
-number; it is about a safety user's report being right.
-
-Safety tags and safety logic live in a separate memory partition. Exclude Class="Safety"
-program logic and Class="Safety" tags from the standard total; keep the measured 296
-safety shell; keep standard-program references to safety tags as ordinary logic. Worth
-0.7–1.9 points on the seven safety files, in the wrong-looking direction — correct, and
-it removes a compensating error before it hides anything else.
+Wired from the `safe_*` captures rather than assumed: a safety program's tags and logic
+cost 0 standard; a controller-scope safety tag costs its name entry (the alias-tag
+formula); the 296 safety shell stays; standard logic reading a safety tag pays its
+ordinary weight plus 8 per safety operand. Its effect on the seven real safety files
+is not re-read here: they are not in `samples/local/`.
 
 ### 2a. Calibrate file confidence to real error
 

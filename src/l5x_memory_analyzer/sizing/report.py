@@ -174,6 +174,15 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     referenced_udts: set[str] = set(udt_types) | set(aoi_types)
     for tag in tags:
         category = "controller_tag" if tag.scope == CONTROLLER_SCOPE else "program_tag"
+        # A safety tag (OQ-SAFETYPARTITION): at controller scope its name entry
+        # is standard memory and its data the safety partition's; in a safety
+        # program the whole tag is the safety partition's. Exact across the
+        # safe_* batch; the safety half is priced by sizing/safety.py.
+        if tag.is_safety and not tag.is_alias:
+            if tag.scope == CONTROLLER_SCOPE:
+                sized.append((tag.path, category, tag.data_type or "", model.alias_overhead.bytes_for(tag.name),
+                              model.safety_partition.data_block_confidence))
+            continue
         if tag.is_alias:
             # An Alias tag is a pointer/rename onto another tag or module I/O
             # point -- it has no DataType/data space of its own in the L5X,
@@ -475,7 +484,20 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # document order, so the shell block below can charge each name past the
     # first one IN ITS OWN PROGRAM.
     plain_routine_names: list[tuple[str, str]] = []
+    # Standard logic reading a controller-scope safety tag pays a per-operand
+    # extra (OQ-SAFETYPARTITION) unless a program tag of the same name shadows it.
+    safety_tag_names = {t.name for t in tags if t.is_safety and t.scope == CONTROLLER_SCOPE}
+    program_tag_names: dict[str, set[str]] = {}
+    for t in tags:
+        if t.scope != CONTROLLER_SCOPE:
+            program_tag_names.setdefault(t.scope[len("program:"):], set()).add(t.name)
     for routine in all_routines:
+        # Safety-routine logic is the safety partition's, all of it: every
+        # safety-instruction rung and the routine's NOP read 0 on the standard
+        # side (safe_* batch). Priced by sizing/safety.py; the safety
+        # task/program shell stays below.
+        if routine.is_safety_program:
+            continue
         if routine.is_jsr_target:
             # The "target content is already folded into the
             # caller's jsr_fixed_base_per_routine" finding only ever held
@@ -598,6 +620,13 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
         if routine.aoi_call_count and not rll_aoi_file_charged:
             logic_bytes += model.structured_text.st_aoi_call_routine_bytes
             rll_aoi_file_charged = True
+        if safety_tag_names:
+            local = program_tag_names.get(routine.program_name or "", set())
+            n_safety_refs = sum(1 for root_name in routine.operand_roots
+                                if root_name in safety_tag_names and root_name not in local)
+            if n_safety_refs:
+                logic_bytes += n_safety_refs * model.safety_partition.standard_operand_bytes
+                logic_basis = weakest(logic_basis, model.safety_partition.standard_operand_confidence)
         logic_entries.append((routine.path, "routine_logic", "RLL", logic_bytes, logic_basis))
         if not is_plain:
             n_jsr_caller_routines += 1
@@ -622,7 +651,11 @@ def build_report(root: ET.Element, model: MemoryModel) -> tuple[list[SizeEntry],
     # double it. The +432 seen in the ST/RLL pairs is the difference
     # between an ST routine and an RLL one, which that generic accounting
     # already absorbs. Charging content only keeps the empty control exact.
+    safety_program_names = {
+        p.get("Name") for p in root.findall("Controller/Programs/Program") if p.get("Class") == "Safety"}
     for st_routine in parse_st_routines(root):
+        if st_routine.program_name in safety_program_names:
+            continue
         st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, tag_types)
         st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
         if st_unpriced_ops:

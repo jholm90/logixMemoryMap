@@ -149,6 +149,20 @@ KNOWN_REGISTER = [
         "structured_text.real_dest_source_conversion_confidence", 1,
         "stc_conv_lint reproduces the pure-REAL 56 exactly",
     ),
+    (
+        "safety_partition.base_bytes", 1394,
+        "safety_partition.base_confidence", 3,
+        "Studio seeds L81ES (v34, 1,394) and L81ES_Sample (v34, 2,754 with three tags and "
+        "three rungs, exact) and safe_n00 (v35, 1,410 = 1,394 + its NOP rung), every other "
+        "safe_* file exact on it; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.data_header_bytes", 28,
+        "safety_partition.data_block_confidence", 54,
+        "safe_tag_<bool|dint>_<10|50|200>, safe_tag_<real|int|sint>_50, the three name "
+        "lengths, _prog, safe_ref_ctl's BOOL[256] and all 39 safe_<mn>_tags_<n> backing "
+        "structures (28 to 132 data bytes), zero residual; OQ-SAFETYPARTITION",
+    ),
 ]
 
 

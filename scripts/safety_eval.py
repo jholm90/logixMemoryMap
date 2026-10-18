@@ -17,7 +17,8 @@ A row that captured with build errors, or carries a capture flag, is listed and 
 every figure: suspect, not wrong (CLAUDE.md, step 3).
 
   python scripts/safety_eval.py            # text report
-  python scripts/safety_eval.py --engine   # also price the standard side live (files on disk)
+  python scripts/safety_eval.py --engine   # also price both partitions live (files on disk)
+                                           # and report every file's residual in each
 """
 
 from __future__ import annotations
@@ -73,7 +74,7 @@ def _per(d: tuple[int, int | None] | None, n: int) -> str:
     return s
 
 
-def report(rows: list[dict], engine: dict[str, int] | None = None) -> str:
+def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -> str:
     good, suspect = readings(rows)
     out: list[str] = []
     p = out.append
@@ -85,7 +86,7 @@ def report(rows: list[dict], engine: dict[str, int] | None = None) -> str:
         std, saf = good["safe_n00"]
         line = f"\ncontrol safe_n00: standard {std:,}, safety {saf if saf is not None else 'n/a'}"
         if engine and "safe_n00" in engine:
-            line += f" | engine standard {engine['safe_n00']:,} (residual {std - engine['safe_n00']:+,})"
+            line += f" | engine standard {engine['safe_n00'][0]:,} (residual {std - engine['safe_n00'][0]:+,})"
         p(line + "  [v34 seed File > New safety: 1,394]")
 
     p("\nsafety tags, controller scope, against safe_n00:")
@@ -123,20 +124,37 @@ def report(rows: list[dict], engine: dict[str, int] | None = None) -> str:
     p("\nstandard logic reading safety BOOLs, against safe_ref_ctl:")
     for n in (10, 50, 200):
         p(f"  x{n:<3} {_per(diff(good, f'safe_ref_{n}', 'safe_ref_ctl'), n)}")
+
+    if engine:
+        p("\nengine against every clean capture (actual - engine), standard | safety:")
+        std_res: dict[int, list[str]] = {}
+        saf_res: dict[int, list[str]] = {}
+        for sid in sorted(good):
+            if sid not in engine:
+                continue
+            (a_std, a_saf), (e_std, e_saf) = good[sid], engine[sid]
+            std_res.setdefault(a_std - e_std, []).append(sid)
+            if a_saf is not None:
+                saf_res.setdefault(a_saf - e_saf, []).append(sid)
+        for label, res in (("standard", std_res), ("safety", saf_res)):
+            for r, sids in sorted(res.items(), key=lambda kv: -len(kv[1])):
+                p(f"  {label:8} {r:+7,}: {len(sids):3} file(s)" + ("" if len(sids) > 6 else f"  {', '.join(sids)}"))
     return "\n".join(out)
 
 
-def engine_predictions() -> dict[str, int]:
-    """The current engine's standard prediction for every safe_* file on disk."""
+def engine_predictions() -> dict[str, tuple[int, int]]:
+    """The current engine's (standard, safety) prediction for every safe_* file on disk."""
     import xml.etree.ElementTree as ET
 
     from l5x_memory_analyzer.sizing.constants import load_memory_model
     from l5x_memory_analyzer.sizing.report import build_report
+    from l5x_memory_analyzer.sizing.safety import build_safety_report
     model = load_memory_model()
     out = {}
     for path in sorted((REPO / "samples" / "generated" / "safety").glob("safe_*.L5X")):
-        entries, _ = build_report(ET.parse(path).getroot(), model)
-        out[path.stem] = sum(e.bytes for e in entries)
+        root = ET.parse(path).getroot()
+        out[path.stem] = (sum(e.bytes for e in build_report(root, model)[0]),
+                          sum(e.bytes for e in build_safety_report(root, model)[0]))
     return out
 
 

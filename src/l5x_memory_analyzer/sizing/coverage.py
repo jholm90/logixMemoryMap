@@ -209,9 +209,15 @@ def audit_coverage(root: ET.Element, weighted_mnemonics) -> list[CoverageGap]:
     skip = (_PRICED_ELSEWHERE | _SAFETY_FAMILY | set(weighted_mnemonics)
             | _declared_aoi_names(root))
     unweighted: dict[str, int] = {}
-    for _owner, routine_el in _iter_routines(root):
+    # A safety program's logic is the safety partition's and is priced there
+    # (sizing/safety.py), safety instructions by their measured rung cost.
+    safety_owners = {f"Program {p.get('Name')}" for p in root.findall("Controller/Programs/Program")
+                     if p.get("Class") == "Safety"}
+    for owner, routine_el in _iter_routines(root):
         if routine_language(routine_el) not in _SIZED_ROUTINE_TYPES:
             continue  # already reported whole, above
+        if owner in safety_owners:
+            continue
         for mnemonic, n in count_instructions_in_text(_rung_texts(routine_el)).items():
             if mnemonic not in skip:
                 unweighted[mnemonic] = unweighted.get(mnemonic, 0) + n

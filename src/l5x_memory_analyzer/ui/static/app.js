@@ -87,10 +87,12 @@ function renderAll() {
   const safetyWarn = document.getElementById("safety-warning");
   if (REPORT.is_safety_project) {
     safetyWarn.classList.remove("hidden");
-    safetyWarn.textContent =
-      `This is a Safety-rated project (${REPORT.safety_level}) -- Safety Task/Program content is ` +
-      `NOT sized by this tool at all. The total below is understated, not a full picture. Treat it ` +
-      `as informational only until Safety content sizing is built (OQ-SAFETY).`;
+    safetyWarn.textContent = REPORT.safety_bytes != null
+      ? `Safety-rated project (${REPORT.safety_level}). Safety tags and safety logic live in the ` +
+        `safety partition, sized separately: ${REPORT.safety_bytes.toLocaleString()} bytes of safety ` +
+        `memory (logic estimated). The map below is the standard partition.`
+      : `Safety-rated project (${REPORT.safety_level}) with no safety program. The map below is the ` +
+        `standard partition.`;
   } else {
     safetyWarn.classList.add("hidden");
   }

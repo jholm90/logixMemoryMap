@@ -243,6 +243,28 @@ class TagOverheadModel:
 
 
 @dataclass(frozen=True)
+class SafetyPartitionModel:
+    """The safety partition's laws (memory_model.yaml safety_partition)."""
+    base_bytes: int
+    base_confidence: str
+    data_header_bytes: int
+    data_alignment: int
+    data_block_confidence: str
+    standard_operand_bytes: int
+    standard_operand_confidence: str
+    ordinary_instruction_confidence: str
+    rung_bytes: dict[str, int]
+    rung_bytes_known: frozenset[str]
+
+    def data_block(self, data_bytes: int) -> int:
+        a = self.data_alignment
+        return a * -(-(self.data_header_bytes + data_bytes) // a)
+
+    def rung_confidence(self, mnemonic: str) -> str:
+        return "KNOWN" if mnemonic in self.rung_bytes_known else "FITTED"
+
+
+@dataclass(frozen=True)
 class UdtDefinitionModel:
     base: int
     per_member: int
@@ -1400,6 +1422,7 @@ class MemoryModel:
     aoi_definition: AoiDefinitionModel
     tag_overhead: TagOverheadModel
     alias_overhead: TagOverheadModel
+    safety_partition: SafetyPartitionModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
     jsr_target_declaration: JsrTargetDeclarationModel
@@ -1709,6 +1732,18 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             flat_base=raw["alias_overhead"]["flat_base"],
             per_8_chars=raw["alias_overhead"]["per_8_chars"],
             confidence=raw["alias_overhead"]["confidence"],
+        ),
+        safety_partition=SafetyPartitionModel(
+            base_bytes=raw["safety_partition"]["base_bytes"],
+            base_confidence=raw["safety_partition"]["base_confidence"],
+            data_header_bytes=raw["safety_partition"]["data_header_bytes"],
+            data_alignment=raw["safety_partition"]["data_alignment"],
+            data_block_confidence=raw["safety_partition"]["data_block_confidence"],
+            standard_operand_bytes=raw["safety_partition"]["standard_operand_bytes"],
+            standard_operand_confidence=raw["safety_partition"]["standard_operand_confidence"],
+            ordinary_instruction_confidence=raw["safety_partition"]["ordinary_instruction_confidence"],
+            rung_bytes=dict(raw["safety_partition"]["rung_bytes"]),
+            rung_bytes_known=frozenset(raw["safety_partition"]["rung_bytes_known"]),
         ),
         udt_definition=UdtDefinitionModel(
             base=raw["udt_definition"]["base"],

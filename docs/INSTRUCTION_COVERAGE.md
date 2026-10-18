@@ -265,8 +265,8 @@ Sorted by real usage. Measured accuracy is mean / worst, with sample count.
 | SQR | 0.00% | 4 | 52 | 0.0000% / 0.0000% (1) step |
 | OR | 0.00% | 4 | 40 | 0.0067% / 0.0067% (1) |
 | SWPB | 0.00% | 4 | 76 | 0.0000% / 0.0000% (1) step |
-| ESTOP | 0.00% | 4 | **unweighted** | — |
-| ROUT | 0.00% | 4 | **unweighted** | — |
+| ESTOP | 0.00% | 4 | 0 standard / 360 safety | KNOWN (safe_estop_*) |
+| ROUT | 0.00% | 4 | 0 standard / 360 safety | KNOWN (safe_rout_*) |
 | FOR | 0.00% | 2 | 80 | — |
 | RTOS | 0.00% | 2 | 72 | 0.0095% / 0.0146% (2) |
 | FIND | 0.00% | 2 | 100 | 0.0000% / 0.0000% (1) step |
@@ -289,11 +289,11 @@ Six mnemonics, 353 occurrences, 0.282% of all real logic.
 | mnemonic | occurrences | status |
 |---|---:|---|
 | CPT | 341 | **Not a flat weight by design.** Priced per call from its own expression's operator tokens. Deliberately absent from the weight table so the per-mnemonic loop cannot double-count it. |
-| ESTOP | 4 | Safety-family instruction. Out of scope. |
-| ROUT | 4 | Safety-family instruction. Out of scope. |
-| LC | 2 | Safety-family instruction (Light Curtain). OQ-SAFETYPARTITION. |
+| ESTOP | 4 | Safety-family instruction: 0 standard, 360 a rung in the safety partition (KNOWN). |
+| ROUT | 4 | Safety-family instruction: 0 standard, 360 a rung in the safety partition (KNOWN). |
+| LC | 2 | Safety-family instruction (Light Curtain): 0 standard, 436 a rung in the safety partition (KNOWN). |
 | SCP | 1 | Never tested. Below the noise floor. |
-| RIN | 1 | Safety-family instruction. Out of scope. |
+| RIN | 1 | Safety-family instruction: 0 standard, 360 a rung in the safety partition (KNOWN). |
 
 **CPT is the one that matters**, and it is not a gap — it is the one instruction
 whose cost genuinely cannot be a flat per-rung number. Its expression model is in
@@ -306,7 +306,7 @@ feature is a day not spent on the residual.
 
 ## Instructions that are out of scope or will not build
 
-**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN, LC and the rest of the safety-routine set. These require a safety CPU; their safety-partition cost is OQ-SAFETYPARTITION. Every call shape is in `SAFETY_INSTRUCTIONS.md`. THRSe was invisible to the instruction scanner until 2026-10-17 (the only lowercase mnemonic), so the real-use counts here could not have included it. Not
+**Safety family** — DCS, CROUT, ROUT, ESTOP, RIN, LC and the rest of the safety-routine set. These require a safety CPU. **Measured 2026-10-18:** every one costs 0 standard, and its safety-partition rung cost is in MEMORY_MODEL ("Safety memory is a separate partition"), wired in `sizing/safety.py` (OQ-SAFETYPARTITION). Every call shape is in `SAFETY_INSTRUCTIONS.md`. THRSe was invisible to the instruction scanner until 2026-10-17 (the only lowercase mnemonic), so the real-use counts here could not have included it. Not
 weight-table gaps; there is nothing to fix on a standard controller. **Ignored, not
 parked:** no test file is built for any of them, and `instrfirst_crout_x10`'s failed
 build is not pursued.

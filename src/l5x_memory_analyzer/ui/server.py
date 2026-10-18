@@ -45,6 +45,7 @@ from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budget
 from l5x_memory_analyzer.sizing.xref import find_usages
 from l5x_memory_analyzer.sizing.export import write_csv, write_xlsx
 from l5x_memory_analyzer.sizing.report import SizeEntry, SizeError, build_report
+from l5x_memory_analyzer.sizing.safety import build_safety_report
 from l5x_memory_analyzer.sizing.tree import (
     NotDrillableError,
     expand_children,
@@ -153,6 +154,7 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
     tag_index = {t.path: (t.data_type, t.dimensions) for t in tags if not t.is_alias}
 
     entries, errors = build_report(doc.root, model)
+    safety_entries, _ = build_safety_report(doc.root, model)
 
     budget = _BUDGET_TABLE.lookup(doc.processor_type)
 
@@ -207,6 +209,9 @@ def _load_state(root_source, display_name: str, from_bytes: bool) -> DocState:
         "is_controller_export": doc.is_controller_export,
         "is_safety_project": doc.is_safety_project,
         "safety_level": doc.safety_level,
+        # The safety partition, a figure separate from the standard total
+        # (OQ-SAFETYPARTITION); None for a project without a safety program.
+        "safety_bytes": sum(e.bytes for e in safety_entries) if safety_entries else None,
         # Declared UDT/AOI names, so the UI can tell a type it can
         # cross-reference from an atomic it cannot.
         "type_names": sorted(data_types),

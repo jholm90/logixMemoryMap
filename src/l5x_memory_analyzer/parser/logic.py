@@ -430,6 +430,26 @@ def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]
     return calls
 
 
+_OPERAND_ROOT = re.compile(r"(?<![\w.\]])([A-Za-z_][A-Za-z0-9_]*)(?![\w(])")
+
+
+def _operand_roots(rung_texts: list[str]) -> tuple[str, ...]:
+    """The root tag name of every operand of every instruction call, once per
+    occurrence: 'XIC(SRefIn[3].Ok)' -> ('SRefIn',). Member names are skipped; a
+    tag used as an index and a keyword operand are returned too, and the sizer
+    keeps only the roots that name a tag it is pricing (OQ-SAFETYPARTITION:
+    standard logic reading a safety tag)."""
+    roots: list[str] = []
+    for text in rung_texts:
+        for m in _INSTRUCTION_CALL.finditer(text):
+            args = _extract_call_args(text, m.end())
+            if args is None:
+                continue
+            for arg in args:
+                roots.extend(_OPERAND_ROOT.findall(arg))
+    return tuple(roots)
+
+
 def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     """One entry per real JSR(...) call, (target_routine_name,
     input_param_count, output_param_count) -- input_param_count read
@@ -756,6 +776,9 @@ class RoutineLogic:
     # A(n) is NOT yet adjusted for output param count, see
     # OPEN_QUESTIONS.md OQ-JSRPARAMCOST.
     jsr_calls: list[tuple[str, int, int]] = field(default_factory=list)
+    # Root tag name of every operand of every instruction call (RLL only), see
+    # _operand_roots. Used to price standard logic that reads a safety tag.
+    operand_roots: tuple[str, ...] = ()
     # The parameter ARGUMENTS of each of those calls (inputs then outputs),
     # target and count excluded, so the sizer can tell an atomic argument from
     # a structure or STRING one. See memory_model.yaml jsr_param_cost.
@@ -1111,6 +1134,7 @@ def parse_rll_routines(
                 cmp_calls=_cmp_calls(rung_texts),
                 jsr_target_names=frozenset(_jsr_targets(rung_texts)),
                 jsr_calls=_jsr_calls(rung_texts),
+                operand_roots=_operand_roots(rung_texts),
                 jsr_call_args=jsr_call_args(rung_texts),
                 ret_operand_counts=ret_operand_counts(rung_texts),
                 branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),

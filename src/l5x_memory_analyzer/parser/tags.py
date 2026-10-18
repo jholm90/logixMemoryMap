@@ -17,6 +17,11 @@ class Tag:
     scope: str  # CONTROLLER_SCOPE or "program:<ProgramName>"
     tag_type: str = "Base"
     alias_for: str | None = None
+    # A safety tag: Class="Safety" at controller scope, or any tag of a
+    # Class="Safety" program (which carry no Class of their own). Sized by its
+    # own law, split across the standard and safety partitions
+    # (OQ-SAFETYPARTITION; MEMORY_MODEL, "Safety memory is a separate partition").
+    is_safety: bool = False
 
     @property
     def path(self) -> str:
@@ -38,7 +43,7 @@ def _parse_dimensions(raw: str | None) -> tuple[int, ...]:
     return dims if any(dims) else ()
 
 
-def _parse_tag_elements(tags_el: ET.Element, scope: str) -> list[Tag]:
+def _parse_tag_elements(tags_el: ET.Element, scope: str, safety_program: bool = False) -> list[Tag]:
     tags = []
     for tag_el in tags_el.findall("Tag"):
         tags.append(
@@ -49,6 +54,7 @@ def _parse_tag_elements(tags_el: ET.Element, scope: str) -> list[Tag]:
                 scope=scope,
                 tag_type=tag_el.get("TagType", "Base"),
                 alias_for=tag_el.get("AliasFor"),
+                is_safety=safety_program or tag_el.get("Class") == "Safety",
             )
         )
     return tags
@@ -68,7 +74,8 @@ def parse_tags(root: ET.Element) -> list[Tag]:
             program_tags_el = program_el.find("Tags")
             if program_tags_el is not None:
                 tags.extend(
-                    _parse_tag_elements(program_tags_el, f"program:{program_name}")
+                    _parse_tag_elements(program_tags_el, f"program:{program_name}",
+                                        safety_program=program_el.get("Class") == "Safety")
                 )
 
     return tags

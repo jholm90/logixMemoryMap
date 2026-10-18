@@ -250,7 +250,7 @@ excluded by default as dead architecture).
 
 ```bash
 python scripts/safety_eval.py            # both partitions, every sweep against its control
-python scripts/safety_eval.py --engine   # plus the engine's live standard prediction
+python scripts/safety_eval.py --engine   # plus the engine's live prediction, both partitions
 ```
 
 Differences every `safe_*` capture against its own control in both columns
@@ -258,7 +258,13 @@ Differences every `safe_*` capture against its own control in both columns
 length against the standard-side hypothesis 56 + 8 × floor(len / 8), scope, each
 instruction's backing tag and its rung, ordinary instructions in the safety routine, and
 standard logic reading safety tags. Rows that captured with errors or carry a capture flag
-are listed and left out of every figure (OQ-SAFETYPARTITION).
+are listed and left out of every figure (OQ-SAFETYPARTITION). `--engine` parses every
+`safe_*` file on disk (about ten minutes) and groups the files by their residual in each
+partition.
+
+The batch itself: `python -m sample_gen.gen_safety_partition [--only REGEX]`. Use
+`--only` for a partial rebuild: a full one restamps every file's dates, which changes its
+hash and queues every captured file for reconversion.
 
 ### `capture_errors.py` — the error gate
 
