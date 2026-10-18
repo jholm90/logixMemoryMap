@@ -346,6 +346,13 @@ generated files. Ask, say why, and wait. No approval is needed for scoped runs:
 The same applies to reading the corpus generally — **filter first, then parse.**
 Never parse every L5X to answer a question about one family.
 
+**No silent long run.** Anything over a minute runs through `sample_gen.progress.run`:
+every core, a progress line with an ETA per item, and a watchdog that stops the run and
+names the stuck item. It is watched live (a Monitor on its progress lines, filtered to a
+line every few dozen items plus every failure), never waited out with a blind sleep loop,
+and the user hears what is running and how long it has left. The safety generators and
+`safety_eval.py --engine` already run this way.
+
 ## Out of scope until real-file error is under 1%
 
 **ALMD / ALMA / ALARM_DIGITAL / ALARM_ANALOG — the INSTRUCTIONS.** Zero occurrences

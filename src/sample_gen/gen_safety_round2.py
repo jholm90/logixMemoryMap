@@ -377,21 +377,27 @@ def predict(l5x: str) -> tuple[int, int]:
             sum(e.bytes for e in build_safety_report(root, model)[0]))
 
 
+def _make(job: tuple[str, str, dict]) -> tuple[int, str]:
+    """Build, lint and write one file in a worker process; its standard prediction and
+    description (a composite's carries both partitions' blind predictions)."""
+    sample_id, description, kwargs = job
+    l5x = build(sample_id, **kwargs)
+    if sample_id.startswith("safe_comp_"):
+        std, saf = predict(l5x)
+        description += f" -- BLIND, predicted before capture: standard {std:,}, safety {saf:,}"
+    return write_sample(l5x, G.OUT_ROOT / f"{sample_id}.L5X"), description
+
+
 def main() -> None:
+    from sample_gen.progress import run
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", metavar="REGEX", help="build only the sample_ids this matches")
     args = ap.parse_args()
-    for sample_id, description, kwargs in plan():
-        if args.only and not re.search(args.only, sample_id):
-            continue
-        out = G.OUT_ROOT / f"{sample_id}.L5X"
-        l5x = build(sample_id, **kwargs)
-        if sample_id.startswith("safe_comp_"):
-            std, saf = predict(l5x)
-            description += f" -- BLIND, predicted before capture: standard {std:,}, safety {saf:,}"
-        predicted = write_sample(l5x, out)
-        append_manifest_row(sample_id, description, G.CATEGORY, out, predicted)
-        print(f"{sample_id}: predicted {predicted:,}")
+    jobs = [(sid, desc, kw) for sid, desc, kw in plan() if not args.only or re.search(args.only, sid)]
+    made = run(((sid, (sid, desc, kw)) for sid, desc, kw in jobs), _make, label="round2")
+    for sample_id, _, _ in jobs:
+        predicted, description = made[sample_id]
+        append_manifest_row(sample_id, description, G.CATEGORY, G.OUT_ROOT / f"{sample_id}.L5X", predicted)
 
 
 if __name__ == "__main__":

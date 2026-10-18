@@ -17,7 +17,8 @@ A row that captured with build errors, or carries a capture flag, is listed and 
 every figure: suspect, not wrong (CLAUDE.md, step 3).
 
   python scripts/safety_eval.py            # text report
-  python scripts/safety_eval.py --engine   # also price both partitions live (files on disk)
+  python scripts/safety_eval.py --engine   # also price both partitions live (files on disk,
+                                           # all cores, a progress line per file, watchdog)
                                            # and report every file's residual in each
 """
 
@@ -208,20 +209,30 @@ def _round3_diffs() -> list[tuple[str, str, str, int]]:
 ROUND3_DIFFS = _round3_diffs()
 
 
-def engine_predictions() -> dict[str, tuple[int, int]]:
-    """The current engine's (standard, safety) prediction for every safe_* file on disk."""
+_MODEL = None
+
+
+def _engine_one(path: str) -> tuple[int, int]:
+    """(standard, safety) for one file, in a worker process."""
     import xml.etree.ElementTree as ET
 
     from l5x_memory_analyzer.sizing.constants import load_memory_model
     from l5x_memory_analyzer.sizing.report import build_report
     from l5x_memory_analyzer.sizing.safety import build_safety_report
-    model = load_memory_model()
-    out = {}
-    for path in sorted((REPO / "samples" / "generated" / "safety").glob("safe_*.L5X")):
-        root = ET.parse(path).getroot()
-        out[path.stem] = (sum(e.bytes for e in build_report(root, model)[0]),
-                          sum(e.bytes for e in build_safety_report(root, model)[0]))
-    return out
+    global _MODEL
+    _MODEL = _MODEL or load_memory_model()
+    root = ET.parse(path).getroot()
+    return (sum(e.bytes for e in build_report(root, _MODEL)[0]),
+            sum(e.bytes for e in build_safety_report(root, _MODEL)[0]))
+
+
+def engine_predictions() -> dict[str, tuple[int, int]]:
+    """The current engine's (standard, safety) prediction for every safe_* file on disk,
+    on every core, a progress line per file, under a watchdog (sample_gen.progress)."""
+    from sample_gen.progress import run
+    paths = sorted((REPO / "samples" / "generated" / "safety").glob("safe_*.L5X"))
+    return run(((p.stem, str(p)) for p in paths), _engine_one, label="engine",
+               item_timeout=60, total_timeout=900)
 
 
 def main() -> None:

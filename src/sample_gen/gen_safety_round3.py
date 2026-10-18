@@ -22,6 +22,7 @@ import re
 from sample_gen import gen_safety_partition as G
 from sample_gen import gen_safety_round2 as R
 from sample_gen.manifest import append_manifest_row, write_sample
+from sample_gen.progress import run
 
 OQ = "OQ-SAFETYPARTITION"
 
@@ -135,17 +136,21 @@ def plan() -> list[tuple[str, str, dict]]:
     return files
 
 
+def _make(job: tuple[str, dict]) -> int:
+    """Build, lint and write one file in a worker process; its standard prediction."""
+    sample_id, kwargs = job
+    return write_sample(R.build(sample_id, **kwargs), G.OUT_ROOT / f"{sample_id}.L5X")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", metavar="REGEX", help="build only the sample_ids this matches")
     args = ap.parse_args()
-    for sample_id, description, kwargs in plan():
-        if args.only and not re.search(args.only, sample_id):
-            continue
-        out = G.OUT_ROOT / f"{sample_id}.L5X"
-        predicted = write_sample(R.build(sample_id, **kwargs), out)
-        append_manifest_row(sample_id, description, G.CATEGORY, out, predicted)
-        print(f"{sample_id}: predicted {predicted:,}")
+    jobs = [(sid, desc, kw) for sid, desc, kw in plan() if not args.only or re.search(args.only, sid)]
+    predicted = run(((sid, (sid, kw)) for sid, _, kw in jobs), _make, label="round3")
+    for sample_id, description, _ in jobs:
+        append_manifest_row(sample_id, description, G.CATEGORY, G.OUT_ROOT / f"{sample_id}.L5X",
+                            predicted[sample_id])
 
 
 if __name__ == "__main__":

@@ -331,6 +331,12 @@ def plan() -> list[tuple[str, str, dict]]:
     return files
 
 
+def _make(job: tuple[str, dict]) -> int:
+    """Build, lint and write one file in a worker process; its standard prediction."""
+    sample_id, kwargs = job
+    return write_sample(build(sample_id, **kwargs), OUT_ROOT / f"{sample_id}.L5X")
+
+
 def main() -> None:
     import argparse
     ap = argparse.ArgumentParser()
@@ -339,13 +345,11 @@ def main() -> None:
                          "file's dates and queues the captured ones for reconversion")
     args = ap.parse_args()
     check_shapes()
-    for sample_id, description, kwargs in plan():
-        if args.only and not re.search(args.only, sample_id):
-            continue
-        out = OUT_ROOT / f"{sample_id}.L5X"
-        predicted = write_sample(build(sample_id, **kwargs), out)
-        append_manifest_row(sample_id, description, CATEGORY, out, predicted)
-        print(f"{sample_id}: predicted {predicted:,}")
+    from sample_gen.progress import run
+    jobs = [(sid, desc, kw) for sid, desc, kw in plan() if not args.only or re.search(args.only, sid)]
+    predicted = run(((sid, (sid, kw)) for sid, _, kw in jobs), _make, label="round1")
+    for sample_id, description, _ in jobs:
+        append_manifest_row(sample_id, description, CATEGORY, OUT_ROOT / f"{sample_id}.L5X", predicted[sample_id])
 
 
 if __name__ == "__main__":
