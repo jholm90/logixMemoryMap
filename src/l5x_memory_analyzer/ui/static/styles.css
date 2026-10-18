@@ -69,11 +69,22 @@ body {
   padding: 0.6rem 1rem;
   background: var(--panel-bg);
   border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  /* One row: the meters always sit to the right of the buttons. The file name gives way
+     (ellipsis, full text on hover) before anything else does. */
+  flex-wrap: nowrap;
 }
+#app-header > * { flex-shrink: 0; }
 
 #app-title { font-weight: 700; font-size: 1.05rem; }
-#file-info { color: var(--text-dim); font-size: 0.85rem; }
+#file-info {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  flex: 0 1 auto !important;
+  min-width: 4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .toolbar-btn {
   display: inline-block;
@@ -115,14 +126,11 @@ body {
    two labels, so the Standard and Safety bars are always the same width. */
 #meters {
   display: grid;
-  grid-template-columns: auto minmax(160px, 1fr) auto;
+  grid-template-columns: auto minmax(100px, 1fr) auto;
   column-gap: 0.5rem;
   row-gap: 0.3rem;
   align-items: center;
-  flex: 1;
-  /* Never narrower than tag + bar minimum + label: past that the header wraps the
-     meters onto their own line rather than clipping the labels. */
-  min-width: min-content;
+  flex: 1 0 auto;
 }
 #budget-bar-wrap, #safety-bar-wrap { display: contents; }
 #meters .bar-tag { grid-column: 1; }

@@ -80,8 +80,9 @@ function renderAll() {
   const infoParts = [`Schema ${REPORT.schema_revision}`];
   if (REPORT.software_revision) infoParts.push(`Software ${REPORT.software_revision}`);
   if (REPORT.processor_type) infoParts.push(REPORT.processor_type);
-  document.getElementById("file-info").textContent =
-    `${REPORT.file_name}  (${infoParts.join(", ")})`;
+  const fileInfo = document.getElementById("file-info");
+  fileInfo.textContent = `${REPORT.file_name}  (${infoParts.join(", ")})`;
+  fileInfo.title = fileInfo.textContent;
   document.getElementById("export-buttons").classList.remove("hidden");
 
   renderSafetyBar();
@@ -97,28 +98,8 @@ function renderAll() {
     warn.classList.add("hidden");
   }
 
-  const fill = document.getElementById("budget-bar-fill");
-  const label = document.getElementById("budget-label");
-  if (REPORT.budget_bytes) {
-    const pct = (REPORT.total_bytes / REPORT.budget_bytes) * 100;
-    fill.style.width = `${Math.min(pct, 100)}%`;
-    fill.classList.toggle("over", pct > 100);
-    const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)" : "";
-    // Show the exact block counts as well as the rounded MB. "1.00 MB /
-    // 2.00 MB" hides the number the controller actually reports on its
-    // Capacity tab, which is what a user cross-checks against.
-    label.textContent =
-      `${fmtBytes(REPORT.total_bytes)} / ${fmtBytes(REPORT.budget_bytes)} (${pct.toFixed(2)}%)${archNote}` +
-      `  ·  ${fmtBlocks(REPORT.total_bytes)} / ${fmtBlocks(REPORT.budget_bytes)} blocks`;
-  } else {
-    // Capacity is part-number specific, don't fake a
-    // number for a processor type we don't have real data for.
-    fill.style.width = "0%";
-    fill.classList.remove("over");
-    label.textContent =
-      `${fmtBytes(REPORT.total_bytes)} (${fmtBlocks(REPORT.total_bytes)} blocks) used ` +
-      `-- budget unknown for processor "${REPORT.processor_type || "?"}"`;
-  }
+  const archNote = REPORT.budget_architecture === "divided" ? " (I/O + Data/Logic pools summed)" : "";
+  setMeter("budget", REPORT.total_bytes, REPORT.budget_bytes, archNote);
 
   CURRENT_NODE = REPORT.hierarchy;
   annotateTagPaths(CURRENT_NODE);
@@ -340,24 +321,30 @@ function renderErrors() {
 // partition; anything in the safety partition the engine cannot price is listed on the
 // Errors tab with every other coverage gap.
 function renderSafetyBar() {
-  const wrap = document.getElementById("safety-bar-wrap");
   const used = REPORT.safety_bytes;
-  wrap.classList.toggle("hidden", used == null);
+  document.getElementById("safety-bar-wrap").classList.toggle("hidden", used == null);
   document.getElementById("meters").classList.toggle("with-safety", used != null);
-  if (used == null) return;
-  const fill = document.getElementById("safety-bar-fill");
-  const label = document.getElementById("safety-label");
-  const budget = REPORT.safety_budget_bytes;
+  if (used != null) setMeter("safety", used, REPORT.safety_budget_bytes, "");
+}
+
+// One meter: the label is the block count against the budget and the percent -- the
+// numbers the Capacity tab shows, which is what a user cross-checks against -- and the
+// rounded KB / MB form is its tooltip. Capacity is part-number specific: with no budget
+// for this processor, no percent is invented.
+function setMeter(id, used, budget, note) {
+  const fill = document.getElementById(`${id}-bar-fill`);
+  const label = document.getElementById(`${id}-label`);
   if (budget) {
     const pct = (used / budget) * 100;
     fill.style.width = `${Math.min(pct, 100)}%`;
     fill.classList.toggle("over", pct > 100);
-    label.textContent = `${fmtBytes(used)} / ${fmtBytes(budget)} (${pct.toFixed(2)}%)  ·  ` +
-      `${fmtBlocks(used)} / ${fmtBlocks(budget)} blocks`;
+    label.textContent = `${fmtBlocks(used)} / ${fmtBlocks(budget)} blocks · ${pct.toFixed(2)}%`;
+    label.title = `${fmtBytes(used)} / ${fmtBytes(budget)} (${pct.toFixed(2)}%)${note}`;
   } else {
     fill.style.width = "0%";
-    label.textContent = `${fmtBytes(used)} (${fmtBlocks(used)} blocks) -- safety memory size unknown ` +
-      `for "${REPORT.processor_type || "?"}"`;
+    fill.classList.remove("over");
+    label.textContent = `${fmtBlocks(used)} blocks · budget unknown`;
+    label.title = `${fmtBytes(used)} used -- no memory size on record for "${REPORT.processor_type || "?"}"`;
   }
 }
 
