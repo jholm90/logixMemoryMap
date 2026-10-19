@@ -33,6 +33,7 @@ Run: python -m sample_gen.gen_safety_io [--only REGEX]
 from __future__ import annotations
 
 import argparse
+import json
 import re
 
 from sample_gen import gen_module_sweep as MS
@@ -40,7 +41,7 @@ from sample_gen import gen_module_sweep_variants as MV
 from sample_gen import gen_safety_partition as G
 from sample_gen import gen_safety_round2 as R
 from sample_gen import gen_safety_round4 as R4
-from sample_gen.manifest import append_manifest_row, write_sample
+from sample_gen.manifest import REPO_ROOT, append_manifest_row, write_sample
 from sample_gen.realism import _ADAPTER_BLOCK, _resize_slot_structure
 
 OQ = "OQ-SAFETYPARTITION"
@@ -170,6 +171,69 @@ def make(sample_id: str, kw: dict) -> str:
     return with_modules(l5x, modules)
 
 
+# --- local-only families -----------------------------------------------------------------
+# The Kinetix integrated-safety drive, 1756 safety I/O and the BNI00HN have no block in this
+# repository. Their templates are taken from compiled real exports (owner's permission,
+# 2026-10-19), with every name, address, safety network number, description and comment
+# replaced, and live in the git-ignored samples/local/ with the files built from them:
+# customer-derived content never enters the repository, and the files move over chat.
+
+LOCAL_BLOCKS = REPO_ROOT / "samples" / "local" / "safety_io_blocks.json"
+LOCAL_OUT = REPO_ROOT / "samples" / "local" / "safety_io"
+
+
+def local_block(key: str, name: str, parent: str, parent_port: str, address: str, snn: str) -> str:
+    out = json.loads(LOCAL_BLOCKS.read_text(encoding="utf-8"))[key]
+    for token, value in (("{NAME}", name), ("{PARENT}", parent), ("{PARENT_PORT}", parent_port),
+                         ("{ADDRESS}", address), ("{SNN}", snn)):
+        assert out.count(token) == 1, (key, token)
+        out = out.replace(token, value)
+    return out
+
+
+def local_plan() -> list[tuple[str, str, dict]]:
+    files: list[tuple[str, str, dict]] = []
+    for key, catalog in (("1756ib16s", "1756-IB16S/A"), ("1756obv8s", "1756-OBV8S/A")):
+        for n in (1, 2, 4):
+            files.append((f"safe_iol_{key}_{n}", f"{n} {catalog} in the 1756-L81ES local chassis, against safe_n00",
+                          {"chassis": [key] * n}))
+    for n in (1, 2, 4):
+        files.append((f"safe_iol_kinstd_{n}", f"a 2198-P208 supply and {n} 2198-D032-ERS3 without safety on the "
+                      "L81ES plant: the control for safe_iol_kinsafe", {"drives": n, "safety": False}))
+        files.append((f"safe_iol_kinsafe_{n}", f"the same {n} drives with integrated safety (CIP_Motion_Device_Safety2)",
+                      {"drives": n, "safety": True}))
+    for n in (1, 2, 4):
+        files.append((f"safe_iol_bni00hn_{n}", f"{n} Balluff BNI00HN safety blocks on a 5069-L330ERMS2's Ethernet port "
+                      "4, against safe_base_5069l330_v35", {"bni": n}))
+    return [(sid, f"{OQ}: {desc}", kw) for sid, desc, kw in files]
+
+
+def local_make(sample_id: str, kw: dict) -> str:
+    from sample_gen.gen_module_motion import _drive_module_xml, bus_supply_with_converter
+    if "bni" in kw:
+        name = "SafeBase" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
+        l5x = R4.build_base(name, "5069-L330ERMS2", "35", "35.05", content=False)
+        snn = local_snn(l5x, "4")
+        return with_modules(l5x, [local_block("bni00hn", f"SafeBni{i + 1}", "Local", "4", f"192.168.1.{60 + i}", snn)
+                                  for i in range(kw["bni"])])
+    l5x = R.build(sample_id)
+    if "chassis" in kw:
+        snn = local_snn(l5x, "1")
+        return with_modules(l5x, [local_block(key, f"SafeCard{slot}", "Local", "1", str(slot), snn)
+                                  for slot, key in enumerate(kw["chassis"], start=1)])
+    snn = local_snn(l5x, "2")
+    supply, _converter = bus_supply_with_converter()
+    drives = [local_block("2198d032s", f"Drv{i + 1}", "Local", "2", f"192.168.1.{20 + i}", snn) if kw["safety"]
+              else _drive_module_xml(f"Drv{i + 1}", "2198-D032-ERS3", "false", address=f"192.168.1.{20 + i}")
+              for i in range(kw["drives"])]
+    return with_modules(l5x, [supply] + drives)
+
+
+def _make_local(job: tuple[str, dict]) -> int:
+    sample_id, kw = job
+    return write_sample(local_make(sample_id, kw), LOCAL_OUT / f"{sample_id}.L5X")
+
+
 def _make(job: tuple[str, dict]) -> int:
     sample_id, kw = job
     return write_sample(make(sample_id, kw), G.OUT_ROOT / f"{sample_id}.L5X")
@@ -179,11 +243,14 @@ def main() -> None:
     from sample_gen.progress import run
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", metavar="REGEX", help="build only the sample_ids this matches")
+    ap.add_argument("--local", action="store_true",
+                    help="build the local-only families into samples/local/safety_io/ (needs the templates there)")
     args = ap.parse_args()
-    jobs = [(sid, desc, kw) for sid, desc, kw in plan() if not args.only or re.search(args.only, sid)]
-    predicted = run(((sid, (sid, kw)) for sid, _, kw in jobs), _make, label="safety-io")
+    roster, build, out = (local_plan(), _make_local, LOCAL_OUT) if args.local else (plan(), _make, G.OUT_ROOT)
+    jobs = [(sid, desc, kw) for sid, desc, kw in roster if not args.only or re.search(args.only, sid)]
+    predicted = run(((sid, (sid, kw)) for sid, _, kw in jobs), build, label="safety-io")
     for sample_id, description, _ in jobs:
-        append_manifest_row(sample_id, description, G.CATEGORY, G.OUT_ROOT / f"{sample_id}.L5X", predicted[sample_id])
+        append_manifest_row(sample_id, description, G.CATEGORY, out / f"{sample_id}.L5X", predicted[sample_id])
 
 
 if __name__ == "__main__":

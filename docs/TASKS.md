@@ -92,6 +92,8 @@ the session's confidentiality guard; they need either one Studio-made export eac
 1756-L81ES v35 project with the device added, exported) or the owner's explicit permission
 for templates derived from the real exports with every customer value replaced.
 
+**Local-only families, 15 built 2026-10-19** (`gen_safety_io.py --local`): 1756-IB16S/A and 1756-OBV8S/A at 1 / 2 / 4 in the L81ES local chassis; a 2198-P208 and 1 / 2 / 4 2198-D032-ERS3 with integrated safety, each against the same drives without safety (`safe_iol_kinstd_*`, the proven drive block); the BNI00HN at 1 / 2 / 4 on a 5069-L330ERMS2's port 4. Their templates come from compiled real exports with every name, address, safety network number, description and comment replaced, so the templates and the files stay in the git-ignored `samples/local/` and move over chat (handed over 2026-10-19). Every derived block matches its compiled shape; the integrated-safety drive is the one block with no capture behind it yet (`check_proven_blocks.py`: 7 unproven, all of it). Still not built: the PowerFlex 527 (needs its axis and a motion group).
+
 Found on the way and fixed: the module-sweep blocks had their `<ExtendedProperties>`
 stripped when genericized, the same defect class as the 2198 ConfigID failures, and lint now
 refuses a safety I/O card without its ConfigID (`safety_io_without_configid`; 0 hits on 18
