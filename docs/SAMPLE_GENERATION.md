@@ -76,6 +76,8 @@ which a test pins, so every round-2 file differences against round 1's captured
 manifest description, written at generation: blind tests. Round 3 (TASKS 0v) puts every
 ordinary instruction of the safety-routine palette alone on one fixed SafetyProgram tag
 pool declared in full by every file, so each differences against `safe_lg_ctl` alone.
+Round 5 (`gen_safety_io.py`, TASKS 0za, 17 files) adds safety I/O: 1734-IB8S/B and OB8S/B cards in a further 1734-AENTR/C rack on the L81ES plant and 5069-IB8S/A and OBV8S/A on a 5069-L330ERMS2's bus, built from the repository's module-sweep blocks with their `<ExtendedProperties>` restored.
+
 Round 4 (`gen_safety_round4.py`, TASKS 0x, 32 files) adds tag mapping, AOI and routine
 sweeps, standard twins on 1756-L81E, and safety bases on other platforms under the
 `SafeBase` prefix, which lint exempts from the platform pin.

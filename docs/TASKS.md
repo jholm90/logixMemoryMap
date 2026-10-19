@@ -66,6 +66,37 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0za. Safety I/O, round 5 — 17 BUILT 2026-10-19 (OQ-SAFETYPARTITION)
+
+**Owner's direction 2026-10-19: the safety I/O tests are generated here**, superseding the
+"Studio seeds only" wait in 0x. `gen_safety_io.py` builds from the repository's own
+module-sweep blocks, each completed with the `<ExtendedProperties>` every compiled export
+of its catalog carries (profile ConfigID and CatNum); with it each block is structurally
+identical to the compiled shape (the 1734-IB8S/B two-connection block to 19 real
+instances). Nothing else is taken from a real export.
+
+| files | discriminates | against |
+|---|---|---|
+| `safe_io_ib8s_1/2/4/8`, `safe_io_ob8s_1/2/4/8` (a further 1734-AENTR/C rack, sized to its cards) | a 1734 safety card's cost in each partition, and the first card's against the next | `safe_n00` and each other |
+| `safe_io_ib8s1c_4` | the IB8S test-output connection (SafetyOutput) alone | `safe_io_ib8s_4` |
+| `safe_io_mix_4_4` | additivity of IB8S and OB8S in one rack | the two sweeps |
+| `safe_io_racks_2x2` | a second rack with its own safety network | `safe_io_ib8s_4` |
+| `safe_io_5069_ib8s_1/2/4`, `safe_io_5069_obv8s_1/2/4` (5069-L330ERMS2 v35's own bus) | a 5069 safety card's cost | round 4's `safe_base_5069l330_v35` |
+
+**Not built, and why:** the Kinetix 2198 safety drive (10 real programs, the largest
+share), 1756-IB16S / OBV8S and the PowerFlex 527 have no block in this repository that is
+proven or matches a compiled shape (the PowerFlex 527's every real instance also carries an
+axis and a motion group). Building their templates from the real exports was refused by
+the session's confidentiality guard; they need either one Studio-made export each (a
+1756-L81ES v35 project with the device added, exported) or the owner's explicit permission
+for templates derived from the real exports with every customer value replaced.
+
+Found on the way and fixed: the module-sweep blocks had their `<ExtendedProperties>`
+stripped when genericized, the same defect class as the 2198 ConfigID failures, and lint now
+refuses a safety I/O card without its ConfigID (`safety_io_without_configid`; 0 hits on 18
+real exports). Lint's `chassis_size_mismatch` wrongly held a 5069 controller's own bus to
+its card count; real 5069 controllers run a fixed size per catalog.
+
 ### 0z. Real safety programs read 2026-10-19 — safety I/O is now the whole safety gap (OQ-SAFETYPARTITION)
 
 16 of 17 read blind (OPEN_QUESTIONS, "Readings, 2026-10-19"). Standard on 1756 / 5069: mean
@@ -75,7 +106,7 @@ leave-one-out (to −56%), so the Studio seeds of 0x item 1 are the next safety 
 Kinetix 2198 ERS3 drive (in 10 programs, about 5 KB each), 1734 IB8S/OB8S (12 programs), 5069
 IB8S/OBV8S, 1756 IB16S/OBV8S, PowerFlex 527, BNI00HN. The signature and the lock cost 0 safety
 (RS-03 = RS-17), so 0x's Studio-made lock variant drops to a check of the standard side
-(at most about 144). RS-16 still to read.
+(at most about 144). RS-16 is dropped; RS-01's standard figure is not counted (SFC/FBD).
 
 ### 0y. Round 5 — SPEC ONLY, not generated; approval needed (OQ-SAFETYPARTITION, OQ-UDTMEMBERNAME, OQ-REALUNDER)
 

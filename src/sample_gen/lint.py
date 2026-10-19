@@ -359,6 +359,26 @@ def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
+# CIP Safety I/O whose compiled exports always carry <ExtendedProperties> with the
+# profile's ConfigID: every real 1734 / 5069 / 1756 safety card and PowerFlex 527. The
+# repository's module-sweep blocks had it stripped; with it they match the compiled shape.
+_SAFETY_IO_CATALOG = re.compile(r"^(1734-\w+S/|5069-\w+S\d?/|1756-\w+S/|PowerFlex 527)")
+
+
+def _safety_io_configid_findings(root: ET.Element) -> list[LintFinding]:
+    """A CIP Safety I/O module without its ExtendedProperties ConfigID."""
+    findings: list[LintFinding] = []
+    for mod in root.iter("Module"):
+        catalog = mod.get("CatalogNumber") or ""
+        if _SAFETY_IO_CATALOG.match(catalog) and mod.find("ExtendedProperties/public/ConfigID") is None:
+            findings.append(LintFinding(
+                "safety_io_without_configid",
+                f"Module {mod.get('Name') or catalog} ({catalog}) has no ExtendedProperties ConfigID; "
+                f"every compiled export of a safety I/O catalog carries one",
+            ))
+    return findings
+
+
 def _parent_port_findings(root: ET.Element) -> list[LintFinding]:
     """A module's ParentModPortId must be a port its parent module has. Studio refuses
     one that is not ("No port was found with the given port number"; the module sweep's
@@ -1138,6 +1158,11 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
             n_children = children_count.get((name, port_id), 0)
             if n_children == 0:
                 continue
+            # A 5069 controller's own bus is a fixed size per catalog, whatever it
+            # carries (real exports: L310 9 with 5 modules, L320 17 with 4, L330 32 with
+            # 9, L340 32 with 6); only an adapter's bus tracks its cards.
+            if name == "Local" and port_el.get("Type") == "5069":
+                continue
             expected = n_children + 1
             if int(bus_size) != expected:
                 findings.append(LintFinding(
@@ -1699,6 +1724,7 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     findings.extend(_safety_instruction_findings(root))
     findings.extend(_local_product_code_findings(root))
     findings.extend(_parent_port_findings(root))
+    findings.extend(_safety_io_configid_findings(root))
     findings.extend(_safety_tag_write_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))

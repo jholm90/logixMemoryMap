@@ -265,8 +265,9 @@ partition.
 The batches: `python -m sample_gen.gen_safety_partition [--only REGEX]` (round 1) and
 `python -m sample_gen.gen_safety_round2 [--only REGEX]` (round 2, TASKS 0u) and
 `python -m sample_gen.gen_safety_round3 [--only REGEX]` (round 3, logic, TASKS 0v) and
-`python -m sample_gen.gen_safety_round4 [--only REGEX]` (round 4, TASKS 0x). All
-four, and `--engine`, run on every core with a progress line per file and a watchdog
+`python -m sample_gen.gen_safety_round4 [--only REGEX]` (round 4, TASKS 0x) and
+`python -m sample_gen.gen_safety_io [--only REGEX]` (round 5, safety I/O, TASKS 0za). All
+five, and `--engine`, run on every core with a progress line per file and a watchdog
 (`sample_gen/progress.py`). Use `--only` for a partial rebuild: a full one restamps every
 file's dates, which changes its hash and queues every captured file for reconversion.
 
