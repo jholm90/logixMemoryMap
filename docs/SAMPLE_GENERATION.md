@@ -80,8 +80,6 @@ Round 4 (`gen_safety_round4.py`, TASKS 0x, 32 files) adds tag mapping, AOI and r
 sweeps, standard twins on 1756-L81E, and safety bases on other platforms under the
 `SafeBase` prefix, which lint exempts from the platform pin.
 
-The 302 captured safety files of rounds 1 to 4 (1.3 GB) were deleted 2026-10-19 once written up; `safe_aoi_call_60`, converted but not captured, stays. Each rebuilds from its generator with `--only`, and every number is in `samples/manifest.csv` and `samples/captures.csv`.
-
 ### The feedback loop
 
     generate → predict → convert → build → read actual → reconcile → adjust
