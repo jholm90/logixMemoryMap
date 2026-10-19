@@ -84,7 +84,8 @@ instances). Nothing else is taken from a real export.
 | `safe_io_5069_ib8s_1/2/4`, `safe_io_5069_obv8s_1/2/4` (5069-L330ERMS2 v35's own bus) | a 5069 safety card's cost | round 4's `safe_base_5069l330_v35` |
 
 **Not built, and why:** the Kinetix 2198 safety drive (10 real programs, the largest
-share), 1756-IB16S / OBV8S and the PowerFlex 527 have no block in this repository that is
+share), 1756-IB16S / OBV8S, the Balluff BNI00HN (an EDS-profile device whose data types are
+named by its EDS revision) and the PowerFlex 527 have no block in this repository that is
 proven or matches a compiled shape (the PowerFlex 527's every real instance also carries an
 axis and a motion group). Building their templates from the real exports was refused by
 the session's confidentiality guard; they need either one Studio-made export each (a
