@@ -805,6 +805,33 @@ reads the same as its safety file.
 | +16 | 5069-L330ERMS2 v35 base and content step | one catalog; L320ERMS2 exact |
 | +16 | 1756-L81ES v32 base and content step | the known L8x v34/v35 +16 (`processor_firmware_correction`) |
 
+### Safety I/O — safety KNOWN, standard FITTED (OQ-SAFETYPARTITION round 5)
+
+A CIP Safety device is a module with a Safety* connection; its type family is that
+connection's decorated data type without its suffix (`sizing/safety_io.py`). **The safety
+partition grows by a fixed amount per device, set by that type, with nothing paid once**
+(exact at 1 / 2 / 4 devices, each against its control):
+
+| device | safety connections' type | safety bytes each |
+|---|---|---:|
+| 1756-IB16S/A | `AB:5000_SDI16` | 6,049 |
+| 1756-OBV8S/A | `AB:5000_SDO8` | 4,497 |
+| Balluff BNI00HN | `_002B:BNI00HN` | 3,901 |
+| PowerFlex 527-STO, 2198-H008-ERS2 | `AB:CIP_Drive_Safety1` | 3,577 |
+| 2198-D012 / D020 / D032 / D057-ERS3, integrated safety | `AB:CIP_Motion_Device_Safety2` | 4,717 |
+| 2198-S086-ERS3 | `AB:CIP_Motion_Device_Safety1` | 4,123 |
+
+Two devices of the same type cost the same whatever the catalog (four drive catalogs; the
+PowerFlex 527 and the Kinetix 5300), and an IB16S beside an OBV8S reads their sum. A device
+is priced only when its whole set of safety-connection types matches a measured one; any
+other is reported as unpriced and the safety figure reads as a minimum (the 1734 cards
+and 5069 cards until their captures).
+
+**Standard memory** beyond the module sizing: a first-of-catalog cost, a per-device cost,
+and a cost shared once by a type family (`memory_model.yaml` `safety_io`): the 1756 pair
+shares 368, the integrated-safety drives 4,160 by type and 684 each. Exact on each
+family's own points; how first costs combine across catalogs beyond those is assumed.
+
 ## Operand shape — measured, free
 
 A member-path operand costs exactly what a plain tag costs: `U.Bit`, `U.Sub.Bit`,

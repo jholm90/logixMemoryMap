@@ -202,6 +202,14 @@ KNOWN_REGISTER = [
         "FLL -4 on the operand law, zero residual at both counts; OQ-SAFETYPARTITION",
     ),
     (
+        "safety_io.safety_bytes.AB:CIP_Motion_Device_Safety2", 4717,
+        "safety_io.safety_confidence", 37,
+        "safe_iol_*: 1756-IB16S / OBV8S at 1/2/4 and their pair, BNI00HN at 1/2/4, the four "
+        "integrated-safety 2198-D0xx at 1/2 with axes and D032 at 1/2/4 without, S086, H008-ERS2 "
+        "and PowerFlex 527 at 1/2: a fixed safety cost per device by its connection type, zero "
+        "residual; OQ-SAFETYPARTITION round 5",
+    ),
+    (
         "safety_partition.aoi_definition_moved_bytes", 800,
         "safety_partition.aoi_confidence", 12,
         "six safety AOI definitions (1/1, 3/3 and 6/6 BOOL parameters, 9 locals, 10 rungs, "

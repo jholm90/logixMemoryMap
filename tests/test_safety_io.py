@@ -50,3 +50,18 @@ def test_lint_refuses_a_safety_card_without_its_configid():
                       count=1, flags=re.S)
     assert stripped != l5x
     assert [f for f in lint_l5x(stripped) if f.kind == "safety_io_without_configid"]
+
+
+def test_a_safety_device_is_priced_by_its_connections_types_and_only_when_measured():
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    from l5x_memory_analyzer.sizing.safety_io import SafetyDevice, safety_rows, standard_rows
+    m = load_memory_model()
+    drives = [SafetyDevice(f"D{i}", "2198-D032-ERS3", ("AB:CIP_Motion_Device_Safety2",)) for i in range(3)]
+    card = SafetyDevice("C", "1734-IB8S/B", ("AB:1734_IB8S", "AB:1734_IB8S_Safety2"))
+    rows, unpriced = safety_rows(drives + [card], m)
+    assert sum(r[3] for r in rows) == 3 * 4717
+    assert unpriced == {"AB:1734_IB8S+AB:1734_IB8S_Safety2": 1}
+    # standard: the type's first-device cost once, then each drive its own
+    assert sum(r[3] for r in standard_rows(drives, m)) == 4160 + 3 * 684
+    pair = [SafetyDevice("I", "1756-IB16S/A", ("AB:5000_SDI16",)), SafetyDevice("O", "1756-OBV8S/A", ("AB:5000_SDO8",))]
+    assert sum(r[3] for r in standard_rows(pair, m)) == 368 + 1832 + 1104 - 2 * 917

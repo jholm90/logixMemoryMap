@@ -31,6 +31,8 @@ from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
 from l5x_memory_analyzer.sizing.report import EXACT, ESTIMATED, SizeEntry, SizeError, build_report
+from l5x_memory_analyzer.sizing.safety_io import safety_devices
+from l5x_memory_analyzer.sizing.safety_io import safety_rows as safety_io_rows
 from l5x_memory_analyzer.sizing.udt import RecursiveUdtError, UnknownDataTypeError, compute_array_size
 
 
@@ -147,6 +149,18 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
                              f"not readable and is priced at a minimum, so the safety figure is a minimum "
                              f"for it (OQ-SAFETYPARTITION)."),
                 ))
+
+    # Safety I/O: each CIP Safety device its measured cost by its connections' types; a
+    # device of a type not yet measured is reported, so the figure reads as a minimum.
+    io_rows, unpriced = safety_io_rows(safety_devices(root), model)
+    rows += io_rows
+    for key, count in sorted(unpriced.items()):
+        errors.append(SizeError(
+            path=f"safety_io/{key}",
+            message=(f"{count} safety I/O device(s) with safety connections of type {key} are not yet "
+                     f"priced in the safety partition, so the safety figure is a minimum for them "
+                     f"(OQ-SAFETYPARTITION)."),
+        ))
 
     total = sum(size for _, _, _, size, _ in rows)
     entries = [

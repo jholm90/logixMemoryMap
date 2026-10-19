@@ -50,6 +50,8 @@ from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, pro
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
 from l5x_memory_analyzer.sizing.logic import ATOMIC_TYPES, compute_routine_logic_bytes
+from l5x_memory_analyzer.sizing.safety_io import safety_devices
+from l5x_memory_analyzer.sizing.safety_io import standard_rows as safety_io_standard_rows
 from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
@@ -1279,6 +1281,10 @@ def build_report(root: ET.Element, model: MemoryModel,
             "catalog_absolute_baseline", "project_baseline", "CATALOG_ABSOLUTE",
             absolute_bytes - so_far, absolute_basis,
         ))
+
+    # CIP Safety devices: the standard memory they cost beyond their module's own sizing
+    # (OQ-SAFETYPARTITION round 5; sizing/safety_io.py).
+    baseline_delta_entries += safety_io_standard_rows(safety_devices(root), model)
 
     if baseline_delta_entries:
         baseline_delta_total = sum(size for _, _, _, size, _ in baseline_delta_entries)

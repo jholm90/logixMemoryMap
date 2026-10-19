@@ -300,6 +300,20 @@ class SafetyPartitionModel:
 
 
 @dataclass(frozen=True)
+class SafetyIoModel:
+    """CIP Safety devices (OQ-SAFETYPARTITION round 5): safety memory by the type family of
+    their safety connections; standard memory beyond the engine's module price, once for
+    the first device of a catalog or type family, then for each device."""
+
+    safety_bytes: dict[str, int]
+    safety_confidence: str
+    standard_first_bytes: dict[str, int]
+    standard_each_bytes: dict[str, int]
+    standard_shared_first_bytes: dict[str, int]
+    standard_confidence: str
+
+
+@dataclass(frozen=True)
 class UdtDefinitionModel:
     base: int
     per_member: int
@@ -1458,6 +1472,7 @@ class MemoryModel:
     tag_overhead: TagOverheadModel
     alias_overhead: TagOverheadModel
     safety_partition: SafetyPartitionModel
+    safety_io: SafetyIoModel
     udt_definition: UdtDefinitionModel
     logic_instructions: LogicInstructionModel
     jsr_target_declaration: JsrTargetDeclarationModel
@@ -1796,6 +1811,14 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             ordinary_delta_bytes=dict(raw["safety_partition"]["ordinary_delta_bytes"]),
             rung_bytes=dict(raw["safety_partition"]["rung_bytes"]),
             rung_bytes_known=frozenset(raw["safety_partition"]["rung_bytes_known"]),
+        ),
+        safety_io=SafetyIoModel(
+            safety_bytes=dict(raw["safety_io"]["safety_bytes"]),
+            safety_confidence=raw["safety_io"]["safety_confidence"],
+            standard_first_bytes=dict(raw["safety_io"]["standard_first_bytes"]),
+            standard_each_bytes=dict(raw["safety_io"]["standard_each_bytes"]),
+            standard_shared_first_bytes=dict(raw["safety_io"]["standard_shared_first_bytes"]),
+            standard_confidence=raw["safety_io"]["standard_confidence"],
         ),
         udt_definition=UdtDefinitionModel(
             base=raw["udt_definition"]["base"],

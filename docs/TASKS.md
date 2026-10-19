@@ -66,7 +66,11 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0za. Safety I/O, round 5 — 17 BUILT 2026-10-19 (OQ-SAFETYPARTITION)
+### 0za. Safety I/O, round 5 — 40 CAPTURED and WIRED 2026-10-19; 17 (1734 / 5069) to capture (OQ-SAFETYPARTITION)
+
+**Captured and wired:** the 40 `safe_iol_*` files (1756 safety I/O, BNI00HN, Kinetix 5700 / 5300, PowerFlex 527) — safety exact per device by connection type, standard by catalog (MEMORY_MODEL, "Safety I/O"). Real safety programs moved from −18…−66% to −1.5…−44% on the safety figure; every remaining gap names unpriced 1734 cards, which the 17 `safe_io_*` files measure. **Next:** capture those 17; then 1734 variants seen in the real set but not built (`AB:1734_IB8S_Safety4`, `AB:1734_OB8S_Safety1/2/3` beyond the built `/B`), 5069 packed variants (`AB:5000_SDI8_Packed`, `AB:5000_SDO8_Packed`), the rev-11 STO drive (`AB:CIP_Drive_Safety2`), and the standard-engine D012-with-axes term.
+The BNI00HN runs on any EtherNet/IP network, not only a 5069's (owner, 2026-10-19); it was built on a 5069 only because the real ones sit there, and a 1756-L81ES copy would confirm the cost is the same.
+
 
 **Owner's direction 2026-10-19: the safety I/O tests are generated here**, superseding the
 "Studio seeds only" wait in 0x. `gen_safety_io.py` builds from the repository's own

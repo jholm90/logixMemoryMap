@@ -1875,6 +1875,53 @@ alias_overhead:
 # scalar atomic safety tag alone (round 4: MOV from a scalar safety DINT, 50 rungs, 8
 # where MOV from a safety DINT array element pays 4). A scalar word operand inside a
 # safety routine is unmeasured and stays operand_bytes.
+# CIP Safety devices (OQ-SAFETYPARTITION round 5, 2026-10-19; MEMORY_MODEL.md "Safety
+# I/O"). A device is a module with a Safety* connection; its type family is that
+# connection's decorated data type without the suffix (safety_io.py). Measured on
+# gen_safety_io.py's files at 1 / 2 / 4 devices (Kinetix and drives at 1 / 2), each
+# against its control, zero residual: the safety partition grows by safety_bytes per
+# device, nothing once; the 1756 IB16S + OBV8S pair reads their sum. The PowerFlex 527
+# and the 2198-H008-ERS2 carry the same type and cost the same 3,577; the four
+# integrated-safety 2198-D0xx-ERS3 one type and 4,717 each, with or without axes.
+#
+# Standard memory beyond what the module sizing already charges: standard_first_bytes
+# once for the first device of a catalog, standard_each_bytes for every device, and
+# standard_shared_first_bytes once for the first device whose type family starts with
+# the key (the 1756 IB16S and OBV8S share 368; the integrated-safety drives share their
+# 4,160 by type). Each exact on its own points; how first-device costs combine across
+# catalogs beyond those is an assumption, so FITTED.
+safety_io:
+  safety_bytes:
+    "AB:5000_SDI16": 6049
+    "AB:5000_SDO8": 4497
+    "_002B:BNI00HN": 3901
+    "AB:CIP_Drive_Safety1": 3577
+    "AB:CIP_Motion_Device_Safety1": 4123
+    "AB:CIP_Motion_Device_Safety2": 4717
+  safety_confidence: KNOWN
+  standard_first_bytes:
+    "1756-IB16S/A": 1832
+    "1756-OBV8S/A": 1104
+    "vendor43:13594": 720
+    "2198-H008-ERS2": 624
+    "PowerFlex 527-STO CIP Safety": 1608
+  standard_each_bytes:
+    "1756-IB16S/A": -917
+    "1756-OBV8S/A": -917
+    "vendor43:13594": 445
+    "2198-H008-ERS2": -1202
+    "PowerFlex 527-STO CIP Safety": 267
+    "2198-D012-ERS3": 684
+    "2198-D020-ERS3": 684
+    "2198-D032-ERS3": 684
+    "2198-D057-ERS3": 684
+    "2198-S086-ERS3": -270
+  standard_shared_first_bytes:
+    "AB:5000_SD": 368
+    "AB:CIP_Motion_Device_Safety2": 4160
+    "AB:CIP_Motion_Device_Safety1": 6264
+  standard_confidence: FITTED
+
 safety_partition:
   base_bytes: 1394
   base_confidence: KNOWN
