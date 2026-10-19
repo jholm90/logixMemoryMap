@@ -46,3 +46,6 @@ strip_*.L5X
 
 # Demo project for the README screenshots; rebuilt by scripts/build_demo_project.py
 docs/demo/
+
+# Test fixtures' rebuilt generator output, reused between runs (tests/conftest.py).
+.cache/

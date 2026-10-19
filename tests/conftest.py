@@ -11,6 +11,7 @@ captures).
 
 from __future__ import annotations
 
+import hashlib
 import importlib
 import sys
 from pathlib import Path
@@ -19,14 +20,27 @@ import pytest
 
 REPO = Path(__file__).resolve().parent.parent
 GENERATED = REPO / "samples" / "generated"
+# Rebuilt files are kept between runs here (git-ignored), keyed by a hash of every
+# generator source and data file, so a run rebuilds them only after a generator changes.
+REGEN_CACHE = REPO / ".cache" / "regenerate"
+
+
+def _generator_key() -> str:
+    h = hashlib.sha256()
+    for f in sorted((REPO / "src" / "sample_gen").rglob("*")):
+        if f.suffix in (".py", ".json", ".csv") and "__pycache__" not in f.parts:
+            h.update(f.relative_to(REPO).as_posix().encode())
+            h.update(f.read_bytes())
+    return h.hexdigest()[:16]
 
 
 @pytest.fixture(scope="session")
 def regenerate(tmp_path_factory):
-    """regenerate("gen_x", "gen_y") -> a temporary stand-in for samples/generated/
-    holding everything those generators write."""
-    root = tmp_path_factory.mktemp("generated")
-    done: set[str] = set()
+    """regenerate("gen_x", "gen_y") -> a stand-in for samples/generated/ holding
+    everything those generators write, built once per generator-source state."""
+    root = REGEN_CACHE / _generator_key()
+    root.mkdir(parents=True, exist_ok=True)
+    done: set[str] = {m.stem for m in root.glob("*.done")}
 
     def _run(*modules: str) -> Path:
         with pytest.MonkeyPatch.context() as mp:
@@ -50,6 +64,7 @@ def regenerate(tmp_path_factory):
                         mp.setattr(mod, attr, lambda *a, **k: None)
                 mod.main()
                 done.add(name)
+                (root / f"{name}.done").touch()
         return root
 
     return _run

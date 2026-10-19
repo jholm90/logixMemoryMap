@@ -45,6 +45,14 @@ python -m pytest -q
 `pytest` works from the repo root once dev extras are installed
 (`pip install -e ".[dev]"`).
 
+Where the time goes (2026-10-19, 7 minutes cold): the `regenerate` fixture rebuilding
+deleted batch files for `test_aoi_and_motion_laws` and the alarm tests (200 s), and the
+waiting-batch guards in `test_build_guards`, which lint and price every committed file not
+yet captured (a minute while a 4.5 MB realism-floor batch waits; near nothing once it is
+captured). The fixture now keeps what it rebuilds in the git-ignored `.cache/regenerate/`,
+keyed by a hash of every generator source and data file, so only the first run after a
+generator change pays the 200 s. Delete `.cache/` to force a rebuild.
+
 ---
 
 ## 3. Capture pipeline

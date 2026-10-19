@@ -21,9 +21,10 @@ def test_round_5_is_17_new_files():
     assert not set(ids) & earlier
 
 
-def test_every_file_lints_clean():
-    for sid, kw in _plan().items():
-        assert not lint_l5x(IO.make(sid, kw)), sid
+def test_one_file_of_each_family_lints_clean():
+    # write_sample lints every file as it is built; this pins one of each shape.
+    for sid in ("safe_io_mix_4_4", "safe_io_racks_2x2", "safe_io_ib8s1c_4", "safe_io_5069_ib8s_4", "safe_io_5069_obv8s_4"):
+        assert not lint_l5x(IO.make(sid, _plan()[sid])), sid
 
 
 def test_each_card_carries_its_profile_configid_and_its_rack_network():
