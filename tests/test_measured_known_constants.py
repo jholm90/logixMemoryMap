@@ -181,6 +181,33 @@ KNOWN_REGISTER = [
         "safe_ref_10/50/200 and safe_sref_two/scalar (+8 a bit operand), safe_sref_mov (+4 a "
         "word operand), against their all-standard twins; OQ-SAFETYPARTITION",
     ),
+    (
+        "safety_partition.standard_scalar_operand_bytes", 8,
+        "safety_partition.standard_operand_confidence", 8,
+        "safe_sref2_mov_50 (50 MOVs from a scalar safety DINT, 8 a rung against safe_sref2_ctl) "
+        "and safe_comp_2's twelve, exact once its UDT and array terms are counted; "
+        "OQ-SAFETYPARTITION round 4",
+    ),
+    (
+        "safety_partition.routine_name_per_8_chars", 8,
+        "safety_partition.routine_name_confidence", 16,
+        "safe_rtn_name16/24/40 (+8 / +16 / +32 against safe_rtn_idle_1's 8 characters), "
+        "safe_rtn_idle_1/5, safe_rtn_jsr_1/2/5/10, safe_prg_2/3/5/_len40/_tags50 and the "
+        "subroutines of safe_comp_1 and _3; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.ordinary_delta_bytes.ATAN2", 64,
+        "safety_partition.ordinary_delta_confidence", 6,
+        "safe_lg_atan2/cop/fll at 20 (round 3) and 100 (round 4) rungs, ATAN2 +64, COP +4, "
+        "FLL -4 on the operand law, zero residual at both counts; OQ-SAFETYPARTITION",
+    ),
+    (
+        "safety_partition.aoi_definition_moved_bytes", 800,
+        "safety_partition.aoi_confidence", 12,
+        "six safety AOI definitions (1/1, 3/3 and 6/6 BOOL parameters, 9 locals, 10 rungs, "
+        "both) move 800 each; instances at 5/20/60 in a safety program and 20 at controller "
+        "scope; calls at 5 and 20 (+44 each, 264 once); safety exact on all; OQ-SAFETYPARTITION",
+    ),
 ]
 
 

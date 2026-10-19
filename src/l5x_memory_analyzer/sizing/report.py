@@ -49,7 +49,7 @@ from l5x_memory_analyzer.sizing.coverage import audit_coverage
 from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, protected_routine_elements
 from l5x_memory_analyzer.sizing.constants import MemoryModel
 from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structured_arg_count
-from l5x_memory_analyzer.sizing.logic import compute_routine_logic_bytes
+from l5x_memory_analyzer.sizing.logic import ATOMIC_TYPES, compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
@@ -510,6 +510,8 @@ def build_report(root: ET.Element, model: MemoryModel,
     # Standard logic reading a controller-scope safety tag pays a per-operand
     # extra (OQ-SAFETYPARTITION) unless a program tag of the same name shadows it.
     safety_tag_names = {t.name for t in tags if t.is_safety and t.scope == CONTROLLER_SCOPE}
+    safety_scalar_atomics = {t.name for t in tags if t.is_safety and t.scope == CONTROLLER_SCOPE
+                             and not t.dimensions and t.data_type in ATOMIC_TYPES}
     program_tag_names: dict[str, set[str]] = {}
     for t in tags:
         if t.scope != CONTROLLER_SCOPE:
@@ -646,7 +648,7 @@ def build_report(root: ET.Element, model: MemoryModel,
         if safety_tag_names:
             sp = model.safety_partition
             local = program_tag_names.get(routine.program_name or "", set())
-            surcharge = sum(sp.standard_bit_operand_bytes if kind == "bit" else sp.standard_operand_bytes
+            surcharge = sum(sp.standard_operand_cost(kind, root_name in safety_scalar_atomics)
                             for _mn, root_name, kind in routine.operand_refs
                             if root_name in safety_tag_names and root_name not in local)
             if surcharge:
@@ -1240,7 +1242,11 @@ def build_report(root: ET.Element, model: MemoryModel,
             f"{processor_type}_V{software_revision.split('.')[0]}_CORRECTION",
             pfc_bytes, pfc_basis,
         ))
-    if scope.is_whole_controller and model.safety_capable_baseline_delta.applies_to(processor_type):
+    # The 296 is the safety task/program shell Studio creates for a safety controller
+    # whose file carries none (the fwmatrix 5069 S2/S3 files); a file with its own safety
+    # task is already charged that shell above (round 4's 5069 bases, OQ-SAFETYPARTITION).
+    if (scope.is_whole_controller and not n_safety_tasks
+            and model.safety_capable_baseline_delta.applies_to(processor_type)):
         baseline_delta_entries.append((
             "safety_capable_baseline_delta", "project_baseline", "SAFETY_CAPABLE_BASELINE",
             model.safety_capable_baseline_delta.bytes,

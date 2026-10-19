@@ -268,6 +268,7 @@ class SafetyPartitionModel:
     aoi_confidence: str
     standard_operand_bytes: int
     standard_bit_operand_bytes: int
+    standard_scalar_operand_bytes: int
     standard_operand_confidence: str
     rung_bytes: dict[str, int]
     rung_bytes_known: frozenset[str]
@@ -276,6 +277,15 @@ class SafetyPartitionModel:
         a = self.data_alignment
         header = self.data_header_bytes + (self.array_header_extra_bytes if is_array else 0)
         return a * -(-(header + data_bytes) // a)
+
+    def standard_operand_cost(self, kind: str, scalar_atomic: bool) -> int:
+        """Standard logic's extra for one operand naming a controller-scope safety tag:
+        a bit instruction's, or a scalar atomic named alone, costs more than any other."""
+        if kind == "bit":
+            return self.standard_bit_operand_bytes
+        if kind == "bare" and scalar_atomic:
+            return self.standard_scalar_operand_bytes
+        return self.standard_operand_bytes
 
     def operand_cost(self, kind: str) -> int:
         """A tag operand of an ordinary instruction in a safety routine, by kind."""
@@ -1781,6 +1791,7 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             aoi_confidence=raw["safety_partition"]["aoi_confidence"],
             standard_operand_bytes=raw["safety_partition"]["standard_operand_bytes"],
             standard_bit_operand_bytes=raw["safety_partition"]["standard_bit_operand_bytes"],
+            standard_scalar_operand_bytes=raw["safety_partition"]["standard_scalar_operand_bytes"],
             standard_operand_confidence=raw["safety_partition"]["standard_operand_confidence"],
             ordinary_delta_bytes=dict(raw["safety_partition"]["ordinary_delta_bytes"]),
             rung_bytes=dict(raw["safety_partition"]["rung_bytes"]),

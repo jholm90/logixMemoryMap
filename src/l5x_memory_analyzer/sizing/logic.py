@@ -57,6 +57,7 @@ _ATOMIC_TYPES = frozenset({
     "BOOL", "SINT", "INT", "DINT", "LINT", "USINT", "UINT", "UDINT", "ULINT",
     "REAL", "LREAL",
 })
+ATOMIC_TYPES = _ATOMIC_TYPES
 
 
 def resolve_arg_type(arg: str, tag_types: dict[str, str],

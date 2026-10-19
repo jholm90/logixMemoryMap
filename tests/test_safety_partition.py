@@ -173,7 +173,11 @@ def test_operand_refs_carry_each_root_and_its_kind():
     # Member names are not roots; a tag used as an index is, as an index.
     assert _operand_refs(["XIC(SRefIn[3].Ok)OTE(Out.Bit[Idx]);", "MOV(Da,Db);"]) == (
         ("XIC", "SRefIn", "bit"), ("OTE", "Out", "bit"), ("OTE", "Idx", "index"),
-        ("MOV", "Da", "word"), ("MOV", "Db", "word"))
+        ("MOV", "Da", "bare"), ("MOV", "Db", "bare"))
+    # A name alone is "bare"; a subscripted or member operand is "word".
+    assert _operand_refs(["MOV(S,E[1]);", "MOV(T.ACC,D);", "CMP(A>B)OTE(X);"]) == (
+        ("MOV", "S", "bare"), ("MOV", "E", "word"), ("MOV", "T", "word"), ("MOV", "D", "bare"),
+        ("CMP", "A", "word"), ("CMP", "B", "word"), ("OTE", "X", "bit"))
 
 
 @pytest.mark.parametrize("data_type,dims,safety", [
@@ -229,3 +233,29 @@ def test_standard_logic_reading_a_safety_word_pays_four():
     safe = _small(controller_tags=ref, standard_rungs=[f"MOV(SRefD[{i}],StdD[{i}]);" for i in range(10)])
     plain = _small(controller_tags=ref, standard_rungs=[f"MOV(StdE[{i}],StdD[{i}]);" for i in range(10)])
     assert _delta(safe, plain) == (10 * 4, 0)
+
+
+def test_standard_logic_naming_a_scalar_safety_word_alone_pays_eight():
+    # safe_sref2_mov_50 (round 4): MOV from a scalar safety DINT, 8 a rung where an
+    # element of a safety DINT array pays 4; safe_comp_2's twelve agree.
+    ref = [G._controller_safety_tag(f"SRefSD{i:03d}", "DINT") for i in range(10)] + [
+        G.tag_xml(f"StdS{i:03d}", "DINT") for i in range(10)] + [G.tag_xml("StdD", "DINT", dimensions=(64,))]
+    safe = _small(controller_tags=ref, standard_rungs=[f"MOV(SRefSD{i:03d},StdD[{i}]);" for i in range(10)])
+    plain = _small(controller_tags=ref, standard_rungs=[f"MOV(StdS{i:03d},StdD[{i}]);" for i in range(10)])
+    assert _delta(safe, plain) == (10 * 8, 0)
+    assert _MODEL.safety_partition.standard_scalar_operand_bytes == 8
+
+
+def test_a_5069_safety_file_pays_the_safety_shell_once():
+    # The 296 safety-capable delta is the shell Studio adds to a safety controller whose
+    # file has no safety task; a file with its own safety task is charged the shell.
+    def baseline(root):
+        r = build_report(root, _MODEL)
+        entries = r[0] if isinstance(r, tuple) else r.entries
+        return {e.path: e.bytes for e in entries if e.category in ("project_baseline", "task_program_shell")}
+    bare = baseline(ET.fromstring(build_l5x("Bare5069", tags_xml="", processor_type="5069-L330ERMS2", safety_level="SIL2")))
+    own = baseline(ET.fromstring(build_l5x("Own5069", tags_xml="", processor_type="5069-L330ERMS2", safety_level="SIL2",
+                                           extra_programs_xml=G._safety_program([], []),
+                                           extra_tasks_xml=G._SAFETY_TASK)))
+    assert bare.get("safety_capable_baseline_delta") == 296 and "safety_task_program_shell" not in bare
+    assert own.get("safety_task_program_shell") == 296 and "safety_capable_baseline_delta" not in own

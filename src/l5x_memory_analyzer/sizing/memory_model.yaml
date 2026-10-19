@@ -1172,6 +1172,14 @@ firmware_baseline_delta:
 # L306ERS2, L310ERS2, L320ERMS2/MS3, L330ERMS2, L340ERS2) on the same
 # "same physical family, not independently confirmed per-catalog" basis
 # this project already uses for L72-L75 vs L71 and L82ES-L85ES vs L81ES.
+#
+# CORRECTED (OQ-SAFETYPARTITION round 4, 2026-10-19): the 296 is the safety task /
+# program shell (logic_instructions.safety_task_program_shell, the same 296), which
+# Studio creates on import for a safety controller whose file carries none -- the
+# fwmatrix 5069 S2/S3 files carried no safety task, unlike its 1756-L8xES files. A file
+# with its own safety task is already charged the shell, so this delta applies only
+# without one: round 4's 5069-L320ERMS2 base with a safety task reads exactly the
+# plant constant once it is not charged twice (it was 296 high), L330ERMS2 +16.
 safety_capable_baseline_delta:
   bytes: 296
   confidence: FITTED
@@ -1822,9 +1830,10 @@ alias_overhead:
   confidence: KNOWN
 
 # The safety partition (OQ-SAFETYPARTITION; MEMORY_MODEL.md, "Safety memory is a
-# separate partition"). Measured on 271 safe_* files (1756-L81ES, v35, 2026-10-18,
-# zero build errors, standard and safety reading on every row); each law is exact on
-# every file that tests it unless its confidence says otherwise.
+# separate partition"). Measured on 299 safe_* files (1756-L81ES v35, and round 4's
+# bases on 5069-L330ERMS2 / L320ERMS2 v35 and L81ES v32 / v34; zero build errors,
+# standard and safety reading on every row); the safety figure is exact on all 299.
+# Each law is exact on every file that tests it unless its confidence says otherwise.
 #
 # A safety tag is a name entry (alias_overhead above, 56 + 8 x floor(len/8)) plus a
 # data block: 8 x ceil((data_header_bytes + data) / 8) for a scalar or structure, with
@@ -1839,24 +1848,33 @@ alias_overhead:
 # instruction costs its standard engine cost plus operand_bytes per tag operand
 # (bit_operand_bytes for an XIC / XIO / OTE / OTL / OTU operand, index_operand_bytes
 # for a tag used as a subscript), exact on 64 of 67 round-3 files, with
-# ordinary_delta_bytes for the three it does not fit (one count each). Each safety
+# ordinary_delta_bytes for the three it does not fit (exact at 20 and 100 rungs). Each safety
 # routine beyond the first costs routine_bytes plus routine_name_per_8_chars x
-# floor(len(name) / 8) (SubRtn01 and MainRoutine 272, Inputs and Outputs 264: the
-# uncalled, JSR-called and extra-program routines and the 12 subroutines of two
-# composites; two name buckets, so FITTED), each safety program beyond the first
+# floor(len(name) / 8) (names of 6 to 40 characters across five buckets: the uncalled,
+# JSR-called and extra-program routines, the 12 subroutines of two composites, and
+# round 4's 16 / 24 / 40-character names), each safety program beyond the first
 # program_bytes in safety and extra_program_standard_bytes plus its name in STANDARD
 # memory. A Class="Safety" AOI costs what a standard AOI costs: its logic and
-# aoi_definition_moved_bytes of its definition in safety, the rest standard (two
-# files, +-8); a call of it in a safety routine its standard call cost plus
-# aoi_call_extra_bytes, and the file the standard one-time AOI call-routine cost (one
-# count).
+# aoi_definition_moved_bytes of its definition in safety, the rest standard (five
+# definitions: 1 to 6 inputs and outputs, 9 locals, 10 rungs; parameters and locals
+# move only the standard share); a call of it in a safety routine its standard call
+# cost plus aoi_call_extra_bytes, and the file the standard one-time AOI call-routine
+# cost (exact at 5 and 20 calls; instances at 5, 20 and 60).
+#
+# A standard -> safety tag-mapping pair (SafetyTagMap) costs nothing in either
+# partition: 0, 1, 10, 50 and 200 pairs read the same (round 4), so nothing prices it.
 #
 # base_bytes: File > New's SafetyTask/SafetyProgram/MainRoutine with no rungs, the
-# same at v34 (Studio seed) and v35 (safe_n00 = 1,394 + one NOP rung).
+# same at v34 (Studio seed) and v35 (safe_n00 = 1,394 + one NOP rung), and on
+# 5069-L330ERMS2 / L320ERMS2 v35 and 1756-L81ES v32 / v34 (round 4: 1,410 with the NOP
+# on all four, and the same +6,544 safety / +3,200 standard for one content step).
 #
 # Standard logic reading a safety tag pays standard_operand_bytes per safety operand,
 # standard_bit_operand_bytes when it is a bit instruction's (XIC+OTE at 10/50/200,
-# two safety XICs, a scalar, MOV from a safety DINT).
+# two safety XICs, a scalar BOOL), and standard_scalar_operand_bytes when it names a
+# scalar atomic safety tag alone (round 4: MOV from a scalar safety DINT, 50 rungs, 8
+# where MOV from a safety DINT array element pays 4). A scalar word operand inside a
+# safety routine is unmeasured and stays operand_bytes.
 safety_partition:
   base_bytes: 1394
   base_confidence: KNOWN
@@ -1866,7 +1884,7 @@ safety_partition:
   data_block_confidence: KNOWN
   routine_bytes: 264
   routine_name_per_8_chars: 8
-  routine_name_confidence: FITTED
+  routine_name_confidence: KNOWN
   program_bytes: 404
   extra_program_standard_bytes: 64
   shell_confidence: KNOWN
@@ -1875,12 +1893,13 @@ safety_partition:
   index_operand_bytes: 8
   ordinary_instruction_confidence: KNOWN
   ordinary_delta_bytes: { ATAN2: 64, COP: 4, FLL: -4 }
-  ordinary_delta_confidence: FITTED
+  ordinary_delta_confidence: KNOWN
   aoi_definition_moved_bytes: 800
   aoi_call_extra_bytes: 44
-  aoi_confidence: FITTED
+  aoi_confidence: KNOWN
   standard_operand_bytes: 4
   standard_bit_operand_bytes: 8
+  standard_scalar_operand_bytes: 8
   standard_operand_confidence: KNOWN
   rung_bytes_known: [ESTOP, RIN, ROUT, LC, NOP]
   rung_bytes:
@@ -2069,6 +2088,11 @@ udt_definition:
   # chars) so including them would be a large change; the member-COUNT arm
   # (udtmn_bool_l07_b{01,02,04,08,16}) is where that shows and it does not come
   # out flat either way -- see OQ-UDTMEMBERNAME.
+  #
+  # REOPENED 2026-10-19 (OQ-UDTMEMBERNAME): re-priced live, the four-DINT length sweep
+  # reads -16 / -8 / -16 / -16 (not flat) and the safety rounds' short-named UDTs read a
+  # pool of 0 where this charges 16 and 32. The base, per-member and name terms are
+  # unaffected; the pool's form is the open part. MEMORY_MODEL.md, "Member names".
   member_name_pool_alignment_bytes: 8
   member_name_pool_per_name_bytes: 1
   confidence: KNOWN

@@ -66,7 +66,37 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0x. Safety round 4 — 32 BUILT 2026-10-18 (items 2 and 4–8); items 1 and 3 wait (OQ-SAFETYPARTITION)
+### 0y. Round 5 — SPEC ONLY, not generated; approval needed (OQ-SAFETYPARTITION, OQ-UDTMEMBERNAME, OQ-REALUNDER)
+
+What round 4 left open that a generated file can answer, plus the two standard-engine
+terms its twins exposed. Same platform and plant as rounds 2 to 4 unless stated: the
+safety files 1756-L81ES v35 on the plant, the standard files 1756-L81E v35 on the plant.
+Every file differences against an existing capture or a control in its own family.
+
+| # | files | varies | held fixed | discriminates | against |
+|---|---|---|---|---|---|
+| 0 | `safe_aoi_call_60` (built, converted 2026-10-19, **no capture row**) | — | — | the safety AOI call law at a third count | `safe_aoi_inst_prog60` |
+| 1 | `safe_lg_ctl2` (the program pool plus 20 scalar safety DINTs `LgSc00..19`), `safe_lg_movsc_20` (`MOV(LgSc{i},LgDb[{i}])`), `safe_lgc_movsc_20` (the same on 20 controller-scope scalar safety DINTs, with `safe_lgc_ctl2`) — 4 files | a scalar word operand in a safety routine | the round-3 pools and rung shape | 4 (as priced) or 8 (as in standard logic) for a scalar word operand in the safety partition | each its own `_ctl2` |
+| 2 | `safe_sref3_ctl` (50 controller safety TIMERs `SRefT000..049`, a standard DINT[64]), `safe_sref3_acc_50` (`MOV(SRefT{i}.ACC,StdD[{i}])`) — 2 files | a member of a scalar safety structure read by standard logic | `safe_sref2_*`'s shape | 4 or 8 for a member operand, beside a bare scalar's 8 | `safe_sref3_ctl` |
+| 3 | `udtpool_dint_n4_len{01,02,03,04,08,12}`, `udtpool_dint_n8_len{01,02,04,12}`, `udtpool_bool_n4_len{01,02,03,04,08,12}` — 16 files, one UDT definition each, no tags | member type, count and name length | the plant; an 8-character UDT name | the pool's form: `+1` a name (BOOL arm) or `len − 2` (DINT arm, safety UDTs), and whether a BOOL run carries its own term | `realism_base_f25` |
+| 4 | `arrtag_dint64_len{04,08,12}`, `arrtag_dint{1,1000}_len08`, `arrtag_dint64x10_len08`, `arrtag_bool64_len08`, `arrtag_real64_len08` — 8 files, standard array tags | name length, dimension, type, count | the plant | whether +4 a standard array tag is per array, per name bucket, per size or per type | `realism_base_f25` |
+
+30 new files and one recapture. Not here: safety I/O (Studio seeds, TASKS 0x item 1);
+the signature and the lock (the Studio-made variant of `safe_n00` in 0x).
+
+### 0x. Safety round 4 — DONE: 31 of 32 captured, wired 2026-10-19 (OQ-SAFETYPARTITION)
+
+**Result:** zero errors, safety exact on all 28 safety files before any change. Tag
+mapping costs nothing (0 to 200 pairs, both partitions); AOI instances at 5 / 60 and
+calls at 5, the AOI parameter / local / rung variants, routine names to 40 characters and
+ATAN2 / COP / FLL at 100 all exact; the safety base and content step identical on
+5069-L330ERMS2 / L320ERMS2 v35 and 1756-L81ES v32 / v34. Wired: the 5069 safety shell
+charged once (it was charged twice, 296 high, on every 5069 safety file with a safety
+task, the real ones included), and a scalar safety DINT read by standard logic at 8. The
+twins show the −16 / −32 UDT and +4 array residuals are the standard engine's, not
+safety's (OQ-UDTMEMBERNAME reopened; OQ-REALUNDER). `safe_aoi_call_60` converted but has
+no capture row (0y item 0).
+
 
 **Built, asked for directly:** `gen_safety_round4.py`, 32 files in `samples/generated/safety/`,
 lint clean, on the plant, each differenced in `safety_eval.py` (round 4): tag mapping at
@@ -94,7 +124,7 @@ precedent. Open the captured `safe_n00` in Logix Designer, read Capacity; genera
 safety signature, read Capacity; safety-lock, read Capacity; export after each step.
 Three readings difference the signature and the lock directly.
 
-Rounds 1 to 3 are wired and exact on all 271 captures.
+Rounds 1 to 4 are wired; safety exact on all 299 captured safety files.
 
 **Safety I/O reference (asked for 2026-10-18):** the real safety programs in
 `samples/local/` hold most of item 1's families (1734 IB8S/OB8S in 10 programs, Kinetix

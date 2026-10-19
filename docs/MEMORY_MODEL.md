@@ -189,7 +189,18 @@ understood, and irrelevant at real-program scale.
 > failure mode in this project: two terms that each fit perfectly in isolation
 > and are wrong together.**
 
-### Member names — KNOWN
+### Member names — wired, REOPENED (OQ-UDTMEMBERNAME)
+
+**Re-priced live on 2026-10-19 the law does not fit its own sweeps.** The four-BOOL
+length sweep reads a flat −8 at every length, but the four-DINT one reads −16, −8, −16,
+−16 at lengths 2, 7, 16 and 32 (not flat), the nested-UDT pair −32 / −32, the BOOL
+member-count arm +8, 0, −8, −24, −48 at 1, 2, 4, 8, 16 BOOLs, and the two safety-round
+UDTs (members `D, R, B1, B2` and `D0`..`D9`) read 16 and 32 below the engine on a
+safety controller and on its 1756-L81E twin alike: their pool reads 0. One candidate,
+`8 × ceil(Σ max(0, len − 2) / 8)` (names of up to 2 characters free), fits the DINT arm
+and both safety UDTs exactly and misses the BOOL arm by 8. Not wired: the seventeen
+real programs are the test of any change here, and the BOOL / DINT disagreement says
+the form is not yet known. As wired:
 
 **A UDT definition's declared members' own names cost an 8-aligned pool**, the
 same law an AOI definition's members follow:
@@ -659,8 +670,12 @@ eventually prices that content.
 ### Safety-capable baseline delta — FITTED
 
 **+296** when `ProcessorType` ends in `S2` or `S3` (the 5069 Motion+Safety
-catalog suffix), independent of whether the file contains any real safety
-content.
+catalog suffix) **and the file carries no safety task**. It is the safety
+task/program shell (the same 296 the engine charges per safety task): the
+firmware-matrix 5069 safety files carried no safety task, and Studio creates one on
+import. A file with its own safety task pays the shell once, through
+`safety_task_program_shell`; until 2026-10-19 the 5069 also paid this delta on top,
+296 too high (round 4's 5069 bases; OQ-SAFETYPARTITION).
 
 ### What is genuinely unconfirmed
 
@@ -677,10 +692,11 @@ content.
 Accuracy is measured on standard processors only; safety-processor rows are excluded
 from every accuracy figure (`quick_eval.py`). A safety controller keeps safety tags and
 safety logic in its own partition, read on the Capacity tab as **safety used memory**
-beside the standard figure. Measured on 271 `safe_*` files in three rounds (1756-L81ES,
-v35, 2026-10-18; zero build errors, both readings on every row), each sweep differenced
-against its own control. **The engine reproduces the safety reading of all 271 to the
-byte**, and the standard reading of 249 to the byte (the rest within 32 bytes; below).
+beside the standard figure. Measured on 299 `safe_*` files in four rounds (1756-L81ES
+v35, and round 4's bases on 5069-L330ERMS2 / L320ERMS2 v35 and 1756-L81ES v32 / v34;
+2026-10-18 and -19; zero build errors, both readings on every row), each sweep
+differenced against its own control. **The engine reproduces the safety reading of all
+299 to the byte**; the standard reading's residuals are below.
 
 **A safety tag is a name entry plus a data block.**
 
@@ -704,11 +720,18 @@ safety-instruction structures and ten array shapes (`DINT[2]` … `DINT[4,4]`,
 **definition** costs standard memory only.
 
 **Shells.** The base, 1,394, is File > New's SafetyTask/SafetyProgram/MainRoutine with
-no rungs (v34 and v35 alike). Each further safety routine costs **264 + 8 × floor(len /
-8)** of its name (8-character names 272, 6- and 7-character 264), called or not. Each
-further safety program costs **404** in safety, plus its routines, and **64 + the
-program-name law** in standard memory; its name costs nothing in safety. The standard
-296 safety task/program shell stays.
+no rungs: the same at v34 and v35, and on 5069-L330ERMS2 and L320ERMS2 v35 and 1756-L81ES
+v32 (1,410 with the NOP rung on every platform, and one content step of 50 safety DINTs
+and 10 RIN rungs +6,544 safety and +3,200 standard on every one). Each further safety
+routine costs **264 + 8 × floor(len / 8)** of its name (names of 8 to 15 characters 272,
+16 to 23 280, 24 to 31 288, 40 296; 6 and 7 characters 264), called or not. Each further
+safety program costs **404** in safety, plus its routines, and **64 + the program-name
+law** in standard memory; its name costs nothing in safety. The standard side's 296
+safety task/program shell is charged once per safety task in the file. A safety
+controller whose file carries no safety task pays the same 296 as
+`safety_capable_baseline_delta` (Studio creates the shell on import; the firmware-matrix
+5069 S2/S3 files), and a file with its own safety task does not pay it again: the 5069
+bases read 296 below the engine until that double charge was removed.
 
 **Safety-routine logic costs nothing in standard memory.** In the safety partition:
 
@@ -723,7 +746,7 @@ program-name law** in standard memory; its name costs nothing in safety. The sta
   math, move, timer, counter, one-shot, MCR, JMP/LBL, literal, mixed-type, indexed,
   member, scalar, controller-scope, series, branch, two-output and seal-in shape, at 20
   and 100 rungs). ATAN2 (no standard weight), COP and FLL carry a measured correction
-  (+64, +4, −4), one count each;
+  (+64, +4, −4), exact at 20 and 100 rungs;
 - a **JSR** costs 72, its standard weight; the subroutine its shell.
 
 | safety instruction | bytes / rung | | safety instruction | bytes / rung |
@@ -749,21 +772,38 @@ program-name law** in standard memory; its name costs nothing in safety. The sta
 **Safety AOIs** (`Class="Safety"`). The total is what the engine prices for the same
 AOI as a standard one; the split is its logic and **800** of its definition in safety,
 the rest of the definition standard (definition alone: 1,228 against 1,236; with ten
-internal rungs and nine locals: 1,560 to the byte). A call in a safety routine costs its
-standard call cost plus **44**, and a file whose safety routines call an AOI the
-standard one-time 264 (one count: FITTED). A safety AOI exported encoded (sealed, safety-locked) is priced
-from its visible parameters, its logic at a minimum, and the engine says so.
+internal rungs and nine locals: 1,560 to the byte). Parameters and locals move only the
+standard share: 3/3 and 6/6 BOOL parameters and 9 locals leave the safety reading at
+the 1/1 definition's 2,230, and each internal rung adds its logic (10 rungs: +180). A
+call in a safety routine costs its standard call cost plus **44**, and a file whose
+safety routines call an AOI the standard one-time 264 (exact at 5 and 20 calls;
+instances at 5, 20 and 60). A safety AOI exported encoded (sealed, safety-locked) is
+priced from its visible parameters, its logic at a minimum, and the engine says so.
+
+**Safety tag mapping** (`SafetyTagMap`, standard -> safety pairs) costs nothing in either
+partition: 0, 1, 10, 50 and 200 DINT pairs over the same 200 + 200 tags all read 872,680
+standard and 7,810 safety.
 
 **Standard logic reading a safety tag** pays its standard cost plus **8 per safety
-bit-instruction operand** and **4 per other safety operand** (XIC+OTE at 10/50/200, two
-safety XICs, a scalar, MOV from a safety DINT array, each against its all-standard
-twin). The safety partition does not move with standard content.
+bit-instruction operand**, **8 per operand that names a scalar atomic safety tag alone**
+(`MOV(SafeDint,…)`; round 4, 50 rungs, and `safe_comp_2`'s twelve), and **4 per other
+safety operand** (an element or member: `MOV(SafeArr[i],…)`) (XIC+OTE at 10/50/200, two
+safety XICs, a scalar BOOL, MOV from a safety DINT array element and from a scalar safety
+DINT, each against its all-standard twin). The safety partition does not move with
+standard content. Inside a safety routine a scalar word operand is unmeasured and stays
+at 4.
 
 **Standard-side residuals still open** (beyond the realism plant's own −1,794, which every
-file shares): a safety AOI's definition −8 (noise floor); +4 per standard array tag in a
-safety project (`safe_ref_ctl`, `safe_sref_*`); UDT definitions −16 and −32; and +52 in
-`safe_comp_2`, consistent with a scalar safety DINT read by a standard MOV costing 8, not
-4. OQ-SAFETYPARTITION, "Still open".
+file shares). Neither of the two larger ones is a safety term: each 1756-L81E twin
+reads the same as its safety file.
+
+| residual | where | status |
+|---|---|---|
+| −8 | a 1/1-parameter safety AOI's definition | noise floor; the 3/3, 6/6 and 9-local ones are exact |
+| +4 per standard array tag | `safe_ref_*`, `safe_sref*`, `safe_comp_2`, and `safetwin_sref_ctl` on a 1756-L81E | standard engine, on the plant (OQ-REALUNDER) |
+| −16 / −32 per UDT definition | `SafeUdtS` (members D, R, B1, B2), `SafeUdtL` (D0..D9), on both controllers | the member-name pool (OQ-UDTMEMBERNAME, reopened) |
+| +16 | 5069-L330ERMS2 v35 base and content step | one catalog; L320ERMS2 exact |
+| +16 | 1756-L81ES v32 base and content step | the known L8x v34/v35 +16 (`processor_firmware_correction`) |
 
 ## Operand shape — measured, free
 

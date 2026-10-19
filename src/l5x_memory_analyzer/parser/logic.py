@@ -431,6 +431,7 @@ def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]
 
 
 _OPERAND_ROOT = re.compile(r"(?<![\w.\]])([A-Za-z_][A-Za-z0-9_]*)(?![\w(])")
+_BARE_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 # Bit instructions: their one operand is a bit reference (OQ-SAFETYPARTITION prices it
 # apart from a word operand).
 BIT_INSTRUCTIONS = frozenset({"XIC", "XIO", "OTE", "OTL", "OTU"})
@@ -439,9 +440,11 @@ BIT_INSTRUCTIONS = frozenset({"XIC", "XIO", "OTE", "OTL", "OTU"})
 def _operand_refs(rung_texts: list[str]) -> tuple[tuple[str, str, str], ...]:
     """(mnemonic, root tag name, kind) for every operand of every instruction call, once per
     occurrence. kind is "index" for a name inside an array subscript, else "bit" for a
-    bit instruction's operand and "word" for any other: 'XIC(B[Idx].Ok)' ->
-    (("XIC", "B", "bit"), ("XIC", "Idx", "index")). Member names are skipped; keyword and
-    label operands come back too, and the sizer keeps only the roots that name a tag."""
+    bit instruction's operand, "bare" for any other operand that is a name alone (no
+    subscript, no member), and "word" for the rest: 'XIC(B[Idx].Ok)' ->
+    (("XIC", "B", "bit"), ("XIC", "Idx", "index")); 'MOV(D,E[1])' -> (("MOV", "D", "bare"),
+    ("MOV", "E", "word")). Member names are skipped; keyword and label operands come back
+    too, and the sizer keeps only the roots that name a tag."""
     refs: list[tuple[str, str, str]] = []
     for text in rung_texts:
         for m in _INSTRUCTION_CALL.finditer(text):
@@ -459,8 +462,10 @@ def _operand_refs(rung_texts: list[str]) -> tuple[tuple[str, str, str], ...]:
                     elif ch == "]":
                         d -= 1
                     depth[i] = d
+                bare = outer == "word" and _BARE_NAME.fullmatch(arg.strip()) is not None
                 for root in _OPERAND_ROOT.finditer(arg):
-                    refs.append((mnemonic, root.group(1), "index" if depth[root.start()] > 0 else outer))
+                    kind = "index" if depth[root.start()] > 0 else ("bare" if bare else outer)
+                    refs.append((mnemonic, root.group(1), kind))
     return tuple(refs)
 
 

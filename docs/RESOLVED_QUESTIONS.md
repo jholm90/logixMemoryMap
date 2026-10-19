@@ -565,19 +565,11 @@ Arrays are deliberately untouched: padding elements instead improves the real fi
 more and destroys the tags category, so that gain is absorbing some other missing
 term.
 
-## OQ-UDTMEMBERNAME — do UDT member names cost anything
+## OQ-UDTMEMBERNAME — REOPENED 2026-10-19, now OPEN_QUESTIONS section 5
 
-**SOLVED, and it was the largest single real-file gain in the project.** They cost an
-8-aligned pool: `8 × ceil(Σ(len + 1) / 8)`. They were charged **nothing**.
-
-**A raw one-byte-per-character rate fits five of seven measured points and misses
-two.** That pair is the entire discrimination between the two forms — any sweep whose
-name lengths share a residue mod 8 cannot tell them apart, which one follow-up batch
-demonstrated by being unable to.
-
-Cross-checked flat in tag count (so per definition, not per instance), and agreeing
-across member counts and member types. Real UDT member names average about 12
-characters and a real program carries on the order of 174 definitions.
+Solved 2026-09 as an 8-aligned pool, `8 × ceil(Σ(len + 1) / 8)`, the largest single
+real-file gain in the project and still wired. Re-priced live, its own four-DINT sweep
+and two short-named safety UDTs do not fit it; the open part is the pool's form.
 
 ## OQ-UDTBOOLMEMBER — superseded by OQ-UDTMEMBERNAME.
 

@@ -123,8 +123,9 @@ ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags 
 logic in a separate memory partition that standard Capacity does not count, so its
 reading is not the quantity the model predicts. **The safety partition is measured and
 wired (OQ-SAFETYPARTITION, 2026-10-18):** the capture tooling records it as `safety_bytes`,
-`sizing/safety.py` prices it as its own figure, exact on all 271 captured `safe_*` files;
-safety I/O, tag mapping and signature/locking are not yet measured. The `safe_*`
+`sizing/safety.py` prices it as its own figure, exact on all 299 captured safety files
+(1756-L81ES v32/v34/v35, 5069-L330ERMS2/L320ERMS2 v35); tag mapping is measured free;
+safety I/O and signature/locking are not yet measured. The `safe_*`
 batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart controller
 prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
 gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and
