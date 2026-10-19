@@ -84,6 +84,7 @@ DRIVE_CHANNELS: dict[str, tuple[frozenset[str], int]] = {
     '2198-D032-ERS3': (frozenset({'Ch1', 'Ch3'}), 2),
     '2198-D057-ERS3': (frozenset({'Ch1', 'Ch3', 'Ch4'}), 3),
     '2198-H008-ERS': (frozenset({'Ch1'}), 1),
+    '2198-H008-ERS2': (frozenset({'Ch1'}), 1),
     '2198-P031': (frozenset({'Ch1'}), 1),
     '2198-P070': (frozenset({'Ch1'}), 1),
     '2198-P141': (frozenset({'Ch1'}), 1),

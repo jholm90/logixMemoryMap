@@ -1446,6 +1446,10 @@ def _aoi_array_param_usage_findings(root: ET.Element) -> list[LintFinding]:
 # ---------------------------------------------------------------------------
 _KINETIX_SUPPLY = re.compile(r"^2198-(P\d+|RP\d+)")
 _KINETIX_DRIVE = re.compile(r"^2198-(?:[DSH]\d+|C\d+)")
+# The drives that hang on a Kinetix 5700 DC bus and so need its supply and converter axis.
+# A 2198-H (Kinetix 5300) takes its own AC input: all 9 real 2198-H008-ERS2 sit in projects
+# with no 2198 supply, and every one compiled.
+_KINETIX_BUS_DRIVE = re.compile(r"^2198-(?:[DS]\d+|C\d+)")
 
 
 def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
@@ -1463,7 +1467,7 @@ def _kinetix_bus_supply_findings(root: ET.Element) -> list[LintFinding]:
     real representation first and is deliberately not guessed at here.
     """
     catalogs = [m.get("CatalogNumber") or "" for m in root.iter("Module")]
-    drives = [c for c in catalogs if _KINETIX_DRIVE.match(c) and not _KINETIX_SUPPLY.match(c)]
+    drives = [c for c in catalogs if _KINETIX_BUS_DRIVE.match(c) and not _KINETIX_SUPPLY.match(c)]
     if not drives:
         return []
     if any(_KINETIX_SUPPLY.match(c) for c in catalogs):
@@ -1504,7 +1508,7 @@ def _kinetix_converter_axis_findings(root: ET.Element) -> list[LintFinding]:
         return []
     drives = sorted({
         c for m in root.iter("Module")
-        if _KINETIX_DRIVE.match(c := m.get("CatalogNumber") or "")
+        if _KINETIX_BUS_DRIVE.match(c := m.get("CatalogNumber") or "")
         and not _KINETIX_SUPPLY.match(c)
     })
     if not drives:

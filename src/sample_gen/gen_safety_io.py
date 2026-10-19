@@ -130,6 +130,13 @@ def with_modules(l5x: str, modules: list[str]) -> str:
     return l5x.replace("</Modules>", "\n".join(modules) + "\n</Modules>", 1) if modules else l5x
 
 
+def with_tags(l5x: str, tags: list[str]) -> str:
+    """Controller-scope tags, appended to the controller's own Tags."""
+    i = l5x.index("<Programs>")
+    j = l5x.rindex("</Tags>", 0, i)
+    return l5x[:j] + "\n".join(tags) + "\n" + l5x[j:]
+
+
 def local_snn(l5x: str, port: str) -> str:
     local = re.search(r'<Module Name="Local".*?</Module>', l5x, re.S).group(0)
     return re.search(rf'<Port Id="{port}"[^>]*SafetyNetwork="([^"]+)"', local).group(1)
@@ -205,11 +212,81 @@ def local_plan() -> list[tuple[str, str, dict]]:
     for n in (1, 2, 4):
         files.append((f"safe_iol_bni00hn_{n}", f"{n} Balluff BNI00HN safety blocks on a 5069-L330ERMS2's Ethernet port "
                       "4, against safe_base_5069l330_v35", {"bni": n}))
+    files.append(("safe_iol_1756pair", "one 1756-IB16S/A and one 1756-OBV8S/A in the L81ES local chassis (additivity)",
+                  {"chassis": ["1756ib16s", "1756obv8s"]}))
+    # Kinetix 5700 as every real safety drive is built: on the proven bus (supply, its
+    # converter axis, the motion group), each drive with its servo axes.
+    for catalog, key in KINETIX:
+        slug = catalog.split("-")[1].lower()
+        for n in (1, 2):
+            files.append((f"safe_iol_kx_{slug}_std_{n}", f"{n} {catalog} without safety and their axes on the proven "
+                          "2198-P208 bus, L81ES plant: the control", {"kinetix": catalog, "drives": n, "safety": False}))
+            files.append((f"safe_iol_kx_{slug}_saf_{n}", f"the same {n} {catalog} with integrated safety",
+                          {"kinetix": catalog, "drives": n, "safety": True}))
+    for n in (1, 2):
+        files.append((f"safe_iol_h008s_{n}", f"{n} 2198-H008-ERS2 (Kinetix 5300, safety) with its axis on a "
+                      "5069-L330ERMS2's port 4, against safe_base_5069l330_v35", {"h008": n}))
+        files.append((f"safe_iol_pf527_{n}", f"{n} PowerFlex 527-STO CIP Safety with its axis and a motion group on the "
+                      "L81ES plant, against safe_n00", {"pf527": n}))
     return [(sid, f"{OQ}: {desc}", kw) for sid, desc, kw in files]
 
 
+# (catalog, safety template): the integrated-safety drives of the real programs.
+KINETIX = (("2198-D012-ERS3", "2198d012s"), ("2198-D020-ERS3", "2198d020s"), ("2198-D032-ERS3", "2198d032s"),
+           ("2198-D057-ERS3", "2198d057s"), ("2198-S086-ERS3", "2198s086s"))
+# Servo axes a drive carries, as real programs carry them (the dual-axis drives 2, S086 1).
+AXIS_CHANNELS = {"2198-D012-ERS3": ("Ch1", "Ch3"), "2198-D020-ERS3": ("Ch1", "Ch3"), "2198-D032-ERS3": ("Ch1", "Ch3"),
+                 "2198-D057-ERS3": ("Ch1", "Ch3"), "2198-S086-ERS3": ("Ch1",)}
+MOTION_GROUP = "Motion"
+
+
+def local_axis(key: str, name: str, module: str, axis_id: int) -> str:
+    out = json.loads(LOCAL_BLOCKS.read_text(encoding="utf-8"))[key]
+    for token, value in (("{NAME}", name), ("{GROUP}", MOTION_GROUP), ("{MODULE}", module), ("{AXISID}", str(axis_id))):
+        assert out.count(token) == 1, (key, token)
+        out = out.replace(token, value)
+    return out
+
+
+def _motion_rpi(block: str) -> str:
+    """A drive's MotionSync connection at the motion group's coarse update (2000 us), as the
+    proven drive and motion group carry it."""
+    return re.sub(r'(<Connection Name="[^"]*" RPI=")\d+(" Type="MotionSync")', r"\g<1>2000\g<2>", block)
+
+
 def local_make(sample_id: str, kw: dict) -> str:
-    from sample_gen.gen_module_motion import _drive_module_xml, bus_supply_with_converter
+    from sample_gen.gen_module_motion import _MOTION_GROUP_TAG_XML, _axis_tag, _drive_module_xml, bus_supply_with_converter
+    if "h008" in kw:
+        name = "SafeBase" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
+        l5x = R4.build_base(name, "5069-L330ERMS2", "35", "35.05", content=False)
+        snn = local_snn(l5x, "4")
+        drives = [_motion_rpi(local_block("2198h008s", f"Drv{i + 1}", "Local", "4", f"192.168.1.{20 + i}", snn))
+                  for i in range(kw["h008"])]
+        axes = [_MOTION_GROUP_TAG_XML] + [local_axis("axis_h008", f"Drv{i + 1}_Axis", f"Drv{i + 1}:Ch1", 700000001 + i)
+                                          for i in range(kw["h008"])]
+        return with_tags(with_modules(l5x, drives), axes)
+    if "pf527" in kw:
+        l5x = R.build(sample_id)
+        snn = local_snn(l5x, "2")
+        drives = [_motion_rpi(local_block("pf527s", f"Vfd{i + 1}", "Local", "2", f"192.168.1.{30 + i}", snn))
+                  for i in range(kw["pf527"])]
+        axes = [_MOTION_GROUP_TAG_XML] + [local_axis("axis_pf527", f"Vfd{i + 1}_Axis", f"Vfd{i + 1}:Ch1", 700000101 + i)
+                                          for i in range(kw["pf527"])]
+        return with_tags(with_modules(l5x, drives), axes)
+    if "kinetix" in kw:
+        catalog = kw["kinetix"]
+        key = dict(KINETIX)[catalog]
+        l5x = R.build(sample_id)
+        snn = local_snn(l5x, "2")
+        supply, converter = bus_supply_with_converter(name="Bus_Supply", address="192.168.1.10",
+                                                      axis_name="Bus_Converter_Axis")
+        modules, axes = [supply], [_MOTION_GROUP_TAG_XML, converter]
+        for i in range(kw["drives"]):
+            name, address = f"Drv{i + 1}", f"192.168.1.{20 + i}"
+            modules.append(_motion_rpi(local_block(key, name, "Local", "2", address, snn)) if kw["safety"]
+                           else _drive_module_xml(name, catalog, "false", address=address))
+            axes += [_axis_tag(f"{name}_{ch}_Axis", f"{name}:{ch}") for ch in AXIS_CHANNELS[catalog]]
+        return with_tags(with_modules(l5x, modules), axes)
     if "bni" in kw:
         name = "SafeBase" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
         l5x = R4.build_base(name, "5069-L330ERMS2", "35", "35.05", content=False)
