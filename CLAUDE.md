@@ -396,6 +396,11 @@ waits.
 - **No proprietary or production L5X files are ever committed.** `samples/` holds
   synthetic and generated test files only; real exports stay in the gitignored
   `samples/local/`.
+- **Exception, owner's decision 2026-10-19:** the safety I/O test files built by
+  `gen_safety_io.py --local` (device templates taken from real exports with every name,
+  address, safety network number, description and comment replaced) go through the
+  repository under `samples/generated/safety/` so the capture tooling reads them; once
+  captured they are removed from the repository and its history.
 - **Confidential files move over chat, never through the repository.** A real
   export, a variant of one, or anything else derived from customer content is sent
   and received in conversation and written to `samples/local/`. It is never
