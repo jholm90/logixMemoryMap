@@ -261,6 +261,12 @@ Only then ask about pushing.
 
 ## Generated L5X files are deleted once their batch is written up
 
+**Suspended for the safety phase until 2026-11-02 (owner's decision, 2026-10-19):**
+`samples/generated/safety/` is kept on disk, written up or not; no clean-up step and no
+storage concern for safety files. Safety work runs the scoped checks only (the safety
+tests, `safety_eval.py`, the test file a change touches); the full suite once before a
+push, not after every step.
+
 A batch's `.L5X` files exist to be captured. Once the batch is reconciled, flagged,
 wired and written up (the sequence above), **its L5X files are deleted from
 `samples/generated/`**: every number they produced stays in `samples/manifest.csv` and
