@@ -26,7 +26,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-REALUNDER** | **0.97% mean, 2.57% worst, 10/17 inside 1%, 15/17 inside 2%** after the 2026-10-03 batch (InOut operands in AOI logic, AOI REAL arguments, AOI scan-mode routines, nested AOI calls, the motion literal law). Mean under 1% for the first time; the stopping rule still fails on the max (export 27 2.57%, export 16 2.23%). Every real program but one still under-predicts (sum-weighted +0.95%). Checkpoint of the 0.58% state: tag `checkpoint-2026-09-25-pre-series-law` (commit `172f581`). |
 | **OQ-AOIBOOLINST** | `aoiint_n00` over-predicts by 12,198 before any logic: its AOI carries 55 BOOL members and 50 instances (engine 320 per instance). 672 real instances carry 40–47 BOOL members. Spec in TASKS 0p; not built. |
 | **OQ-SERIESREAL** | **WIRED (option A).** −12 per extra writing instruction in a rung (OTE/OTL/OTU, word-destination writers, TON), exact in all 38 isolating files. Kept open only as the record of why the headline rose; closes once OQ-REALUNDER finds what it was cancelling. |
-| **OQ-SAFETYPARTITION** | Opened 2026-10-17. **302 files captured in four rounds, zero errors; the laws are wired** (MEMORY_MODEL, "Safety memory is a separate partition"): safety exact on all 299 safety files, on 1756-L81ES v32/v34/v35 and 5069-L330ERMS2/L320ERMS2 v35; tag mapping measured at zero. Open: safety I/O (in every real safety program), the signature and the lock (a Studio-made variant), `safe_aoi_call_60` (converted, not captured); 17 real safety programs predicted blind (below). Moves **no** standard-processor figure: safety processors are excluded from accuracy. |
+| **OQ-SAFETYPARTITION** | Opened 2026-10-17. **302 files captured in four rounds, zero errors; the laws are wired** (MEMORY_MODEL, "Safety memory is a separate partition"): safety exact on all 299 safety files, on 1756-L81ES v32/v34/v35 and 5069-L330ERMS2/L320ERMS2 v35; tag mapping measured at zero. Open: safety I/O (in every real safety program), the signature and the lock (a Studio-made variant), `safe_aoi_call_60` (converted, not captured); 17 real safety programs predicted blind and read 2026-10-19 (below): standard mean 2.20%, worst −3.71% on ten (RS-01, unsized SFC/FBD, −8.89%); safety 18 to 66% low, all of it safety I/O. Moves **no** standard-processor figure: safety processors are excluded from accuracy. |
 | **OQ-UDTMEMBERNAME** | **Reopened 2026-10-19.** Re-priced live, the member-name pool does not fit its own four-DINT length sweep (−16 / −8 / −16 / −16) or the safety rounds' short-named UDTs (pool 0 where 16 and 32 are charged, on a 1756-L81E twin too). A candidate fits those and misses the BOOL arm by 8. Section 5. |
 
 ---
@@ -308,6 +308,35 @@ Seventeen real safety programs, predicted on both partitions by the engine of 20
 | RS-14 | `4f6521c6d420` | 1769-L30ERMS v32.13 | 656,281 | 15,802 | 4 | 0 | yes / yes | dead architecture; v32 (base measured at v34/v35) |
 | RS-15 | `96dde6b4e9fe` | 1769-L33ERMS v30.14 | 753,452 | 16,858 | 6 | 0 | yes / yes | dead architecture; v30 (base measured at v34/v35) |
 | RS-16 | `5b9bf99acaf1` | 1769-L33ERMS v32.13 | 852,085 | 12,390 | 6 | 0 | no / no | dead architecture; v32 (base measured at v34/v35) |
+
+### Readings, 2026-10-19 — the blind test scored
+
+Capacity read on 16 of the 17 (RS-16 not read). Prediction minus reading, as a share of the reading.
+
+| label | standard read | standard error | safety read | safety error | safety gap (read − predicted) |
+|---|---:|---:|---:|---:|---:|
+| RS-01 | 2,007,604 | −8.89% | 83,129 | −52.6% | 43,691 |
+| RS-02 | 1,510,245 | −2.03% | 124,952 | −64.5% | 80,634 |
+| RS-03 | 2,819,627 | −0.35% | 197,262 | −66.0% | 130,176 |
+| RS-04 | 511,973 | −2.94% | 26,858 | −43.0% | 11,536 |
+| RS-05 | 1,279,555 | −3.53% | 22,987 | −18.4% | 4,241 |
+| RS-06 | 655,664 | +2.78% | 34,288 | −52.2% | 17,906 |
+| RS-07 | 1,074,245 | −0.23% | 34,995 | −53.1% | 18,593 |
+| RS-08 | 1,572,161 | −3.71% | 31,910 | −39.5% | 12,600 |
+| RS-09 | 658,680 | +2.97% | 34,288 | −52.2% | 17,906 |
+| RS-10 | 2,935,942 | −3.09% | 50,058 | −30.9% | 15,448 |
+| RS-17 | 2,817,995 | −0.34% | 197,262 | −65.0% | 128,204 |
+| RS-11 (1769) | 622,636 | −8.14% | 17,656 | −20.1% | 3,546 |
+| RS-12 (1769) | 518,040 | −8.92% | 17,656 | −20.1% | 3,546 |
+| RS-13 (1769) | 624,084 | −8.13% | 17,656 | −20.1% | 3,546 |
+| RS-14 (1769) | 707,484 | −7.24% | 20,548 | −23.1% | 4,746 |
+| RS-15 (1769) | 785,944 | −4.13% | 24,104 | −30.1% | 7,246 |
+
+**Standard figure on 1756 / 5069 safety controllers, blind: mean 2.81%, worst −8.89% (eleven programs); mean 2.20%, worst −3.71% excluding RS-01**, which carries 7 SFC and 2 FBD routines the engine does not size (reported by the engine as unpriced, so its total is a minimum). Nine of the ten others inside 3.6%. The 1769 rows (dead architecture) read −4% to −9% and are not tuned on.
+
+**Safety figure: −18% to −66%, every one low, and the gap is safety I/O.** It scales with the safety module count (about 2 to 3 KB a 1734 / 5069 safety module, about 5 KB a Kinetix safety drive, a 1756 safety module more). A per-family charge fitted on these readings does not hold up: leave-one-out misses run from +34% to −56%, and one constant a module leaves ±30%. So safety I/O is measured from Studio seeds, not fitted (TASKS 0x item 1).
+
+**Signature and lock cost nothing in safety:** RS-03 (signed and locked) and RS-17 (an earlier revision with both removed, its safety AOI in clear text) read the same 197,262. On the standard side RS-03 reads 1,632 more than RS-17 against 1,488 predicted for their content difference, so the signature and the lock together cost at most about 144 standard. RS-06 and RS-09 (the same safety content on 5069-L320ERMS2 and L330ERMS2, v32) read the same 34,288, as predicted (16,382 each).
 
 ---
 

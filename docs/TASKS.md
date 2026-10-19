@@ -66,6 +66,17 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
+### 0z. Real safety programs read 2026-10-19 — safety I/O is now the whole safety gap (OQ-SAFETYPARTITION)
+
+16 of 17 read blind (OPEN_QUESTIONS, "Readings, 2026-10-19"). Standard on 1756 / 5069: mean
+2.20%, worst −3.71% on ten; RS-01 −8.89% from 7 unsized SFC and 2 FBD routines. Safety: 18 to
+66% low on every program, scaling with safety modules; a fitted per-module charge fails
+leave-one-out (to −56%), so the Studio seeds of 0x item 1 are the next safety work, ranked:
+Kinetix 2198 ERS3 drive (in 10 programs, about 5 KB each), 1734 IB8S/OB8S (12 programs), 5069
+IB8S/OBV8S, 1756 IB16S/OBV8S, PowerFlex 527, BNI00HN. The signature and the lock cost 0 safety
+(RS-03 = RS-17), so 0x's Studio-made lock variant drops to a check of the standard side
+(at most about 144). RS-16 still to read.
+
 ### 0y. Round 5 — SPEC ONLY, not generated; approval needed (OQ-SAFETYPARTITION, OQ-UDTMEMBERNAME, OQ-REALUNDER)
 
 What round 4 left open that a generated file can answer, plus the two standard-engine
