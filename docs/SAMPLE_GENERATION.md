@@ -376,13 +376,16 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## To capture: safety pit stop, batch A of 2 — 63 files (TASKS 0zb)
+## To capture: safety pit stop, batch A of 2 — 90 files (TASKS 0zb)
 
 Built 2026-10-20 on the owner's instruction, every file on the realism floor and lint
-clean: `stshape_*` (42, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),
+clean: `stshape_*` (43, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),
 `modrep_*` (15, `gen_module_repeat.py`, 1756-L81E v35: five catalogs at 1 / 2 / 4,
 OQ-MODREPEAT) and `safe_io6_*` (6, `gen_safety_round6.py`, 1756-L81ES v35: 1734-OB8S/A,
-1734-IB8S/B one connection, 442G-MABLB, OQ-SAFETYPARTITION). The roster, what each file
+1734-IB8S/B one connection, 442G-MABLB, OQ-SAFETYPARTITION), `aoibool_*` (22,
+`gen_aoi_bool_instances.py`, 1756-L81E v35: scalar AOI instances with 4 to 65 BOOL bits,
+OQ-AOIBOOLINST) and, local, `safe_iol_gensafe_*` / `safe_iol_fanucs_*` (4, `gen_safety_io.py
+--local`: the two robot safety interfaces). The roster, what each file
 discriminates and against which capture: TASKS 0zb. Round 5's 17 `safe_io_*` are still to
 capture alongside.
 

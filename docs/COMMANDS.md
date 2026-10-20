@@ -281,7 +281,8 @@ file's dates, which changes its hash and queues every captured file for reconver
 
 The standard-figure half of the safety pit stop (TASKS 0zb): `python -m sample_gen.gen_st_shapes
 [PREFIX]` (`stshape_*`, OQ-STSHAPE; a prefix such as `stshape_aoi_` builds only those) and
-`python -m sample_gen.gen_module_repeat` (`modrep_*`, OQ-MODREPEAT).
+`python -m sample_gen.gen_module_repeat` (`modrep_*`, OQ-MODREPEAT) and
+`python -m sample_gen.gen_aoi_bool_instances` (`aoibool_*`, OQ-AOIBOOLINST).
 
 ### `capture_errors.py` — the error gate
 

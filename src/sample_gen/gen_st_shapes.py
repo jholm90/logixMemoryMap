@@ -22,6 +22,7 @@ tags and UDT, so each differences against `stshape_n00` (and the noted sibling):
   stshape_vidx_offset400     `StD[i] := StE[Ix + 1] + 1;`          index expression
   stshape_real400            `StR[i] := StR[i] + 1.5;`             REAL destination, float literal
   stshape_real_member400     `StU[i].R := StU[i].R + 1.5;`         the same through a member path
+  stshape_real_mul400        `StR[i] := StR[i] * 1.5;`             REAL, one multiplicative operator
   stshape_bool_{lit,copy,not,and,cmp}400   BOOL destination: `1`, `StC[i]`, `NOT StC[i]`,
                              `StC[i] AND StF[i]`, `StD[i] > 5`
   stshape_if_*200            200 IF blocks, body `StD[i] := StD[i] + 1;`, conditions: BOOL
@@ -102,6 +103,7 @@ def plan() -> list[tuple[str, list[str], str]]:
         ("vidx_offset400", _assign("StD[{i}] := StE[Ix + 1] + 1;"), "400 assignments, the source indexed by an expression"),
         ("real400", _assign("StR[{i}] := StR[{i}] + 1.5;"), "400 REAL assignments with a float literal"),
         ("real_member400", _assign("StU[{i}].R := StU[{i}].R + 1.5;"), "the same through a REAL UDT member"),
+        ("real_mul400", _assign("StR[{i}] := StR[{i}] * 1.5;"), "400 REAL assignments, one multiplicative operator"),
         ("bool_lit400", _assign("StB[{i}] := 1;"), "400 BOOL destinations from a literal"),
         ("bool_copy400", _assign("StB[{i}] := StC[{i}];"), "400 BOOL destinations from a BOOL"),
         ("bool_not400", _assign("StB[{i}] := NOT StC[{i}];"), "400 BOOL destinations from NOT a BOOL"),

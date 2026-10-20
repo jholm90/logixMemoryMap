@@ -45,9 +45,9 @@ def test_a_real_member_destination_prices_as_real_through_the_scope():
     assert _st_cost("stshape_real_member400", scope=False) != _st_cost("stshape_real400", scope=False)
 
 
-def test_the_batch_is_42_files_and_one_of_each_family_lints_clean():
+def test_the_batch_is_43_files_and_one_of_each_family_lints_clean():
     plan = dict((sid, lines) for sid, lines, _ in S.plan())
-    assert len(plan) == 42
+    assert len(plan) == 43
     for sid in ("stshape_n00", "stshape_vidx_offset400", "stshape_if_nested200", "stshape_aoi_if200"):
         assert not lint_l5x(S.make(sid, plan[sid])), sid
 

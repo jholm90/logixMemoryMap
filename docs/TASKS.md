@@ -66,7 +66,7 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0zb. Safety pit stop, batch A of 2 — 63 files BUILT 2026-10-20, to capture (OQ-STSHAPE, OQ-MODREPEAT, OQ-SAFETYPARTITION)
+### 0zb. Safety pit stop, batch A of 2 — 90 files BUILT 2026-10-20, to capture (OQ-STSHAPE, OQ-MODREPEAT, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
 
 **Owner's direction 2026-10-20:** two further safety test generations and nothing after
 them; the goal is the **standard** figure on programs that carry safety, not safety
@@ -82,14 +82,14 @@ generated now").
 | RS-05 | −3.30% | −42,240 | 576 executable ST lines: −73 a line |
 | RS-08 | −3.42% | −53,725 | 756 executable ST lines: −71 a line |
 | RS-10 | −2.78% | −81,592 | 1,126 executable ST lines: −72 a line |
-| RS-04 | −2.78% | −14,228 | a source-protected AOI of 148,827 encoded characters (a minimum by design), 63 ST lines, 4 safety devices with no standard term |
+| RS-04 | −2.78% | −14,228 | a source-protected AOI of 148,827 encoded characters (a minimum by design), 63 ST lines, 4 safety devices with no standard term. **The owner's unlocked re-export (RS-04u, `8a641c45110c`, the same content with that AOI in clear) prices its 97 rungs at +9,412: −0.94%, −4,816**, about its 63 executable ST lines at the ST rate (assuming the same Capacity reading, which source protection does not change) |
 | RS-09 | +2.52% | +16,590 | repeated 1732E / EX260 at full price each (no repeat cost) |
 | RS-06 | +2.32% | +15,242 | the same program; RS-09 has two more 1732E-IB16M12R/A and reads ~700 a copy above RS-06 where 1,432 is charged |
 | RS-02 | −0.72% | −10,871 | — |
 | RS-03 / RS-17 | +0.41% | +11,433 / +11,577 | — |
 | RS-07 | −0.12% | −1,307 | — |
 
-Mean 1.88%, worst −3.42%. **None of the large residuals is safety content.** The
+Mean 1.88%, worst −3.42%; **1.69%** with RS-04's unlocked re-export in its place. **None of the large residuals is safety content.** The
 three worst share one mechanism at one rate, about 72 bytes per executable ST line, and
 the engine charges about 70 a line there: real ST is written in member paths, tag
 indexes, compound conditions, BOOL destinations and ELSE branches, and the ST law was
@@ -108,19 +108,23 @@ literal. RS-05 / RS-08 / RS-10 moved +1,764 / +4,241 / +7,565.
 
 | files | varies | discriminates | against |
 |---|---|---|---|
-| `stshape_*`, 38 (`gen_st_shapes.py`), 1756-L81E v35 plant, one JSR-called ST routine, the same tags and UDT in each | assignments (400): literal index, UDT member, scalar-UDT member, tag index on source / destination / both, tag index then member, index as a member path, index expression, REAL and REAL member; BOOL destinations (400): literal, BOOL, NOT, AND, comparison; IF (200): BOOL, `> 5`, `= 5`, `>= tag`, AND, AND of three, OR, NOT, range, REAL, members, tag-indexed BOOL, two statements, ELSE, nested; COP (200) literal / tag index; FOR (50) literal bound, tag bound, loop-indexed body; `/* */` comments | each real ST shape's cost per statement | `stshape_n00`; `stshape_assign400` ties to captured `streal_assign400` |
+| `stshape_*`, 39 (`gen_st_shapes.py`), 1756-L81E v35 plant, one JSR-called ST routine, the same tags and UDT in each | assignments (400): literal index, UDT member, scalar-UDT member, tag index on source / destination / both, tag index then member, index as a member path, index expression, REAL, REAL member and REAL multiply (flagged unpriced on RS-04 once members resolve); BOOL destinations (400): literal, BOOL, NOT, AND, comparison; IF (200): BOOL, `> 5`, `= 5`, `>= tag`, AND, AND of three, OR, NOT, range, REAL, members, tag-indexed BOOL, two statements, ELSE, nested; COP (200) literal / tag index; FOR (50) literal bound, tag bound, loop-indexed body; `/* */` comments | each real ST shape's cost per statement | `stshape_n00`; `stshape_assign400` ties to captured `streal_assign400` |
 | `stshape_aoi_*`, 4 | the same in an AOI's own ST Logic: one statement, 400 on locals, 200 IFs, 400 from Input parameters | whether AOI-internal ST costs what program ST does | `stshape_aoi_n00`, then the program twin |
 | `modrep_*`, 15 (`gen_module_repeat.py`), L81E v35 plant | 1732E-IB16M12R/A, 1732E-OB16M12R/A, EX260-SEN1/A, EX260-SEN3/A, PowerFlex 525-EENET at 1 / 2 / 4 | first copy and each further copy (OQ-MODULEMARGINAL's law, for five catalogs measured once) | `realism_base_f25` |
 | `safe_io6_*`, 6 (`gen_safety_round6.py`), L81ES v35 plant | 1734-OB8S/A, 1734-IB8S/B one connection, 442G-MABLB at 1 / 2 | each safety device type in RS-06 / RS-07 / RS-09 not yet built, first and each, both partitions | `safe_n00`; with round 5's 17 still to capture |
+| `aoibool_*`, 22 (`gen_aoi_bool_instances.py`), L81E v35 plant | one AOI with k BOOL locals, k + 4 bits = 4 / 32 / 33 / 59 / 64 / 65, each as the definition alone, 1 and 50 scalar instances; 25 at k = 55; a 50-element array at k = 55; the 55 BOOLs as Input parameters at 1 and 50 | the scalar AOI instance law with many BOOLs (OQ-AOIBOOLINST, added on the owner's instruction 2026-10-20): packing, any slot alignment, and the definition | each other; def against `realism_base_f25` |
+| `safe_iol_gensafe_*`, `safe_iol_fanucs_*`, 4 (`gen_safety_io.py --local`), L81ES v35 plant | the generic Ethernet safety device a real program uses for its robot (RS-04 / RS-07) and the FANUC R30iB Plus (RS-01), at 1 / 2 on the Ethernet port | each robot safety interface, both partitions | `safe_n00` |
 
 Every safety block matches a compiled real shape exactly (OB8S/A 3 real instances,
-IB8S one-connection 6, 442G 1) once completed with its catalog's ExtendedProperties
-(ConfigID 204; Vendor, CatNum, ConfigID 102); all 63 lint clean on the realism floor.
+IB8S one-connection 6, 442G 1, the generic robot interface and the FANUC 1 each) once completed with its catalog's ExtendedProperties
+(ConfigID 204; Vendor, CatNum, ConfigID 102); all 90 lint clean on the realism floor. The robot
+templates come from compiled real exports with every name, address, safety network number,
+description and comment replaced; like round 5's they stay in the git-ignored `samples/local/`
+and the four files are handed over to go into `samples/generated/safety/` (CLAUDE.md exception).
 
 **Deliberately not built, each below the floor or not measurable from a file:** the
 5069 packed safety cards (RS-04 only, three cards on module revision 1 at v31), the
-generic Ethernet safety device (RS-04 and RS-07, one each; no repository block carries
-its safety connections), the FANUC robot and rev-11 STO drive (RS-01 only, not counted),
+rev-11 STO drive (RS-01 only, not counted),
 the SIL3 partner (charged 2,344 flat; at most about 0.1% of RS-03 / RS-17), the
 signature and lock (at most 144), source-protected content (not readable from L5X), and
 SFC / FBD (RS-01, not counted).
@@ -130,6 +134,13 @@ costs what a D020 does at the first copy (round 5: `safe_iol_kx_d012_saf_1` / `_
 errors, both +4,008 against the engine where D020 / D032 / D057 read the plant constant;
 the bare-drive `asmclose_2198_d012_*` points that set the 105 carry no axis, which no real
 program has). Moves RS-02 / RS-03 / RS-17 by +4,008 once each.
+
+OQ-AOIBOOLINST (TASKS 0p item 1, spec since 2026-10-04) is in the batch on the owner's
+instruction: a scalar AOI instance prices each BOOL at 4 bytes where the instance-array
+path packs them (OPEN_QUESTIONS section 3); packing accounts for 10,600 of `aoiint_n00`'s
+12,198 and, unwired, moves RS-06 / RS-09 by −23,248 each and RS-02 / RS-03 / RS-17 by −19,276
+to −27,628 — the same programs the module-repeat term was attributed to, so batch A settles
+which of the two carries RS-06 / RS-09.
 
 **Batch B** is specified only from batch A's readings: what is still outside 1% on the
 ten programs, with a mechanism. Expected if batch A confirms both mechanisms: RS-05 /
@@ -366,7 +377,7 @@ needed first).
    show 1,913 of 2,043 are 1756-L81E at v35, and the other 130 are exactly the platform
    batches (L9/v38 side by side: 74 L81E v38 and 50 L9; five 5069 platform-equivalence
    files; the one L83E Kinetix rack), each identifiable from its window title.
-3. **OQ-AOIBOOLINST**: spec in 0p, waiting on approval to generate.
+3. **OQ-AOIBOOLINST**: built in 0zb (`aoibool_*`, 22 files), 2026-10-20.
 
 Blocked: **OQ-REALUNDER** needs the seventeen real exports back in `samples/local/` (the
 cloud container was reset). The safety-partition estimate and TASKS 2 are DONE (0s).
@@ -461,7 +472,7 @@ as reported in OQ-AOICOMPLEX.
 
 **Next batch — SPEC, not built:**
 
-1. **OQ-AOIBOOLINST (8 files).** Split `aoiint_n00`'s −12,198 between instance data and definition.
+1. **OQ-AOIBOOLINST (8 files) — superseded by TASKS 0zb's 22 `aoibool_*`, built 2026-10-20.** Split `aoiint_n00`'s −12,198 between instance data and definition.
    One AOI with 3 inputs + 1 output and k BOOL locals, k = 0, 16, 32, 55, each at 1 and 50 instances,
    no logic, no axis, realism floor. Instance step (50 − 1) / 49 per k gives the per-instance figure
    against the engine's (320 at k = 55); the 1-instance files give the definition. Differences

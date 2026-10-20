@@ -235,6 +235,15 @@ def local_plan() -> list[tuple[str, str, dict]]:
                           "2198-P208 bus, L81ES plant: the control", {"kinetix": catalog, "drives": n, "safety": False}))
             files.append((f"safe_iol_kx_{slug}_saf_{n}", f"the same {n} {catalog} with integrated safety",
                           {"kinetix": catalog, "drives": n, "safety": True}))
+    # Robots on CIP Safety (round 6, TASKS 0zb): the generic Ethernet safety device a real
+    # program uses for its robot (RS-04, RS-07) and the FANUC R30iB Plus (RS-01), each on the
+    # L81ES Ethernet port, its safety network the port's.
+    for key, what in (("gensafe", "generic Ethernet safety device for a robot (SafetyInput 12 / SafetyOutput 8 / "
+                                  "Standard 32 / 32 bytes)"),
+                      ("fanucs", "FANUC Robot R30iB Plus/A with its safety connections")):
+        for n in (1, 2):
+            files.append((f"safe_iol_{key}_{n}", f"{n} {what} on the L81ES plant's Ethernet port, against safe_n00",
+                          {"robot": key, "count": n}))
     for n in (1, 2):
         files.append((f"safe_iol_h008s_{n}", f"{n} 2198-H008-ERS2 (Kinetix 5300, safety) with its axis on a "
                       "5069-L330ERMS2's port 4, against safe_base_5069l330_v35", {"h008": n}))
@@ -277,6 +286,11 @@ def local_make(sample_id: str, kw: dict) -> str:
         axes = [_MOTION_GROUP_TAG_XML] + [local_axis("axis_h008", f"Drv{i + 1}_Axis", f"Drv{i + 1}:Ch1", 700000001 + i)
                                           for i in range(kw["h008"])]
         return with_tags(with_modules(l5x, drives), axes)
+    if "robot" in kw:
+        l5x = R.build(sample_id)
+        snn = local_snn(l5x, "2")
+        return with_modules(l5x, [local_block(kw["robot"], f"SafeRbt{i + 1}", "Local", "2", f"192.168.1.{80 + i}", snn)
+                                  for i in range(kw["count"])])
     if "pf527" in kw:
         l5x = R.build(sample_id)
         snn = local_snn(l5x, "2")
