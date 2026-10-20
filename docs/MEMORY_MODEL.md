@@ -885,16 +885,18 @@ the L5X states as plainly for them as for anything else.
 
 ### Per-catalog overhead
 
-`module_overhead_by_catalog` holds 51 catalogs, derived by the same subtraction
-method as the predefined structures. Any catalog with no real data falls back to
-the flat `module_overhead` of **1,672** bytes, the mean of the original two
-captured deltas. Both stay estimated tier, not exact.
+`module_overhead_by_catalog` holds 83 catalogs, derived by the same subtraction
+method as the predefined structures. A catalog with no entry and module-defined types is
+priced by the unseen-catalog law below (a base plus its types); one with neither falls
+back to the flat `module_overhead` of **1,672** bytes, the mean of the original two
+captured deltas. All stay estimated tier, not exact.
 
-**2198-series servo drives — KNOWN.** All six `2198-*-ERS3` catalogs cost
-**4,624 bytes for the first drive and 3,640 for each additional one, identical
-across all six**. Measured from 18 clean captures at 1, 2 and 4 modules per
-catalog. Overhead is set to 4,113 for all six (4,624 less their common 511-byte
-declared structure).
+**2198-series servo drives — KNOWN.** The four `2198-D0xx-ERS3` catalogs cost
+**4,624 bytes for the first drive and 3,640 for each additional one**: overhead 4,113
+first, 3,129 after (4,624 / 3,640 less their common 511-byte declared structure). The
+S086 and S130 cost 3,849 / 2,865 overhead. The D012 and S086 were set from round 5's
+with-axis captures (`safe_iol_kx_*`, 2026-10-20) where the bare-drive `asmclose_2198_*`
+points read 105 for the D012: a drive with its axes is the only shape a real program has.
 
 > The per-catalog distinction previously believed to exist between those six was
 > itself an artifact of guessing. The old guesses ran 6,384 bytes high per drive,
@@ -952,6 +954,47 @@ and take the relevant sweep rows from 16 byte-exact to 47.
 > no catalog carrying a measured repeat rate appears under more than one parent.
 > **The scope is undetermined by data** and cannot change a real-file number
 > until a real file splits a catalog across racks. Default `project`.
+
+### A module-defined type is defined once per project — FITTED (OQ-MODREPEAT)
+
+Every module's connection tags carry Rockwell's own data types (`AB:1756_DI:I:0` and the
+structures nested in it), and a project holds each type's definition once. **A module whose
+types an earlier module already defined pays its overhead less those definitions**, each
+priced with the UDT definition law on the members the module's decorated data lists:
+
+    overhead = catalog overhead − Σ definition(t)   over its types already defined
+
+It reproduces every measured repeat discount: 1734-AENT 520 against 488 of definitions,
+1794-AENT 432 / 448, 1756-IB16 792 / 784, 1756-IB32/B 792 / 720, 1756-IB16IF/A 2,208 / 2,312,
+842E-CM-M 1,000 / 1,056, PowerFlex 755-EENET-CM-S 976 / 1,048, the 2198 drives 984 / 1,048,
+440C-CR30 3,768 / 4,008. The same holds across catalogs (a 1756-OA16I after a 1756-OA16
+shares two of its three types) and for any number of copies.
+
+**A type without a vendor prefix is the module's own.** A 5069 Compact I/O card in
+standard data format carries channel types named `CHANNEL_DI:I:0`, `CHANNEL_DO_DIAG:I:0`
+(two colons where `AB:5000_DI16:I:0` has three). Those are not shared: every module that
+carries one defines it again, and a copy an earlier module already defined costs **76**
+more on top. Measured on the 34 `rack_5069_*` captures (one to twelve cards a rack, ten
+racks with 64 cards in one file): with the prefixed types shared and the channel types
+paid by each card, a joint fit of the adapter, the 76 and each catalog's first copy
+leaves **rms 17, max 41 bytes**; sharing the channel types too leaves the ten-rack file
+29,422 under.
+
+**An unseen catalog** (no entry of its own, no family) is a base plus the definitions of
+its types not yet defined in the project: **1,064** for a module with one connection or
+none, **2,579** for two or more (the medians of first-copy overhead less type definitions
+over 45 and 20 measured catalogs), in place of the flat 1,672. Tested blind on nine 5069
+catalogs before their single-card captures were wired: eight within −247 to +329, six
+within ±85; the 5069-HSC2XOB4/A at +1,571. ASSUMED.
+
+Not applied: an EDS-profile type (vendor-prefixed name `_0142:...`; an AL1222's second
+copy measured its first copy's full cost), a CIP Safety device (priced by its measured
+safety_io rows), a rack-aliased card, a module others hang off (an adapter, a bridge), and
+any later copy whose own repeat rate is measured (repeat_bytes, the 2198 families).
+Census over 251 clean module captures: total |error| 214,854 → 131,710 (every 5069 rack
+within ±0.35%), 117 → 128 inside ±8, nothing outside the 5069 racks moved by the
+module-scoped rule. Being tested on the realism floor across module
+classes by `modrep_*` (TASKS 0zb).
 
 ### Generic ETHERNET-MODULE connection data — KNOWN
 
@@ -1014,10 +1057,14 @@ this wrong.
 - **Zero-connection modules** (no connection, no stated size). An `ETHERNET-BRIDGE`
   with **no child modules** is an IP-address placeholder and costs its node overhead
   only: **320** (KNOWN — exact at 1, 2, 4, 8 and 10 bridges, inhibited or not;
-  OQ-BRIDGEPH), charged with no notice. Every other zero-connection module — a
+  OQ-BRIDGEPH), charged with no notice. A **5069-AENTR** remote-rack adapter costs
+  **625** whatever it carries (FITTED, the 34 `rack_5069_*` captures) and a **5069-SERIAL/A**
+  367 (its single-card capture less the adapter). Every other zero-connection module — a
   gateway such as a 1756-EN2T, or a bridge with devices beneath it — is charged the
-  flat 2,344 (`zero_connection_module`) with a coverage notice. `Local` is excluded
-  because its overhead is already in the project baseline.
+  flat 2,344 (`zero_connection_module`) with a coverage notice. `rack_1756_n12` to `_n16`,
+  which add a 1756-CNB/D and a 1756-HYD02 to `_n10`, read +2,384 to +3,458 against +504:
+  those modules cost less than the flat rate, by amounts not yet separated. `Local` is
+  excluded because its overhead is already in the project baseline.
 - **Rack-aliased POINT I/O cards** are priced: declared data plus the
   `rack_aliased_module` overhead from the pioconn_* sweep (OQ-POINTIOCONN). They no
   longer raise a notice; the old one said they were uncharged, which had stopped

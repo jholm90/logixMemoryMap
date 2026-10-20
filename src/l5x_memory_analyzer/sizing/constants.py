@@ -1029,6 +1029,49 @@ class ModuleConnectionDataModel:
 
 
 @dataclass(frozen=True)
+class ModuleTypeSharingModel:
+    """A module-defined data type is defined once per project (OQ-MODREPEAT). A module whose
+    connection tags carry a type an earlier module already defined does not pay that type's
+    definition again: its overhead is reduced by the type's definition cost, priced with the
+    UDT definition law. See memory_model.yaml module_type_sharing."""
+    enabled: bool
+    eds_type_pattern: str
+    confidence: str
+    # An UNSEEN catalog's first copy: this base plus the definitions of its types not yet
+    # defined in the project, by how many connections it declares (one or none: an I/O
+    # module; two or more: a motion device, a drive). Medians of first-copy overhead less
+    # type definitions over the measured catalogs.
+    unseen_base_single_bytes: int = 0
+    unseen_base_multi_bytes: int = 0
+    unseen_confidence: str = "ASSUMED"
+    # A type named without a vendor prefix ("CHANNEL_DI:I:0": two colons, where
+    # "AB:5000_DI16:I:0" has three) belongs to the module that carries it: every module
+    # defines it again, and one an earlier module already defined costs
+    # module_scoped_repeat_extra_bytes on top of its definition.
+    module_scoped_type_pattern: str = ""
+    module_scoped_repeat_extra_bytes: int = 0
+
+    def is_module_scoped(self, name: str) -> bool:
+        return bool(self.module_scoped_type_pattern) and re.match(self.module_scoped_type_pattern, name) is not None
+
+    def unseen_base_for(self, connection_count: int) -> int:
+        return self.unseen_base_multi_bytes if connection_count >= 2 else self.unseen_base_single_bytes
+
+    def is_eds(self, defined_types) -> bool:
+        return any(re.match(self.eds_type_pattern, name) for name, _ in defined_types)
+
+    def definition_bytes(self, name: str, members, udt_definition) -> int:
+        runs = 0
+        previous_bool = False
+        for _, data_type in members:
+            is_bool = data_type == "BOOL"
+            if is_bool and not previous_bool:
+                runs += 1
+            previous_bool = is_bool
+        return udt_definition.bytes_for(name, len(members), runs, [n for n, _ in members])
+
+
+@dataclass(frozen=True)
 class ModuleOverheadModel:
     """Real per-catalog module overhead (OQ-MODULEIO, wired) --
     see memory_model.yaml module_overhead_by_catalog for the full
@@ -1071,6 +1114,18 @@ class ModuleOverheadModel:
             if re.match(pattern, catalog):
                 return pattern, discount
         return None
+
+    def is_measured(self, catalog_number: str | None) -> bool:
+        """True when this catalog's first copy is priced from a measurement: its own entry,
+        or a catalog family's unseen-member rate."""
+        catalog = catalog_number or ""
+        return catalog in self.by_catalog or self._family(catalog) is not None
+
+    def has_measured_repeat(self, catalog_number: str | None) -> bool:
+        """True when a later copy of this catalog has its own measured rate (repeat_bytes
+        or a catalog family's discount), which module_type_sharing must not stack on."""
+        catalog = catalog_number or ""
+        return catalog in self.repeat_by_catalog or self._family(catalog) is not None
 
     def occurrence_key(self, catalog_number: str | None,
                        parent_module: str = "") -> tuple[str, str]:
@@ -1495,6 +1550,7 @@ class MemoryModel:
     # flat rate above.
     zero_connection_by_catalog: dict
     module_overhead_by_catalog: ModuleOverheadModel
+    module_type_sharing: ModuleTypeSharingModel
     # OQ-DEFSCALE see memory_model.yaml definition_scale_correction.
     udt_definition_extra: int
     udt_tag_extra: int
@@ -1519,6 +1575,9 @@ class MemoryModel:
     # is how well the sizing constants have been shown to WORK, and it is what
     # the UI reports as confidence instead of a provenance tier.
     instruction_accuracy: dict = field(default_factory=dict)
+    # Catalogs whose zero_connection_by_catalog cost was measured WITH modules beneath
+    # them (a rack adapter), so it applies whether or not the module has children.
+    zero_connection_adapters: frozenset = frozenset()
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -1632,6 +1691,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             catalog: (entry["bytes"], entry["confidence"])
             for catalog, entry in (raw.get("zero_connection_module", {}).get("by_catalog") or {}).items()
         },
+        zero_connection_adapters=frozenset(
+            catalog for catalog, entry in (raw.get("zero_connection_module", {}).get("by_catalog") or {}).items()
+            if entry.get("with_children")),
         module_overhead_confidence=module_overhead["confidence"],
         module_connection_data=ModuleConnectionDataModel(
             word_bytes=raw["module_connection_data"]["word_bytes"],
@@ -1670,6 +1732,16 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
                 for f in raw.get("module_family_repeat", {}).get("families", [])
                 if "unseen_first_bytes" in f
             },
+        ),
+        module_type_sharing=ModuleTypeSharingModel(
+            enabled=raw["module_type_sharing"]["enabled"],
+            eds_type_pattern=raw["module_type_sharing"]["eds_type_pattern"],
+            confidence=raw["module_type_sharing"]["confidence"],
+            unseen_base_single_bytes=raw["module_type_sharing"]["unseen_base_single_bytes"],
+            unseen_base_multi_bytes=raw["module_type_sharing"]["unseen_base_multi_bytes"],
+            unseen_confidence=raw["module_type_sharing"]["unseen_confidence"],
+            module_scoped_type_pattern=raw["module_type_sharing"].get("module_scoped_type_pattern", ""),
+            module_scoped_repeat_extra_bytes=raw["module_type_sharing"].get("module_scoped_repeat_extra_bytes", 0),
         ),
         udt_definition_extra=raw.get("definition_scale_correction", {}).get("udt_definition_extra", 0),
         udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),

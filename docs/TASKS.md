@@ -66,89 +66,123 @@ REAL member/array spelling and AOI surcharges; STRING MOV = DINT MOV; L9 v38 = L
 v38 + 2,276 and v35 → v38 = 0 on all 32 items. Series-output law exact again, still
 unwired (OQ-SERIESREAL).
 
-### 0zb. Safety pit stop, batch A of 2 — 90 files BUILT 2026-10-20, to capture (OQ-STSHAPE, OQ-MODREPEAT, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
+### 0zc. The twelve open items of 2026-10-20 — CLOSED
+
+Listed by the owner 2026-10-20 ("i want all these closed and resolved"); each checked against
+the code and the data, not the earlier notes.
+
+| item | state |
+|---|---|
+| MAH / MSO at 60 a rung | **Wired**: `logic_instructions.weights` MAH 60, MSO 60 (their real two-operand shape). |
+| Rebuild INSTRUCTION_COVERAGE from current real data | **Done** for the real data in this checkout: a section on the ten counted real safety-controller programs (21,539 standard rungs, 136,996 native instructions, one unweighted occurrence, an undeclared AOI). The seventeen standard exports are not in this checkout; their tables stand as last regenerated. |
+| The real alias tag cost, 56 + 8 × floor(len / 8) | **Wired, KNOWN** (`alias_overhead`), the same law as a controller-scope safety tag's standard name entry. |
+| OQ-AXISDEEP's composite case | **Closed without code** (RESOLVED_QUESTIONS): round 5's 24 captured files with 1 to 5 axes each read the plant's own +1,786..+1,794, so every axis tag prices at zero residual. |
+| The per-task overhead finding | **Documented** (MEMORY_MODEL, "Task, program and routine shell — KNOWN"): `task_extra` 700 exact at 2, 3 and 6 tasks; the +24 at four tasks is name rounding (OQ-TASKNAMEROUND); the old −1,472 a task is superseded. |
+| Indirect addressing and cross-program references | **Documented** (MEMORY_MODEL, "Indirect addressing — WIRED", "Cross-program references": −16 a rung a further program, no formula change). |
+| The MAM / MAJ / MAS / MRP build failures | **Flagged** (OPEN_BUILD_ERRORS, "Motion instructions need their full parameter list": MAM 20 operands, MAJ 17, MAS 9, MRP 5; RESOLVED OQ-MAMFAMILY-BUILDFAIL). |
+| A full sweep for unprocessed captures | **Done for everything that can be priced without a full regeneration**: the 497 batch files on disk and the 40 local ones, and the module families regenerated in the scratchpad (251 clean captures, plus 45 composite). It found two: the Kinetix with-axis terms (D012 / S086, wired) and the 34 `rack_5069_*` captures, never re-priced under the module law (wired, OQ-MODREPEAT). The other deleted families need a corpus-wide regeneration, which waits on the owner's approval. |
+| An honest assessment, and commit / push | Below; pushed once the full suite passed. |
+| CROUT as a safety instruction | **Done**: Safety family, 0 standard, its rung priced in the safety partition (492); 43 real uses in the safety routines of the ten counted programs, none in the seventeen standard ones. |
+| MAPC's real use | **126 calls, 0.10% of real instructions**, priced exact. |
+| Twenty more STRING tests | **Built**: `strx_*`, 21 files (OQ-STRSHAPE, TASKS 0zb). |
+
+**The assessment, 2026-10-20.** The standard engine on the seventeen standard-processor
+programs is where it was: mean 0.97%, worst 2.57%, the stopping rule not met on the max, and
+nothing this session could be scored against them (they are not in this checkout). On the ten
+real safety-controller programs the standard figure is mean 1.58%, worst −3.64%; what is left
+is not safety content — about 72 bytes an ST line on three programs, and the module and AOI
+BOOL terms on two — and batch A measures each. The safety figure is still 1.5% to 44% low,
+every gap a device type with a file in batch A or round 5, apart from an encoded safety AOI
+that stays a minimum. Roughly: the measuring is done and the machinery to wire it is built;
+what remains is two captures, their reconciliation, and whatever batch A shows the
+mechanisms named here do not explain. The risk sits in three places: the ST shapes may
+explain only part of the −72 a line; the module law has never been read on the realism
+floor (every round-2 `modrep_*` file is a blind prediction); and packed 5069 cards' type
+sharing is untested until `safe_io6_5069_*` reads.
+
+### 0zb. Safety pit stop, batch A of 2 — 162 files BUILT 2026-10-20, to capture with round 5's 17 (OQ-STSHAPE, OQ-MODREPEAT, OQ-STRSHAPE, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
 
 **Owner's direction 2026-10-20:** two further safety test generations and nothing after
-them; the goal is the **standard** figure on programs that carry safety, not safety
-accuracy. Batch A is everything that figure still needs a measurement for; batch B is only
-the follow-up its results leave. Generated on the owner's instruction ("I want all tests
-generated now").
+them; the goal is the **standard** figure on programs that carry safety, and the safety
+figure within a few percent ("over 10% I'd complain about"). Batch A is everything either
+figure still needs a measurement for; batch B is only the follow-up its readings leave.
+Generated on the owner's instruction ("I want all tests generated now"), and the module
+law made general on the owner's instruction ("the logic needs to be able to handle any
+I/O module used by anyone any number of times").
 
-**Where the standard error on the ten 1756 / 5069 safety programs comes from** (engine of
-2026-10-20, prediction minus reading; RS-01 not counted, RS-11..16 dead architecture):
+**The standard figure on the ten 1756 / 5069 safety programs** (engine of 2026-10-20,
+prediction minus reading; RS-01 not counted, RS-11..16 dead architecture):
 
 | label | error | bytes | what carries it |
 |---|---:|---:|---|
-| RS-05 | −3.30% | −42,240 | 576 executable ST lines: −73 a line |
-| RS-08 | −3.42% | −53,725 | 756 executable ST lines: −71 a line |
-| RS-10 | −2.78% | −81,592 | 1,126 executable ST lines: −72 a line |
-| RS-04 | −2.78% | −14,228 | a source-protected AOI of 148,827 encoded characters (a minimum by design), 63 ST lines, 4 safety devices with no standard term. **The owner's unlocked re-export (RS-04u, `8a641c45110c`, the same content with that AOI in clear) prices its 97 rungs at +9,412: −0.94%, −4,816**, about its 63 executable ST lines at the ST rate (assuming the same Capacity reading, which source protection does not change) |
-| RS-09 | +2.52% | +16,590 | repeated 1732E / EX260 at full price each (no repeat cost) |
-| RS-06 | +2.32% | +15,242 | the same program; RS-09 has two more 1732E-IB16M12R/A and reads ~700 a copy above RS-06 where 1,432 is charged |
-| RS-02 | −0.72% | −10,871 | — |
-| RS-03 / RS-17 | +0.41% | +11,433 / +11,577 | — |
-| RS-07 | −0.12% | −1,307 | — |
+| RS-08 | −3.64% | −57,199 | 756 executable ST lines: about −72 a line (OQ-STSHAPE) |
+| RS-05 | −3.43% | −43,826 | 576 executable ST lines |
+| RS-10 | −3.08% | −90,407 | 1,126 executable ST lines |
+| RS-04u | −0.40% | −2,027 | the owner's unlocked re-export of RS-04, read 510,176 standard / 26,858 safety: 1,797 below the locked file, so source protection costs about that on the standard side. The locked RS-04 reads −2.59% (its protected AOI priced at a minimum) |
+| RS-09 | +1.80% | +11,830 | repeated 1732E / EX260 modules; +2.52% before the module law |
+| RS-06 | +1.78% | +11,650 | the same program on another controller; +2.32% before |
+| RS-02 | −1.19% | −17,975 | four PowerFlex 525 sharing two types under the law (−6,496) and the D012 first-copy correction (+4,008); the encoded AxisSTO safety AOI |
+| RS-03 / RS-17 | +0.23% / +0.24% | +6,577 / +6,721 | — |
+| RS-07 | +0.04% | +461 | — |
 
-Mean 1.88%, worst −3.42%; **1.69%** with RS-04's unlocked re-export in its place. **None of the large residuals is safety content.** The
-three worst share one mechanism at one rate, about 72 bytes per executable ST line, and
-the engine charges about 70 a line there: real ST is written in member paths, tag
-indexes, compound conditions, BOOL destinations and ELSE branches, and the ST law was
-measured on bare tags (OQ-STSHAPE). The seventeen standard programs carry about 1,510
-ST lines in all, which is why it never showed there.
+**Mean 1.58%, worst −3.64%** with RS-04u in RS-04's place (1.80% with the locked file).
+None of the large residuals is safety content. The three worst share one mechanism at one
+rate, about 72 bytes per executable ST line; the ST law was measured on bare tags.
 
-**Engine fixes made with the dive, no constant changed** (all 79 measured ST files
-rebuilt and re-priced: none moved): `/* */` block comments are stripped (they were charged
-as code — a header holding "For" or ":=" read as a FOR block or a statement); ST operand
-types resolve through the routine's own scope (members, program tags, an AOI's parameters,
-as ladder operands already do) and operands are read whole (`StU[i].R` is a REAL, not the
-UDT plus a stray `i` and `R`); a subscript is no longer counted as an operator or a
-literal. RS-05 / RS-08 / RS-10 moved +1,764 / +4,241 / +7,565.
+**Wired with the dive, no new constant beyond those named:** `/* */` comments stripped and
+ST operands read whole through the routine's scope (RS-05 / RS-08 / RS-10 +1,764 / +4,241 /
++7,565; all 79 measured ST files unmoved); the 2198-D012 and -S086 with their axes from round
+5 (D012 105 → 4,113 first copy, S086 3,849 / 2,865 as the S130; RS-02 / RS-03 / RS-17
++4,008 each); the module-type law (OQ-MODREPEAT, MEMORY_MODEL "A module-defined type is
+defined once per project": 251 clean module captures |error| 214,854 → 131,710, the 34
+`rack_5069_*` captures within ±0.35%, the 5069-AENTR 625, nine 5069 catalogs wired from
+their own isolation captures); the SIL3 partner's ConfigID 100 (lint refuses a 1756-L8SP
+without it); lint accepts every 2198 drive Major a real export carries and a 5069 bus at
+its fixed size.
 
-**The roster** (each generator's docstring has the exact statements):
+**The roster** (each generator's docstring has the exact statements and devices):
 
 | files | varies | discriminates | against |
 |---|---|---|---|
-| `stshape_*`, 39 (`gen_st_shapes.py`), 1756-L81E v35 plant, one JSR-called ST routine, the same tags and UDT in each | assignments (400): literal index, UDT member, scalar-UDT member, tag index on source / destination / both, tag index then member, index as a member path, index expression, REAL, REAL member and REAL multiply (flagged unpriced on RS-04 once members resolve); BOOL destinations (400): literal, BOOL, NOT, AND, comparison; IF (200): BOOL, `> 5`, `= 5`, `>= tag`, AND, AND of three, OR, NOT, range, REAL, members, tag-indexed BOOL, two statements, ELSE, nested; COP (200) literal / tag index; FOR (50) literal bound, tag bound, loop-indexed body; `/* */` comments | each real ST shape's cost per statement | `stshape_n00`; `stshape_assign400` ties to captured `streal_assign400` |
-| `stshape_aoi_*`, 4 | the same in an AOI's own ST Logic: one statement, 400 on locals, 200 IFs, 400 from Input parameters | whether AOI-internal ST costs what program ST does | `stshape_aoi_n00`, then the program twin |
-| `modrep_*`, 15 (`gen_module_repeat.py`), L81E v35 plant | 1732E-IB16M12R/A, 1732E-OB16M12R/A, EX260-SEN1/A, EX260-SEN3/A, PowerFlex 525-EENET at 1 / 2 / 4 | first copy and each further copy (OQ-MODULEMARGINAL's law, for five catalogs measured once) | `realism_base_f25` |
-| `safe_io6_*`, 6 (`gen_safety_round6.py`), L81ES v35 plant | 1734-OB8S/A, 1734-IB8S/B one connection, 442G-MABLB at 1 / 2 | each safety device type in RS-06 / RS-07 / RS-09 not yet built, first and each, both partitions | `safe_n00`; with round 5's 17 still to capture |
-| `aoibool_*`, 22 (`gen_aoi_bool_instances.py`), L81E v35 plant | one AOI with k BOOL locals, k + 4 bits = 4 / 32 / 33 / 59 / 64 / 65, each as the definition alone, 1 and 50 scalar instances; 25 at k = 55; a 50-element array at k = 55; the 55 BOOLs as Input parameters at 1 and 50 | the scalar AOI instance law with many BOOLs (OQ-AOIBOOLINST, added on the owner's instruction 2026-10-20): packing, any slot alignment, and the definition | each other; def against `realism_base_f25` |
-| `safe_iol_gensafe_*`, `safe_iol_fanucs_*`, 4 (`gen_safety_io.py --local`), L81ES v35 plant | the generic Ethernet safety device a real program uses for its robot (RS-04 / RS-07) and the FANUC R30iB Plus (RS-01), at 1 / 2 on the Ethernet port | each robot safety interface, both partitions | `safe_n00` |
+| `stshape_*`, 39 (`gen_st_shapes.py`), L81E v35 plant, one JSR-called ST routine | assignments (400): literal index, UDT member, scalar-UDT member, tag index on source / destination / both, tag index then member, index as a member path, index expression, REAL, REAL member, REAL multiply; BOOL destinations (400): literal, BOOL, NOT, AND, comparison; IF (200): BOOL, `> 5`, `= 5`, `>= tag`, AND, AND of three, OR, NOT, range, REAL, members, tag-indexed BOOL, two statements, ELSE, nested; COP (200) literal / tag index; FOR (50) literal bound, tag bound, loop-indexed body; `/* */` comments | each real ST shape's cost per statement | `stshape_n00`; `stshape_assign400` ties to captured `streal_assign400` |
+| `stshape_aoi_*`, 4 | the same in an AOI's own ST Logic | whether AOI-internal ST costs what program ST does | `stshape_aoi_n00`, then the program twin |
+| `modrep_*`, 36 (`gen_module_repeat.py`), L81E v35 plant | round 1: 1732E-IB16M12R/A, 1732E-OB16M12R/A, EX260-SEN1/A, EX260-SEN3/A, PowerFlex 525-EENET at 1 / 2 / 4. Round 2, one class each: 1756-IF8/A and 1756-OF8/B (chassis analog), 843E encoders (prefix-less types on an Ethernet device), PowerFlex 755-EENET at 1 / 2 / 4; 1 / 2 / 4 1734-IE2C/C in a sixth POINT rack; 5069-OB16/B one rack × 1, × 4, four racks × 1; ETHERNET-MODULE one, a second sharing its input type, a second sharing only its configuration type | the module-type law on the floor, every round-2 file a blind prediction | `realism_base_f25` |
+| `strx_*`, 21 (`gen_string_shapes.py`), L81E v35 plant | 400 STRING calls each: EQU on elements / members / behind an index, NEQ, MOV member / behind an index, COP member, CONCAT member / custom-typed, INSERT, MID (and behind an index), DELETE, FIND, DTOS, STOD, RTOS, STOR, UPPER | STRING operands as real programs write them (OQ-STRSHAPE) | `strx_n00` |
+| `aoibool_*`, 22 (`gen_aoi_bool_instances.py`), L81E v35 plant | one AOI with k BOOL locals, k + 4 bits = 4 / 32 / 33 / 59 / 64 / 65, each as the definition alone, 1 and 50 scalar instances; 25 at k = 55; a 50-element array at k = 55; the 55 BOOLs as Input parameters at 1 and 50 | the scalar AOI instance law with many BOOLs (OQ-AOIBOOLINST): packing, slot alignment, the definition | each other; def against `realism_base_f25` |
+| `safe_io6_*`, `safe_sil3_*`, `safe_sil2_*`, `safe_pc6_*`, `safe_base_5069l310_v31*`, 27 (`gen_safety_round6.py`) | 1734-OB8S/A, one-connection IB8S/B, 442G at 1 / 2; SIL3 on the L81ES (with its partner) and the 5069-L320ERMS3, empty / content step / with safety cards; safety produced and consumed tags to a peer; the v31 5069-L310ERS2 base; 1 / 2 standard packed 5069-IB16/A, one OB16/B, two of each on the 5069-L330ERMS2 base | every safety shape of the ten counted programs not yet built, both partitions; the packed 5069 cards' type sharing | `safe_n00`, `safe_base_5069l330_v35`, round 5 |
+| `safe_iol_*`, 13 local (`gen_safety_io.py --local`) | the generic robot safety interface and the FANUC R30iB Plus at 1 / 2; the revision-11 2198-D032 with network STO at 1 / 2 (no axes, `safe_iol_kinsafe_n` with the drive swapped); RS-04's packed 5069 cards at 1 / 2 on the v31 L310ERS2; the Kinetix drive at SIL3 at 1 / 2 and the 1756 safety pair at SIL3 | each remaining real safety device type, both partitions | `safe_n00`, `safe_iol_kinsafe_n`, `safe_base_5069l310_v31`, `safe_sil3_n00` |
 
-Every safety block matches a compiled real shape exactly (OB8S/A 3 real instances,
-IB8S one-connection 6, 442G 1, the generic robot interface and the FANUC 1 each) once completed with its catalog's ExtendedProperties
-(ConfigID 204; Vendor, CatNum, ConfigID 102); all 90 lint clean on the realism floor. The robot
-templates come from compiled real exports with every name, address, safety network number,
-description and comment replaced; like round 5's they stay in the git-ignored `samples/local/`
-and the four files are handed over to go into `samples/generated/safety/` (CLAUDE.md exception).
+Every file lint-clean on its floor; every safety block matches a compiled real shape
+(module-sweep blocks completed with their catalog's ExtendedProperties, or templates from
+compiled real exports with every name, address, safety network number, description and
+comment replaced). The 13 local files stay in the git-ignored `samples/local/safety_io/`
+and are handed over to go into `samples/generated/safety/` (CLAUDE.md exception); the four
+robot files and the last nine were sent 2026-10-20. The revision-11 drive block has no
+zero-error capture behind it (it is the variable); every other Kinetix block in the batch
+matches a captured one, the SIL3 drives differing only in the safety network number.
 
-**Deliberately not built, each below the floor or not measurable from a file:** the
-5069 packed safety cards (RS-04 only, three cards on module revision 1 at v31), the
-rev-11 STO drive (RS-01 only, not counted),
-the SIL3 partner (charged 2,344 flat; at most about 0.1% of RS-03 / RS-17), the
-signature and lock (at most 144), source-protected content (not readable from L5X), and
-SFC / FBD (RS-01, not counted).
-
-**Measured already, wire with batch A's reconciliation:** a 2198-D012-ERS3 with its axes
-costs what a D020 does at the first copy (round 5: `safe_iol_kx_d012_saf_1` / `_2`, zero
-errors, both +4,008 against the engine where D020 / D032 / D057 read the plant constant;
-the bare-drive `asmclose_2198_d012_*` points that set the 105 carry no axis, which no real
-program has). Moves RS-02 / RS-03 / RS-17 by +4,008 once each.
+**Predictions written down before capture** (standard, the engine of 2026-10-20; the
+manifest holds every file's): `realism_base_f25` reads 840,384; `modrep_1756_of8_b`
+847,594 / 848,498 / 850,306 (+904 a further OF8/B, 554 of overhead); `modrep_843e_mipxxbax_a`
+845,241 / 847,888 / 853,182; `modrep_5069_ob16_b_r1x1` 846,715, `_r1x4` 852,355, `_r4x1`
+854,230 (a further rack 625 more than a further card); `modrep_genem_n01` 844,234,
+`_same_in` 845,866, `_diff` 846,178; `safe_io6_5069_mix_2_2` 850,708 against the base's
+842,466.
 
 OQ-AOIBOOLINST (TASKS 0p item 1, spec since 2026-10-04) is in the batch on the owner's
 instruction: a scalar AOI instance prices each BOOL at 4 bytes where the instance-array
 path packs them (OPEN_QUESTIONS section 3); packing accounts for 10,600 of `aoiint_n00`'s
-12,198 and, unwired, moves RS-06 / RS-09 by −23,248 each and RS-02 / RS-03 / RS-17 by −19,276
-to −27,628 — the same programs the module-repeat term was attributed to, so batch A settles
-which of the two carries RS-06 / RS-09.
+12,198 and, unwired, moves RS-06 / RS-09 by −23,248 each and RS-02 / RS-03 / RS-17 by
+−19,276 to −27,628. RS-06 / RS-09 now read +1.78% / +1.80% with the module law, so the
+`aoibool_*` and `modrep_*` readings together settle which term carries them; neither is
+wired further until both are read.
 
 **Batch B** is specified only from batch A's readings: what is still outside 1% on the
-ten programs, with a mechanism. Expected if batch A confirms both mechanisms: RS-05 /
-RS-08 / RS-10 inside about 1%, RS-06 / RS-09 to about +1.3%, mean about 0.9%.
+ten programs, and on the safety figure outside a few percent, with a mechanism.
 
 ### 0za. Safety I/O, round 5 — 40 CAPTURED and WIRED 2026-10-19; 17 (1734 / 5069) to capture (OQ-SAFETYPARTITION)
 
-**Captured and wired:** the 40 `safe_iol_*` files (1756 safety I/O, BNI00HN, Kinetix 5700 / 5300, PowerFlex 527) — safety exact per device by connection type, standard by catalog (MEMORY_MODEL, "Safety I/O"). Real safety programs moved from −18…−66% to −1.5…−44% on the safety figure; every remaining gap names unpriced 1734 cards, which the 17 `safe_io_*` files measure. **Next:** capture those 17; then 1734 variants seen in the real set but not built (`AB:1734_IB8S_Safety4`, `AB:1734_OB8S_Safety1/2/3` beyond the built `/B`), 5069 packed variants (`AB:5000_SDI8_Packed`, `AB:5000_SDO8_Packed`), the rev-11 STO drive (`AB:CIP_Drive_Safety2`), and the standard-engine D012-with-axes term.
+**Captured and wired:** the 40 `safe_iol_*` files (1756 safety I/O, BNI00HN, Kinetix 5700 / 5300, PowerFlex 527) — safety exact per device by connection type, standard by catalog (MEMORY_MODEL, "Safety I/O"). Real safety programs moved from −18…−66% to −1.5…−44% on the safety figure; every remaining gap names unpriced 1734 cards, which the 17 `safe_io_*` files measure. **Next:** capture those 17 with batch A (TASKS 0zb), which builds what this list named: the one-connection IB8S (`Safety6`), the OB8S/A (`Safety3`), the 5069 packed cards, the revision-11 STO drive; the D012-with-axes term is wired (2026-10-20). `AB:1734_IB8S_Safety4` appears in no counted real program.
 The BNI00HN runs on any EtherNet/IP network, not only a 5069's (owner, 2026-10-19); it was built on a 5069 only because the real ones sit there, and a 1756-L81ES copy would confirm the cost is the same.
 
 
@@ -1045,5 +1079,5 @@ bytes is wrong before it is tested**, which eliminates most of what looks plausi
 | Hiding per-element confidence by default | Done: `?ConfidenceMode=true` shows it; the Errors tab always shows the file-level figure. |
 | Partial exports on import — OQ-EXPORTSCOPE | **Closed, accepted in use.** AOI, UDT and program imports behave as needed; the unmeasured import shell stays uncharged. |
 | Attribute the real residual with Studio-made deletions | **Declined.** Costs a bench session per reading. Struck from the plan; item 3 is what remains. |
-| MAPC | **EXACT.** 260 bytes per call; the steps 1→10→100 are exact, the 100-call reading landing on the number written down before capture. |
-| CROUT and the rest of the Safety family | **Ignored.** Out of scope, zero real uses; `instrfirst_crout_x10`'s errored row is owned by OQ-SAFETY. |
+| MAPC | **EXACT.** 164 a call plus the motion literal law on its four REAL parameters (`motlit_mapc_*`, exact; the 260 first measured carried the scaling literals 1,1); the steps 1→10→100 were exact, the 100-call reading landing on the number written down before capture. **Real use (researched 2026-10-20):** 126 calls across the seventeen, 0.10% of real instructions — INSTRUCTION_COVERAGE. Closed. |
+| CROUT and the rest of the Safety family | **Classified Safety (2026-10-20).** 0 standard each; the rung cost is the safety partition's (CROUT 492, `sizing/safety.py`, OQ-SAFETYPARTITION). Zero real uses of CROUT; `instrfirst_crout_x10`'s errored row is a standard controller refusing a safety instruction (OQ-CROUT-MAPC-BUILDFAIL), not a missing weight. |

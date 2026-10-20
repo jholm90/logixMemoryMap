@@ -99,6 +99,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from sample_gen.data.kinetix import (
+    ATTESTED_MAJORS,
     CONFIG_DATA,
     DRIVE_CHANNELS,
     MODULE_IDENTITY,
@@ -362,7 +363,9 @@ def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
 # CIP Safety I/O whose compiled exports always carry <ExtendedProperties> with the
 # profile's ConfigID: every real 1734 / 5069 / 1756 safety card and PowerFlex 527. The
 # repository's module-sweep blocks had it stripped; with it they match the compiled shape.
-_SAFETY_IO_CATALOG = re.compile(r"^(1734-\w+S/|5069-\w+S\d?/|1756-\w+S/|PowerFlex 527)")
+# Safety I/O cards, the 442G safety switch interfaces, the PowerFlex 527 and the SIL3 safety
+# partner: every compiled export of each carries its profile ConfigID.
+_SAFETY_IO_CATALOG = re.compile(r"^(1734-\w+S/|5069-\w+S\d?/|1756-\w+S/|1756-L8SP$|442G-|PowerFlex 527)")
 
 
 def _safety_io_configid_findings(root: ET.Element) -> list[LintFinding]:
@@ -1160,8 +1163,10 @@ def _chassis_size_findings(root: ET.Element) -> list[LintFinding]:
                 continue
             # A 5069 controller's own bus is a fixed size per catalog, whatever it
             # carries (real exports: L310 9 with 5 modules, L320 17 with 4, L330 32 with
-            # 9, L340 32 with 6); only an adapter's bus tracks its cards.
-            if name == "Local" and port_el.get("Type") == "5069":
+            # 9, L340 32 with 6), and so is a 5069-AENTR's: the real reference adapter
+            # carries Bus Size 32 with 12 cards, and all 34 rack_5069_* captures built
+            # clean at 32 with 1 to 12. Only a POINT or FLEX adapter's bus tracks its cards.
+            if port_el.get("Type") == "5069":
                 continue
             expected = n_children + 1
             if int(bus_size) != expected:
@@ -1651,14 +1656,14 @@ def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
         identity = MODULE_IDENTITY.get(catalog)
         if identity is not None:
             _vendor, product_type, product_code, major, _minor = identity
-            for attr, expected in (("ProductType", product_type), ("ProductCode", product_code),
-                                   ("Major", major)):
+            for attr, expected in (("ProductType", {product_type}), ("ProductCode", {product_code}),
+                                   ("Major", ATTESTED_MAJORS.get(catalog, {major}))):
                 actual = module.get(attr)
-                if actual is not None and actual != expected:
+                if actual is not None and actual not in expected:
                     findings.append(LintFinding(
                         "module_identity_mismatch",
                         f"Module {name} ({catalog}): {attr}=\"{actual}\" but every real "
-                        f"{catalog} in the corpus uses \"{expected}\". A wrong ProductCode "
+                        f"{catalog} in the corpus uses {sorted(expected)}. A wrong ProductCode "
                         f"gives the module another catalog's identity.",
                     ))
         # The Major revision decides ConfigSize on a 2198 drive, not the catalog.

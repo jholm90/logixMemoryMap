@@ -134,6 +134,17 @@ class ModuleInfo:
     # consequence at all, it only decides what is drawn inside what.
     # Empty string on the root module, which names no parent.
     parent_module: str = ""
+    # The module-defined data types its connection tags carry, each with its members
+    # ((name, data type), ...), outermost first: "AB:1756_DI:I:0" and any structure nested
+    # in it. A project defines each type once, so a further module carrying the same type
+    # does not pay its definition again (OQ-MODREPEAT, memory_model.yaml
+    # module_type_sharing).
+    defined_types: tuple[tuple[str, tuple[tuple[str, str], ...]], ...] = ()
+    # A CIP Safety device (a Safety* connection): priced by its own measured safety_io rows,
+    # which module_type_sharing does not stack on.
+    has_safety_connection: bool = False
+    # How many <Connection> elements it declares (a motion device's diagnostics + sync = 2).
+    connection_count: int = 0
 
     @property
     def is_legacy_network(self) -> bool:
@@ -210,6 +221,34 @@ def _structure_size(structure_el: ET.Element | None) -> tuple[int, list[str]]:
             total += sub_total
             unknown.extend(sub_unknown)
     return total, unknown
+
+
+def _defined_types(module_el: ET.Element) -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
+    """Every data type the module's InputTag / OutputTag / ConfigTag decorated data declares,
+    with its members, nested structures included, each type once."""
+    seen: dict[str, tuple[tuple[str, str], ...]] = {}
+
+    def walk(struct: ET.Element) -> None:
+        members = []
+        for child in struct:
+            if child.tag in ("DataValueMember", "StructureMember", "ArrayMember"):
+                members.append((child.get("Name") or "", child.get("DataType") or ""))
+                if child.tag == "StructureMember":
+                    walk(child)
+                elif child.tag == "ArrayMember":
+                    element = child.find(".//Structure")
+                    if element is not None:
+                        walk(element)
+        data_type = struct.get("DataType")
+        if data_type and data_type not in seen:
+            seen[data_type] = tuple(members)
+
+    for tag_name in ("InputTag", "OutputTag", "ConfigTag"):
+        for tag_el in module_el.iter(tag_name):
+            struct = tag_el.find("Data[@Format='Decorated']/Structure")
+            if struct is not None:
+                walk(struct)
+    return tuple(seen.items())
 
 
 def parse_modules(root: ET.Element) -> list[ModuleInfo]:
@@ -345,6 +384,10 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
             uses_rack_connection=uses_rack_connection, config_script_bytes=config_script_bytes,
             port_types=frozenset(port_types),
             parent_module=parent_module,
+            defined_types=_defined_types(module_el),
+            has_safety_connection=any((c.get("Type") or "").startswith("Safety")
+                                      for c in module_el.iter("Connection")),
+            connection_count=sum(1 for _ in module_el.iter("Connection")),
         ))
     return result
 

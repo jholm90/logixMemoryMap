@@ -68,14 +68,16 @@ def test_a_safety_device_is_priced_by_its_connections_types_and_only_when_measur
     assert sum(r[3] for r in standard_rows(pair, m)) == 368 + 1832 + 1104 - 2 * 917
 
 
-def test_round_6_is_6_files_each_a_compiled_shape():
+def test_round_6_is_27_files_each_a_compiled_shape():
     import xml.etree.ElementTree as ET
     from sample_gen import gen_safety_round6 as R6
     from l5x_memory_analyzer.sizing.safety_io import device_key, safety_devices
     plan = {sid: kw for sid, _, kw in R6.plan()}
-    assert len(plan) == 6 and not set(plan) & {sid for sid, _, _ in IO.plan()}
+    assert len(plan) == 27 and not set(plan) & {sid for sid, _, _ in IO.plan()}
     keys = {}
     for sid, kw in plan.items():
+        if not sid.startswith("safe_io6_"):
+            continue
         l5x = R6.make(sid, kw)
         assert not lint_l5x(l5x), sid
         keys[sid] = {device_key(d) for d in safety_devices(ET.fromstring(l5x))}
@@ -83,3 +85,29 @@ def test_round_6_is_6_files_each_a_compiled_shape():
     assert keys["safe_io6_ib8s1c_1"] == {"AB:1734_IB8S_Safety6"}
     assert keys["safe_io6_442g_2"] == {"AB:442G_MABB_E0JP4679"}
     assert "<ConfigID>204</ConfigID>" in R6.make("safe_io6_ob8sa_1", plan["safe_io6_ob8sa_1"])
+    # the standard 5069 cards: packed, as every real one is, and no safety device
+    assert keys["safe_io6_5069_mix_2_2"] == set()
+    mix = R6.make("safe_io6_5069_mix_2_2", plan["safe_io6_5069_mix_2_2"])
+    assert mix.count("AB:5000_DI16_Packed:I:0") >= 4 and 'ProcessorType="5069-L330ERMS2"' in mix
+
+
+def test_round_6_sil3_carries_its_partner_and_the_safety_message_tags_their_shape():
+    from sample_gen import gen_safety_round6 as R6
+    plan = {sid: kw for sid, _, kw in R6.plan()}
+    sil3 = R6.make("safe_sil3_n00", plan["safe_sil3_n00"])
+    assert 'SafetyLevel="SIL3/PLe"' in sil3 and 'CatalogNumber="1756-L8SP"' in sil3
+    assert "<ConfigID>100</ConfigID><CatNum>1756-L8SP</CatNum>" in sil3
+    both = R6.make("safe_pc6_both", plan["safe_pc6_both"])
+    assert 'TagType="Produced"' in both and 'TagType="Consumed"' in both and 'CatalogNumber="5069-L306ERS2"' in both
+    for sid in ("safe_sil3_n00", "safe_sil3_5069_ib8s_2", "safe_pc6_both", "safe_base_5069l310_v31"):
+        assert not lint_l5x(R6.make(sid, plan[sid])), sid
+
+
+def test_lint_refuses_a_safety_partner_without_its_configid():
+    from sample_gen import gen_safety_round6 as R6
+    plan = {sid: kw for sid, _, kw in R6.plan()}
+    sil3 = R6.make("safe_sil3_n00", plan["safe_sil3_n00"])
+    stripped = re.sub(r"<ExtendedProperties>\n<public><ConfigID>100</ConfigID><CatNum>1756-L8SP</CatNum></public>\n"
+                      r"</ExtendedProperties>\n", "", sil3, count=1)
+    assert stripped != sil3
+    assert [f for f in lint_l5x(stripped) if f.kind == "safety_io_without_configid"]

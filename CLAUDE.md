@@ -125,7 +125,9 @@ reading is not the quantity the model predicts. **The safety partition is measur
 wired (OQ-SAFETYPARTITION, 2026-10-18):** the capture tooling records it as `safety_bytes`,
 `sizing/safety.py` prices it as its own figure, exact on all 299 captured safety files
 (1756-L81ES v32/v34/v35, 5069-L330ERMS2/L320ERMS2 v35); tag mapping is measured free;
-safety I/O and signature/locking are not yet measured. The `safe_*`
+safety I/O is wired for round 5's 41 captured devices and the remaining device types, SIL3
+and safety produced/consumed tags are in batch A (TASKS 0zb); signature and lock cost
+nothing in safety and at most ~144 standard (RS-03 against RS-17). The `safe_*`
 batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart controller
 prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
 gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and

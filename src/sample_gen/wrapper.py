@@ -254,6 +254,11 @@ def safety_partner_module_xml(
         f'<Ports>\n'
         f'<Port Id="1" Address="1" Type="ICP" Upstream="true" Width="0" />\n'
         f'</Ports>\n'
+        # Every compiled export of the partner carries its profile's ConfigID (three real
+        # SIL3 exports, 1756-L8SP v32 and v35: 100); without it the partner is the same
+        # stripped-ExtendedProperties defect the safety I/O blocks had (lint refuses it).
+        f'<ExtendedProperties>\n<public><ConfigID>100</ConfigID><CatNum>1756-L8SP</CatNum></public>\n'
+        f'</ExtendedProperties>\n'
         f'</Module>'
     )
 

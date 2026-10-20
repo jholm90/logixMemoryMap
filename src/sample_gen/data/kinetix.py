@@ -110,6 +110,19 @@ MODULE_IDENTITY: dict[str, tuple[str, str, str, str, str]] = {
     '2198-S130-ERS3': ('1', '45', '8', '13', '1'),   # attested 4x
 }
 
+# catalog -> every Major a real export carries it at. MODULE_IDENTITY's Major is
+# the one its stored payload was read from; a drive at another real Major is just
+# as real (export 14 carries D012/D020/D032/D057/S086 at Major 11, RS-01 its D020
+# and D032 at 11 and its D057 at 9). lint.py accepts any Major listed here and
+# checks the payload that goes with it through the Major -> ConfigSize rule.
+ATTESTED_MAJORS: dict[str, frozenset[str]] = {
+    '2198-D012-ERS3': frozenset({'11', '14'}),
+    '2198-D020-ERS3': frozenset({'11', '14'}),
+    '2198-D032-ERS3': frozenset({'11', '14'}),
+    '2198-D057-ERS3': frozenset({'9', '11', '14'}),
+    '2198-S086-ERS3': frozenset({'11', '13'}),
+}
+
 # catalog -> {(ConfigSize, value_count): comma-joined values}
 CONFIG_DATA: dict[str, dict[tuple[int, int], str]] = {
     '2198-C4004-ERS': {

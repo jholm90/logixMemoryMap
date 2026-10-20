@@ -117,6 +117,18 @@ def test_wrong_product_code_is_a_finding():
     assert "module_identity_mismatch" in kinds
 
 
+def test_every_real_major_is_accepted():
+    """A D032 at Major 11 is real (export 14, RS-01); Major 7 is not."""
+    def kinds(major: str) -> set[str]:
+        xml = _wrap(f'<Module Name="Drv1" CatalogNumber="2198-D032-ERS3" Vendor="1" '
+                    f'ProductType="45" ProductCode="13" Major="{major}" Minor="1"/>'
+                    '<Module Name="PS" CatalogNumber="2198-P208"/>')
+        return {f.kind for f in lint_l5x(xml)}
+    assert "module_identity_mismatch" not in kinds("11")
+    assert "module_identity_mismatch" not in kinds("14")
+    assert "module_identity_mismatch" in kinds("7")
+
+
 def test_configsize_payload_mismatch_is_a_finding():
     xml = _wrap('<Module Name="PS" CatalogNumber="2198-P208"/>'
                 '<Module Name="Drv1" CatalogNumber="2198-D012-ERS3" Vendor="1" '

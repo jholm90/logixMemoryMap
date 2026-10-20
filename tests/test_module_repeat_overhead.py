@@ -53,11 +53,19 @@ def model():
     return load_memory_model()
 
 
-def _modules_root(catalogs: list[str], parents: list[str] | None = None) -> ET.Element:
+def _type_for(catalog: str) -> str:
+    return "AB:TEST_" + "".join(ch for ch in catalog if ch.isalnum()) + ":I:0"
+
+
+def _modules_root(catalogs: list[str], parents: list[str] | None = None,
+                  types: list[str] | None = None) -> ET.Element:
     """A real connection block matters: a module with no <Communications> takes
     the zero-connection flat rate instead of the per-catalog table, so a
-    fixture without one silently tests a different branch."""
+    fixture without one silently tests a different branch. Each catalog carries its own
+    module-defined type unless `types` says otherwise (module_type_sharing prices a type
+    once per project)."""
     parents = parents or ["Local"] * len(catalogs)
+    types = types or [_type_for(c) for c in catalogs]
     mods = "".join(
         f"""<Module Name="M{i}" CatalogNumber="{c}" ParentModule="{p}">
               <Ports><Port Id="1" Address="{i + 1}" Type="ICP" Upstream="true"/></Ports>
@@ -66,7 +74,7 @@ def _modules_root(catalogs: list[str], parents: list[str] | None = None) -> ET.E
                   <Connection Name="Standard" RPI="10000" Type="Input" InputSize="4" OutputSize="0">
                     <InputTag ExternalAccess="Read/Write">
                       <Data Format="Decorated">
-                        <Structure DataType="AB:TEST:I:0">
+                        <Structure DataType="{t}">
                           <DataValueMember Name="Fault" DataType="DINT" Value="0"/>
                         </Structure>
                       </Data>
@@ -75,7 +83,7 @@ def _modules_root(catalogs: list[str], parents: list[str] | None = None) -> ET.E
                 </Connections>
               </Communications>
             </Module>"""
-        for i, (c, p) in enumerate(zip(catalogs, parents))
+        for i, (c, p, t) in enumerate(zip(catalogs, parents, types))
     )
     return ET.fromstring(f"""
     <RSLogix5000Content SchemaRevision="1.0">
@@ -93,9 +101,14 @@ def _modules_root(catalogs: list[str], parents: list[str] | None = None) -> ET.E
     """)
 
 
-def _module_bytes(catalogs: list[str], model, parents: list[str] | None = None) -> list[int]:
-    entries, _ = build_report(_modules_root(catalogs, parents), model)
+def _module_bytes(catalogs: list[str], model, parents: list[str] | None = None,
+                  types: list[str] | None = None) -> list[int]:
+    entries, _ = build_report(_modules_root(catalogs, parents, types), model)
     return [e.bytes for e in entries if e.category == "module_io"]
+
+
+def _fixture_type_bytes(model, name: str) -> int:
+    return model.module_type_sharing.definition_bytes(name, (("Fault", "DINT"),), model.udt_definition)
 
 
 def test_the_discount_is_applied(model):
@@ -139,16 +152,39 @@ def test_exactly_the_ten_measured_applicable_catalogs_are_wired(model):
     assert model.module_overhead_by_catalog.repeat_by_catalog.keys() == with_repeat.keys()
 
 
-def test_an_excluded_family_keeps_paying_the_first_instance_rate(model):
-    """ETHERNET-MODULE costs the same every time: its measured repeat rate
-    describes a cloned connection shape no real program contains.
-
-    2198 drives were in this test on the grounds that their
-    rate came from files that failed Build on bus power. Those 24 rows have now
-    been recaptured clean and the per-copy rate is real, so the family moved out
-    of here and into the test below."""
+def test_a_further_copy_does_not_define_its_types_again(model):
+    """ETHERNET-MODULE carries no repeat_bytes (its genem_n sweep cloned one connection
+    shape). Under module_type_sharing a later copy pays its first-copy rate less the
+    definitions of the types an earlier module defined -- so an identical clone saves them
+    (genem_n measured 710 a copy) and a differently-sized one, carrying other types, does not."""
+    t = _type_for("ETHERNET-MODULE")
     sizes = _module_bytes(["ETHERNET-MODULE"] * 3, model)
-    assert sizes[0] == sizes[1] == sizes[2]
+    assert sizes[0] - sizes[1] == sizes[0] - sizes[2] == _fixture_type_bytes(model, t)
+    other = _module_bytes(["ETHERNET-MODULE"] * 2, model,
+                          types=["AB:ETHERNET_MODULE_SINT_8Bytes:I:0", "AB:ETHERNET_MODULE_SINT_12Bytes:I:0"])
+    assert other[0] == other[1]
+
+
+def test_a_type_is_shared_across_catalogs_but_not_for_an_eds_profile_or_a_rack_head(model):
+    shared = "AB:1756_DI:I:0"
+    a, b = _module_bytes(["1756-IA16", "1756-OA16"], model)
+    a2, b2 = _module_bytes(["1756-IA16", "1756-OA16"], model, types=[shared, shared])
+    assert a2 == a and b - b2 == _fixture_type_bytes(model, shared)
+    eds = "_0142:AL1222_90D03083:I:0"
+    first, second = _module_bytes(["AL1222", "AL1222"], model, types=[eds, eds])
+    assert first == second
+    # a module the second one hangs off keeps its full rate
+    head, child = _module_bytes(["1756-IA16", "1756-IA16"], model, parents=["Local", "M0"])
+    assert head == _module_bytes(["1756-IA16"], model)[0]
+
+
+def test_an_unseen_catalog_is_a_base_plus_its_new_types(model):
+    sharing = model.module_type_sharing
+    t = _type_for("XYZ-UNSEEN/A")
+    first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model)
+    data = 4  # the fixture's one DINT member
+    assert first == sharing.unseen_base_single_bytes + _fixture_type_bytes(model, t) + data
+    assert second == sharing.unseen_base_single_bytes + data
 
 
 def test_repeat_scope_defaults_to_project(model):
@@ -174,7 +210,9 @@ def test_parent_scope_restarts_the_count_under_each_parent(model):
         model.module_overhead_by_catalog, repeat_scope="parent"))
     same = _module_bytes(["1756-IB16"] * 2, per_rack, ["Local", "Local"])
     assert same[1] < same[0]
-    split = _module_bytes(["1756-IB16"] * 2, per_rack, ["Local", "Rack2"])
+    # distinct module-defined types, so only the occurrence count is under test here
+    split = _module_bytes(["1756-IB16"] * 2, per_rack, ["Local", "Rack2"],
+                          types=["AB:TEST_A:I:0", "AB:TEST_B:I:0"])
     assert split[0] == split[1] == same[0]
 
 
@@ -203,14 +241,6 @@ def test_module_order_does_not_change_the_total(model):
     forward = sum(_module_bytes(["1756-IB16"] * 2 + ["1756-IB32/B"] * 2, model))
     reverse = sum(_module_bytes(["1756-IB32/B"] * 2 + ["1756-IB16"] * 2, model))
     assert forward == reverse
-
-
-def test_an_unmeasured_catalog_keeps_paying_the_first_instance_rate(model):
-    """No repeat_bytes means the old behaviour, which over-predicts rather than
-    under-predicts -- the safe direction for a catalog with no real data."""
-    assert "9999-NOT-A-REAL-CATALOG" not in model.module_overhead_by_catalog.repeat_by_catalog
-    sizes = _module_bytes(["9999-NOT-A-REAL-CATALOG"] * 3, model)
-    assert sizes[0] == sizes[1] == sizes[2]
 
 
 def test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset(model):
@@ -231,93 +261,47 @@ def test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset(model):
         C = 23,120 for D020 / D032 / D057 / S130
         C = 19,112 for D012 / S086          (4,008 less, one time only)
 
-    So the rate is FLAT -- copy eight costs what copy one costs -- and the only
-    per-catalog difference is a single 4,008 term. The one non-conforming point
-    is asmclose_2198_d012_ers3_n08, which reads 52,240 where D012's own three
-    linear points give 48,232; S086 shares D012's C and runs linear through all
-    four counts, so that row is treated as needing recapture rather than fitted.
+    So the rate is FLAT -- copy eight costs what copy one costs. Those were BARE drives.
+    With their axes, as every real drive carries them (OQ-SAFETYPARTITION round 5,
+    safe_iol_kx_*), a D012 reads exactly a D020 (the 4,008 one-time difference is gone;
+    asmclose_2198_d012_ers3_n08 had already read like D020) and an S086 exactly an S130.
     """
     table = model.module_overhead_by_catalog
-    flat = ["2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3",
-            "2198-D057-ERS3", "2198-S086-ERS3"]
-    for catalog in flat + ["2198-S130-ERS3"]:
+    dual = ["2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3", "2198-D057-ERS3"]
+    single = ["2198-S086-ERS3", "2198-S130-ERS3"]
+    for catalog in dual + single:
         overhead, confidence = table.overhead_for(catalog, 1)
         assert confidence == "KNOWN", catalog
 
     # every copy after the first costs the same as every other -- no discount ramp
-    for catalog in flat + ["2198-S130-ERS3"]:
+    for catalog in dual + single:
         rates = {table.overhead_for(catalog, i)[0] for i in (2, 3, 8)}
         assert len(rates) == 1, (catalog, rates)
 
-    # S130 is cheaper per copy than the other five, which share one rate
-    five = {table.overhead_for(c, 2)[0] for c in flat}
-    assert len(five) == 1, five
-    assert table.overhead_for("2198-S130-ERS3", 2)[0] < five.pop()
-
-    # D012 and S086 share a one-time term below the other four's
-    assert (table.overhead_for("2198-D012-ERS3", 1)[0]
-            == table.overhead_for("2198-S086-ERS3", 1)[0])
-    assert (table.overhead_for("2198-D012-ERS3", 1)[0]
-            < table.overhead_for("2198-D020-ERS3", 1)[0])
+    # the dual-axis drives share one first copy and one rate; the single-axis two another
+    for group in (dual, single):
+        assert len({table.overhead_for(c, 1)[0] for c in group}) == 1, group
+        assert len({table.overhead_for(c, 2)[0] for c in group}) == 1, group
+    assert table.overhead_for("2198-S086-ERS3", 2)[0] < table.overhead_for("2198-D012-ERS3", 2)[0]
 
 
-def test_repeat_scope_defaults_to_project(model):
-    """project | parent is a real open question (nothing captured splits a
-    catalog across parents), so it is a model field rather than a code comment.
-    The default is project; parent restarts the count under each parent."""
-    table = model.module_overhead_by_catalog
-    assert table.repeat_scope == "project"
-    assert table.occurrence_key("1756-IB16", "Rack2") == ("1756-IB16", "")
-
-    from dataclasses import replace
-
-    per_rack = replace(table, repeat_scope="parent")
-    assert per_rack.occurrence_key("1756-IB16", "Rack2") == ("1756-IB16", "Rack2")
-
-
-def test_parent_scope_restarts_the_count_under_each_parent(model):
-    """Two IB16s under one parent: second is discounted. One under each of two
-    parents: both pay full price."""
-    from dataclasses import replace
-
-    per_rack = replace(model, module_overhead_by_catalog=replace(
-        model.module_overhead_by_catalog, repeat_scope="parent"))
-    same = _module_bytes(["1756-IB16"] * 2, per_rack, ["Local", "Local"])
-    assert same[1] < same[0]
-    split = _module_bytes(["1756-IB16"] * 2, per_rack, ["Local", "Rack2"])
-    assert split[0] == split[1] == same[0]
+def test_a_type_without_a_vendor_prefix_is_defined_by_every_module(model):
+    """5069 channel types ("CHANNEL_DI:I:0", two colons) are not shared: each module that
+    carries one defines it again, and a copy an earlier module defined costs
+    module_scoped_repeat_extra_bytes on top (rack_5069_*, OQ-MODREPEAT). A vendor-prefixed
+    type in the same position is shared."""
+    sharing = model.module_type_sharing
+    scoped, prefixed = "CHANNEL_TEST:I:0", "AB:CHANNEL_TEST:I:0"
+    assert sharing.is_module_scoped(scoped) and not sharing.is_module_scoped(prefixed)
+    first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model, types=[scoped, scoped])
+    assert second - first == sharing.module_scoped_repeat_extra_bytes == 76
+    first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model, types=[prefixed, prefixed])
+    assert first - second == _fixture_type_bytes(model, prefixed)
 
 
-def test_the_mechanism_is_flat_from_the_second_instance_on(model):
-    """d x (n - 1), confirmed at n = 1 / 2 / 4 / 8 -- n=8 was the first point
-    that could have shown a per-rack or per-connection-block step and doesn't."""
-    table = model.module_overhead_by_catalog
-    assert table.overhead_for("1756-IB16", 1)[0] == 1684
-    assert table.overhead_for("1756-IB16", 2)[0] == 892
-    assert table.overhead_for("1756-IB16", 9)[0] == 892
-
-
-def test_the_discount_is_per_catalog_not_per_module(model):
-    """Two different catalogs are each on their FIRST instance, so neither gets
-    a repeat rate -- the split keys on the catalog, not on position in the file.
-    Settled on real data by modmarg_mixq{1,2,3}: reversing module order leaves
-    the total byte-identical, which per-file ordering could not do."""
-    mixed = _module_bytes(["1756-IB16", "1756-IB32/B"], model)
-    ib16_alone = _module_bytes(["1756-IB16"], model)[0]
-    ib32_alone = _module_bytes(["1756-IB32/B"], model)[0]
-    assert mixed == [ib16_alone, ib32_alone]
-
-
-def test_module_order_does_not_change_the_total(model):
-    """The x2rev half of the mixture arm, in miniature."""
-    forward = sum(_module_bytes(["1756-IB16"] * 2 + ["1756-IB32/B"] * 2, model))
-    reverse = sum(_module_bytes(["1756-IB32/B"] * 2 + ["1756-IB16"] * 2, model))
-    assert forward == reverse
-
-
-def test_an_unmeasured_catalog_keeps_paying_the_first_instance_rate(model):
-    """No repeat_bytes means the old behaviour, which over-predicts rather than
-    under-predicts -- the safe direction for a catalog with no real data."""
-    assert "9999-NOT-A-REAL-CATALOG" not in model.module_overhead_by_catalog.repeat_by_catalog
-    sizes = _module_bytes(["9999-NOT-A-REAL-CATALOG"] * 3, model)
-    assert sizes[0] == sizes[1] == sizes[2]
+def test_the_5069_adapter_costs_its_measured_rate_with_cards_beneath_it(model):
+    root = _modules_root(["5069-AENTR", "5069-OB16/B"], parents=["Local", "M0"])
+    adapter = next(m for m in root.iter("Module") if m.get("Name") == "M0")
+    adapter.remove(adapter.find("Communications"))
+    entries, _ = build_report(root, model)
+    assert [e.bytes for e in entries if e.data_type == "5069-AENTR"] == [625]

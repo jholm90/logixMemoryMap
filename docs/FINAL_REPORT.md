@@ -401,9 +401,10 @@ are rebuilt as `_r3` (OQ-BUILDFAIL-OPEN); the 49 await reconciliation.
   imports behave as needed. The import shell stays unmeasured and uncharged.
 - **Studio-made deletions on real programs.** Declined; costs a bench session per
   reading. Section 8 no longer relies on it.
-- **CROUT and the rest of the Safety family** (DCS, ROUT, ESTOP, RIN). Ignored — out of
-  scope under OQ-SAFETY, zero real uses. `instrfirst_crout_x10`'s errored row is owned by
-  OQ-SAFETY.
+- **CROUT and the rest of the Safety family** (DCS, ROUT, ESTOP, RIN). Classified Safety:
+  0 standard each, the rung cost priced in the safety partition (CROUT 492,
+  OQ-SAFETYPARTITION). Zero real uses of CROUT; `instrfirst_crout_x10`'s errored row is a
+  standard controller refusing a safety instruction.
 
 ### Decisions only the owner can make
 

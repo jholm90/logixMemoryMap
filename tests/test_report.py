@@ -375,13 +375,17 @@ def test_module_overhead_uses_real_per_catalog_value_when_known():
     assert module_entry.bytes == 4 + 1684  # module_defined_bytes(4) + real 1756-IB16 overhead
 
 
-def test_module_overhead_falls_back_to_flat_default_for_unknown_catalog():
+def test_an_unknown_catalog_is_a_base_plus_its_module_defined_types():
+    """No measured entry: the unseen-catalog base plus the definition of the module-defined
+    type it carries (memory_model.yaml module_type_sharing), not the flat 1,672."""
     root = _root_with_module("9999-NOT-A-REAL-CATALOG")
     entries, errors = build_report(root, MODEL)
     assert errors == []
     module_entry = next(e for e in entries if e.category == "module_io")
-    assert module_entry.basis == MODEL.module_overhead_confidence
-    assert module_entry.bytes == 4 + MODEL.module_overhead_bytes
+    sharing = MODEL.module_type_sharing
+    assert module_entry.basis == sharing.unseen_confidence
+    assert module_entry.bytes == 4 + sharing.unseen_base_single_bytes + sharing.definition_bytes(
+        "AB:5000_DI16:I:0", (("Fault", "DINT"),), MODEL.udt_definition)
 
 
 def _root_with_legacy_network_module(port_type: str, catalog: str = "9999-NO-REAL-DATA/Z") -> ET.Element:

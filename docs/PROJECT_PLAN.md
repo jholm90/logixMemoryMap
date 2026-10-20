@@ -138,8 +138,8 @@ clearly marked estimated and tag numbers clearly marked exact. *Met.*
 ## Phase 6 — Polish and edge cases
 
 - **Safety task handling — done.** Safety Task and Program shells have their own
-  sizing path; the UI warns that a safety project's total is understated. DCS and
-  CROUT are Safety-family instructions and out of scope.
+  sizing path, and the safety partition is priced as its own figure (OQ-SAFETYPARTITION).
+  DCS and CROUT are Safety-family instructions: 0 standard, priced in the safety partition.
 - **Alarm condition overhead — done.** Tag-based alarm conditions are solved to
   within 0.16% on one real program and 8.8% on another.
 - **Module and I/O sizing — done** for Ethernet and local in-rack modules.

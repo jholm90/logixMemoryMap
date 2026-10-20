@@ -978,6 +978,8 @@ def build_report(root: ET.Element, model: MemoryModel,
     # Modules something else hangs off: a bridge with devices beneath it is a
     # live path, not a placeholder (OQ-BRIDGEPH).
     _module_parents = {m.parent_module for m in _modules if m.name != "Local"}
+    # Module-defined data types already defined by an earlier module (module_type_sharing).
+    _defined_type_names: set[str] = set()
 
     for _module_index, module in enumerate(_modules):
         # "Local" is the processor's own self-entry (always present, always
@@ -988,6 +990,12 @@ def build_report(root: ET.Element, model: MemoryModel,
         if module.name == "Local":
             continue
         label = _module_labels[_module_index]
+        # A module-scoped type (no vendor prefix) is the carrying module's own: never shared.
+        _scoped = model.module_type_sharing.is_module_scoped
+        _shared_types = [t for t in module.defined_types if t[0] in _defined_type_names and not _scoped(t[0])]
+        _new_types = [t for t in module.defined_types if t[0] not in _defined_type_names or _scoped(t[0])]
+        _scoped_repeats = sum(1 for t in module.defined_types if _scoped(t[0]) and t[0] in _defined_type_names)
+        _defined_type_names.update(name for name, _ in module.defined_types)
         if module.module_defined_bytes == 0 and module.stated_total_bytes == 0:
             # real, found reviewing the export 24
             # production file: a bridge/gateway module with NO connections
@@ -1018,8 +1026,9 @@ def build_report(root: ET.Element, model: MemoryModel,
             # and needs no notice. Anything else here (a gateway such as a
             # 1756-EN2T, or a bridge with devices beneath it) keeps the flat
             # rate and its coverage notice.
-            placeholder = (module.name not in _module_parents
-                           and module.catalog_number in model.zero_connection_by_catalog)
+            placeholder = (module.catalog_number in model.zero_connection_by_catalog
+                           and (module.name not in _module_parents
+                                or module.catalog_number in model.zero_connection_adapters))
             if placeholder:
                 zero_bytes, zero_basis = model.zero_connection_by_catalog[module.catalog_number]
             else:
@@ -1152,6 +1161,28 @@ def build_report(root: ET.Element, model: MemoryModel,
         catalog_occurrence[occ_key] = catalog_occurrence.get(occ_key, 0) + 1
         overhead_bytes, overhead_basis = model.module_overhead_by_catalog.overhead_for(
             module.catalog_number, catalog_occurrence[occ_key])
+        # A type an earlier module already defined is not defined again (memory_model.yaml
+        # module_type_sharing). Not where a measured repeat rate already applies, not on
+        # an EDS profile's types, not on a module others hang off.
+        sharing = model.module_type_sharing
+        table = model.module_overhead_by_catalog
+        eligible = (sharing.enabled and module.defined_types and module.name not in _module_parents
+                    and not module.uses_rack_connection
+                    and not sharing.is_eds(module.defined_types) and not module.has_safety_connection)
+        measured_repeat = catalog_occurrence[occ_key] > 1 and table.has_measured_repeat(module.catalog_number)
+        if eligible and not table.is_measured(module.catalog_number):
+            # An unseen catalog: a base plus the definitions of its types this project has
+            # not defined yet.
+            overhead_bytes = sharing.unseen_base_for(module.connection_count) + sum(
+                sharing.definition_bytes(name, members, model.udt_definition) for name, members in _new_types)
+            overhead_basis = sharing.unseen_confidence
+        elif eligible and _shared_types and not measured_repeat:
+            overhead_bytes -= sum(sharing.definition_bytes(name, members, model.udt_definition)
+                                  for name, members in _shared_types)
+            overhead_basis = weakest(overhead_basis, sharing.confidence)
+        if eligible and _scoped_repeats and not measured_repeat:
+            overhead_bytes += sharing.module_scoped_repeat_extra_bytes * _scoped_repeats
+            overhead_basis = weakest(overhead_basis, sharing.confidence)
         module_bytes = module.module_defined_bytes + overhead_bytes
         # A generic ETHERNET-MODULE's connection data costs 4x its declared
         # bytes, not 1x (memory_model.yaml module_connection_data, wired

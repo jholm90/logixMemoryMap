@@ -376,18 +376,27 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## To capture: safety pit stop, batch A of 2 — 90 files (TASKS 0zb)
+## To capture: safety pit stop, batch A of 2 — 162 files (TASKS 0zb)
 
-Built 2026-10-20 on the owner's instruction, every file on the realism floor and lint
-clean: `stshape_*` (43, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),
-`modrep_*` (15, `gen_module_repeat.py`, 1756-L81E v35: five catalogs at 1 / 2 / 4,
-OQ-MODREPEAT) and `safe_io6_*` (6, `gen_safety_round6.py`, 1756-L81ES v35: 1734-OB8S/A,
-1734-IB8S/B one connection, 442G-MABLB, OQ-SAFETYPARTITION), `aoibool_*` (22,
-`gen_aoi_bool_instances.py`, 1756-L81E v35: scalar AOI instances with 4 to 65 BOOL bits,
-OQ-AOIBOOLINST) and, local, `safe_iol_gensafe_*` / `safe_iol_fanucs_*` (4, `gen_safety_io.py
---local`: the two robot safety interfaces). The roster, what each file
-discriminates and against which capture: TASKS 0zb. Round 5's 17 `safe_io_*` are still to
-capture alongside.
+Built 2026-10-20 on the owner's instruction, every file on its floor and lint clean:
+`stshape_*` (43, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),
+`modrep_*` (36, `gen_module_repeat.py`, 1756-L81E v35: five Ethernet catalogs at 1 / 2 / 4,
+then one class of module each — 1756 chassis analog, 843E encoders, PowerFlex 755, POINT
+I/O on its own connection, 5069 behind a 5069-AENTR, generic ETHERNET-MODULE — OQ-MODREPEAT),
+`strx_*` (21, `gen_string_shapes.py`, 1756-L81E v35: STRING operands as real programs write
+them, OQ-STRSHAPE), `aoibool_*` (22, `gen_aoi_bool_instances.py`, 1756-L81E v35: scalar AOI
+instances with 4 to 65 BOOL bits, OQ-AOIBOOLINST), round 6 (27, `gen_safety_round6.py`:
+1734-OB8S/A, 1734-IB8S/B one connection and 442G on the L81ES plant, SIL3 on the L81ES and
+the 5069-L320ERMS3, safety produced / consumed tags, the v31 5069-L310ERS2 base, standard
+packed 5069 cards on the 5069-L330ERMS2 base; OQ-SAFETYPARTITION, OQ-MODREPEAT) and, local,
+13 `safe_iol_*` (`gen_safety_io.py --local`: the two robot safety interfaces, the
+revision-11 STO drive, RS-04's packed 5069 safety cards, the Kinetix drive and the 1756 pair
+at SIL3). The roster, what each file discriminates and against which capture: TASKS 0zb.
+Round 5's 17 `safe_io_*` are still to capture alongside.
+
+A 5069 card behind a 5069-AENTR keeps the adapter's Bus Size 32, as the real reference and
+all 34 `rack_5069_*` captures carry it (lint treats a 5069 bus as fixed); a POINT adapter's
+bus is sized to its cards and its slot structure with it (`realism.rack_xml`'s method).
 
 An AOI whose Logic is ST is `aoi_xml()`'s definition with its self-closed RLL Logic
 routine replaced by an ST one (`gen_st_shapes.aoi_definition`), the shape real AOI

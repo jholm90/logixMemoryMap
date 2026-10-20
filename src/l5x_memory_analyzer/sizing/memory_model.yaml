@@ -643,6 +643,15 @@ zero_connection_module:
   # read +8 per bridge over 6-character ones (bridgeph_ebr_long_n04).
   by_catalog:
     'ETHERNET-BRIDGE': { bytes: 320, confidence: KNOWN }
+    # The 5069-AENTR remote-rack adapter and the 5069-SERIAL/A, both without connections
+    # of their own (OQ-MODREPEAT, 2026-10-20). Fitted jointly with the per-card costs and
+    # module_type_sharing's module-scoped repeat cost on the 34 rack_5069_* captures (one
+    # to twelve cards a rack, ten racks in one file): residual rms 17, max 41. The adapter
+    # carries the cards beneath it, so its cost applies with children (with_children); the
+    # flat rate above charged it 2,344. 5069-SERIAL/A is its single-card capture less the
+    # adapter.
+    '5069-AENTR': { bytes: 625, confidence: FITTED, with_children: true }
+    '5069-SERIAL/A': { bytes: 367, confidence: ASSUMED }
 
 # repeat_bytes (OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
 # later modules of the SAME catalog in one project cost LESS than the first.
@@ -791,6 +800,88 @@ module_family_repeat:
     # family it belongs to rather than as the flat 1,672 generic default.
     - { pattern: "^2198-[DSCH]\\d", discount_bytes: 984, unseen_first_bytes: 4113 }
     - { pattern: "^2198-R?P\\d", discount_bytes: 984, unseen_first_bytes: 3589 }
+
+# A MODULE-DEFINED DATA TYPE IS DEFINED ONCE PER PROJECT (OQ-MODREPEAT, 2026-10-20). Every
+# module's connection tags carry Rockwell's own data types ("AB:1756_DI:I:0" and the
+# structures nested in it), and a project holds each type's definition once. The measured
+# repeat discount of every catalog that has one is that definition, priced with the UDT
+# definition law (udt_definition) on the type's members as the module's decorated data
+# lists them:
+#
+#   catalog                 measured discount   type definitions   difference
+#   1734-AENT/B, /C               520                488              -32
+#   1794-AENT                     432                448              +16
+#   1756-IB16                     792                784               -8
+#   1756-IB32/B                   792                720              -72
+#   1756-IB16IF/A               2,208              2,312             +104
+#   842E-CM-M                   1,000              1,056              +56
+#   PowerFlex 755-EENET-CM-S      976              1,048              +72
+#   2198-D0xx / S086 / S130       984              1,048              +64
+#   440C-CR30-22BBB/A           3,768              4,008             +240
+#
+# and the first-copy overhead of every measured catalog less its types' definitions is
+# about 1,100 for a digital or analog I/O module whatever its size (OF8 5,066 = 554 + 4,512;
+# IB16 1,684 = 900 + 784) and about 2,600-3,100 for a motion device, which is why one flat
+# per-module figure could never price both an IB16 and an OF8. So a module whose types an
+# EARLIER module in the file already defined -- the second copy of any catalog, or another
+# catalog carrying the same type -- pays its overhead less those definitions.
+#
+# Where a later copy's own rate is measured (repeat_bytes, module_family_repeat) that rate
+# is used and this does not stack on it. Not applied:
+#   * an EDS-profile type (vendor-prefixed name, "_0142:AL1222_90D03083:I:0"): AL1222's
+#     second copy measured its first copy's full cost (discount 0);
+#   * a CIP Safety device: its standard cost is its measured safety_io rows (first of
+#     catalog, each, shared by type), fitted on round 5's 1 / 2 / 4 captures; those rows
+#     already hold what its repeats save (the 1756-IB16S + OBV8S pair's shared 368 is this
+#     same law across two catalogs: their one shared type defines at 392);
+#   * a rack-aliased card (its data rides its rack's connection): the 1756-OB32 behind a
+#     bridge chain (modmarg_ob32chain_*, asmclose_1756_ob32_rackaliased_*) reads further off
+#     with it;
+#   * a module other modules hang off (a rack adapter, a bridge): a sixth POINT I/O rack on
+#     the plant reads 826 ABOVE the engine (l9v38_m_pointio), so a discount there has no
+#     support until the modrep_* adapter files read;
+#   * 1756-EN4TR, whose 1,520 discount carries no module-defined type at all -- its measured
+#     repeat_bytes stands.
+# FITTED: the law reproduces nine measured discounts within -72..+104 bytes and one at +240;
+# the cross-catalog half (a type shared by two catalogs) and every unmeasured class are
+# what the modrep_* batch validates.
+#
+# AN UNSEEN CATALOG (no entry of its own, no family) with module-defined types is priced the
+# same way rather than at the flat 1,672: a base plus the definitions of its types not yet
+# defined in the project. The base is the median of first-copy overhead less type
+# definitions over the measured catalogs: 1,064 for a module with one connection or none
+# (45 catalogs), 2,579 for one with two or more (20 catalogs, the motion devices and
+# drives). Against those 65 measured first copies the mean error is 392 (I/O) and 546
+# (two or more connections), where the flat 1,672 is wrong by 1,042 and 2,141: one flat
+# figure cannot price a 1756-IB16 (1,684) and a 1756-OF8/B (5,066) both. ASSUMED -- the
+# per-catalog spread around each median is real.
+#
+# A TYPE WITHOUT A VENDOR PREFIX IS THE MODULE'S OWN (2026-10-20). A 5069 Compact I/O
+# card in standard data format carries channel types named "CHANNEL_DI:I:0",
+# "CHANNEL_DO_DIAG:I:0", "CHANNEL_AI:O:0" -- two colons where "AB:5000_DI16:I:0" has
+# three. Those are not shared: every module that carries one defines it again, and a
+# copy an earlier module already defined costs module_scoped_repeat_extra_bytes (76) on
+# top. The vendor-prefixed types beside them are shared as above. Measured on the 34
+# rack_5069_* captures (one to twelve cards a rack, ten racks with 64 cards in one
+# file): with the prefixed types shared and the channel types paid again by each card,
+# a joint fit of the adapter, this repeat cost and each catalog's first copy leaves rms
+# 17 and max 41 bytes; sharing the channel types too leaves the ten-rack file 29,422
+# under (with the adapter at the flat 2,344), and without the repeat cost the rms is 336.
+# FITTED.
+#
+# The unseen-catalog half was tested blind on the same files before their single-card
+# captures were wired as catalog entries: eight of nine 5069 catalogs within -247..+329
+# of their own measured cost, six within +-85; the 5069-HSC2XOB4/A (four large channel
+# types) at +1,571.
+module_type_sharing:
+  enabled: true
+  eds_type_pattern: '^_[0-9A-Fa-f]{4}:'
+  confidence: FITTED
+  unseen_base_single_bytes: 1064
+  unseen_base_multi_bytes: 2579
+  unseen_confidence: ASSUMED
+  module_scoped_type_pattern: '^[^:]+:[^:]+:[^:]+$'
+  module_scoped_repeat_extra_bytes: 76
 
 module_overhead_repeat_discount:
   apply_repeat_discount: true
@@ -948,6 +1039,22 @@ module_overhead_by_catalog:
   # least-squares split between the members of those pairs is arbitrary,
   # not measured. Deliberately NOT wired from that fit; gen_module_5069_
   # single_sweep.py generates the missing single-module files instead.
+  #
+  # Those nine are wired now (OQ-MODREPEAT, 2026-10-20) from their own isolation
+  # captures, rack_5069_single_*: one 5069-AENTR and the one card. Each is the
+  # capture less the blank project (18,128), the adapter (625, zero_connection_module)
+  # and the card's own data. Before these entries the unseen-catalog law
+  # (module_type_sharing) priced them, blind: eight of nine within -247..+329 of
+  # these values and six within +-85, the 5069-HSC2XOB4/A at +1,571.
+  '5069-IA16/A': { bytes: 2811, confidence: ASSUMED }
+  '5069-IF8/B': { bytes: 4303, confidence: ASSUMED }
+  '5069-OA16/A': { bytes: 3789, confidence: ASSUMED }
+  '5069-OB16/B': { bytes: 3899, confidence: ASSUMED }
+  '5069-OB8/A': { bytes: 3053, confidence: ASSUMED }
+  '5069-OF4/A': { bytes: 3615, confidence: ASSUMED }
+  '5069-OF8/A': { bytes: 4439, confidence: ASSUMED }
+  '5069-OW16/C': { bytes: 3797, confidence: ASSUMED }
+  '5069-HSC2XOB4/A': { bytes: 7341, confidence: ASSUMED }
   '5069-IB16/A': { bytes: 2888, confidence: FITTED }
   '5069-IB8S/A': { bytes: 1835, confidence: FITTED }
   '5069-IY4/A': { bytes: 4040, confidence: FITTED }
@@ -991,7 +1098,12 @@ module_overhead_by_catalog:
   # ACD so it is not a mis-capture, but S086 shares D012's base and runs linear
   # through all four counts, so D012 is wired from its three linear points and
   # that row needs recapture before it is believed. See OQ-MODULEMARGINAL.
-  '2198-D012-ERS3': { bytes: 105, repeat_bytes: 3129, confidence: KNOWN }
+  # D012 and S086 WITH THEIR AXES (OQ-SAFETYPARTITION round 5, 2026-10-20): every real drive carries
+  # its axes, and with them a D012 reads exactly a D020 (safe_iol_kx_d012_saf_1 / _2, zero errors,
+  # 4,008 above the 105 first copy at both counts) and a non-safety S086 exactly an S130 (3,849 first,
+  # 2,865 after: safe_iol_kx_s086_std_1 / _2). The 105 was read off bare drives (asmclose_2198_d012 /
+  # _s086), a shape no real program has, and asmclose_2198_d012_ers3_n08 already read like D020.
+  '2198-D012-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2198-D020-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2198-D032-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
   '2198-D057-ERS3': { bytes: 4113, repeat_bytes: 3129, confidence: KNOWN }
@@ -1001,7 +1113,7 @@ module_overhead_by_catalog:
   '2198-P141': { bytes: 3613, confidence: ASSUMED }
   '2198-P208': { bytes: 3589, confidence: ASSUMED }
   '2198-RP200': { bytes: 3617, confidence: ASSUMED }
-  '2198-S086-ERS3': { bytes: 105, repeat_bytes: 3129, confidence: KNOWN }
+  '2198-S086-ERS3': { bytes: 3849, repeat_bytes: 2865, confidence: KNOWN }
   '2198-S130-ERS3': { bytes: 3849, repeat_bytes: 2865, confidence: KNOWN }
   '2702782': { bytes: -16, confidence: ASSUMED }
   '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
@@ -1915,11 +2027,11 @@ safety_io:
     "2198-D020-ERS3": 684
     "2198-D032-ERS3": 684
     "2198-D057-ERS3": 684
-    "2198-S086-ERS3": -270
+    "2198-S086-ERS3": -6
   standard_shared_first_bytes:
     "AB:5000_SD": 368
     "AB:CIP_Motion_Device_Safety2": 4160
-    "AB:CIP_Motion_Device_Safety1": 6264
+    "AB:CIP_Motion_Device_Safety1": 2256
   standard_confidence: FITTED
 
 safety_partition:

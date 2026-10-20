@@ -467,9 +467,11 @@ def test_does_not_flag_scp_outside_a_ladder_routine():
 
 # --- dynamic vs fixed backplanes -------------------------------------------
 # A 1756 chassis has a FIXED slot count set by its catalog (4/10/13/17), so an
-# under-populated 1756 rack is normal and must never be flagged. Point I/O,
-# Flex and 5069 have no physical chassis: the bus is as long as what is
-# plugged in, so the coupler plus its cards is the only correct size.
+# under-populated 1756 rack is normal and must never be flagged. Point I/O and
+# Flex have no physical chassis: the bus is as long as what is plugged in, so
+# the coupler plus its cards is the only correct size. A 5069 bus is fixed too:
+# the real reference 5069-AENTR carries Bus Size 32 with 12 cards, and all 34
+# rack_5069_* captures built clean at 32 with 1 to 12.
 _RACK = """
 <RSLogix5000Content SchemaRevision="1.0">
   <Controller Name="Test">
@@ -514,13 +516,18 @@ def test_dynamic_rack_sized_to_its_cards_is_clean():
 def test_dynamic_rack_carrying_a_donor_bus_size_is_flagged():
     """A module block copied from a real export brings that application's rack
     size with it; the rack being built has one card, so 14 is a leftover."""
-    for ptype in ("PointIO", "Flex", "5069"):
+    for ptype in ("PointIO", "Flex"):
         assert _chassis(ptype, 14), ptype
 
 
 def test_fixed_1756_chassis_is_never_flagged():
     """A 13-slot ICP chassis holding two cards is a normal design."""
     assert not _chassis("ICP", 13)
+
+
+def test_a_5069_adapter_bus_is_fixed_like_a_chassis():
+    """The real 5069-AENTR: Bus Size 32 whatever it carries."""
+    assert not _chassis("5069", 32)
 
 
 # --- non_standard_processor / non_standard_firmware ------------------------

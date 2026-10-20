@@ -18,6 +18,36 @@ Real logic is extremely top-heavy: **4 mnemonics cover half of all
 occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
 individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
 
+## The real safety-controller programs (2026-10-20)
+
+Counted over the ten real 1756 / 5069 safety-controller programs the safety figures use
+(RS-02 to RS-10 and RS-17, RS-04 as its unlocked re-export), from the files in this checkout:
+**21,539 standard RLL rungs, 136,996 native instruction occurrences, 93 distinct mnemonics**,
+132 calls of 70 declared AOIs, 4,552 ST lines, and 882 safety-routine rungs holding 5,815
+instructions.
+
+**Every native standard instruction carries a weight.** One occurrence is unpriced: a call
+to an AOI the export does not declare (a partial export, not a missing weight). The set is as
+top-heavy as the standard one: 3 mnemonics cover half the occurrences, 15 cover 90%, 39 cover
+99%.
+
+XIC 45,485 · XIO 16,073 · OTE 16,061 · MOV 11,604 · OTU 6,156 · EQU 5,213 · OTL 4,783 ·
+TON 3,173 · ONS 3,050 · CLR 2,758 · NEQ 2,275 · NOP 2,174 · COP 2,046 · ADD 1,711 ·
+LES 1,070 · GRT 1,043 · JSR 1,027 · LIM 933 · INSERT 777 · RES 764 · GEQ 714 · CONCAT 713 ·
+SUB 622 · FLL 606 · MUL 557 · CPT 549 · BTD 540 · GSV 479 · LEQ 459 · DIV 327 · DTOS 296 ·
+JMP 276 · LBL 254 · CMP 247 · CPS 232 · CTU 192 · MID 191 · RTO 162 · SSV 132 · MVM 121.
+
+Two differences from the seventeen matter: the **string instructions** (INSERT 777, CONCAT
+713, MID 191, and 2,424 STRING operands of EQU and 2,151 of MOV written as members behind an
+index — the weights were confirmed on STRING array elements, so `strx_*` measures these
+shapes, OQ-STRSHAPE) and **Structured Text** (4,552 lines, three times the seventeen's ~1,510;
+OQ-STSHAPE).
+
+**Safety routines:** XIC 2,855 · OTE 1,148 · XIO 753 · MOV 427 · DCS 135 · TON 116 ·
+ONS 87 · JSR 73 · NOP 57 · CROUT 43 · EQU 34 · CLR 33 · OTU 20 · TOF 11 · ESTOP 4 · ROUT 4 ·
+AFI, OTL, LC, GEQ 2 each. All of it is priced in the safety partition (MEMORY_MODEL, "Safety
+memory is a separate partition"); none of it costs standard memory.
+
 ## How far "exact" reaches (2026-10-04)
 
 **98.6% of real instruction occurrences are mnemonics whose weight has been confirmed on a full

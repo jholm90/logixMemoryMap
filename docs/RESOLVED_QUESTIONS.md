@@ -1627,6 +1627,15 @@ bytes higher, measured against a baseline that does not itself reconcile. The fi
 composition behind it is not available, so it is recorded rather than silently trusted
 or silently dropped.
 
+**The composite case is closed, no code change (2026-10-20).** Round 5's 24 captured
+`safe_iol_*` files carrying `AXIS_CIP_DRIVE` tags (1 to 5 axes a file, on 2198-D012 / D020 /
+D032 / D057 / S086, a 2198-H008 and a PowerFlex 527, safety and standard drives, the
+1756-L81ES plant) each read +1,786 to +1,794 against the engine, and the plant alone
+(`safe_n00`) and the axis-free drive files (`safe_iol_kinsafe_1`, `safe_iol_kinstd_1`) read
++1,794: every axis tag prices at zero residual, within the ±8 noise floor, from one axis to
+five. The wired constants are the right set; the 92–100-higher totals were the baseline that
+did not reconcile.
+
 ## OQ-AXISMARGINAL — multi-drive axis scaling
 
 **CLOSED, and it is the canonical validity failure.** Every file in the sweep carried

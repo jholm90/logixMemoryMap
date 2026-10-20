@@ -21,6 +21,16 @@ real AOIs write it — InOut reads +8 per instruction, scan-mode routines +268, 
 the stopping rule is met; the max is not (export 27). The set still under-predicts overall
 (sum-weighted +0.95%). Next: TASKS 0p.
 
+### Real safety-controller programs — 2026-10-20 (safety pit stop, TASKS 0zb / 0zc)
+
+Excluded from the accuracy figure above by rule, and tracked because the owner's goal is the
+standard figure on programs that carry safety. On the ten real 1756 / 5069 safety-controller
+programs the **standard figure reads mean 1.58%, worst −3.64%** (RS-04 as its unlocked
+re-export); what is left is about 72 bytes an ST line on three programs (OQ-STSHAPE) and the
+module and AOI BOOL terms on two (OQ-MODREPEAT, OQ-AOIBOOLINST). The **safety figure** is 1.5%
+to 44% low, every gap a safety device type with a file in batch A or round 5. Batch A, 162
+files, and round 5's 17 are built and waiting for capture; batch B is the last.
+
 ### Earlier — after the capture batch that followed the blind set
 
 **Now 2.18% mean, 4.31% worst, all seventeen under**, since the series-output law was

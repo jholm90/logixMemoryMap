@@ -23,11 +23,15 @@ A 1734 rack carries its own safety network number, shared by its safety cards an
 independent of the controller's; a module on the controller's own bus carries that bus
 port's number (both as compiled exports have them).
 
-Not here, each for want of a block proven or compiled in this repository: the Kinetix 2198
-safety drive, 1756-IB16S / OBV8S, and the PowerFlex 527 (every real one carries an axis
-and a motion group).
+With --local, the devices with no block in this repository, from templates taken from
+compiled real exports (owner's permission, 2026-10-19) and kept with their files in the
+git-ignored samples/local/ (local_plan): 1756-IB16S / OBV8S, the Kinetix 5700 and 5300
+safety drives with and without their axes, the PowerFlex 527, the BNI00HN, the robot safety
+interfaces (generic Ethernet device, FANUC), the revision-11 2198-D032 with network STO,
+RS-04's packed 5069 safety cards on its v31 controller, and the Kinetix drive and the 1756
+pair at SIL3.
 
-Run: python -m sample_gen.gen_safety_io [--only REGEX]
+Run: python -m sample_gen.gen_safety_io [--local] [--only REGEX]
 """
 
 from __future__ import annotations
@@ -201,10 +205,15 @@ LOCAL_BLOCKS = REPO_ROOT / "samples" / "local" / "safety_io_blocks.json"
 LOCAL_OUT = REPO_ROOT / "samples" / "local" / "safety_io"
 
 
-def local_block(key: str, name: str, parent: str, parent_port: str, address: str, snn: str) -> str:
+def local_block(key: str, name: str | None, parent: str, parent_port: str, address: str, snn: str) -> str:
+    """A template from samples/local/safety_io_blocks.json with its placeholders filled. A
+    card on a 5069 controller's own bus has no Name (its template no {NAME}): name None."""
     out = json.loads(LOCAL_BLOCKS.read_text(encoding="utf-8"))[key]
     for token, value in (("{NAME}", name), ("{PARENT}", parent), ("{PARENT_PORT}", parent_port),
                          ("{ADDRESS}", address), ("{SNN}", snn)):
+        if value is None:
+            assert token not in out, (key, token)
+            continue
         assert out.count(token) == 1, (key, token)
         out = out.replace(token, value)
     return out
@@ -244,6 +253,21 @@ def local_plan() -> list[tuple[str, str, dict]]:
         for n in (1, 2):
             files.append((f"safe_iol_{key}_{n}", f"{n} {what} on the L81ES plant's Ethernet port, against safe_n00",
                           {"robot": key, "count": n}))
+    # What the safety figure still needs (round 6, TASKS 0zb): a rev-11 2198 drive's network
+    # STO (AB:CIP_Drive_Safety2, RS-01), the 5069 packed safety cards on their v31
+    # 5069-L310ERS2 (RS-04), and the round-5 devices again at SIL3 (RS-01, RS-03, RS-17).
+    for n in (1, 2):
+        files.append((f"safe_iol_kx11_d032_{n}", f"{n} 2198-D032-ERS3 at module revision 11 with network STO "
+                      "(CIP_Drive_Safety2) on a 2198-P208, no axes, L81ES plant: safe_iol_kinsafe_"
+                      f"{n} with the revision-11 drive", {"kinetix11": n}))
+        for key, catalog in (("5069ib8sp", "5069-IB8S/A"), ("5069obv8sp", "5069-OBV8S/A")):
+            files.append((f"safe_iol_5069p_{key[4:-1]}_{n}", f"{n} {catalog} at module revision 1, packed data, on a "
+                          "5069-L310ERS2 v31's own bus, against safe_base_5069l310_v31", {"packed": key, "count": n}))
+        files.append((f"safe_iol_sil3_kx_d032_{n}", f"{n} 2198-D032-ERS3 with integrated safety and their axes on "
+                      "the proven bus, on the SIL3 L81ES plant, against safe_sil3_n00 and safe_iol_kx_d032_saf_"
+                      f"{n} (SIL2)", {"sil3kx": n}))
+    files.append(("safe_iol_sil3_1756pair", "one 1756-IB16S/A and one 1756-OBV8S/A in the SIL3 L81ES chassis beside "
+                  "its partner, against safe_sil3_n00 and safe_iol_1756pair (SIL2)", {"sil3pair": True}))
     for n in (1, 2):
         files.append((f"safe_iol_h008s_{n}", f"{n} 2198-H008-ERS2 (Kinetix 5300, safety) with its axis on a "
                       "5069-L330ERMS2's port 4, against safe_base_5069l330_v35", {"h008": n}))
@@ -277,6 +301,38 @@ def _motion_rpi(block: str) -> str:
 
 def local_make(sample_id: str, kw: dict) -> str:
     from sample_gen.gen_module_motion import _MOTION_GROUP_TAG_XML, _axis_tag, _drive_module_xml, bus_supply_with_converter
+    from sample_gen import gen_safety_round6 as R6
+    if "kinetix11" in kw:
+        # safe_iol_kinsafe_n's shape (captured clean) with the drive swapped: the proven axis
+        # carries attributes the real revision-11 drive's axes do not, so no axes here.
+        l5x = R.build(sample_id)
+        snn = local_snn(l5x, "2")
+        supply, _converter = bus_supply_with_converter()
+        return with_modules(l5x, [supply] + [local_block("2198d032s11", f"Drv{i + 1}", "Local", "2",
+                                                         f"192.168.1.{20 + i}", snn) for i in range(kw["kinetix11"])])
+    if "sil3kx" in kw:
+        l5x = R6._sil3_1756(sample_id, False)
+        snn = local_snn(l5x, "2")
+        supply, converter = bus_supply_with_converter(name="Bus_Supply", address="192.168.1.10",
+                                                      axis_name="Bus_Converter_Axis")
+        modules, axes = [supply], [_MOTION_GROUP_TAG_XML, converter]
+        for i in range(kw["sil3kx"]):
+            name, address = f"Drv{i + 1}", f"192.168.1.{20 + i}"
+            modules.append(_motion_rpi(local_block("2198d032s", name, "Local", "2", address, snn)))
+            axes += [_axis_tag(f"{name}_{ch}_Axis", f"{name}:{ch}") for ch in AXIS_CHANNELS["2198-D032-ERS3"]]
+        return with_tags(with_modules(l5x, modules), axes)
+    if "packed" in kw:
+        l5x = R6._base(sample_id, "5069-L310ERS2", "SIL2", "31", False)
+        snn = local_snn(l5x, "1")
+        prefix = "SIn" if "ib8s" in kw["packed"] else "SOut"
+        return with_modules(l5x, [local_block(kw["packed"], f"{prefix}{slot}", "Local", "1", str(slot), snn)
+                                  for slot in range(1, kw["count"] + 1)])
+    if "sil3pair" in kw:
+        l5x = R6._sil3_1756(sample_id, False)
+        snn = local_snn(l5x, "1")
+        # slot 1 is the partner's
+        return with_modules(l5x, [local_block(k, f"SafeCard{slot}", "Local", "1", str(slot), snn)
+                                  for slot, k in ((2, "1756ib16s"), (3, "1756obv8s"))])
     if "h008" in kw:
         name = "SafeBase" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
         l5x = R4.build_base(name, "5069-L330ERMS2", "35", "35.05", content=False)

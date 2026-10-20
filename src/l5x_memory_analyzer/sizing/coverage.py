@@ -46,14 +46,16 @@ from l5x_memory_analyzer.parser.logic import (
 # Priced outside logic_instructions.weights -- see the module docstring.
 _PRICED_ELSEWHERE = frozenset({"CPT", "BST", "NXB", "BND"})
 
-# Safety-task instructions: OUT OF SCOPE, not unpriced.
+# Safety-routine instructions: priced in the SAFETY partition, not unpriced.
 #
 # Reported as coverage gaps, which was wrong in the same way
 # reporting ST as unpriced was wrong after it got wired -- it overstates the
 # hole and it buries the gaps that are real. These five only appear inside a
-# GuardLogix SafetyProgram, which this project does not size at all
-# (SafetyLevel/safety-task content is explicitly out of scope; CROUT was
-# reclassified the same way see OQ-CROUT-MAPC-BUILDFAIL).
+# GuardLogix SafetyProgram. Each costs 0 standard; its rung cost is the safety
+# partition's (sizing/safety.py, MEMORY_MODEL "Safety memory is a separate
+# partition", OQ-SAFETYPARTITION; CROUT 492 a rung). CROUT's errored
+# instrfirst_crout_x10 row is a standard controller refusing a safety
+# instruction (OQ-CROUT-MAPC-BUILDFAIL), not a missing weight.
 #
 # Identified from their real call shapes in the corpus, which all take the
 # `_S`-suffixed safety reset tags that only exist in a safety task:
