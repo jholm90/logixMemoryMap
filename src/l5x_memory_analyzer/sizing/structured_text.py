@@ -51,7 +51,10 @@ from l5x_memory_analyzer.parser.logic import CptCall, aoi_call_sites, routine_la
 # A line is comment-only/blank if, once a trailing "// ..." or a whole
 # "(* ... *)" is stripped, nothing executable remains.
 _LINE_COMMENT = re.compile(r"//.*$")
-_BLOCK_COMMENT = re.compile(r"\(\*.*?\*\)", re.DOTALL)
+# Both block forms the language has. `/* */` was missed: real programs carry it, and a
+# header comment holding "For", "If" or ":=" was charged as a FOR block or a statement --
+# a 400-line test routine with one such comment line per statement read 133 KB high.
+_BLOCK_COMMENT = re.compile(r"\(\*.*?\*\)|/\*.*?\*/", re.DOTALL)
 
 # Control-flow keywords, counted on the code with comments already removed
 # so a keyword mentioned inside a comment is never charged.
@@ -70,11 +73,13 @@ _CASE_SELECTOR = re.compile(r"^\s*[\w.,\s]+:(?!=)", re.M)
 # instead of 100 and over-predicted it by 12.40%. A block terminator is not
 # a statement -- the construct it closes is already charged by its own
 # if_block/for_block/while_block/case_block term.
-_ASSIGNMENT = re.compile(r"(?P<lhs>[A-Za-z_][\w.\[\]]*)\s*:=\s*(?P<rhs>[^;]*);")
+_ASSIGNMENT = re.compile(r"(?P<lhs>[A-Za-z_]\w*(?:\[[^\]]*\]|\.\w+)*)\s*:=\s*(?P<rhs>[^;]*);")
 # A right-hand side that is nothing but a numeric/boolean literal.
 _BARE_LITERAL_RHS = re.compile(r"^\s*(?:-?\d+(?:\.\d+)?|TRUE|FALSE)\s*$", re.I)
 _OPERATOR_TOKEN = re.compile(r"\*\*|[+\-*/]|\bMOD\b|\bAND\b|\bOR\b|\bXOR\b", re.I)
-_IDENT = re.compile(r"[A-Za-z_][\w.]*")
+_IDENT_START = re.compile(r"[A-Za-z_]\w*")
+_KEYWORDS = frozenset({"MOD", "AND", "OR", "XOR", "NOT", "TRUE", "FALSE"})
+_SUBSCRIPTS = re.compile(r"\[[^\[\]]*\]")
 # A numeric LITERAL, not the digits inside an identifier: `R0 * R1` has no
 # literals in it, and reading its "0" and "1" as integer literals made every
 # all-REAL statement look like it had integer operands (found when
@@ -213,7 +218,7 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
     unmeasured: list[str] = []
     unpriced_ops: set[str] = set()
     for call in routine.cpt_calls:
-        dest_is_real = bool(tag_types) and tag_types.get(call.dest) == "REAL"
+        dest_is_real = _type_of(tag_types, call.dest) == "REAL"
         # The operator premium is the CPT tier table's own step above tier 1 --
         # ST carries no separate classification, because the 16 bytes a
         # multiplicative operator costs over an additive one IS that step. An
@@ -225,15 +230,11 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
         # per operator here against tier 3's 80, the premium is 0 (not 16) on a
         # REAL destination, and a one-operator bitwise statement costs 124 rather
         # than the additive 40 with no premium at all.
-        integer_named = sum(1 for name in call.operand_names
-                            if tag_types and tag_types.get(name) in _INTEGER_TYPES)
+        source_types = [_type_of(tag_types, name) for name in call.operand_names]
+        integer_named = sum(1 for t in source_types if t in _INTEGER_TYPES)
         conversion_bytes = 0
-        if dest_is_real and tag_types:
-            conversion_bytes = sum(
-                st.conversion_bytes_for(tag_types[name])
-                for name in call.operand_names
-                if tag_types.get(name) in _INTEGER_TYPES
-            )
+        if dest_is_real:
+            conversion_bytes = sum(st.conversion_bytes_for(t) for t in source_types if t in _INTEGER_TYPES)
         # The premium table follows the OPERANDS, not the destination -- an
         # all-floating-point statement pays none. Without a tag table every
         # statement reads as integer-operand, which is the status quo.
@@ -284,21 +285,75 @@ def size_st_control_flow(routine: StructuredTextRoutine, model) -> int:
     )
 
 
+def _strip_subscripts(text: str) -> str:
+    while True:
+        out = _SUBSCRIPTS.sub("", text)
+        if out == text:
+            return out
+        text = out
+
+
+def _operands(text: str) -> list[str]:
+    """Every top-level operand path in an expression, written whole: `StU[Ix].A`, `MPS.Count`,
+    `Arr[Stn.Idx + 1]`. What sits inside a subscript is the index, not a source, and a name
+    followed by `(` is a function."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        m = _IDENT_START.match(text, i)
+        if not m or (i and (text[i - 1].isalnum() or text[i - 1] in "_.")):
+            i += 1
+            continue
+        j = m.end()
+        while j < n:
+            if text[j] == "[":
+                depth = 0
+                while j < n:
+                    depth += {"[": 1, "]": -1}.get(text[j], 0)
+                    j += 1
+                    if depth == 0:
+                        break
+            elif text[j] == "." and j + 1 < n and (text[j + 1].isalnum() or text[j + 1] == "_"):
+                j += 1
+                while j < n and (text[j].isalnum() or text[j] == "_"):
+                    j += 1
+            else:
+                break
+        word = text[i:j]
+        if word.upper() not in _KEYWORDS and not text[j:].lstrip().startswith("("):
+            out.append(word)
+        i = j
+    return out
+
+
+def _type_of(tag_types, path: str) -> str | None:
+    """An operand path's data type: through the scope's resolver (sizing/operand_types.py)
+    when one is given, which follows members, aliases, program and AOI scope; from a flat
+    {name: type} table only for a bare name or an element of one."""
+    if not tag_types:
+        return None
+    resolve = getattr(tag_types, "resolve", None)
+    if resolve is not None:
+        return resolve(path)
+    base = _strip_subscripts(path)
+    return None if "." in base else tag_types.get(base)
+
+
 def _cpt_call_for(lhs: str, rhs: str) -> CptCall:
     """Represents one ST assignment as the CPT call it costs like.
 
     Built to the same shape sizing/logic.py already consumes for a real
     CPT(...) rung, so the REAL-destination float path, the operator tiers
     and the literal handling all apply to ST for free rather than being
-    reimplemented (and drifting)."""
-    numbers = _NUMBER.findall(rhs)
+    reimplemented (and drifting). Operands are kept whole -- `StU[i].R` is a REAL, not
+    the UDT `StU` plus a stray `i` and `R` -- and an index is not an operator or a
+    literal of the expression."""
+    flat = _strip_subscripts(rhs)
+    numbers = _NUMBER.findall(flat)
     return CptCall(
-        operators=_OPERATOR_TOKEN.findall(rhs),
-        dest=lhs.split("[")[0],
-        operand_names=tuple(
-            idn.split("[")[0] for idn in _IDENT.findall(rhs)
-            if idn.upper() not in {"MOD", "AND", "OR", "XOR", "TRUE", "FALSE"}
-        ),
+        operators=_OPERATOR_TOKEN.findall(flat),
+        dest=lhs.strip(),
+        operand_names=tuple(_operands(rhs)),
         int_literals=sum(1 for x in numbers if "." not in x),
         float_literals=sum(1 for x in numbers if "." in x),
     )

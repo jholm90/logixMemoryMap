@@ -1510,6 +1510,15 @@ holds two float literals inside arithmetic.
 
 ## Structured Text — FITTED
 
+**What the law is measured on, and how an operand is read (OQ-STSHAPE, 2026-10-20).**
+Every constant below was measured on bare tags (`D0`, `R1`) and literal array indexes.
+Comments of all three forms (`//`, `(* *)`, `/* */`) are free and stripped before
+counting. An operand is read whole and typed through the routine's own scope — members,
+aliases, program tags, an AOI's parameters and locals — as ladder operands are
+(`sizing/operand_types.py`); a subscript is the index, not an operand, operator or
+literal of the expression. Member paths, tag indexes, comparisons and boolean operators
+in conditions, BOOL destinations and ELSE are not yet measured in ST (`stshape_*`).
+
 **One law**, replacing a five-entry table keyed on operator count whose fallback
 over-predicted a one-operator assignment roughly threefold:
 

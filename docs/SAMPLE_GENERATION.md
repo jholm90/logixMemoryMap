@@ -376,6 +376,22 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
+## To capture: safety pit stop, batch A of 2 — 63 files (TASKS 0zb)
+
+Built 2026-10-20 on the owner's instruction, every file on the realism floor and lint
+clean: `stshape_*` (42, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),
+`modrep_*` (15, `gen_module_repeat.py`, 1756-L81E v35: five catalogs at 1 / 2 / 4,
+OQ-MODREPEAT) and `safe_io6_*` (6, `gen_safety_round6.py`, 1756-L81ES v35: 1734-OB8S/A,
+1734-IB8S/B one connection, 442G-MABLB, OQ-SAFETYPARTITION). The roster, what each file
+discriminates and against which capture: TASKS 0zb. Round 5's 17 `safe_io_*` are still to
+capture alongside.
+
+An AOI whose Logic is ST is `aoi_xml()`'s definition with its self-closed RLL Logic
+routine replaced by an ST one (`gen_st_shapes.aoi_definition`), the shape real AOI
+definitions carry. A 442G-MABLB and a 1734-OB8S/A import only with their catalog's
+ExtendedProperties (`gen_safety_io.EXTENDED`, `EXTENDED_PUBLIC`), the same defect that
+failed their `modulesweep_*_r2` files.
+
 ## Captured: operand spelling — 50 files, zero errors (OQ-TYPEDMEMBER, INDIRECTUDT, STRINGMOV, MIXEDTYPE resolved)
 
 `gen_operand_spelling.py`, `samples/generated/opspell/`, all on the realism baseline, 500

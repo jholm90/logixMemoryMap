@@ -54,6 +54,12 @@ EXTENDED = {
     ("1734-OB8S/B", "2", 2): ("205", "1734-OB8S"),
     ("5069-IB8S/A", "2", 1): ("16777344", "5069-IB8S"),
     ("5069-OBV8S/A", "3", 2): ("16777452", "5069-OBV8S"),
+    ("1734-OB8S/A", "1", 2): ("204", "1734-OB8S"),
+}
+# Profiles whose ExtendedProperties name the vendor first (every compiled export of them).
+EXTENDED_PUBLIC = {
+    ("442G-MABLB-UR-E0JP4679/A", "1", 2): ("<Vendor>Rockwell Automation/Allen-Bradley</Vendor>"
+                                          "<CatNum>442G-MABLB-UR-E0JP4679</CatNum><ConfigID>102</ConfigID>"),
 }
 
 # Each 1734 rack's own safety network number: the ones the repository's blocks carry.
@@ -80,6 +86,8 @@ TEMPLATES = {
     "ob8s": _module(MS._MODULE_CHAINS["1734-OB8S/B"][0], "1734-OB8S/B"),
     "5069ib8s": _module(MS._MODULE_CHAINS["5069-IB8S/A"][0], "5069-IB8S/A"),
     "5069obv8s": _module(MS._MODULE_CHAINS["5069-OBV8S/A"][0], "5069-OBV8S/A"),
+    "ob8sa": _module(MS._MODULE_CHAINS["1734-OB8S/A"][0], "1734-OB8S/A"),
+    "442g": _module(MS._MODULE_CHAINS["442G-MABLB-UR-E0JP4679/A"][0], "442G-MABLB-UR-E0JP4679/A"),
 }
 
 
@@ -88,9 +96,13 @@ def with_extended(block: str) -> str:
     catalog = re.search(r'CatalogNumber="([^"]+)"', block).group(1)
     major = re.search(r'\bMajor="(\d+)"', block).group(1)
     conns = len(re.findall(r"<Connection\b", block))
-    config_id, catnum = EXTENDED[(catalog, major, conns)]
-    ext = (f"<ExtendedProperties>\n<public><ConfigID>{config_id}</ConfigID><CatNum>{catnum}</CatNum>"
-           f"</public>\n</ExtendedProperties>\n</Module>")
+    key = (catalog, major, conns)
+    if key in EXTENDED_PUBLIC:
+        public = EXTENDED_PUBLIC[key]
+    else:
+        config_id, catnum = EXTENDED[key]
+        public = f"<ConfigID>{config_id}</ConfigID><CatNum>{catnum}</CatNum>"
+    ext = f"<ExtendedProperties>\n<public>{public}</public>\n</ExtendedProperties>\n</Module>"
     assert "<ExtendedProperties>" not in block
     return block[: block.rindex("</Module>")] + ext
 

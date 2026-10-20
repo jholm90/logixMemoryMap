@@ -685,7 +685,12 @@ def build_report(root: ET.Element, model: MemoryModel,
     for st_routine in parse_st_routines(root):
         if st_routine.program_name in safety_program_names:
             continue
-        st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, tag_types)
+        # Operand types through the routine's own scope (OQ-STSHAPE): members, program
+        # tags and an AOI's parameters resolve, as they do for ladder operands.
+        st_scope = (file_operand_types.for_aoi(st_routine.program_name[len("aoi:"):])
+                    if st_routine.program_name.startswith("aoi:") else None) \
+            or file_operand_types.for_program(st_routine.program_name)
+        st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, st_scope)
         st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
         if st_unpriced_ops:
             errors.append(SizeError(

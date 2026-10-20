@@ -66,3 +66,20 @@ def test_a_safety_device_is_priced_by_its_connections_types_and_only_when_measur
     assert sum(r[3] for r in standard_rows(drives, m)) == 4160 + 3 * 684
     pair = [SafetyDevice("I", "1756-IB16S/A", ("AB:5000_SDI16",)), SafetyDevice("O", "1756-OBV8S/A", ("AB:5000_SDO8",))]
     assert sum(r[3] for r in standard_rows(pair, m)) == 368 + 1832 + 1104 - 2 * 917
+
+
+def test_round_6_is_6_files_each_a_compiled_shape():
+    import xml.etree.ElementTree as ET
+    from sample_gen import gen_safety_round6 as R6
+    from l5x_memory_analyzer.sizing.safety_io import device_key, safety_devices
+    plan = {sid: kw for sid, _, kw in R6.plan()}
+    assert len(plan) == 6 and not set(plan) & {sid for sid, _, _ in IO.plan()}
+    keys = {}
+    for sid, kw in plan.items():
+        l5x = R6.make(sid, kw)
+        assert not lint_l5x(l5x), sid
+        keys[sid] = {device_key(d) for d in safety_devices(ET.fromstring(l5x))}
+    assert keys["safe_io6_ob8sa_2"] == {"AB:1734_OB8S+AB:1734_OB8S_Safety3"}
+    assert keys["safe_io6_ib8s1c_1"] == {"AB:1734_IB8S_Safety6"}
+    assert keys["safe_io6_442g_2"] == {"AB:442G_MABB_E0JP4679"}
+    assert "<ConfigID>204</ConfigID>" in R6.make("safe_io6_ob8sa_1", plan["safe_io6_ob8sa_1"])

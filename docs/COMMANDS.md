@@ -274,10 +274,14 @@ The batches: `python -m sample_gen.gen_safety_partition [--only REGEX]` (round 1
 `python -m sample_gen.gen_safety_round2 [--only REGEX]` (round 2, TASKS 0u) and
 `python -m sample_gen.gen_safety_round3 [--only REGEX]` (round 3, logic, TASKS 0v) and
 `python -m sample_gen.gen_safety_round4 [--only REGEX]` (round 4, TASKS 0x) and
-`python -m sample_gen.gen_safety_io [--only REGEX]` (round 5, safety I/O, TASKS 0za). All
-five, and `--engine`, run on every core with a progress line per file and a watchdog
+`python -m sample_gen.gen_safety_io [--only REGEX]` (round 5, safety I/O, TASKS 0za) and
+`python -m sample_gen.gen_safety_round6` (round 6, TASKS 0zb). All six, and `--engine`, run on every core with a progress line per file and a watchdog
 (`sample_gen/progress.py`). Use `--only` for a partial rebuild: a full one restamps every
 file's dates, which changes its hash and queues every captured file for reconversion.
+
+The standard-figure half of the safety pit stop (TASKS 0zb): `python -m sample_gen.gen_st_shapes
+[PREFIX]` (`stshape_*`, OQ-STSHAPE; a prefix such as `stshape_aoi_` builds only those) and
+`python -m sample_gen.gen_module_repeat` (`modrep_*`, OQ-MODREPEAT).
 
 ### `capture_errors.py` — the error gate
 
