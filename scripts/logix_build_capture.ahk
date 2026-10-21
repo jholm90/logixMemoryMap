@@ -385,12 +385,12 @@ Status(msg) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
         }
-        Sleep 2250
+        Sleep 250
         Send "^v"   ; paste the path PowerShell put on the clipboard
-        Sleep 2250
+        Sleep 250
         Send "{Enter}"
 				
-				sleep 8000
+				sleep 2000
 
         ; Switching away from a Build-modified project can prompt to save
         ; first -- discard, never persist Build's cache write into the
