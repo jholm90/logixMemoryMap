@@ -381,22 +381,22 @@ Status(msg) {
         Status("Opening next file (from clipboard)")
         Send "^o"
 
-        if !WinWait("Open Project", , 5) {
+        if !WinWait("Open Project", , 10) {
             MsgBox "Open Project dialog didn't appear within 5s -- check the Ctrl+O shortcut."
             continue
         }
-        Sleep 250
+        Sleep 2250
         Send "^v"   ; paste the path PowerShell put on the clipboard
-        Sleep 250
+        Sleep 2250
         Send "{Enter}"
 				
-				sleep 1000
+				sleep 8000
 
         ; Switching away from a Build-modified project can prompt to save
         ; first -- discard, never persist Build's cache write into the
         ; tracked sample file. TODO: confirm 'n' is really the access key
         ; for this dialog's "No"/"Don't Save" button.
-        if WinWait(, "Save the changes?", 2)
+        if WinWait(, "Save the changes?", 10)
             Send "n"
 
         ; Wait for the project to actually load. TODO: replace with a real
