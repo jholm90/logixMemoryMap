@@ -234,14 +234,23 @@ $alreadyLogged = @{}
 # back to a path through the spec side.
 $pathById = @{}
 $manifest | ForEach-Object { $pathById[$_.sample_id] = $_.l5x_path }
+# Also keyed on sample_id itself, which is the file's own name: a file captured from a
+# directory other than the one its spec row names (the local safety I/O files are built in
+# samples/local/safety_io/ and captured from samples/generated/safety/) would otherwise
+# never count as logged and be captured again on every pass.
+$loggedIds = @{}
 $captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ') } |
-    ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true } }
+    ForEach-Object {
+        $loggedIds[$_.sample_id] = $true
+        if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true }
+    }
 $mismatchFlagged = @{}
 $captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ' } |
     ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
-$remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) }
+$remaining = $rows | Where-Object { -not $alreadyLogged.ContainsKey((Get-RelPath $_.l5x_path)) -and
+    -not $loggedIds.ContainsKey((Get-SampleIdAndDescription (Get-RelPath $_.l5x_path)).Id) }
 if ($Limit -gt 0) { $remaining = $remaining | Select-Object -First $Limit }
 $retryCount = @($remaining | Where-Object { $mismatchFlagged.ContainsKey((Get-RelPath $_.l5x_path)) }).Count
 Write-Host "$($rows.Count) converted sample(s) in log; $($alreadyLogged.Count) already logged; $($remaining.Count) remaining this pass ($retryCount of those are window-title-mismatch/zero-capacity retries)."

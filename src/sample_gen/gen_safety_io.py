@@ -405,11 +405,14 @@ def main() -> None:
     ap.add_argument("--local", action="store_true",
                     help="build the local-only families into samples/local/safety_io/ (needs the templates there)")
     args = ap.parse_args()
-    roster, build, out = (local_plan(), _make_local, LOCAL_OUT) if args.local else (plan(), _make, G.OUT_ROOT)
+    roster, build = (local_plan(), _make_local) if args.local else (plan(), _make)
     jobs = [(sid, desc, kw) for sid, desc, kw in roster if not args.only or re.search(args.only, sid)]
     predicted = run(((sid, (sid, kw)) for sid, _, kw in jobs), build, label="safety-io")
+    # A local file is built in samples/local/safety_io/ and captured from
+    # samples/generated/safety/ (CLAUDE.md exception), so its spec row names the latter: the
+    # capture tooling and every reader find it where it is captured.
     for sample_id, description, _ in jobs:
-        append_manifest_row(sample_id, description, G.CATEGORY, out / f"{sample_id}.L5X", predicted[sample_id])
+        append_manifest_row(sample_id, description, G.CATEGORY, G.OUT_ROOT / f"{sample_id}.L5X", predicted[sample_id])
 
 
 if __name__ == "__main__":
