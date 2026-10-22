@@ -160,6 +160,14 @@ Cumulative:
 
 V3 and V4 only if practical in Studio; Part 2's C and D answer the same questions.
 
+Predicted for each edit before any reading (safety figure, from the engine's 182,826 for RS-17
+against its reading of 197,262): **V1** the engine drops 10,836 (the 29 calls 10,572 and the
+264 a file that calls an AOI pays); if the safety call extra is 22 an operand the reading drops
+~14,700. **V2** the engine drops a further 7,316 (29 instances 6,168, the definition's 800 and
+its logic 348); packed instances drop ~1,400 less; an Output AOI parameter at ~300 drops
+~8,700 more. **V3** the engine drops 0; at 4.3 a description character ~14,000. **V4** the
+engine drops 0; each Public parameter's own cost × 59.
+
 **Part 2 — isolation files**, 1756-L81ES v35 on the realism plant with the safety task, AOIs
 of the project's own design (not AxisSTO's text):
 
