@@ -376,7 +376,7 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Built 2026-10-22: safety batch B, the last of 2 — 32 files awaiting conversion and capture (TASKS 0zd)
+## Built 2026-10-22: safety batch B, the last of 2 — 36 files awaiting conversion and capture (TASKS 0zd)
 
 `gen_safety_round7.py`, 26 files on the L81ES plant (the two drive files by `--local`): a
 safety AOI call's operand count (8 against the measured 2), its parameters not passed (16, 2
@@ -387,8 +387,9 @@ both scopes; DCS chained five to a rung; DCS rungs in an uncalled routine; a 173
 without a module name read by slot path against program BOOLs; a mixed-rung family (control,
 50, 100, 100 with a comment on every rung) of eight shapes real safety routines use; and the
 safety base on 5069-L320ERMS2 v32. Rebuilt: `safe_io6_5069_ob16_1` / `_mix_2_2` (ConfigID)
-and `strx_*_r2` (a DINT bit for the destination). Each file's blind prediction is in TASKS
-0zd; Studio-made variants of RS-17 are the owner's.
+and `strx_*_r2` (a DINT bit for the destination). Added: `strm_*`, four arrays of 400 of a UDT
+holding two STRINGs, two custom strings, one of each, a STRING and a DINT (OQ-STRSHAPE). Each
+file's blind prediction is in TASKS 0zd; Studio-made variants of RS-17 are the owner's.
 
 ## Captured 2026-10-21: safety pit stop, batch A of 2 — 217 readings (TASKS 0zb)
 

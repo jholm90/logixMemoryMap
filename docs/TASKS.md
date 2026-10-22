@@ -100,13 +100,14 @@ explain only part of the −72 a line; the module law has never been read on the
 floor (every round-2 `modrep_*` file is a blind prediction); and packed 5069 cards' type
 sharing is untested until `safe_io6_5069_*` reads.
 
-### 0zd. Safety batch B, the last of 2 — BUILT 2026-10-22 (32 files), awaiting conversion and capture; the four Studio variants are the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
+### 0zd. Safety batch B, the last of 2 — BUILT 2026-10-22 (36 files), awaiting conversion and capture; the four Studio variants are the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
 
 **Built 2026-10-22** (owner's go-ahead the same day): `gen_safety_round7.py` (26 files: Part 2
 as revised below plus no-call controls for each AOI family, a fourth mixed-rung file and Part
 4's one missing file), the two `safe_io6_5069_*` rebuilt by `gen_safety_round6`, and the four
 STRING files rebuilt as `strx_*_r2` (`gen_string_shapes --only`; the first build's rows keep
-their suspect readings, and the capture tool skips a sample id already read). Every file
+their suspect readings, and the capture tool skips a sample id already read), and four `strm_*`
+(`gen_string_members.py`) to say which string member a UDT array pays 4 more for (OQ-STRSHAPE). Every file
 passed lint and the realism floor; the two drive files passed `check_proven_blocks.py` (0
 unproven) and go through `samples/generated/safety/` by the 2026-10-19 exception.
 
@@ -132,6 +133,7 @@ costs nothing):
 | `safe_base_5069l320_v32` | 1,410 (standard 853,762) | standard: the v32 delta on a 5069 plant (the 1756-L81ES plant read +11,256) |
 | `safe_io6_5069_ob16_1` / `_mix_2_2` | standard 846,574 / 850,844 | OQ-MODREPEAT's packed 5069 cards |
 | `strx_equ_elem_r2` … `strx_neq_member_r2` | standard 1,256,194 (`_vidx` 1,332,994) | OQ-STRSHAPE's STRING EQU / NEQ operands |
+| `strm_s2_400` / `_c2_400` / `_sc_400` / `_sd_400` | standard 911,482 / 877,882 / 895,482 / 879,482 (plant −1,794 under each) | +1,600 on `s2` alone: a STRING member is 88; +3,200 on `c2` and +1,600 on `sc`: the custom string is 48 (OQ-STRSHAPE, the three programs' 2,744 to 12,677 nested STRINGs) |
 
 
 **Owner's direction 2026-10-22:** close the safety work first; the ST / FBD / SFC instruction
