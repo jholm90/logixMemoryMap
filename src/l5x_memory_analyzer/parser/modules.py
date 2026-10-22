@@ -38,6 +38,7 @@ import xml.etree.ElementTree as ET
 from functools import lru_cache
 
 from l5x_memory_analyzer.sizing.constants import load_memory_model
+from l5x_memory_analyzer.sizing.safety_io import device_of
 from dataclasses import dataclass, field
 
 # Same atomic-size convention as sizing/udt.py's compute_udt_size -- a
@@ -143,6 +144,12 @@ class ModuleInfo:
     # A CIP Safety device (a Safety* connection): priced by its own measured safety_io rows,
     # which module_type_sharing does not stack on.
     has_safety_connection: bool = False
+    # Its safety connection shape (sizing/safety_io.SafetyDevice), for a device of an
+    # unmeasured catalog, which the device law prices; None for any other module.
+    safety_device: object = None
+    # Packed bytes of the per-channel structures nested in its configuration tag (a 1756-IF8's
+    # four, an OF8's eight): configuration a further copy cannot share (OQ-MODREPEAT).
+    per_channel_config_bytes: int = 0
     # How many <Connection> elements it declares (a motion device's diagnostics + sync = 2).
     connection_count: int = 0
 
@@ -249,6 +256,42 @@ def _defined_types(module_el: ET.Element) -> tuple[tuple[str, tuple[tuple[str, s
             if struct is not None:
                 walk(struct)
     return tuple(seen.items())
+
+
+def _packed_bytes(struct: ET.Element) -> float:
+    """A decorated structure's data with BOOLs as bits, nested structures included."""
+    total = 0.0
+    for child in struct:
+        dtype = child.get("DataType") or ""
+        if child.tag == "DataValueMember":
+            total += 1 / 8 if dtype == "BOOL" else _atomic_bytes().get(dtype, 0)
+        elif child.tag == "ArrayMember":
+            dims = int((child.get("Dimensions") or "0").split(",")[0] or 0)
+            if dtype == "BOOL":
+                total += dims / 8
+            elif dtype in _atomic_bytes():
+                total += _atomic_bytes()[dtype] * dims
+            else:
+                total += sum(_packed_bytes(s) for e in child.findall("Element") for s in e.findall("Structure"))
+        elif child.tag in ("StructureMember", "Structure"):
+            total += _packed_bytes(child)
+    return total
+
+
+def _per_channel_config_bytes(module_el: ET.Element) -> int:
+    """Packed bytes of the structures nested in the module's configuration tag."""
+    total = 0.0
+    for tag_el in module_el.iter("ConfigTag"):
+        struct = tag_el.find("Data[@Format='Decorated']/Structure")
+        if struct is None:
+            continue
+        for child in struct:
+            dtype = child.get("DataType") or ""
+            if child.tag == "StructureMember":
+                total += _packed_bytes(child)
+            elif child.tag == "ArrayMember" and dtype != "BOOL" and dtype not in _atomic_bytes():
+                total += sum(_packed_bytes(s) for e in child.findall("Element") for s in e.findall("Structure"))
+    return round(total)
 
 
 def parse_modules(root: ET.Element) -> list[ModuleInfo]:
@@ -387,6 +430,8 @@ def parse_modules(root: ET.Element) -> list[ModuleInfo]:
             defined_types=_defined_types(module_el),
             has_safety_connection=any((c.get("Type") or "").startswith("Safety")
                                       for c in module_el.iter("Connection")),
+            safety_device=device_of(module_el),
+            per_channel_config_bytes=_per_channel_config_bytes(module_el),
             connection_count=sum(1 for _ in module_el.iter("Connection")),
         ))
     return result

@@ -272,6 +272,10 @@ class SafetyPartitionModel:
     standard_operand_confidence: str
     rung_bytes: dict[str, int]
     rung_bytes_known: frozenset[str]
+    # A produced / consumed controller-scope safety tag: its data block plus these.
+    produced_tag_extra_bytes: int = 0
+    consumed_tag_extra_bytes: int = 0
+    produced_consumed_confidence: str = "UNKNOWN"
 
     def data_block(self, data_bytes: int, is_array: bool = False) -> int:
         a = self.data_alignment
@@ -311,6 +315,37 @@ class SafetyIoModel:
     standard_each_bytes: dict[str, int]
     standard_shared_first_bytes: dict[str, int]
     standard_confidence: str
+    # The device law, for a device of types never measured: safety memory an overhead per
+    # safety connection plus its connection data; standard memory a per-device overhead by
+    # its connections plus the definitions of its data types the project has not defined.
+    unseen_input_connection_bytes: int = 0
+    unseen_output_connection_bytes: int = 0
+    unseen_data_byte_bytes: int = 0
+    unseen_standard_base_bytes: int = 0
+    unseen_standard_output_bytes: int = 0
+    unseen_standard_connection_bytes: int = 0
+    unseen_confidence: str = "FITTED"
+
+    def unseen_safety_bytes(self, d) -> int:
+        return (self.unseen_input_connection_bytes * d.safety_inputs
+                + self.unseen_output_connection_bytes * d.safety_outputs
+                + self.unseen_data_byte_bytes * d.safety_data_bytes)
+
+    def unseen_standard_bytes(self, d) -> int:
+        """The device's standard cost before its type definitions."""
+        return (self.unseen_standard_base_bytes
+                + (self.unseen_standard_output_bytes if d.safety_outputs else 0)
+                + self.unseen_standard_connection_bytes * d.standard_connections)
+
+
+@dataclass(frozen=True)
+class AoiScalarInstanceModel:
+    """A scalar AOI instance (OQ-AOIBOOLINST): its BOOLs packed into words as an array
+    element's are, and the slot rounded: align(packed data + tag overhead + offset)."""
+    packed: bool = False
+    slot_offset_bytes: int = 0
+    alignment_bytes: int = 8
+    confidence: str = "UNKNOWN"
 
 
 @dataclass(frozen=True)
@@ -1050,9 +1085,16 @@ class ModuleTypeSharingModel:
     # module_scoped_repeat_extra_bytes on top of its definition.
     module_scoped_type_pattern: str = ""
     module_scoped_repeat_extra_bytes: int = 0
+    # ... and only on a module whose catalog matches this (a 5069 card): the 843E's
+    # prefix-less types are shared like any other.
+    module_scoped_catalog_pattern: str = ""
+    # A further copy's per-channel configuration, held per copy: this times its packed bytes.
+    per_channel_config_factor: float = 0.0
 
-    def is_module_scoped(self, name: str) -> bool:
-        return bool(self.module_scoped_type_pattern) and re.match(self.module_scoped_type_pattern, name) is not None
+    def is_module_scoped(self, name: str, catalog: str = "") -> bool:
+        if not self.module_scoped_type_pattern or re.match(self.module_scoped_type_pattern, name) is None:
+            return False
+        return not self.module_scoped_catalog_pattern or re.match(self.module_scoped_catalog_pattern, catalog or "") is not None
 
     def unseen_base_for(self, connection_count: int) -> int:
         return self.unseen_base_multi_bytes if connection_count >= 2 else self.unseen_base_single_bytes
@@ -1283,6 +1325,17 @@ class StructuredTextModel:
     # declared type. stc_conv_mixed confirms the additivity to the byte.
     real_dest_source_conversion_bytes: dict[str, int] = field(default_factory=dict)
     st_aoi_call_routine_bytes: int = 0
+    # The shapes real ST is written in (OQ-STSHAPE): see memory_model.yaml structured_text.
+    further_index_in_statement_bytes: int = 0
+    condition_comparison_bytes: int = 0
+    condition_and_bytes: int = 0
+    condition_or_bytes: int = 0
+    condition_real_comparison_bytes: int = 0
+    else_branch: int = 0
+    bool_assign_bytes: int = 0
+    bool_assign_literal_bytes: int = 0
+    real_float_literal_bytes: int = 0
+    shape_confidence: str = "UNKNOWN"
 
     _OPERATOR_CLASSES = {
         "+": "additive", "-": "additive",
@@ -1578,6 +1631,8 @@ class MemoryModel:
     # Catalogs whose zero_connection_by_catalog cost was measured WITH modules beneath
     # them (a rack adapter), so it applies whether or not the module has children.
     zero_connection_adapters: frozenset = frozenset()
+    # A scalar AOI instance's packed BOOLs and rounded slot (OQ-AOIBOOLINST).
+    aoi_scalar_instance: AoiScalarInstanceModel = AoiScalarInstanceModel()
 
 
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
@@ -1650,6 +1705,16 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             },
             real_dest_source_conversion_bytes=dict(
                 raw["structured_text"].get("real_dest_source_conversion_bytes", {})),
+            further_index_in_statement_bytes=raw["structured_text"].get("further_index_in_statement_bytes", 0),
+            condition_comparison_bytes=raw["structured_text"].get("condition_comparison_bytes", 0),
+            condition_and_bytes=raw["structured_text"].get("condition_and_bytes", 0),
+            condition_or_bytes=raw["structured_text"].get("condition_or_bytes", 0),
+            condition_real_comparison_bytes=raw["structured_text"].get("condition_real_comparison_bytes", 0),
+            else_branch=raw["structured_text"].get("else_branch", 0),
+            bool_assign_bytes=raw["structured_text"].get("bool_assign_bytes", 0),
+            bool_assign_literal_bytes=raw["structured_text"].get("bool_assign_literal_bytes", 0),
+            real_float_literal_bytes=raw["structured_text"].get("real_float_literal_bytes", 0),
+            shape_confidence=raw["structured_text"].get("shape_confidence", "UNKNOWN"),
             confidence=raw["structured_text"]["confidence"],
         ),
         alarm_conditions=AlarmConditionModel(
@@ -1742,10 +1807,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             unseen_confidence=raw["module_type_sharing"]["unseen_confidence"],
             module_scoped_type_pattern=raw["module_type_sharing"].get("module_scoped_type_pattern", ""),
             module_scoped_repeat_extra_bytes=raw["module_type_sharing"].get("module_scoped_repeat_extra_bytes", 0),
+            module_scoped_catalog_pattern=raw["module_type_sharing"].get("module_scoped_catalog_pattern", ""),
+            per_channel_config_factor=raw["module_type_sharing"].get("per_channel_config_factor", 0.0),
         ),
         udt_definition_extra=raw.get("definition_scale_correction", {}).get("udt_definition_extra", 0),
         udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),
         aoi_instance_extra=raw.get("definition_scale_correction", {}).get("aoi_instance_extra", 0),
+        aoi_scalar_instance=AoiScalarInstanceModel(**raw.get("aoi_scalar_instance", {})),
         aoi_definition_extra=raw.get("definition_scale_correction", {}).get("aoi_definition_extra", 0),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
@@ -1883,6 +1951,9 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             ordinary_delta_bytes=dict(raw["safety_partition"]["ordinary_delta_bytes"]),
             rung_bytes=dict(raw["safety_partition"]["rung_bytes"]),
             rung_bytes_known=frozenset(raw["safety_partition"]["rung_bytes_known"]),
+            produced_tag_extra_bytes=raw["safety_partition"].get("produced_tag_extra_bytes", 0),
+            consumed_tag_extra_bytes=raw["safety_partition"].get("consumed_tag_extra_bytes", 0),
+            produced_consumed_confidence=raw["safety_partition"].get("produced_consumed_confidence", "UNKNOWN"),
         ),
         safety_io=SafetyIoModel(
             safety_bytes=dict(raw["safety_io"]["safety_bytes"]),
@@ -1891,6 +1962,13 @@ def load_memory_model(path: str | Path | None = None) -> MemoryModel:
             standard_each_bytes=dict(raw["safety_io"]["standard_each_bytes"]),
             standard_shared_first_bytes=dict(raw["safety_io"]["standard_shared_first_bytes"]),
             standard_confidence=raw["safety_io"]["standard_confidence"],
+            unseen_input_connection_bytes=raw["safety_io"].get("unseen_input_connection_bytes", 0),
+            unseen_output_connection_bytes=raw["safety_io"].get("unseen_output_connection_bytes", 0),
+            unseen_data_byte_bytes=raw["safety_io"].get("unseen_data_byte_bytes", 0),
+            unseen_standard_base_bytes=raw["safety_io"].get("unseen_standard_base_bytes", 0),
+            unseen_standard_output_bytes=raw["safety_io"].get("unseen_standard_output_bytes", 0),
+            unseen_standard_connection_bytes=raw["safety_io"].get("unseen_standard_connection_bytes", 0),
+            unseen_confidence=raw["safety_io"].get("unseen_confidence", "FITTED"),
         ),
         udt_definition=UdtDefinitionModel(
             base=raw["udt_definition"]["base"],

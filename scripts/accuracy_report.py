@@ -61,7 +61,7 @@ from l5x_memory_analyzer.sizing.constants import load_memory_model  # noqa: E402
 from l5x_memory_analyzer.sizing.report import build_report  # noqa: E402
 
 MANIFEST = REPO_ROOT / "samples" / "manifest.csv"
-_BAD_NOTE_MARKERS = ("WINDOW TITLE MISMATCH", "ZERO CAPACITY")
+_BAD_NOTE_MARKERS = ("WINDOW TITLE MISMATCH", "ZERO CAPACITY", "CAPACITY NOT NUMERIC")
 
 
 _MODEL = load_memory_model()

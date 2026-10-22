@@ -100,7 +100,88 @@ explain only part of the −72 a line; the module law has never been read on the
 floor (every round-2 `modrep_*` file is a blind prediction); and packed 5069 cards' type
 sharing is untested until `safe_io6_5069_*` reads.
 
-### 0zb. Safety pit stop, batch A of 2 — 162 files BUILT 2026-10-20, to capture with round 5's 17 (OQ-STSHAPE, OQ-MODREPEAT, OQ-STRSHAPE, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
+### 0zd. Safety batch B, the last of 2 — SPEC ONLY, not generated; owner's approval needed (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
+
+**Owner's direction 2026-10-22:** close the safety work first; the ST / FBD / SFC instruction
+work (0ze) waits for it. Batch A's readings left one mechanism outside the owner's
+tolerance — the safety figure on RS-02 / RS-03 / RS-17, −5.6% / −8.3% / −7.3% — and a
+small, consistent −1.0% to −1.8% on the other nine (OPEN_QUESTIONS Section 8). Everything
+below answers a currently open question; nothing is built until this spec is approved.
+
+**Part 1 — Studio-made variants of RS-17** (the owner's work in Logix Designer; RS-17 is
+unlocked; each variant exported to `samples/local/`, never committed, with its standard
+and safety Capacity readings). Cumulative, one deletion each:
+
+| variant | deletion | what its reading prices |
+|---|---|---|
+| V1 | the 15 rungs of the AxisSTO call routine (29 calls; the routine stays) | the safety AOI calls passing drive safety-connection members |
+| V2 | V1 + the 29 AxisSTO instance tags and the AxisSTO definition | the instances (4 TIMER locals each) and the definition |
+| V3 | V2 + the input routine whose DCS rungs read unnamed 1734 safety cards by their adapter's slot | slot-path safety-module operands |
+| V4 | V3 + the input routine whose DCS rungs read the local 1756-IB16S through `Local:3:I` | local-chassis safety-module operands |
+
+Each reading less the previous one is that content's own cost in both partitions; the
+engine's own difference on the same deletion says where it is wrong, with no derived file
+written by anyone but Studio.
+
+**Part 2 — isolation files**, 1756-L81ES v35 on the realism plant with the safety task,
+each against its twin that reads a safety program tag instead (the devices identical in
+every file of the family; the 1734 rack and the 1756 local card from round 5's proven
+blocks, the drive from a zero-error capture):
+
+| file(s) | 100 safety rungs of | discriminates |
+|---|---|---|
+| `safe_op_ctl` | `XIC(SfBit[i]) OTE(SfOut[i])`, safety program BOOLs | the control |
+| `safe_op_named_100`, `_named_200` | `XIC(SCard1:I.Pt0nData)`, a named 1734-IB8S/B | a named safety card's connection member (two counts) |
+| `safe_op_slot_100`, `_slot_200` | `XIC(SRACK_1:2:I.Pt0nData)`, an unnamed card through its adapter's slot | the slot-path spelling RS-03 / RS-10 / RS-17 use (two counts) |
+| `safe_op_local_100` | `XIC(Local:3:I.Pt0n.Status)`, a 1756-IB16S in the local chassis | the local-chassis spelling |
+| `safe_op_drive_100` | `XIC(Drv1:SI.STOActive)`, an integrated-safety drive | a drive's safety-connection member |
+| `safe_op_out_100` | `XIC(SfBit[i]) OTE(SCard2:O.Pt0nData)`, a named 1734-OB8S/B | a safety output card's member as a destination |
+| `safe_dcs_tag_20`, `safe_dcs_mod_20` | DCS with its two channels on program BOOLs / on a named card's points | DCS with module-tag channels |
+| `safe_aoi_tmr_def`, `safe_aoi_tmr_20` | a safety AOI with four TIMER locals and TON / TOF inside (own design), the definition alone and 20 instances + 20 calls | timers in a safety AOI |
+| `safe_aoi_modarg_20`, `safe_aoi_tagarg_20` | 20 calls of a 2-in / 2-out safety AOI, arguments a drive's `SI` / `SO` members against program BOOLs | module-tag arguments to a safety AOI call |
+
+**Part 3 — rebuilds of files that never reached a clean reading** (generators fixed, lint
+refuses the defects): `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` (the 5069-OB16/B
+ConfigID; OQ-MODREPEAT's packed-card question); `strx_equ_elem`, `strx_equ_member`,
+`strx_equ_vidx`, `strx_neq_member` (a BOOL destination; 2,424 real STRING EQU operands are
+members behind an index). **Dropped, not rebuilt:** the four `stshape_aoi_*` (AOI-internal
+ST is about 80 statements a real program, +4 each at most — under the floor) and
+`safe_sil2_5069l320s3_n00` (it was only the SIL3 files' control, and those read exact
+without it; the conversion cause stays unknown unless the owner sends its Studio
+error-log line).
+
+**Part 4 — the v32 baseline on content** (firmware-matrix exemption: firmware is the
+variable): the realism plant on a 5069-L320ERMS2 at v32 and at v35, no safety content,
+2 files. RS-06 / RS-09 (v32) read +1.65% / +1.66%, about the 11,240 v32 delta that was read
+off bare files; if the plant at v32 reads 11,240 more than at v35 the delta is right and
+the lead dies, otherwise the delta scales with content.
+
+**Size:** 4 Studio variants and 22 generated files (14 isolation + 6 rebuilt + 2). Every Part 2 file
+needs its devices' blocks matched against zero-error captures
+(`scripts/check_proven_blocks.py`) before hand-over.
+
+**Deferred, under the floor on the programs in this checkout** (re-check on the seventeen
+before testing): a STRING member in a UDT array (4 an element, OQ-STRSHAPE; 0 to 500 such
+elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3 to 5 a
+program, OQ-MODREPEAT).
+
+### 0ze. ST, FBD and SFC instructions and data types — QUEUED after 0zd (owner, 2026-10-22)
+
+The owner supplied the Logix 5000 language manuals for Sequential Function Charts,
+Structured Text and Function Block Diagram (chat-only, never in the repository) for the
+concepts. Not started: the safety work closes first. What it needs before any spec: an
+inventory of what the real programs actually use (RS-01 alone carries 7 SFC routines with
+272 steps and FBD — the reason it is not counted); for each instruction its operand
+signature and backing data type (FBD_* function-block structures, SFC_STEP / SFC_ACTION /
+SFC_STOP, PIDE and the other process blocks), from Studio-made exports rather than from
+memory, so lint can refuse a wrong one; then count sweeps per construct as for ladder and
+ST. The floor rule decides which ones get files.
+
+### 0zb. Safety batch A of 2 — CAPTURED 2026-10-21 and WIRED (OQ-STSHAPE, OQ-MODREPEAT, OQ-STRSHAPE, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
+
+**Captured 2026-10-21, wired the same day.** 217 readings; 8 with build errors (four `stshape_aoi_*`, four `strx_equ` / `_neq`), 3 never converted, 2 recaptured on the retry of 2026-10-21. Closed OQ-AOIBOOLINST (the scalar AOI law, KNOWN; RESOLVED_QUESTIONS). Wired: 12 safety device types and the device law for any other; produced / consumed safety tags; the SIL3 partner and a peer controller; the ST shapes (39 files exact); nine module repeat rates, the 5069-only prefix-less rule and the per-channel configuration term. Standard figure on the ten counted real safety programs **mean 1.58% → 1.34%, worst −3.64% → −2.45%**; safety figure on nine −1.0% to −1.8%, on RS-02 / RS-03 / RS-17 −5.6% / −8.3% / −7.3% (0zd). The seventeen standard programs are not re-scored (CLAUDE.md).
+
+
 
 **Owner's direction 2026-10-20:** two further safety test generations and nothing after
 them; the goal is the **standard** figure on programs that carry safety, and the safety

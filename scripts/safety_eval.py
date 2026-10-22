@@ -34,7 +34,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from sample_gen.manifest_store import load_manifest  # noqa: E402
 
-FLAGS = re.compile(r"WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|PROCTYPE-UNREAD")
+FLAGS = re.compile(r"WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC|PROCTYPE-UNREAD")
 
 
 def readings(rows: list[dict]) -> tuple[dict[str, tuple[int, int | None]], list[tuple[str, str]]]:

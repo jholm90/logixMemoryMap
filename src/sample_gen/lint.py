@@ -366,6 +366,10 @@ def _local_product_code_findings(root: ET.Element) -> list[LintFinding]:
 # Safety I/O cards, the 442G safety switch interfaces, the PowerFlex 527 and the SIL3 safety
 # partner: every compiled export of each carries its profile ConfigID.
 _SAFETY_IO_CATALOG = re.compile(r"^(1734-\w+S/|5069-\w+S\d?/|1756-\w+S/|1756-L8SP$|442G-|PowerFlex 527)")
+# Standard catalogs refused on import without it: the 5069-OB16 (its module-sweep block never
+# converted; safe_io6_5069_ob16_1 / _mix_2_2 failed the same way). Every compiled export of
+# it carries ConfigID 711 packed on a controller's bus, 110 in standard data on an adapter.
+_CONFIGID_REQUIRED_CATALOG = re.compile(r"^5069-OB16/")
 
 
 def _safety_io_configid_findings(root: ET.Element) -> list[LintFinding]:
@@ -373,11 +377,19 @@ def _safety_io_configid_findings(root: ET.Element) -> list[LintFinding]:
     findings: list[LintFinding] = []
     for mod in root.iter("Module"):
         catalog = mod.get("CatalogNumber") or ""
-        if _SAFETY_IO_CATALOG.match(catalog) and mod.find("ExtendedProperties/public/ConfigID") is None:
+        if mod.find("ExtendedProperties/public/ConfigID") is not None:
+            continue
+        if _SAFETY_IO_CATALOG.match(catalog):
             findings.append(LintFinding(
                 "safety_io_without_configid",
                 f"Module {mod.get('Name') or catalog} ({catalog}) has no ExtendedProperties ConfigID; "
                 f"every compiled export of a safety I/O catalog carries one",
+            ))
+        elif _CONFIGID_REQUIRED_CATALOG.match(catalog):
+            findings.append(LintFinding(
+                "module_without_configid",
+                f"Module {mod.get('Name') or catalog} ({catalog}) has no ExtendedProperties ConfigID; "
+                f"Studio refuses this catalog without the one every compiled export carries",
             ))
     return findings
 
@@ -785,8 +797,18 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
             if len(args) != 1:
                 continue
             operand = args[0].strip()
-            if _BIT_SUBSCRIPT_RE.search(operand):
-                continue  # already bit-subscripted, valid regardless of type
+            bit = _BIT_SUBSCRIPT_RE.search(operand)
+            if bit:
+                # A bit of an integer is valid; a bit of a REAL is not ("Invalid bit
+                # specifier", 400 errors on each of strx_equ_* / strx_neq_member).
+                base_type = _resolve_operand_type(operand[:bit.start()], tag_types, udt_members)
+                if base_type in ("REAL", "LREAL"):
+                    findings.append(LintFinding(
+                        "bit_specifier_on_real",
+                        f"'{mnemonic}({operand})' -- a bit subscript on a {base_type}: Studio rejects it "
+                        f"as an invalid bit specifier: {text.strip()!r}",
+                    ))
+                continue
             resolved_type = _resolve_operand_type(operand, tag_types, udt_members)
             if resolved_type and resolved_type != "BOOL":
                 findings.append(LintFinding(

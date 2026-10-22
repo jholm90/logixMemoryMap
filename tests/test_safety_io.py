@@ -53,19 +53,84 @@ def test_lint_refuses_a_safety_card_without_its_configid():
     assert [f for f in lint_l5x(stripped) if f.kind == "safety_io_without_configid"]
 
 
-def test_a_safety_device_is_priced_by_its_connections_types_and_only_when_measured():
+def test_a_safety_device_is_priced_by_its_connections_types_and_an_unseen_one_by_the_device_law():
     from l5x_memory_analyzer.sizing.constants import load_memory_model
     from l5x_memory_analyzer.sizing.safety_io import SafetyDevice, safety_rows, standard_rows
     m = load_memory_model()
-    drives = [SafetyDevice(f"D{i}", "2198-D032-ERS3", ("AB:CIP_Motion_Device_Safety2",)) for i in range(3)]
-    card = SafetyDevice("C", "1734-IB8S/B", ("AB:1734_IB8S", "AB:1734_IB8S_Safety2"))
-    rows, unpriced = safety_rows(drives + [card], m)
-    assert sum(r[3] for r in rows) == 3 * 4717
-    assert unpriced == {"AB:1734_IB8S+AB:1734_IB8S_Safety2": 1}
+    drives = [SafetyDevice(f"D{i}", "2198-D032-ERS3", ("AB:CIP_Motion_Device_Safety2",), 1, 1, 72, 0, True)
+              for i in range(3)]
+    card = SafetyDevice("C", "1734-IB8S/B", ("AB:1734_IB8S", "AB:1734_IB8S_Safety2"), 1, 1, 4)
+    rows, unmeasured = safety_rows(drives + [card], m)
+    assert sum(r[3] for r in rows) == 3 * 4717 + 3513 and unmeasured == {}
+    # A device of types never measured: an overhead per safety connection plus its data.
+    odd_in = SafetyDevice("X", "1791ES-IB8XOBV4/A", ("AB:1791ES_IB8XOBV4_Safety",), 1, 0, 10)
+    odd_io = SafetyDevice("Y", "Some-Robot/A", ("XX:Robot_SI", "XX:Robot_SO"), 1, 1, 24, 1)
+    rows, unmeasured = safety_rows([odd_in, odd_io], m)
+    assert [(r[3], r[4]) for r in rows] == [(1653 + 160, "FITTED"), (1653 + 1814 + 16 * 24, "FITTED")]
+    assert unmeasured == {"AB:1791ES_IB8XOBV4_Safety": 1, "XX:Robot_SI+XX:Robot_SO": 1}
+    # and on the standard side a per-device overhead by its connections (types come on top)
+    assert m.safety_io.unseen_standard_bytes(odd_in) == 600
+    assert m.safety_io.unseen_standard_bytes(odd_io) == 600 + 162 + 1242
     # standard: the type's first-device cost once, then each drive its own
     assert sum(r[3] for r in standard_rows(drives, m)) == 4160 + 3 * 684
     pair = [SafetyDevice("I", "1756-IB16S/A", ("AB:5000_SDI16",)), SafetyDevice("O", "1756-OBV8S/A", ("AB:5000_SDO8",))]
     assert sum(r[3] for r in standard_rows(pair, m)) == 368 + 1832 + 1104 - 2 * 917
+
+
+def test_the_device_law_reproduces_every_measured_device_type_within_three_and_a_half_percent():
+    """Each measured type's safety cost against the law that prices an unmeasured one."""
+    import xml.etree.ElementTree as ET
+    from pathlib import Path
+    import pytest
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    from l5x_memory_analyzer.sizing.safety_io import device_key, safety_devices
+    sio = load_memory_model().safety_io
+    root = Path(__file__).parent.parent / "samples" / "generated" / "safety"
+    files = sorted(root.glob("safe_io*_1.L5X")) + sorted(root.glob("safe_iol_*_1.L5X"))
+    if not files:
+        pytest.skip("the safety batch is not on disk")
+    seen = {}
+    for f in files:
+        for d in safety_devices(ET.parse(f).getroot()):
+            seen.setdefault(device_key(d), d)
+    assert len(seen) == 18
+    for key, d in seen.items():
+        law, real = sio.unseen_safety_bytes(d), sio.safety_bytes[key]
+        assert abs(law - real) <= 0.035 * real, (key, law, real)
+
+
+# Batch A (2026-10-21): each device type's safety cost, exact at every count captured.
+BATCH_A_SAFETY = {
+    "AB:1734_IB8S+AB:1734_IB8S_Safety2": 3513, "AB:1734_IB8S_Safety6": 1629,
+    "AB:1734_OB8S+AB:1734_OB8S_Safety1": 3457, "AB:1734_OB8S+AB:1734_OB8S_Safety3": 3457,
+    "AB:5000_SDI8": 2513, "AB:5000_DO8+AB:5000_SDO8": 4497, "AB:5000_SDI8_Packed": 1873,
+    "AB:5000_DO8_Packed+AB:5000_SDO8_Packed": 3741, "AB:442G_MABB_E0JP4679": 3621,
+    "FR:Safety_RobotPlus_8Bytes": 3745, "AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes": 3745,
+    "AB:CIP_Drive_Safety2": 3578,
+}
+
+
+def test_the_batch_a_device_types_carry_their_measured_safety_cost():
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    sio = load_memory_model().safety_io
+    assert {k: sio.safety_bytes[k] for k in BATCH_A_SAFETY} == BATCH_A_SAFETY
+    assert (sio.unseen_input_connection_bytes, sio.unseen_output_connection_bytes, sio.unseen_data_byte_bytes) == (
+        1653, 1814, 16)
+
+
+def test_a_catalog_with_two_safety_shapes_is_keyed_by_its_device_key_on_the_standard_side():
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    from l5x_memory_analyzer.sizing.safety_io import SafetyDevice, standard_rows
+    m = load_memory_model()
+    two_conn = [SafetyDevice(f"C{i}", "1734-IB8S/B", ("AB:1734_IB8S", "AB:1734_IB8S_Safety2"), True) for i in range(2)]
+    one_conn = [SafetyDevice(f"S{i}", "1734-IB8S/B", ("AB:1734_IB8S_Safety6",)) for i in range(2)]
+    assert sum(r[3] for r in standard_rows(two_conn, m)) == 1013 - 2 * 416
+    assert sum(r[3] for r in standard_rows(one_conn, m)) == 437 - 2 * 438
+    # each a first device of its own key, whatever order they come in
+    assert sum(r[3] for r in standard_rows(one_conn + two_conn, m)) == 1013 - 2 * 416 + 437 - 2 * 438
+    # the revision-11 2198-D032-ERS3 (network STO) is its own key, not the catalog's 684
+    rev11 = [SafetyDevice(f"K{i}", "2198-D032-ERS3", ("AB:CIP_Drive_Safety2",), True) for i in range(2)]
+    assert sum(r[3] for r in standard_rows(rev11, m)) == 800 + 2 * 1184
 
 
 def test_round_6_is_27_files_each_a_compiled_shape():

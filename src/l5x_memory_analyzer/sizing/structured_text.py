@@ -46,7 +46,7 @@ import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 
-from l5x_memory_analyzer.parser.logic import CptCall, aoi_call_sites, routine_language
+from l5x_memory_analyzer.parser.logic import CptCall, _indirect_index_sites, aoi_call_sites, routine_language
 
 # A line is comment-only/blank if, once a trailing "// ..." or a whole
 # "(* ... *)" is stripped, nothing executable remains.
@@ -94,6 +94,19 @@ _INTEGER_TYPES = frozenset({"SINT", "INT", "DINT", "LINT",
 # longer a coverage gap there. OR is grouped with them as the same tier-1
 # fallback and is NOT independently measured -- see OQ-STEXPR.
 _ST_MEASURED_BITWISE = frozenset({"AND", "XOR", "OR"})
+# The shapes real ST is written in (OQ-STSHAPE). A comparison operator in a condition or a
+# BOOL assignment's right-hand side; `:=` never appears inside one.
+_COMPARISON = re.compile(r"<>|>=|<=|(?<![:<>])=|<|>")
+_CONDITION = re.compile(r"\b(?:ELSIF|IF)\b(.*?)\bTHEN\b", re.I | re.S)
+_AND = re.compile(r"\bAND\b|&", re.I)
+_OR = re.compile(r"\bOR\b|\bXOR\b", re.I)
+_CLAUSE_SPLIT = re.compile(r"\bAND\b|\bOR\b|\bXOR\b|&", re.I)
+_FLOAT_LITERAL = re.compile(r"(?<![\w.])\d+\.\d+")
+_ARITHMETIC = re.compile(r"\*\*|[+\-*/]|\bMOD\b", re.I)
+# What ends one statement for the second-index rule: a terminator, or the keyword that ends
+# a condition or loop head.
+_STATEMENT_BREAK = re.compile(r";|\bTHEN\b|\bDO\b|\bELSE\b|\bOF\b", re.I)
+_BLOCK_TOKEN = re.compile(r"\bEND_IF\b|\bEND_CASE\b|\bIF\b|\bCASE\b|\bELSE\b", re.I)
 
 
 @dataclass
@@ -122,6 +135,12 @@ class StructuredTextRoutine:
     # mixed-case invisibility that hid RLL call sites until segment 3.
     aoi_call_count: int = 0
     aoi_call_param_count: int = 0
+    # Each assignment's right-hand side, in the order of cpt_calls (a BOOL destination's is
+    # priced as a condition, not as arithmetic).
+    assignment_rhs: list = field(default_factory=list)
+    # IF and ELSIF conditions, and the ELSE branches of IFs (a CASE's ELSE is case_block's).
+    conditions: list = field(default_factory=list)
+    else_branches: int = 0
 
 
 def strip_comments(text: str) -> str:
@@ -199,8 +218,27 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 code_text=code,
                 aoi_call_count=aoi_calls,
                 aoi_call_param_count=aoi_call_params,
+                assignment_rhs=[a.group("rhs") for a in assignments],
+                conditions=[m.group(1) for m in _CONDITION.finditer(code)],
+                else_branches=_if_else_count(code),
             ))
     return routines
+
+
+def _if_else_count(code: str) -> int:
+    """ELSE branches that belong to an IF: a CASE's ELSE is priced with its branches."""
+    stack: list[str] = []
+    count = 0
+    for m in _BLOCK_TOKEN.finditer(code):
+        token = m.group(0).upper()
+        if token in ("IF", "CASE"):
+            stack.append(token)
+        elif token in ("END_IF", "END_CASE"):
+            if stack:
+                stack.pop()
+        elif stack and stack[-1] == "IF":
+            count += 1
+    return count
 
 
 def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
@@ -217,8 +255,17 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
     total = 0
     unmeasured: list[str] = []
     unpriced_ops: set[str] = set()
-    for call in routine.cpt_calls:
-        dest_is_real = _type_of(tag_types, call.dest) == "REAL"
+    rhs_texts = routine.assignment_rhs or [""] * len(routine.cpt_calls)
+    for call, rhs in zip(routine.cpt_calls, rhs_texts):
+        dest_type = _type_of(tag_types, call.dest)
+        # A BOOL destination from a BOOL, a NOT, an AND / OR or a comparison is a condition,
+        # not arithmetic (OQ-STSHAPE); one with arithmetic in it keeps the arithmetic law.
+        if dest_type == "BOOL" and st.bool_assign_bytes and not _ARITHMETIC.search(_strip_subscripts(rhs)):
+            total += st.bool_assign_bytes + condition_cost(rhs, st, tag_types)
+            if _BARE_LITERAL_RHS.match(rhs):
+                total += st.bool_assign_literal_bytes
+            continue
+        dest_is_real = dest_type == "REAL"
         # The operator premium is the CPT tier table's own step above tier 1 --
         # ST carries no separate classification, because the 16 bytes a
         # multiplicative operator costs over an additive one IS that step. An
@@ -241,6 +288,8 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
         all_float = bool(tag_types) and integer_named == 0 and call.int_literals == 0
         total += st.assignment_cost(
             call.operators, dest_is_real, conversion_bytes, all_float)
+        if dest_is_real and len(call.operators) == 1:
+            total += st.real_float_literal_bytes * call.float_literals
         gap = st.unmeasured_one_operator_class(call.operators, dest_is_real)
         if gap and gap not in unmeasured:
             unmeasured.append(gap)
@@ -258,6 +307,42 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
             unpriced_ops.add(op)
     total += st.st_aoi_call_cost(routine.aoi_call_count, routine.aoi_call_param_count)
     return total, unmeasured, sorted(unpriced_ops)
+
+
+def condition_cost(text: str, st, tag_types=None) -> int:
+    """What a condition costs beyond a bare BOOL (OQ-STSHAPE): per comparison, per AND, per OR,
+    and per comparison on a REAL or a float literal. NOT costs nothing."""
+    flat = _strip_subscripts(text)
+    cost = (st.condition_comparison_bytes * len(_COMPARISON.findall(flat))
+            + st.condition_and_bytes * len(_AND.findall(flat))
+            + st.condition_or_bytes * len(_OR.findall(flat)))
+    for clause in _CLAUSE_SPLIT.split(text):
+        if not _COMPARISON.search(_strip_subscripts(clause)):
+            continue
+        if _FLOAT_LITERAL.search(_strip_subscripts(clause)) or any(
+                _type_of(tag_types, name) in ("REAL", "LREAL") for name in _operands(clause)):
+            cost += st.condition_real_comparison_bytes
+    return cost
+
+
+def size_st_shapes(routine: StructuredTextRoutine, model, tag_types=None) -> int:
+    """The shapes real ST is written in (OQ-STSHAPE): every tag-driven index at the rung's
+    indirect_index cost (a second in one statement a little less), IF / ELSIF conditions
+    beyond a bare BOOL, and the ELSE branches of IFs."""
+    st = model.structured_text
+    ix = model.logic_instructions.indirect_index
+    total = 0
+    for segment in _STATEMENT_BREAK.split(routine.code_text):
+        sites = _indirect_index_sites([segment])
+        for n, (kind, array_path, follows) in enumerate(sites):
+            total += ix.cost_for(kind)
+            element_type = None if follows else _type_of(tag_types, array_path)
+            total += ix.element_cost_for(follows, element_type)
+            if n:
+                total += st.further_index_in_statement_bytes
+    total += sum(condition_cost(c, st, tag_types) for c in routine.conditions)
+    total += st.else_branch * routine.else_branches
+    return total
 
 
 def size_st_control_flow(routine: StructuredTextRoutine, model) -> int:

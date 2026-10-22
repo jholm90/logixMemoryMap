@@ -15,19 +15,36 @@ assembled from the log, and only the second can be trusted. The command is
 Matched on filename against the log with the **last row per file winning**, so a
 later success supersedes an earlier failure:
 
-| | count |
+| | count (2026-10-22) |
 |---|---:|
-| committed generated L5X | 3,610 |
-| last status `ok` | 3,583 |
-| last status FAILED | **0** |
-| no conversion record, not captured | **26** — the `opshape_*` batch |
+| committed generated L5X | 522 (written-up batches are deleted; CLAUDE.md) |
+| last status `ok` | 519 |
+| last status FAILED | **3** — batch A, below |
+| no conversion record | 0 |
 
-**No conversion failures and no open build errors.** The three `_r3` rebuilds —
-`almd_minimal_r3`, `almd_realtext_r3`, `modulerack_kinetix_full_bus_r3` — captured with
-zero errors, and OQ-BUILDFAIL-OPEN is closed. `modulerack_kinetix_twobus_studio` was
-built and read in Studio by hand, so it has a capture and no conversion record.
+**Three conversion failures and eight build-error rows open, all from batch A** (below);
+earlier batches had none open. The `_r3` rebuilds of 2026-10 captured with zero errors and
+OQ-BUILDFAIL-OPEN is closed.
 
-### Build errors from the last batch
+### Batch A, 2026-10-21
+
+Three files never converted and eight built with errors; each is flagged against its
+question (`scripts/capture_errors.py`, exit 0).
+
+| file | stage | Studio message | cause | enforced by / next |
+|---|---|---|---|---|
+| `safe_io6_5069_ob16_1`, `safe_io6_5069_mix_2_2` | import (retried 2026-10-21, same) | XMLSrv_E_IMPORT_ABORTED_NO_CHANGES | the 5069-OB16/B module-sweep block has no ExtendedProperties ConfigID (every compiled export carries 711 packed on a controller's bus, 110 in a rack); the IB16/A block imported without one | `module_without_configid`; `gen_safety_round6.std_card` adds it; rebuilt in batch B |
+| `safe_sil2_5069l320s3_n00` | import (retried, same) | XMLSrv_E_IMPORT_ABORTED_NO_CHANGES | **unknown** — the same catalog at SIL3 converts; the converter log carries only the abort | not needed (the SIL3 files read exact without it); dropped from batch B unless the Studio error-log line arrives |
+| `strx_equ_elem`, `_equ_member`, `_equ_vidx`, `strx_neq_member` | build, 400 errors each | Rung n, OTE, Operand 0: Invalid bit specifier | each result written to `SuC[i].R.0`, a bit of a REAL; none of the 400 rungs reached the controller (each reads 16 below `strx_n00`) | `bit_specifier_on_real`; a BOOL destination in batch B |
+| `stshape_aoi_n00`, `_assign400`, `_if200`, `_param400` | build, 1 error each | Rung 0: Missing output instruction | the call rung is an AOI with no visible output alone on a rung | not rebuilt: AOI-internal ST is under the floor (TASKS 0zd) |
+| `safe_iol_kx_d012_std_1` / `_2` | build, 2 / 4 errors | Primary Bus Sharing Group 3 … Shared DC with no Shared AC/DC | the proven non-safety D012 block's bus-sharing setting | reading equals the other D0xx controls'; used for no law |
+
+The capture tool once stored a status line as a Capacity value
+(`safe_sil3_step`: "Read 1769 series Edit8 OCD value: …"), which stopped every loader that
+parses it. It now refuses a non-numeric reading (`CAPACITY NOT NUMERIC`, retried next run),
+and `load_manifest()` treats one as uncaptured.
+
+### Build errors from an earlier batch
 
 Three files converted and then failed Build. Causes, now enforced by lint:
 

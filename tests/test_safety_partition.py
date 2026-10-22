@@ -164,6 +164,34 @@ def test_standard_logic_reading_a_safety_tag_pays_eight_per_operand():
     assert _delta(safe, ctl)[1] == 0
 
 
+def test_a_produced_or_consumed_safety_tag_carries_its_connection_in_the_partition():
+    sp = _MODEL.safety_partition
+    assert (sp.produced_tag_extra_bytes, sp.consumed_tag_extra_bytes, sp.produced_consumed_confidence) == (
+        3788, 1169, "KNOWN")
+    udt = ('<DataType Name="SafeMsg" Family="NoFamily" Class="User"><Members>'
+           '<Member Name="CommsStatus" DataType="CONNECTION_STATUS" Dimension="0" Radix="NullType" Hidden="false" '
+           'ExternalAccess="Read/Write"/><Member Name="Data" DataType="DINT" Dimension="0" Radix="Decimal" '
+           'Hidden="false" ExternalAccess="Read/Write"/></Members></DataType>')
+
+    def project(tag_type: str) -> ET.Element:
+        root = _small()
+        dts = root.find("Controller/DataTypes")
+        dts.append(ET.fromstring(udt))
+        tag = ET.fromstring(f'<Tag Name="SafeOut1" Class="Safety" TagType="{tag_type}" DataType="SafeMsg" '
+                            f'ExternalAccess="Read/Write"/>')
+        root.find("Controller/Tags").append(tag)
+        return root
+
+    base = _both(project("Base"))[1]
+    assert _both(project("Produced"))[1] - base == 3788
+    assert _both(project("Consumed"))[1] - base == 1169
+
+
+def test_the_sil3_partner_and_a_peer_safety_controller_cost_their_measured_node_overhead():
+    assert _MODEL.zero_connection_by_catalog["1756-L8SP"] == (528, "KNOWN")
+    assert _MODEL.zero_connection_by_catalog["5069-L306ERS2"] == (560, "KNOWN")
+
+
 def test_a_project_without_a_safety_program_has_no_safety_partition():
     root = ET.fromstring(build_l5x("Plain", tags_xml=G.tag_xml("Std", "DINT")))
     assert build_safety_report(root, _MODEL) == ([], [])

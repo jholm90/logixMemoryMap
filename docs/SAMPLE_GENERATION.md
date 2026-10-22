@@ -376,7 +376,21 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## To capture: safety pit stop, batch A of 2 — 162 files (TASKS 0zb)
+## Next: safety batch B, the last of 2 — SPECIFIED, NOT BUILT (TASKS 0zd)
+
+Four Studio-made variants of RS-17 (the owner's), 14 isolation files on the L81ES plant
+(safety logic reading safety I/O tags named, by slot path, through `Local` and on a drive;
+DCS on module channels; a safety AOI with timers; a safety AOI call with module-tag
+arguments), 6 rebuilds (the two 5069-OB16/B files with their ConfigID, the four `strx`
+EQU / NEQ with a BOOL destination) and the realism plant on a 5069-L320ERMS2 at v32 and v35.
+Not built until the owner approves the spec.
+
+## Captured 2026-10-21: safety pit stop, batch A of 2 — 217 readings (TASKS 0zb)
+
+209 clean; 8 with build errors and 3 never converted, each flagged to its question
+(OPEN_BUILD_ERRORS, "Batch A"). Closed OQ-AOIBOOLINST; wired the safety device types and
+the device law, produced / consumed safety tags, SIL3, the ST shapes and the module repeat
+rates (RESOLVED_QUESTIONS, "Batch A of 2026-10-21").
 
 Built 2026-10-20 on the owner's instruction, every file on its floor and lint clean:
 `stshape_*` (43, `gen_st_shapes.py`, 1756-L81E v35: real ST shapes, OQ-STSHAPE),

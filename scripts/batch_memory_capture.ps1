@@ -239,13 +239,13 @@ $manifest | ForEach-Object { $pathById[$_.sample_id] = $_.l5x_path }
 # samples/local/safety_io/ and captured from samples/generated/safety/) would otherwise
 # never count as logged and be captured again on every pass.
 $loggedIds = @{}
-$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ') } |
+$captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC') } |
     ForEach-Object {
         $loggedIds[$_.sample_id] = $true
         if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true }
     }
 $mismatchFlagged = @{}
-$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ' } |
+$captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC' } |
     ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
 
 $rows = Import-Csv $ConvertLog | Where-Object { $_.status -eq "ok" }
@@ -391,6 +391,16 @@ foreach ($row in $remaining) {
     if ($blocksUsed -eq "0") {
         Write-Warning "Capacity read as 0 for $($meta.Id) -- almost certainly a bad read, not a real value. Flagging, not counting."
         $notes = if ($notes) { "$notes; ZERO CAPACITY: read as 0, not a real value, not counted" } else { "ZERO CAPACITY: read as 0, not a real value, not counted" }
+    }
+    # A Capacity reading that is not a number (a status line the read picked up,
+    # "Read 1769 series Edit8 OCD value: Reading Static23 value", once landed in
+    # actual_bytes and broke every loader that parses it) is flagged and NOT stored:
+    # the text goes to notes, actual_bytes stays blank, and the row is retried.
+    if ($blocksUsed -notmatch '^\d+$') {
+        Write-Warning "Capacity read for $($meta.Id) is not a number ('$blocksUsed') -- not stored, flagged for retry."
+        $flag = "CAPACITY NOT NUMERIC: '$blocksUsed' -- not stored, retried next run"
+        $notes = if ($notes) { "$notes; $flag" } else { $flag }
+        $blocksUsed = ""
     }
     # "flag the file if Error or Warning is not a number
     # then i want to flag it just like the window title to be able to be run

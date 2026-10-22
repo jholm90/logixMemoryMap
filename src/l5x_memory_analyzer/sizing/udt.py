@@ -124,21 +124,7 @@ def compute_array_size(
         # part of the declared member list this counts), with a further
         # +4 correction each time the BOOL member count crosses a
         # 32-member packed-word boundary.
-        bool_count = sum(
-            1 for m in data_types[data_type].members
-            if m.data_type == "BOOL" and m.name not in ("EnableIn", "EnableOut")
-        )
-        per_instance = element_bytes - model.aoi_array.flat_discount
-        if bool_count > 0:
-            word_size = model.aoi_array.bool_word_size
-            # EnableIn/EnableOut share these words even though bool_count
-            # excludes them -- see memory_model.yaml
-            # aoi_array.enable_bits_packed_with_bools (36 files, 12 bool counts
-            # across three 32-bit boundaries, 12/12).
-            packed_bits = bool_count + model.aoi_array.enable_bits_packed_with_bools
-            words = -(-packed_bits // word_size)  # ceil
-            per_instance -= bool_count * 4
-            per_instance += model.aoi_array.bool_word_extra * max(0, words - 1)
+        per_instance = aoi_packed_element_bytes(data_type, data_types, model, element_bytes)
         # The whole block is padded up to an 8-byte boundary, not each
         # instance -- see memory_model.yaml aoi_array.block_alignment_bytes
         # (OQ-AOIBOOLPACK-PAIRING, 48/48 captured sweep families).
@@ -256,6 +242,28 @@ def compute_udt_definition_cost(
             [m.name for m in udt.members if not m.hidden]),
         model.udt_definition.confidence,
     )
+
+
+def aoi_packed_element_bytes(data_type: str, data_types, model, element_bytes: int) -> int:
+    """An AOI instance's data with its BOOL members packed into 32-bit words beside EnableIn /
+    EnableOut: an array element's size (memory_model.yaml aoi_array), and a scalar
+    instance's data before its tag slot (aoi_scalar_instance)."""
+    bool_count = sum(
+        1 for m in data_types[data_type].members
+        if m.data_type == "BOOL" and m.name not in ("EnableIn", "EnableOut")
+    )
+    per_instance = element_bytes - model.aoi_array.flat_discount
+    if bool_count > 0:
+        word_size = model.aoi_array.bool_word_size
+        # EnableIn/EnableOut share these words even though bool_count
+        # excludes them -- see memory_model.yaml
+        # aoi_array.enable_bits_packed_with_bools (36 files, 12 bool counts
+        # across three 32-bit boundaries, 12/12).
+        packed_bits = bool_count + model.aoi_array.enable_bits_packed_with_bools
+        words = -(-packed_bits // word_size)  # ceil
+        per_instance -= bool_count * 4
+        per_instance += model.aoi_array.bool_word_extra * max(0, words - 1)
+    return per_instance
 
 
 def compute_aoi_definition_cost(

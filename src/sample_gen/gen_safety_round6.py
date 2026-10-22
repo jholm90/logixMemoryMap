@@ -117,12 +117,30 @@ def plan() -> list[tuple[str, str, dict]]:
     return [(sid, f"{OQ}: {desc}", kw) for sid, desc, kw in files + sil3 + pc + std]
 
 
+# The ExtendedProperties every compiled export of a packed standard 5069 card carries on a
+# controller's own bus (RS-05 / RS-08 / RS-10: IB16 700, OB16 711; the same catalogs in
+# standard data behind a 5069-AENTR carry 500 / 110). The module-sweep blocks lack it. The
+# OB16/B without it is refused on import (its own sweep file, safe_io6_5069_ob16_1 and
+# _mix_2_2), so it gets its catalog's; the IB16/A imported and captured without it
+# (safe_io6_5069_ib16_1 / _2) and is left as captured, so the files still difference.
+STD_5069_EXTENDED = {
+    "5069-OB16/B": ("5069-OB16", "711"),
+}
+
+
 def std_card(catalog: str, name: str, slot: int) -> str:
-    """A standard 5069 card's module-sweep block on the controller's own bus, renamed and
-    re-slotted."""
+    """A standard 5069 card's module-sweep block on the controller's own bus, renamed,
+    re-slotted, and completed with its catalog's ExtendedProperties."""
     from sample_gen.gen_module_sweep import _MODULE_CHAINS
     block = re.sub(r'Name="[^"]+"', f'Name="{name}"', _MODULE_CHAINS[catalog][0], count=1)
-    return re.sub(r'(<Port Id="1" Address=")\d+(" Type="5069" Upstream="true")', rf"\g<1>{slot}\g<2>", block, count=1)
+    block = re.sub(r'(<Port Id="1" Address=")\d+(" Type="5069" Upstream="true")', rf"\g<1>{slot}\g<2>", block, count=1)
+    if "<ExtendedProperties>" not in block and catalog in STD_5069_EXTENDED:
+        catnum, config_id = STD_5069_EXTENDED[catalog]
+        block = block.replace("</Module>", (
+            "<ExtendedProperties>\n<public><Vendor>Rockwell Automation/Allen-Bradley</Vendor>"
+            f"<CatNum>{catnum}</CatNum><ConfigID>{config_id}</ConfigID><ADDAVersion>1</ADDAVersion></public>\n"
+            "</ExtendedProperties>\n</Module>"), 1)
+    return block
 
 
 SAFE_MSG = "SafeMsg"

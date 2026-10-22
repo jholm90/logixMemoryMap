@@ -210,6 +210,21 @@ KNOWN_REGISTER = [
         "residual; OQ-SAFETYPARTITION round 5",
     ),
     (
+        "safety_partition.produced_tag_extra_bytes", 3788,
+        "safety_partition.produced_consumed_confidence", 7,
+        "safe_pc6_def / _prod_1 / _prod_2 / _cons_1 / _cons_2 / _both / _peer (batch A): a "
+        "produced safety tag 3,788 and a consumed one 1,169 beyond the data block, exact at 1 "
+        "and 2 and additive in _both; the peer controller nothing in safety; OQ-SAFETYPARTITION",
+    ),
+    (
+        "structured_text.further_index_in_statement_bytes", -8,
+        "structured_text.shape_confidence", 39,
+        "stshape_* (batch A): 400 statements / 200 IF / 50 FOR blocks per shape against "
+        "stshape_n00, every shape exact to the byte after wiring -- tag index 84 / 108 / +40 / "
+        "+20, a second index 8 less (vidx_both, for_vidx), conditions 16 / 4 / 16 / 20, ELSE 28, "
+        "BOOL destinations 28 / 44, a float literal +4; OQ-STSHAPE",
+    ),
+    (
         "safety_partition.aoi_definition_moved_bytes", 800,
         "safety_partition.aoi_confidence", 12,
         "six safety AOI definitions (1/1, 3/3 and 6/6 BOOL parameters, 9 locals, 10 rungs, "

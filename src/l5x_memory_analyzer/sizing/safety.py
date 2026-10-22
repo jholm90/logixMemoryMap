@@ -75,6 +75,11 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
             data += model.aoi_instance_extra
         size = sp.data_block(data, is_array=bool(tag.dimensions))
         basis = weakest(basis, sp.data_block_confidence)
+        # A produced or consumed safety tag carries its connection in the partition.
+        extra = {"Produced": sp.produced_tag_extra_bytes, "Consumed": sp.consumed_tag_extra_bytes}.get(tag.tag_type, 0)
+        if extra:
+            size += extra
+            basis = weakest(basis, sp.produced_consumed_confidence)
         if tag.scope == CONTROLLER_SCOPE:
             rows.append((tag.path, "controller_tag", tag.data_type, size, basis))
         else:
@@ -151,15 +156,18 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
                 ))
 
     # Safety I/O: each CIP Safety device its measured cost by its connections' types; a
-    # device of a type not yet measured is reported, so the figure reads as a minimum.
-    io_rows, unpriced = safety_io_rows(safety_devices(root), model)
+    # device of types not yet measured by the device law, and reported.
+    io_rows, unmeasured = safety_io_rows(safety_devices(root), model)
     rows += io_rows
-    for key, count in sorted(unpriced.items()):
+    sio = model.safety_io
+    for key, count in sorted(unmeasured.items()):
         errors.append(SizeError(
             path=f"safety_io/{key}",
-            message=(f"{count} safety I/O device(s) with safety connections of type {key} are not yet "
-                     f"priced in the safety partition, so the safety figure is a minimum for them "
-                     f"(OQ-SAFETYPARTITION)."),
+            message=(f"{count} safety I/O device(s) with safety connections of type {key} have never been "
+                     f"measured; each is priced by the device law ({sio.unseen_input_connection_bytes} per "
+                     f"safety input connection, {sio.unseen_output_connection_bytes} per output connection, "
+                     f"{sio.unseen_data_byte_bytes} per byte of their data), which reproduces the 18 measured "
+                     f"types within 3.4% (OQ-SAFETYPARTITION)."),
         ))
 
     total = sum(size for _, _, _, size, _ in rows)

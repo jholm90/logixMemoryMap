@@ -121,10 +121,10 @@ def test_the_discount_is_applied(model):
     assert sizes[0] - sizes[1] == 1684 - 892
 
 
-def test_exactly_the_ten_measured_applicable_catalogs_are_wired(model):
-    """Ten of the seventeen measured rates apply. The other seven are held out
-    on shape grounds and each says so at its own table entry -- a future change
-    that quietly adds one back should fail here."""
+def test_exactly_the_measured_applicable_catalogs_are_wired(model):
+    """Ten of the seventeen measured rates apply, and the nine batch A measured (modrep_*).
+    The other seven are held out on shape grounds and each says so at its own table entry --
+    a future change that quietly adds one back should fail here."""
     import yaml
 
     from l5x_memory_analyzer.sizing import constants
@@ -139,7 +139,7 @@ def test_exactly_the_ten_measured_applicable_catalogs_are_wired(model):
     # test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset.
     ERS3 = {"2198-D012-ERS3", "2198-D020-ERS3", "2198-D032-ERS3",
             "2198-D057-ERS3", "2198-S086-ERS3", "2198-S130-ERS3"}
-    assert len(with_repeat) == 16
+    assert len(with_repeat) == 16 + 9
     assert ERS3 <= set(with_repeat)
     assert "ETHERNET-MODULE" not in with_repeat
     for catalog in EXCLUDED_ON_SHAPE_GROUNDS:
@@ -285,18 +285,35 @@ def test_2198_drives_are_flat_per_copy_with_a_one_time_catalog_offset(model):
     assert table.overhead_for("2198-S086-ERS3", 2)[0] < table.overhead_for("2198-D012-ERS3", 2)[0]
 
 
-def test_a_type_without_a_vendor_prefix_is_defined_by_every_module(model):
-    """5069 channel types ("CHANNEL_DI:I:0", two colons) are not shared: each module that
+def test_a_type_without_a_vendor_prefix_is_defined_by_every_5069_card(model):
+    """5069 channel types ("CHANNEL_DI:I:0", two colons) are not shared: each 5069 card that
     carries one defines it again, and a copy an earlier module defined costs
     module_scoped_repeat_extra_bytes on top (rack_5069_*, OQ-MODREPEAT). A vendor-prefixed
-    type in the same position is shared."""
+    type in the same position is shared, and so is a prefix-less type on any other module
+    (the 843E encoder's, modrep_843e_*)."""
     sharing = model.module_type_sharing
     scoped, prefixed = "CHANNEL_TEST:I:0", "AB:CHANNEL_TEST:I:0"
-    assert sharing.is_module_scoped(scoped) and not sharing.is_module_scoped(prefixed)
-    first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model, types=[scoped, scoped])
+    assert sharing.is_module_scoped(scoped, "5069-XYZUNSEEN/A")
+    assert not sharing.is_module_scoped(prefixed, "5069-XYZUNSEEN/A")
+    assert not sharing.is_module_scoped(scoped, "843E-XYZUNSEEN/A")
+    first, second = _module_bytes(["5069-XYZUNSEEN/A", "5069-XYZUNSEEN/A"], model, types=[scoped, scoped])
     assert second - first == sharing.module_scoped_repeat_extra_bytes == 76
+    first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model, types=[scoped, scoped])
+    assert first - second == _fixture_type_bytes(model, scoped)
     first, second = _module_bytes(["XYZ-UNSEEN/A", "XYZ-UNSEEN/A"], model, types=[prefixed, prefixed])
     assert first - second == _fixture_type_bytes(model, prefixed)
+
+
+def test_the_batch_a_catalogs_carry_their_measured_repeat_rate(model):
+    """modrep_* (OQ-MODREPEAT): a further copy's total less its declared data, the same at 2
+    and 4 copies."""
+    table = model.module_overhead_by_catalog
+    assert {c: table.overhead_for(c, 2)[0] for c in (
+        "1732E-IB16M12R/A", "1732E-OB16M12R/A", "1756-IF8/A", "1756-OF8/B", "843E-MIPxxBAx/A",
+        "EX260-SEN1/A", "EX260-SEN3/A", "PowerFlex 525-EENET", "PowerFlex 755-EENET")} == {
+        "1732E-IB16M12R/A": 910, "1732E-OB16M12R/A": 1050, "1756-IF8/A": 1063, "1756-OF8/B": 1298,
+        "843E-MIPxxBAx/A": 1438, "EX260-SEN1/A": 1014, "EX260-SEN3/A": 1016, "PowerFlex 525-EENET": 5618,
+        "PowerFlex 755-EENET": 1076}
 
 
 def test_the_5069_adapter_costs_its_measured_rate_with_cards_beneath_it(model):

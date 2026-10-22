@@ -48,6 +48,15 @@ ONS 87 · JSR 73 · NOP 57 · CROUT 43 · EQU 34 · CLR 33 · OTU 20 · TOF 11 �
 AFI, OTL, LC, GEQ 2 each. All of it is priced in the safety partition (MEMORY_MODEL, "Safety
 memory is a separate partition"); none of it costs standard memory.
 
+**After batch A (2026-10-21).** The string shapes are measured: every STRING shape the real
+programs write — members, behind tag indexes, custom string types, INSERT, MID, DELETE,
+FIND, DTOS, STOD, RTOS, STOR, UPPER, CONCAT, COP, MOV — is exact against its control
+(`strx_*`); EQU / NEQ are rebuilt in batch B (they were built on a REAL bit). **Every real
+ST shape is measured and wired** (`stshape_*`, 39 files exact; MEMORY_MODEL, "The shapes
+real ST is written in"). In the safety routines every instruction is priced; what is not
+yet measured is an operand that names a safety I/O module's connection tag (about 900 of
+them across the ten, OPEN_QUESTIONS Section 8).
+
 ## How far "exact" reaches (2026-10-04)
 
 **98.6% of real instruction occurrences are mnemonics whose weight has been confirmed on a full

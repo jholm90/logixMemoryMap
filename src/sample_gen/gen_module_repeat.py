@@ -150,10 +150,11 @@ def make(sample_id: str, modules: Callable[[], str]) -> str:
     return build_l5x(target_name=target_name(sample_id), **with_baseline(extra_modules_xml=modules()))
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", metavar="REGEX", help="build only the sample_ids this matches")
-    args = ap.parse_args()
+    # Called from the test fixture with no arguments: the process's own argv is pytest's.
+    args = ap.parse_args([] if argv is None else argv)
     for sample_id, what, modules in plan():
         if args.only and not re.search(args.only, sample_id):
             continue
@@ -166,4 +167,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1:])

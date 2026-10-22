@@ -156,6 +156,12 @@ def load_manifest(resolve_local: bool = True) -> list[dict]:
         cap = caps.get(sid, {})
         for k in CAPTURE_COLUMNS[1:]:
             row[k] = cap.get(k) or ""
+        # A reading that is not a number is a failed read, not a capture: treated as
+        # uncaptured, so no caller parses a status line as bytes (the capture tool now
+        # refuses to store one, CAPACITY NOT NUMERIC).
+        for k in ("actual_bytes", "safety_bytes"):
+            if k in row and row[k] and not row[k].strip().isdigit():
+                row[k] = ""
         joined.append(row)
     return joined
 

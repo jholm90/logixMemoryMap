@@ -39,6 +39,7 @@ from l5x_memory_analyzer.sizing.structured_text import (
     parse_st_routines,
     size_st_assignments,
     size_st_control_flow,
+    size_st_shapes,
 )
 from l5x_memory_analyzer.parser.modules import label_modules, parse_modules
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
@@ -52,12 +53,15 @@ from l5x_memory_analyzer.sizing.logic import jsr_structured_call_bytes, structur
 from l5x_memory_analyzer.sizing.logic import ATOMIC_TYPES, compute_routine_logic_bytes
 from l5x_memory_analyzer.sizing.safety_io import safety_devices
 from l5x_memory_analyzer.sizing.safety_io import standard_rows as safety_io_standard_rows
+from l5x_memory_analyzer.sizing.safety_io import has_standard_terms as has_safety_standard_terms
 from l5x_memory_analyzer.sizing.operand_types import FileOperandTypes
 from l5x_memory_analyzer.sizing.udt import (
     RecursiveUdtError,
     UnknownDataTypeError,
+    aoi_packed_element_bytes,
     compute_aoi_definition_cost,
     compute_array_size,
+    compute_element_size,
     compute_udt_definition_cost,
     custom_string_maxlen,
     referenced_data_type_names,
@@ -260,6 +264,16 @@ def build_report(root: ET.Element, model: MemoryModel,
         tag_def = data_types.get(tag.data_type)
         if tag_def is not None and not tag_def.is_string_family:
             size += model.aoi_instance_extra if tag_def.is_aoi else model.udt_tag_extra
+        # A scalar AOI instance packs its BOOLs into words as an array element does, and its
+        # slot rounds to 8 (OQ-AOIBOOLINST, memory_model.yaml aoi_scalar_instance).
+        scalar_aoi = model.aoi_scalar_instance
+        if (scalar_aoi.packed and tag_def is not None and tag_def.is_aoi and not tag.dimensions
+                and not tag.is_alias):
+            element, _ = compute_element_size(tag.data_type, data_types, model)
+            packed = aoi_packed_element_bytes(tag.data_type, data_types, model, element)
+            align = scalar_aoi.alignment_bytes
+            size = align * -(-(packed + overhead + scalar_aoi.slot_offset_bytes) // align)
+            basis = weakest(basis, scalar_aoi.confidence)
         # Built-in STRING tags cost 2 bytes less than the flat tag_overhead
         # formula above predicts (RESOLVED_QUESTIONS.md OQ-STRINGTAGOVERHEAD)
         # -- confirmed KNOWN, not yet extended to custom StringFamily types.
@@ -691,7 +705,8 @@ def build_report(root: ET.Element, model: MemoryModel,
                     if st_routine.program_name.startswith("aoi:") else None) \
             or file_operand_types.for_program(st_routine.program_name)
         st_assign_bytes, st_unmeasured, st_unpriced_ops = size_st_assignments(st_routine, model, st_scope)
-        st_bytes = size_st_control_flow(st_routine, model) + st_assign_bytes
+        st_bytes = (size_st_control_flow(st_routine, model) + st_assign_bytes
+                    + size_st_shapes(st_routine, model, st_scope))
         if st_unpriced_ops:
             errors.append(SizeError(
                 path=f"coverage/st_operator/{st_routine.program_name}/{st_routine.routine_name}",
@@ -991,7 +1006,8 @@ def build_report(root: ET.Element, model: MemoryModel,
             continue
         label = _module_labels[_module_index]
         # A module-scoped type (no vendor prefix) is the carrying module's own: never shared.
-        _scoped = model.module_type_sharing.is_module_scoped
+        def _scoped(name: str, _catalog: str = module.catalog_number) -> bool:
+            return model.module_type_sharing.is_module_scoped(name, _catalog)
         _shared_types = [t for t in module.defined_types if t[0] in _defined_type_names and not _scoped(t[0])]
         _new_types = [t for t in module.defined_types if t[0] not in _defined_type_names or _scoped(t[0])]
         _scoped_repeats = sum(1 for t in module.defined_types if _scoped(t[0]) and t[0] in _defined_type_names)
@@ -1183,7 +1199,22 @@ def build_report(root: ET.Element, model: MemoryModel,
         if eligible and _scoped_repeats and not measured_repeat:
             overhead_bytes += sharing.module_scoped_repeat_extra_bytes * _scoped_repeats
             overhead_basis = weakest(overhead_basis, sharing.confidence)
+        # A further copy holds its per-channel configuration again, whatever type it shares.
+        if (eligible and not measured_repeat and module.per_channel_config_bytes
+                and module.config_profile in {name for name, _ in _shared_types}):
+            overhead_bytes += round(sharing.per_channel_config_factor * module.per_channel_config_bytes)
+            overhead_basis = weakest(overhead_basis, sharing.confidence)
         module_bytes = module.module_defined_bytes + overhead_bytes
+        # A safety device of an unmeasured catalog (a custom card, another vendor's device, an
+        # EDS profile): the device law, its overhead by connection shape plus the definitions
+        # of its types this project has not defined (memory_model.yaml safety_io). Its safety
+        # data is in the safety partition, so its declared data is not charged here.
+        device = module.safety_device
+        if (device is not None and not device.motion and not table.is_measured(module.catalog_number)
+                and not has_safety_standard_terms(device, model.safety_io)):
+            module_bytes = model.safety_io.unseen_standard_bytes(device) + sum(
+                sharing.definition_bytes(name, members, model.udt_definition) for name, members in _new_types)
+            overhead_basis = model.safety_io.unseen_confidence
         # A generic ETHERNET-MODULE's connection data costs 4x its declared
         # bytes, not 1x (memory_model.yaml module_connection_data, wired
         # exact on 14 captured points from W=2 to W=114). The

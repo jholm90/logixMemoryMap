@@ -57,11 +57,11 @@ def test_alias_tags_size_not_error():
     assert real_dint.bytes == 4 + 92  # DINT(4) + tag_overhead("RealDint", 8 chars)
 
     aoi_instance = by_path["controller/DebSensor1"]
-    # EnableIn(BOOL,4) + DebTmr(TIMER,12), InOut excluded, + tag_overhead("DebSensor1", 10 chars)
-    # -8: an AOI INSTANCE is over-charged by the flat
-    # tag_overhead (memory_model.yaml definition_scale_correction, exact over a
-    # sweep of 1..60 instances).
-    assert aoi_instance.bytes == 16 + 92 - 8
+    # A scalar AOI instance (memory_model.yaml aoi_scalar_instance, OQ-AOIBOOLINST):
+    # its element packed as an array element is -- EnableIn(BOOL,4) + DebTmr(TIMER,12),
+    # InOut excluded, less the array law's flat 4 -- plus tag_overhead("DebSensor1",
+    # 10 chars) less 4, rounded up to 8: 12 + 92 - 4 = 100 -> 104.
+    assert aoi_instance.bytes == 8 * -(-((16 - 4) + 92 - 4) // 8) == 104
     # Every component is KNOWN: UDT alignment and standalone BOOL sizing were
     # both closed by real capture, the BOOL tier corrected.
     assert aoi_instance.basis == "KNOWN"

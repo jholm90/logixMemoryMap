@@ -652,6 +652,14 @@ zero_connection_module:
     # adapter.
     '5069-AENTR': { bytes: 625, confidence: FITTED, with_children: true }
     '5069-SERIAL/A': { bytes: 367, confidence: ASSUMED }
+    # A SIL3 1756-L81ES's 1756-L8SP safety partner and a peer safety controller in the I/O
+    # tree (OQ-SAFETYPARTITION batch A, 2026-10-21): the partner reads 1,808..1,816 below the
+    # flat rate on six SIL3 files against their SIL2 controls (safe_sil3_n00, _ib8s_2 / _4,
+    # safe_iol_sil3_1756pair, _kx_d032_1 / _2), the peer 5069-L306ERS2 1,784 below on four
+    # (safe_pc6_peer, _cons_1 / _2, _both against safe_pc6_def). Neither costs anything in
+    # the safety partition.
+    '1756-L8SP': { bytes: 528, confidence: KNOWN }
+    '5069-L306ERS2': { bytes: 560, confidence: KNOWN }
 
 # repeat_bytes (OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
 # later modules of the SAME catalog in one project cost LESS than the first.
@@ -873,6 +881,27 @@ module_family_repeat:
 # captures were wired as catalog entries: eight of nine 5069 catalogs within -247..+329
 # of their own measured cost, six within +-85; the 5069-HSC2XOB4/A (four large channel
 # types) at +1,571.
+#
+# ONLY ON A 5069 CARD (batch A, 2026-10-21). The 843E-MIPxxBAx/A encoder carries two
+# prefix-less types (CHANNEL_ENC_DIAG:I:0, CHANNEL_ENC:O:0) beside its prefixed ones, and a
+# further copy reads 1,535 against 2,647 with them paid again (modrep_843e_*, exact at 2 and
+# 4): sharing them too leaves it 40 off. So a prefix-less type is the module's own only on a
+# 5069 card (module_scoped_catalog_pattern); on anything else it is shared like any other.
+#
+# Against the nine catalogs batch A measured at 1 / 2 / 4 copies (modrep_*), the law's
+# repeat discount (a further copy's definitions saved) is right within 1732E +56 / +40,
+# EX260 -72, 843E -40 (as above), PowerFlex 525 -224, 1734-IE2C +221, 1756-IF8 -432,
+# 1756-OF8 -744, PowerFlex 755 +632 per copy: the error for a catalog nobody has measured.
+# Each of the nine now has its own measured repeat_bytes.
+#
+# PER-CHANNEL CONFIGURATION IS PER COPY. The two over-discounted, 1756-IF8/A and 1756-OF8/B,
+# are the two whose configuration tag carries per-channel structures (four and eight, 189.5
+# and 345 bytes packed): specialty cards with a lot of configuration per channel, which a
+# further copy holds again whatever it shares. The 432 and 744 each copy pays beyond the
+# law are 2.28 and 2.16 times those bytes; the five without per-channel configuration read
+# -221..+72. So a further copy of a catalog without its own measured rate pays
+# per_channel_config_factor times its per-channel configuration bytes once its
+# configuration type is shared. FITTED on two catalogs (residual +11 / -22).
 module_type_sharing:
   enabled: true
   eds_type_pattern: '^_[0-9A-Fa-f]{4}:'
@@ -881,7 +910,9 @@ module_type_sharing:
   unseen_base_multi_bytes: 2579
   unseen_confidence: ASSUMED
   module_scoped_type_pattern: '^[^:]+:[^:]+:[^:]+$'
+  module_scoped_catalog_pattern: '^5069-'
   module_scoped_repeat_extra_bytes: 76
+  per_channel_config_factor: 2.2
 
 module_overhead_repeat_discount:
   apply_repeat_discount: true
@@ -965,8 +996,8 @@ module_overhead_by_catalog:
   '1794-IR8/A': { bytes: 3983, confidence: ASSUMED }  # +2311 vs the flat 1672 -- modulesweep_1794_ir8_a minus modulesweep_1794_acn15_c
   '1794-OE4/B': { bytes: 2914, confidence: ASSUMED }  # +1242 vs the flat 1672 -- modulesweep_1794_oe4_b minus modulesweep_1794_acn15_c
   '1794-VHSC/A': { bytes: 5952, confidence: ASSUMED }  # +4280 vs the flat 1672 -- modulesweep_1794_vhsc_a minus modulesweep_1794_acn15_c
-  'PowerFlex 525-EENET': { bytes: 7018, confidence: ASSUMED }  # +5346 vs the flat 1672 -- modulesweep_powerflex_525_eenet (Local + this module only)
-  'PowerFlex 755-EENET': { bytes: 4108, confidence: ASSUMED }  # +2436 vs the flat 1672 -- modulesweep_powerflex_755_eenet (Local + this module only)
+  'PowerFlex 525-EENET': { bytes: 7018, repeat_bytes: 5618, confidence: ASSUMED }  # +5346 vs the flat 1672 -- modulesweep_powerflex_525_eenet (Local + this module only)
+  'PowerFlex 755-EENET': { bytes: 4108, repeat_bytes: 1076, confidence: ASSUMED }  # +2436 vs the flat 1672 -- modulesweep_powerflex_755_eenet (Local + this module only)
   '150 SMC Flex-E': { bytes: 6614, confidence: ASSUMED }
   # 1,592 with the connection law above and the 400-byte config array charged as
   # declared: genem_in002/in010/in450 land exactly at 2,024 / 2,056 / 3,816 real
@@ -982,9 +1013,13 @@ module_overhead_by_catalog:
   # device. Applying it anyway was 67,450 of the 189,570 bytes the discount
   # removed from the real programs. See module_overhead_repeat_discount.
   'ETHERNET-MODULE': { bytes: 1592, confidence: KNOWN }
+  # repeat_bytes on 1732E-IB16M12R/A, 1732E-OB16M12R/A, 1756-IF8/A, 1756-OF8/B, 843E,
+  # EX260-SEN1/SEN3 and PowerFlex 525 / 755: batch A's modrep_* at 1 / 2 / 4 copies on the
+  # realism floor, a further copy's total less its declared data, the same at 2 and 4 to the
+  # byte (OQ-MODREPEAT). The first copies were already exact.
   '1732E-IB16M12DR/A': { bytes: 2126, confidence: ASSUMED }
-  '1732E-IB16M12R/A': { bytes: 1422, confidence: ASSUMED }
-  '1732E-OB16M12R/A': { bytes: 1802, confidence: ASSUMED }
+  '1732E-IB16M12R/A': { bytes: 1422, repeat_bytes: 910, confidence: ASSUMED }
+  '1732E-OB16M12R/A': { bytes: 1802, repeat_bytes: 1050, confidence: ASSUMED }
   '1734-AENT/B': { bytes: 1608, repeat_bytes: 1088, confidence: KNOWN }
   '1734-AENT/C': { bytes: 1604, repeat_bytes: 1084, confidence: KNOWN }
   '1734-AENTR/B': { bytes: 1606, confidence: ASSUMED }
@@ -1012,13 +1047,13 @@ module_overhead_by_catalog:
   '1756-IB16': { bytes: 1684, repeat_bytes: 892, confidence: KNOWN }
   '1756-IB16IF/A': { bytes: 4952, repeat_bytes: 2744, confidence: KNOWN }
   '1756-IB32/B': { bytes: 1688, repeat_bytes: 896, confidence: KNOWN }
-  '1756-IF8/A': { bytes: 3415, confidence: ASSUMED }
+  '1756-IF8/A': { bytes: 3415, repeat_bytes: 1063, confidence: ASSUMED }
   '1756-OA16': { bytes: 2108, confidence: ASSUMED }
   '1756-OA16I': { bytes: 1848, confidence: ASSUMED }
   '1756-OB16E': { bytes: 2108, confidence: ASSUMED }
   '1756-OB32': { bytes: 1848, confidence: ASSUMED }
   '1756-OF4/A': { bytes: 3870, confidence: ASSUMED }
-  '1756-OF8/B': { bytes: 5066, confidence: ASSUMED }
+  '1756-OF8/B': { bytes: 5066, repeat_bytes: 1298, confidence: ASSUMED }
   '1794-ACN15/C': { bytes: 1640, confidence: ASSUMED }
   '1794-AENT': { bytes: 1612, repeat_bytes: 1180, confidence: KNOWN }
   '1794-IB16/A': { bytes: 1536, confidence: ASSUMED }
@@ -1118,11 +1153,11 @@ module_overhead_by_catalog:
   '2702782': { bytes: -16, confidence: ASSUMED }
   '440C-CR30-22BBB/A': { bytes: 4388, repeat_bytes: 620, confidence: KNOWN }
   '842E-CM-M': { bytes: 3633, repeat_bytes: 2633, confidence: KNOWN }
-  '843E-MIPxxBAx/A': { bytes: 2966, confidence: ASSUMED }
+  '843E-MIPxxBAx/A': { bytes: 2966, repeat_bytes: 1438, confidence: ASSUMED }
   'AL1122': { bytes: -793, confidence: ASSUMED }
   'AL1222': { bytes: -793, confidence: ASSUMED }
-  'EX260-SEN1/A': { bytes: 1430, confidence: ASSUMED }
-  'EX260-SEN3/A': { bytes: 1432, confidence: ASSUMED }
+  'EX260-SEN1/A': { bytes: 1430, repeat_bytes: 1014, confidence: ASSUMED }
+  'EX260-SEN3/A': { bytes: 1432, repeat_bytes: 1016, confidence: ASSUMED }
   'PowerFlex 755-EENET-CM': { bytes: 3613, confidence: ASSUMED }
   'PowerFlex 755-EENET-CM-S': { bytes: 3621, repeat_bytes: 2645, confidence: KNOWN }
 
@@ -2002,6 +2037,39 @@ alias_overhead:
 # the key (the 1756 IB16S and OBV8S share 368; the integrated-safety drives share their
 # 4,160 by type). Each exact on its own points; how first-device costs combine across
 # catalogs beyond those is an assumption, so FITTED.
+#
+# Batch A (2026-10-21, gen_safety_round6.py and gen_safety_io.py --local): twelve more
+# device types, each exact at every count built (1 / 2, 1 / 2 / 4, or 1 / 2 / 4 / 8), the
+# mixes additive (safe_io_mix_4_4 = 4 x 3,513 + 4 x 3,457) and SIL3 costing what SIL2 does.
+# A standard table key is a device key (its safety type families joined) where one catalog
+# carries more than one safety shape (the 1734-IB8S/B in two, the 2198-D032-ERS3 at
+# revision 11 against 13) and the catalog otherwise; the device key wins. The 1734 cards'
+# first-device term includes their test rack's adapter: a POINT adapter carrying only safety
+# cards reads 634 below its module price (safe_io_racks_2x2's second rack), which a real
+# program's mixed rack never shows, so a real program's first 1734 safety card of a type is
+# priced up to ~630 low. Their per-device term is fitted over 1 / 2 / 4 / 8 (residual +75 /
+# +7 / -145 / +63, the same on IB8S and OB8S: each further card costs 752, 760, 760, then
+# 632 from the fifth, whatever the card).
+#
+# THE DEVICE LAW, for any device whose types were never measured (a custom card, another
+# vendor's device, an EDS profile), fitted on the 18 measured device types (1,629..6,049):
+#
+#   safety   = 1,653 per safety input connection + 1,814 per safety output connection
+#            + 16 per byte of the safety connections' data
+#   standard = 600 + 162 with a safety output connection + 1,242 per standard data
+#              connection, plus the definitions (UDT law) of its data types the project has
+#              not defined yet -- so a further copy of a device pays only the overhead
+#
+# The data is the connection's stated InputSize / OutputSize (a DataDriven connection), else
+# its decorated data's bits / 8 rounded up. Each device predicted with itself left out of the
+# fit: safety worst 115 bytes (5.5%, the 1,629 one-connection 1734-IB8S), rms 66; the free
+# three-parameter fit is 1,655 / 1,816 / 15.9 and these are it with the byte rate whole.
+# Standard: a further copy reads 560..832 (one or two safety connections) and 1,817..2,155
+# with a standard connection; a first copy less a further one is its types' definitions
+# within -312..+248 on the nine devices outside the 1734 family (an EDS profile included:
+# 728 against 776), the 1734 cards ~490 above it with their test rack's adapter in the
+# difference. Safety data lives in the safety partition, so standard does not scale with it.
+# A motion device (a drive) is priced by the motion laws, not this.
 safety_io:
   safety_bytes:
     "AB:5000_SDI16": 6049
@@ -2010,13 +2078,44 @@ safety_io:
     "AB:CIP_Drive_Safety1": 3577
     "AB:CIP_Motion_Device_Safety1": 4123
     "AB:CIP_Motion_Device_Safety2": 4717
+    "AB:1734_IB8S+AB:1734_IB8S_Safety2": 3513
+    "AB:1734_IB8S_Safety6": 1629
+    "AB:1734_OB8S+AB:1734_OB8S_Safety1": 3457
+    "AB:1734_OB8S+AB:1734_OB8S_Safety3": 3457
+    "AB:5000_SDI8": 2513
+    "AB:5000_DO8+AB:5000_SDO8": 4497
+    "AB:5000_SDI8_Packed": 1873
+    "AB:5000_DO8_Packed+AB:5000_SDO8_Packed": 3741
+    "AB:442G_MABB_E0JP4679": 3621
+    "FR:Safety_RobotPlus_8Bytes": 3745
+    "AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes": 3745
+    "AB:CIP_Drive_Safety2": 3578
   safety_confidence: KNOWN
+  unseen_input_connection_bytes: 1653
+  unseen_output_connection_bytes: 1814
+  unseen_data_byte_bytes: 16
+  unseen_standard_base_bytes: 600
+  unseen_standard_output_bytes: 162
+  unseen_standard_connection_bytes: 1242
+  unseen_confidence: FITTED
   standard_first_bytes:
     "1756-IB16S/A": 1832
     "1756-OBV8S/A": 1104
     "vendor43:13594": 720
     "2198-H008-ERS2": 624
     "PowerFlex 527-STO CIP Safety": 1608
+    "AB:1734_IB8S+AB:1734_IB8S_Safety2": 1013
+    "AB:1734_OB8S+AB:1734_OB8S_Safety1": 949
+    "AB:1734_IB8S_Safety6": 437
+    "AB:1734_OB8S+AB:1734_OB8S_Safety3": 854
+    "AB:442G_MABB_E0JP4679": 1448
+    "AB:5000_SDI8": 888
+    "AB:5000_DO8+AB:5000_SDO8": 824
+    "AB:5000_SDI8_Packed": 560
+    "AB:5000_DO8_Packed+AB:5000_SDO8_Packed": 808
+    "FR:Safety_RobotPlus_8Bytes": 944
+    "AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes": 1200
+    "AB:CIP_Drive_Safety2": 800
   standard_each_bytes:
     "1756-IB16S/A": -917
     "1756-OBV8S/A": -917
@@ -2028,6 +2127,20 @@ safety_io:
     "2198-D032-ERS3": 684
     "2198-D057-ERS3": 684
     "2198-S086-ERS3": -6
+    "AB:1734_IB8S+AB:1734_IB8S_Safety2": -416
+    "AB:1734_OB8S+AB:1734_OB8S_Safety1": -1088
+    "AB:1734_IB8S_Safety6": -438
+    "AB:1734_OB8S+AB:1734_OB8S_Safety3": -1028
+    "AB:442G_MABB_E0JP4679": -954
+    "AB:5000_SDI8": -1288
+    "AB:5000_DO8+AB:5000_SDO8": -1224
+    "AB:5000_SDI8_Packed": -1308
+    "AB:5000_DO8_Packed+AB:5000_SDO8_Packed": -1260
+    "FR:Safety_RobotPlus_8Bytes": 313
+    "AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes": 56
+    # The revision-11 drive's network STO (safe_iol_kx11_d032_*): its own, in place of the
+    # catalog's 684 measured on the revision-13 integrated-safety drive.
+    "AB:CIP_Drive_Safety2": 1184
   standard_shared_first_bytes:
     "AB:5000_SD": 368
     "AB:CIP_Motion_Device_Safety2": 4160
@@ -2041,6 +2154,13 @@ safety_partition:
   array_header_extra_bytes: 8
   data_alignment: 8
   data_block_confidence: KNOWN
+  # A controller-scope safety tag that is produced or consumed: its data block plus these
+  # (safe_pc6_prod_1 / _2, _cons_1 / _2 and _both, batch A 2026-10-21; exact at 1 and 2 and
+  # additive). Measured on a UDT of CONNECTION_STATUS + DINT produced once (ProduceCount 1),
+  # the shape RS-03 / RS-17 carry. In standard memory both cost what any safety tag does.
+  produced_tag_extra_bytes: 3788
+  consumed_tag_extra_bytes: 1169
+  produced_consumed_confidence: KNOWN
   routine_bytes: 264
   routine_name_per_8_chars: 8
   routine_name_confidence: KNOWN
@@ -2193,6 +2313,23 @@ definition_scale_correction:
   # is wired because it is exact and costs nothing, not because it is large.
   aoi_definition_extra: -7
   aoi_definition_extra_confidence: KNOWN
+  confidence: KNOWN
+
+# A SCALAR AOI INSTANCE (OQ-AOIBOOLINST, aoibool_*, batch A 2026-10-21) packs its BOOL
+# parameters and locals into 32-bit words beside EnableIn / EnableOut exactly as an array
+# element does (aoi_array), and its slot rounds up to 8 bytes:
+#     instance = 8 x ceil((packed element + tag_overhead + slot_offset_bytes) / 8)
+# One AOI (InB BOOL, InD DINT, InR REAL inputs; Sts BOOL output; LoD DINT local; k BOOL
+# locals) with k = 0, 28, 29, 55, 60, 61 -- 4 to 65 BOOL bits, one to three words -- one and
+# fifty scalar instances each, the 55 also at 25 and as Input parameters: 96 a copy for
+# one word, 104 for two and for three, exact everywhere; the engine had charged each BOOL 4
+# bytes (104 / 216 / 220 / 324 / 344 / 348). A 50-element array of the same AOI exact before
+# and after (1,088). Without BOOLs beyond EnableIn / EnableOut the law is the old one
+# rounded up to 8.
+aoi_scalar_instance:
+  packed: true
+  slot_offset_bytes: -4
+  alignment_bytes: 8
   confidence: KNOWN
 
 udt_definition:
@@ -4085,6 +4222,38 @@ structured_text:
   # per-assignment rests on that one substitution. See OQ-STSIZING.
   while_block: 76            # per WHILE ... END_WHILE
   comments_and_blanks: 0     # CONFIRMED FREE -- see above
+  # THE SHAPES REAL ST IS WRITTEN IN (OQ-STSHAPE, batch A 2026-10-21): stshape_*, one
+  # JSR-called routine on the realism floor, each shape 400 statements, 200 IF blocks or 50
+  # FOR blocks against stshape_n00 and its sibling, every residual an exact multiple of its
+  # count, zero errors.
+  #
+  # A tag-driven index costs what it costs in a rung (indirect_index): 84 (StD[Ix], and
+  # StE[StP.A] with the index a member path), 108 for an index expression (StE[Ix + 1]), a
+  # member after it 40 more (StU[Ix].A, 124), a BOOL element 20 more (IF StB[Ix], 104), in an
+  # assignment, a condition, an instruction's operand (COP(StD[Ix], ...), 84) or a FOR body.
+  # A second tag index in the same statement costs 8 less (StD[Ix] := StE[Jx] + 1; 160, and the
+  # FOR body StD[Ix] := StE[Ix] + 1; 160).
+  further_index_in_statement_bytes: -8
+  # An IF or ELSIF condition beyond a BOOL (or NOT a BOOL, the same) pays per comparison
+  # (> 5, = 5, >= Lim: +16), per AND (+4; three BOOLs ANDed +8), per OR (+16), and a comparison
+  # on a REAL or against a float literal 20 more (StR > 1.5: +36); two comparisons ANDed +36.
+  condition_comparison_bytes: 16
+  condition_and_bytes: 4
+  condition_or_bytes: 16
+  condition_real_comparison_bytes: 20
+  # ELSE in an IF (+28 beyond its statement; a CASE's ELSE is in case_block). Two statements
+  # and a nested IF were already exact.
+  else_branch: 28
+  # A BOOL destination is not an arithmetic assignment: 28 from a BOOL or NOT a BOOL, and its
+  # right-hand side priced as a condition (AND 32, a comparison 44); a bare literal 44. The
+  # arithmetic law charged them 36 and an AND 124.
+  bool_assign_bytes: 28
+  bool_assign_literal_bytes: 16
+  # A float literal in a one-operator REAL assignment: 60 where a REAL tag source costs 56
+  # (StR[i] := StR[i] + 1.5, through a member path and with * alike), the +4 a float literal
+  # costs against a REAL in a rung (OQ-LITREAL). A compound expression's are already exact.
+  real_float_literal_bytes: 4
+  shape_confidence: KNOWN
   # ST ASSIGNMENT EXPRESSION COST, keyed "<operator count>|<REAL dest?>".
   #
   # An ST assignment does NOT simply cost what the equivalent CPT costs.

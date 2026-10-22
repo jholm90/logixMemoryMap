@@ -312,6 +312,20 @@ way as a nested UDT.
 > (4 bytes), which is what the XML shape shows, but this is an open question and
 > not a KNOWN fact.
 
+
+**A scalar instance packs its BOOLs (OQ-AOIBOOLINST, 2026-10-21) — KNOWN.** A scalar AOI
+instance holds its BOOL parameters and locals packed into 32-bit words beside EnableIn /
+EnableOut, exactly as an array element does (Array of instances, below), and its slot
+rounds up to 8: `8 × ceil((packed element + tag overhead − 4) / 8)` (`aoi_scalar_instance`).
+One AOI with 4 to 65 BOOL bits — one, two, three words — at 1, 25 and 50 instances, locals
+or Input parameters: 96 a copy for one word, 104 for two and three, every file exact; the
+engine had charged each BOOL 4 bytes (104 / 216 / 220 / 324 / 344 / 348). Re-priced over
+the 735 rebuilt AOI-family captures, 75 move: 70 closer, the rest within 4 bytes; it
+closes `mbshape_*` (+1,000..+2,300 → within ±40), `aoiint_*` (+12,198 → +4 against the
+plant) and `aoilit_*`. Without BOOLs beyond EnableIn / EnableOut it is the old law rounded
+up to 8. The real safety programs move −0.01% to −0.80%; the seventeen standard programs,
+not in this checkout, by an estimated −100 KB in all, toward under-prediction.
+
 ### Definition cost — FITTED
 
 An AOI's own parameter and LocalTag declaration has a real one-time cost,
@@ -805,32 +819,81 @@ reads the same as its safety file.
 | +16 | 5069-L330ERMS2 v35 base and content step | one catalog; L320ERMS2 exact |
 | +16 | 1756-L81ES v32 base and content step | the known L8x v34/v35 +16 (`processor_firmware_correction`) |
 
-### Safety I/O — safety KNOWN, standard FITTED (OQ-SAFETYPARTITION round 5)
+### Safety I/O — safety KNOWN per measured type, the device law FITTED (OQ-SAFETYPARTITION)
 
 A CIP Safety device is a module with a Safety* connection; its type family is that
 connection's decorated data type without its suffix (`sizing/safety_io.py`). **The safety
 partition grows by a fixed amount per device, set by that type, with nothing paid once**
-(exact at 1 / 2 / 4 devices, each against its control):
+(exact at every count built, 1 / 2 / 4 / 8, each against its control; mixes additive; SIL3
+the same as SIL2):
 
-| device | safety connections' type | safety bytes each |
+| device | safety connections' types | safety bytes each |
 |---|---|---:|
 | 1756-IB16S/A | `AB:5000_SDI16` | 6,049 |
 | 1756-OBV8S/A | `AB:5000_SDO8` | 4,497 |
-| Balluff BNI00HN | `_002B:BNI00HN` | 3,901 |
-| PowerFlex 527-STO, 2198-H008-ERS2 | `AB:CIP_Drive_Safety1` | 3,577 |
+| 5069-OBV8S/A, standard data | `AB:5000_DO8+AB:5000_SDO8` | 4,497 |
 | 2198-D012 / D020 / D032 / D057-ERS3, integrated safety | `AB:CIP_Motion_Device_Safety2` | 4,717 |
 | 2198-S086-ERS3 | `AB:CIP_Motion_Device_Safety1` | 4,123 |
+| Balluff BNI00HN (EDS) | `_002B:BNI00HN` | 3,901 |
+| FANUC R30iB Plus | `FR:Safety_RobotPlus_8Bytes` | 3,745 |
+| generic Ethernet safety device (12 in / 8 out) | `AB:ETHERNET_MODULE_SINT_12Bytes+..._8Bytes` | 3,745 |
+| 5069-OBV8S/A, packed | `AB:5000_DO8_Packed+AB:5000_SDO8_Packed` | 3,741 |
+| 442G-MABLB-UR-E0JP4679/A | `AB:442G_MABB_E0JP4679` | 3,621 |
+| 2198-D032-ERS3 at revision 11, network STO | `AB:CIP_Drive_Safety2` | 3,578 |
+| PowerFlex 527-STO, 2198-H008-ERS2 | `AB:CIP_Drive_Safety1` | 3,577 |
+| 1734-IB8S/B, with its test-output connection | `AB:1734_IB8S+AB:1734_IB8S_Safety2` | 3,513 |
+| 1734-OB8S/B | `AB:1734_OB8S+AB:1734_OB8S_Safety1` | 3,457 |
+| 1734-OB8S/A | `AB:1734_OB8S+AB:1734_OB8S_Safety3` | 3,457 |
+| 5069-IB8S/A, standard data | `AB:5000_SDI8` | 2,513 |
+| 5069-IB8S/A, packed | `AB:5000_SDI8_Packed` | 1,873 |
+| 1734-IB8S/B, input connection only | `AB:1734_IB8S_Safety6` | 1,629 |
 
-Two devices of the same type cost the same whatever the catalog (four drive catalogs; the
-PowerFlex 527 and the Kinetix 5300), and an IB16S beside an OBV8S reads their sum. A device
-is priced only when its whole set of safety-connection types matches a measured one; any
-other is reported as unpriced and the safety figure reads as a minimum (the 1734 cards
-and 5069 cards until their captures).
+**The device law — any other safety device** (a custom card, another vendor's device, an
+EDS profile), fitted on the 18 types above:
 
-**Standard memory** beyond the module sizing: a first-of-catalog cost, a per-device cost,
-and a cost shared once by a type family (`memory_model.yaml` `safety_io`): the 1756 pair
-shares 368, the integrated-safety drives 4,160 by type and 684 each. Exact on each
-family's own points; how first costs combine across catalogs beyond those is assumed.
+    safety bytes = 1,653 per safety input connection + 1,814 per safety output connection
+                 + 16 per byte of the safety connections' data
+
+The data is the connection's stated `InputSize` / `OutputSize` (a DataDriven connection),
+else its decorated data's bits / 8 rounded up. It reproduces all 18 within 3.4% (worst the
+1,629 one-connection IB8S); each type predicted with itself left out of the fit is within
+115 bytes (5.5%), rms 66. Priced from the law alone — every measured table emptied — the
+twelve real safety programs' safety figure moves by at most 1.1 points. A device priced by
+the law is reported (FITTED), not silent.
+
+**Standard memory** beyond the module's own sizing (`memory_model.yaml` `safety_io`): a
+first-device cost and a per-device cost for each measured type, keyed by the device key
+where one catalog carries more than one safety shape (the 1734-IB8S/B with and without its
+output connection; the 2198-D032-ERS3 at revision 11 against 13) and by the catalog
+otherwise, plus a cost shared once by a type family (the 1756 pair 368, the
+integrated-safety drives 4,160). The 1734 cards' first-device terms include their test
+rack's adapter: a POINT adapter carrying only safety cards reads 634 below its module price
+(`safe_io_racks_2x2`), which a real mixed rack never shows, so a real program's first 1734
+safety card of a type is priced up to about 630 low. A further 1734 safety card costs 752,
+760, 760, then 632 from the fifth, whatever the card (fitted over 1 / 2 / 4 / 8: residual
++75 / +7 / −145 / +63).
+
+For a safety device whose catalog has neither a module entry nor measured terms, the
+standard side is the device law too: **600, 162 more with a safety output connection,
+1,242 per standard data connection, plus the definitions (UDT law) of its data types the
+project has not yet defined** — so a further copy pays only the overhead. On the measured
+devices a further copy reads 560..832 (one or two safety connections) and 1,817..2,155 with
+a standard connection, and a first copy less a further one equals its types' definitions
+within −312..+248 on the nine devices outside the 1734 family (an EDS profile included: 728
+against 776). Safety data lives in the safety partition, so the standard side does not
+scale with it. A motion device (a drive) is priced by the motion laws instead.
+
+**Produced and consumed safety tags.** A controller-scope safety tag that is produced pays
+3,788 in the safety partition beyond its data block, one consumed 1,169 (exact at 1 and 2,
+additive; a UDT of CONNECTION_STATUS + DINT produced once, the shape the real programs
+carry). In standard memory both cost what any safety tag does, and the peer controller
+whose tag is consumed costs 560 standard (a 5069-L306ERS2 in the I/O tree, against the
+flat 2,344) and nothing in safety.
+
+**SIL3 costs nothing of its own.** The 1756-L8SP partner of a SIL3 1756-L81ES costs 528
+standard (six files, ±8; it was charged the flat 2,344) and nothing in safety; SIL3 safety
+cards, drives, the 1756 pair, the empty base and the content step read exactly what SIL2
+reads, in both partitions, on the 1756-L81ES and the 5069-L320ERMS3 alike.
 
 ## Operand shape — measured, free
 
@@ -996,6 +1059,34 @@ within ±0.35%), 117 → 128 inside ±8, nothing outside the 5069 racks moved by
 module-scoped rule. Being tested on the realism floor across module
 classes by `modrep_*` (TASKS 0zb).
 
+
+**Batch A, 2026-10-21 (`modrep_*`, 36 files).** Nine catalogs at 1 / 2 / 4 copies on the
+realism floor; the first copies were already exact and each further copy costs the same at
+2 and at 4, so each now carries its measured `repeat_bytes` (a further copy's total less
+its declared data): 1732E-IB16M12R/A 910, 1732E-OB16M12R/A 1,050, 1756-IF8/A 1,063,
+1756-OF8/B 1,298, 843E-MIPxxBAx/A 1,438, EX260-SEN1/A 1,014, EX260-SEN3/A 1,016,
+PowerFlex 525-EENET 5,618, PowerFlex 755-EENET 1,076. Against those, the law's repeat for
+a catalog nobody has measured is right within 1732E +56 / +40, EX260 −72, 843E −40,
+PowerFlex 525 −224, 1734-IE2C +221, PowerFlex 755 +632 per copy.
+
+**A prefix-less type is the module's own only on a 5069 card.** The 843E carries two
+prefix-less types (`CHANNEL_ENC_DIAG:I:0`, `CHANNEL_ENC:O:0`) beside its prefixed ones; a
+further copy reads 1,535 where paying them again charged 2,647, and sharing them leaves it
+40 off. `module_scoped_catalog_pattern` = `^5069-`.
+
+**Per-channel configuration is per copy.** The 1756-IF8/A and 1756-OF8/B — specialty
+cards with a lot of configuration per channel, which a further copy holds again whatever
+type it shares — read 432 and 744 a copy above the law; they are the two whose
+configuration tag nests per-channel structures (four and eight, 189.5 and 345 bytes
+packed), 2.28 and 2.16 times those bytes, while the five without per-channel configuration
+read −221..+72. So a further copy of a catalog without its own measured rate pays
+`per_channel_config_factor` (2.2) times its per-channel configuration bytes once its
+configuration type is shared: FITTED on two, IF8 −14 and OF8 +15 a copy from the law
+alone. The declared data (`module_defined_bytes`) does not count nested structure members
+at all — the IF8's per-channel configuration (239 bytes standalone) and the OF8's (628) are
+missing from it — which this term does not change; recorded, not altered (every catalog
+entry was fitted against the declared data as it is).
+
 ### Generic ETHERNET-MODULE connection data — KNOWN
 
 **A generic `ETHERNET-MODULE` connection's data costs 4× its declared bytes.**
@@ -1059,7 +1150,9 @@ this wrong.
   only: **320** (KNOWN — exact at 1, 2, 4, 8 and 10 bridges, inhibited or not;
   OQ-BRIDGEPH), charged with no notice. A **5069-AENTR** remote-rack adapter costs
   **625** whatever it carries (FITTED, the 34 `rack_5069_*` captures) and a **5069-SERIAL/A**
-  367 (its single-card capture less the adapter). Every other zero-connection module — a
+  367 (its single-card capture less the adapter). A SIL3 controller's **1756-L8SP** safety
+  partner costs **528** and a peer safety controller in the I/O tree (**5069-L306ERS2**)
+  **560** (KNOWN, six and four files; OQ-SAFETYPARTITION). Every other zero-connection module — a
   gateway such as a 1756-EN2T, or a bridge with devices beneath it — is charged the
   flat 2,344 (`zero_connection_module`) with a coverage notice. `rack_1756_n12` to `_n16`,
   which add a 1756-CNB/D and a 1756-HYD02 to `_n10`, read +2,384 to +3,458 against +504:
@@ -1563,8 +1656,33 @@ Comments of all three forms (`//`, `(* *)`, `/* */`) are free and stripped befor
 counting. An operand is read whole and typed through the routine's own scope — members,
 aliases, program tags, an AOI's parameters and locals — as ladder operands are
 (`sizing/operand_types.py`); a subscript is the index, not an operand, operator or
-literal of the expression. Member paths, tag indexes, comparisons and boolean operators
-in conditions, BOOL destinations and ELSE are not yet measured in ST (`stshape_*`).
+literal of the expression.
+
+**The shapes real ST is written in — KNOWN (OQ-STSHAPE, batch A, 2026-10-21).** 39
+`stshape_*` files, each shape 400 statements, 200 IF blocks or 50 FOR blocks against one
+control on the realism floor, every residual an exact multiple of its count:
+
+| shape | cost |
+|---|---|
+| member path (`StU[i].A`), scalar-UDT member, comments | free (already exact) |
+| a tag-driven index — destination, source, condition, an instruction's operand (`COP(StD[Ix], …)`), a FOR body, the index spelled as a member path | 84, the rung's `indirect_index` cost |
+| an index expression (`StE[Ix + 1]`) | 108 |
+| a member after a tag index (`StU[Ix].A`) / a tag-indexed BOOL element | +40 / +20 |
+| a second tag index in the same statement (`StD[Ix] := StE[Jx] + 1`; a FOR body indexed twice by its variable) | 8 less (76) |
+| IF / ELSIF condition beyond a BOOL or NOT a BOOL: per comparison / AND / OR | +16 / +4 / +16 |
+| a comparison on a REAL or against a float literal | 20 more (`StR > 1.5`: +36) |
+| ELSE in an IF (a CASE's ELSE is in its branch cost) | +28 |
+| BOOL destination from a BOOL or NOT a BOOL, its right-hand side priced as a condition | 28 (AND 32, a comparison 44) |
+| BOOL destination from a bare literal | 44 |
+| a float literal in a one-operator REAL assignment | +4 (60 where a REAL tag costs 56; OQ-LITREAL's +4) |
+
+Two statements, a nested IF, a literal or tag FOR bound, a literal-indexed COP were exact
+before. Wired in `size_st_shapes` and the BOOL-destination branch of
+`size_st_assignments`; the 79 earlier ST captures do not move. Inside an AOI's own ST
+Logic the same statements read 4 more each, on files whose call rung carried a build
+error, so it is not wired (batch B rebuilds them). The real BOOL destinations are 146
+literal, 38 copy, 18 comparison; the real conditions comparisons, AND and OR — every real
+shape is now a measured one.
 
 **One law**, replacing a five-entry table keyed on operator count whose fallback
 over-predicted a one-operator assignment roughly threefold:

@@ -47,8 +47,11 @@ instruction in a rung, exact in all 38 files that isolate it, timers included. B
 the same set read 0.58% / 2.37%, but only because that over-charge was cancelling a real
 ~2% under-charge nobody has found yet. **Finding that ~2% is the work now** (TASKS 0k).
 
-**CHECKPOINT: tag `checkpoint-2026-09-25-pre-series-law`** (commit `172f581`, on `main`; the tag itself is local only — the remote refuses tag pushes) holds the 0.58% state. Remind
-the user of it roughly every fifth response while this line of work is open.
+**Not re-scored since 2026-10-21.** The scalar AOI instance law (OQ-AOIBOOLINST, closed by
+batch A) re-prices every scalar AOI instance: −0.01% to −0.80% on the real safety programs,
+an estimated −100 KB across the seventeen, toward under-prediction. The seventeen are not
+in this checkout; the figures above stand until `scripts/quick_eval.py` runs on the
+owner's machine.
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the
@@ -122,12 +125,16 @@ user memory (OQ-L9BUDGET). No further L9 work is planned.
 ending S, S2 or S3 — 1756-L8xES, 5069-L3xxERS2/ERMS2/ERMS3) keeps safety tags and safety
 logic in a separate memory partition that standard Capacity does not count, so its
 reading is not the quantity the model predicts. **The safety partition is measured and
-wired (OQ-SAFETYPARTITION, 2026-10-18):** the capture tooling records it as `safety_bytes`,
-`sizing/safety.py` prices it as its own figure, exact on all 299 captured safety files
-(1756-L81ES v32/v34/v35, 5069-L330ERMS2/L320ERMS2 v35); tag mapping is measured free;
-safety I/O is wired for round 5's 41 captured devices and the remaining device types, SIL3
-and safety produced/consumed tags are in batch A (TASKS 0zb); signature and lock cost
-nothing in safety and at most ~144 standard (RS-03 against RS-17). The `safe_*`
+wired (OQ-SAFETYPARTITION):** the capture tooling records it as `safety_bytes`,
+`sizing/safety.py` prices it as its own figure, exact on all 393 captured safety files
+(1756-L81ES v32/v34/v35, 5069-L310ERS2 v31, 5069-L330ERMS2/L320ERMS2/L320ERMS3 v35); tag
+mapping is measured free; every safety I/O device type in the real programs is measured
+(18 types) and **any other is priced by the device law** — an overhead per safety
+connection plus 16 a byte of its data, within 3.4% of all 18 (2026-10-21); SIL3 costs
+nothing of its own beyond its partner's 528 standard; produced / consumed safety tags are
+wired; signature and lock cost nothing in safety and at most ~144 standard (RS-03 against
+RS-17). Safety figure on the real programs: −1.0% to −1.8% on nine, −5.6% to −8.3% on the
+three that address safety I/O tags from safety logic (OQ-SAFETYLOGICIO, batch B). The `safe_*`
 batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart controller
 prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
 gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and

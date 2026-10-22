@@ -33,6 +33,56 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 ---
 
+# Batch A of 2026-10-21
+
+217 files captured (162 built 2026-10-20, round 5's 17, 13 local safety I/O files, the
+SIL3 / produced-consumed / v31 rounds); 209 clean, 8 with build errors (four `stshape_aoi_*`,
+four `strx_equ` / `_neq`), three never converted. Closed OQ-AOIBOOLINST; wired the rest
+into the open questions they serve (OQ-SAFETYPARTITION, OQ-STSHAPE, OQ-MODREPEAT,
+OQ-STRSHAPE). Standard figure on the ten counted real safety-controller programs: mean
+1.58% → 1.34%, worst −3.64% → −2.45%; safety figure on nine of them −1.0% to −1.8% (from
+−1.5% to −44%).
+
+## OQ-AOIBOOLINST — AOI instances with many BOOL members
+
+**SOLVED and wired, KNOWN.** A scalar AOI instance packs its BOOL parameters and locals into
+32-bit words beside EnableIn / EnableOut, as an array element does, and its slot rounds up
+to 8 bytes: `8 × ceil((packed element + tag overhead − 4) / 8)` (`aoi_scalar_instance`,
+MEMORY_MODEL "A scalar instance packs its BOOLs").
+
+| BOOL bits (k + 4) | words | real per instance | engine before |
+|---:|---:|---:|---:|
+| 4 | 1 | 96 | 104 |
+| 32 | 1 | 96 | 216 |
+| 33 | 2 | 104 | 220 |
+| 59 | 2 | 104 | 324 |
+| 64 | 2 | 104 | 344 |
+| 65 | 3 | 104 | 348 |
+
+`aoibool_*`, 22 files: one AOI (InB BOOL, InD DINT, InR REAL inputs, Sts BOOL output, LoD
+DINT local, k BOOL locals), each k as the definition alone, 1 and 50 scalar instances, 25 at
+k = 55, the 55 BOOLs as Input parameters at 1 and 50, a 50-element array at k = 55 (1,088,
+exact before and after: the array law already packed them). Every instance file exact
+against its definition file. Three words reading the same 104 as two is what fixes the
+8-byte slot rounding; a per-word step would read 112.
+
+**The census.** 735 AOI-family captures rebuilt from their generators and priced with the
+law off and on: 75 move, 70 closer, the other five within 4 bytes (one moves −1,200 with its
+own control, `aoilit_s_ilit`, unchanged against it). It closes three families nothing had
+explained: `mbshape_*` (+1,000 to +2,300 → within ±40), `aoiint_*` (the question's own
+evidence, `aoiint_n00` +12,198 → +4 against the realism plant) and `aoilit_*` (+1,200 →
+the plant). The diagnosis of 2026-10-20 (packing, 10,600 of the 12,198) left 1,598
+unexplained; the slot rounding is the rest.
+
+**The real programs move toward under-prediction**: −0.01% to −0.32% on the safety programs,
+−0.80% on RS-02 (258 instances), and on the seventeen standard programs an estimated
+−100 KB in all (672 instances of 40–47-BOOL AOIs). They are not in this checkout: the
+headline is re-scored on the owner's machine with `scripts/quick_eval.py`. A correct
+law that deepens the under-prediction unmasks an under-charge elsewhere (OQ-REALUNDER), it
+does not create one.
+
+---
+
 # The 92-file batch of 2026-10-03
 
 Eight questions closed on one capture: 91 rows clean, 1 with a build error. Five laws wired;
