@@ -129,7 +129,8 @@ def report(rows: list[dict], engine: dict[str, tuple[int, int]] | None = None) -
         p(f"  x{n:<3} {_per(diff(good, f'safe_ref_{n}', 'safe_ref_ctl'), n)}")
 
     for title, diffs in (("round 2 (TASKS 0u)", ROUND2_DIFFS), ("round 3, logic (TASKS 0v)", ROUND3_DIFFS),
-                         ("round 4 (TASKS 0x)", ROUND4_DIFFS)):
+                         ("round 4 (TASKS 0x)", ROUND4_DIFFS),
+                         ("batch B (OQ-SAFETYLOGICIO, TASKS 0zd)", BATCHB_DIFFS)):
         p(f"\n{title}, per unit, against its control" + (" | engine per unit" if engine else "") + ":")
         for label, a, b, n in diffs:
             if a in good and b in good:
@@ -236,6 +237,39 @@ def _round4_diffs() -> list[tuple[str, str, str, int]]:
 
 
 ROUND4_DIFFS = _round4_diffs()
+
+
+def _batchb_diffs() -> list[tuple[str, str, str, int]]:
+    """Batch B (OQ-SAFETYLOGICIO, TASKS 0zd): each candidate against its own control."""
+    return [
+        ("AOI a8: instance + arrays", "safe_aoiarg_a8_inst20", "safe_n00", 20),
+        ("AOI a8: call, 8 tag operands (5->20)", "safe_aoiarg_a8tag_20", "safe_aoiarg_a8tag_5", 15),
+        ("AOI a8: 20 calls against none", "safe_aoiarg_a8tag_20", "safe_aoiarg_a8_inst20", 20),
+        ("AOI p16: instance", "safe_aoiarg_p16_inst20", "safe_n00", 20),
+        ("AOI p16: call, 2 operands", "safe_aoiarg_p16_call20", "safe_aoiarg_p16_inst20", 20),
+        ("a 2198-D012 with axes and bus", "safe_aoiarg_a8mod_ctl", "safe_aoiarg_a8_inst20", 1),
+        ("AOI a8: call, 7 module operands", "safe_aoiarg_a8mod_20", "safe_aoiarg_a8mod_ctl", 20),
+        ("timer AOI: definition", "safe_aoitmr_def", "safe_n00", 1),
+        ("timer AOI: instance", "safe_aoitmr_inst20", "safe_aoitmr_def", 20),
+        ("Output AOI parameter", "safe_par_aoiout20", "safe_aoitmr_inst20", 20),
+        ("program BOOL, Read/Write", "safe_par_local50", "safe_n00", 50),
+        ("Usage Public", "safe_par_public50", "safe_par_local50", 50),
+        ("Usage Output", "safe_par_output50", "safe_par_local50", 50),
+        ("Usage Input", "safe_par_input50", "safe_par_local50", 50),
+        ("description 200, program scope", "safe_desc_prg50_l200", "safe_par_local50", 50),
+        ("description 50, controller scope", "safe_desc_ctl50_l50", "safe_tag_bool_50", 50),
+        ("description 200, controller scope", "safe_desc_ctl50_l200", "safe_tag_bool_50", 50),
+        ("DCS chained five a rung", "safe_dcs_chain5x4", "safe_dcs_20", 20),
+        ("DCS rungs in an uncalled routine", "safe_rtn_idle_dcs20", "safe_dcs_20", 20),
+        ("slot-path operand vs program BOOL", "safe_op_slot_100", "safe_op_ctl_100", 100),
+        ("mixed rung (50)", "safe_mix_50", "safe_mix_ctl", 50),
+        ("mixed rung (100)", "safe_mix_100", "safe_mix_ctl", 100),
+        ("rung comment", "safe_mix_100_cmt", "safe_mix_100", 100),
+        ("5069-L320ERMS2 base v32 vs v35", "safe_base_5069l320_v32", "safe_base_5069l320_v35", 1),
+    ]
+
+
+BATCHB_DIFFS = _batchb_diffs()
 
 
 _MODEL = None
