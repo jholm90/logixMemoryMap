@@ -198,15 +198,16 @@ without it; the conversion cause stays unknown unless the owner sends its Studio
 error-log line).
 
 **Part 4 — the v32 baseline on content** (firmware-matrix exemption: firmware is the
-variable): the realism plant on a 5069-L320ERMS2 at v32 and at v35, no safety content,
-2 files. RS-06 / RS-09 (v32) read +1.65% / +1.66% standard, about the 11,240 v32 delta that
+variable): the realism plant on a 5069-L320ERMS2 at v32 (its v35 twin, `safe_base_5069l320_v35`,
+is captured), 1 file. The engine already reproduces the plant at v31 (5069-L310ERS2) and v32
+(1756-L81ES) to its constant offset, so this file is confirmatory and the lead below is weak. RS-06 / RS-09 (v32) read +1.65% / +1.66% standard, about the 11,240 v32 delta that
 was read off bare files; if the plant at v32 reads 11,240 more than at v35 the delta is right
 and the lead dies, otherwise the delta scales with content.
 
-**Size:** 4 Studio variants (V3 / V4 if practical) and 26 generated files (18 isolation + 6
-rebuilt + 2). A1 to A3 carry the drive from the local template (`gen_safety_io.py --local`, the
-2026-10-19 exception route); files with a drive or a 1734 safety card are checked against
-zero-error captures (`scripts/check_proven_blocks.py`) before hand-over.
+**Size, as built:** 4 Studio variants (V3 / V4 if practical) and 36 generated files: 25 in
+`gen_safety_round7` beside Part 4's one, 6 rebuilt, 4 `strm_*`. The two `safe_aoiarg_a8mod_*` carry
+the drive from the local template (the 2026-10-19 exception route) and passed
+`scripts/check_proven_blocks.py` with 0 unproven blocks.
 
 **Not in batch B:** the generic −1.0% to −1.8% on the eight other programs (152 + 4.08 a
 safety rung, or 54 + 42 a device + 0.58 a bit instruction; no single mechanism, inside a few
