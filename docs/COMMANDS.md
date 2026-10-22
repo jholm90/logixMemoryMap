@@ -270,6 +270,22 @@ are listed and left out of every figure (OQ-SAFETYPARTITION). `--engine` parses 
 `safe_*` file on disk (about ten minutes) and groups the files by their residual in each
 partition.
 
+### `safety_census.py` — what each real safety program's safety partition carries
+
+```bash
+python scripts/safety_census.py               # every real safety program in samples/local
+python scripts/safety_census.py RS-17 RS-02   # those labels only
+```
+
+Reads the real safety programs (never rewrites them) and counts, per program: safety-routine
+operands by spelling (safety tag, member, AOI instance, module connection tag named, by an
+adapter's slot or through `Local`, literal), where each safety instruction sits (alone,
+chained, beside ordinary instructions), safety tags by scope and kind, program parameters by
+`Usage`, descriptions and comments with their characters, safety AOI calls and their operand
+counts, and devices. A feature a well-predicted program carries in quantity is bounded by that
+program's gap; this is how OQ-SAFETYLOGICIO's opening lead was refuted. Prints labels only,
+and a user type as `UDT`, never its name.
+
 The batches: `python -m sample_gen.gen_safety_partition [--only REGEX]` (round 1) and
 `python -m sample_gen.gen_safety_round2 [--only REGEX]` (round 2, TASKS 0u) and
 `python -m sample_gen.gen_safety_round3 [--only REGEX]` (round 3, logic, TASKS 0v) and

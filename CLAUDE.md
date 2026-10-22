@@ -134,7 +134,7 @@ connection plus 16 a byte of its data, within 3.4% of all 18 (2026-10-21); SIL3 
 nothing of its own beyond its partner's 528 standard; produced / consumed safety tags are
 wired; signature and lock cost nothing in safety and at most ~144 standard (RS-03 against
 RS-17). Safety figure on the real programs: −1.0% to −1.8% on nine, −5.6% to −8.3% on the
-three that address safety I/O tags from safety logic (OQ-SAFETYLOGICIO, batch B). The `safe_*`
+three revisions of one program whose safety content nothing has measured (OQ-SAFETYLOGICIO, batch B). The `safe_*`
 batch runs on 1756-L81ES at v35, the one platform lint allows the SafePart controller
 prefix. By the owner's decision (2026-10-17) that phase has **no noise-floor
 gate and no file-size limit**: every safety-routine instruction is measured. Safety-processor rows, real and

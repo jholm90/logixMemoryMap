@@ -103,42 +103,47 @@ sharing is untested until `safe_io6_5069_*` reads.
 ### 0zd. Safety batch B, the last of 2 — SPEC ONLY, not generated; owner's approval needed (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
 
 **Owner's direction 2026-10-22:** close the safety work first; the ST / FBD / SFC instruction
-work (0ze) waits for it. Batch A's readings left one mechanism outside the owner's
-tolerance — the safety figure on RS-02 / RS-03 / RS-17, −5.6% / −8.3% / −7.3% — and a
-small, consistent −1.0% to −1.8% on the other nine (OPEN_QUESTIONS Section 8). Everything
-below answers a currently open question; nothing is built until this spec is approved.
+work (0ze) waits for it. Batch A's readings left the safety figure on RS-02 / RS-03 / RS-17
+at −5.6% / −8.3% / −7.3%, outside the owner's tolerance, and −1.0% to −1.8% on the eight
+other programs (OPEN_QUESTIONS Section 8).
+
+**Revised 2026-10-22 after a census of every real safety program.** The first version of
+this spec aimed most of its files at module-tag operands in safety logic. The other programs
+refute that: 1.4 bytes an operand, 5 to 8 at most (Section 8). What is left is content only
+these three programs carry and nothing has measured. Each candidate gets its own files, and
+each file states what it reads under each candidate, so one capture decides.
 
 **Part 1 — Studio-made variants of RS-17** (the owner's work in Logix Designer; RS-17 is
-unlocked; each variant exported to `samples/local/`, never committed, with its standard
-and safety Capacity readings). Cumulative, one deletion each:
+unlocked; each exported to `samples/local/`, never committed, with both Capacity readings).
+Cumulative:
 
-| variant | deletion | what its reading prices |
+| variant | change | what its reading prices |
 |---|---|---|
-| V1 | the 15 rungs of the AxisSTO call routine (29 calls; the routine stays) | the safety AOI calls passing drive safety-connection members |
-| V2 | V1 + the 29 AxisSTO instance tags and the AxisSTO definition | the instances (4 TIMER locals each) and the definition |
-| V3 | V2 + the input routine whose DCS rungs read unnamed 1734 safety cards by their adapter's slot | slot-path safety-module operands |
-| V4 | V3 + the input routine whose DCS rungs read the local 1756-IB16S through `Local:3:I` | local-chassis safety-module operands |
+| V1 | delete the 15 rungs of the AxisSTO call routine (29 calls; the routine stays) | the calls with eight operands (candidate 1): 10,572 priced; ~3.8 KB more if the safety call extra is per operand |
+| V2 | V1 + the 29 AxisSTO instances (`Usage="Output"`) and the definition | the instances as Output parameters and the definition (candidates 2, 6) |
+| V3 | V2 + clear the description of every safety tag (94) | descriptions (candidate 3): 0, or ~14 KB at 4.3 a character |
+| V4 | V3 + set the remaining 59 safety program parameters to `Usage="Local"` | Public parameters in a safety program (candidate 2) |
 
-Each reading less the previous one is that content's own cost in both partitions; the
-engine's own difference on the same deletion says where it is wrong, with no derived file
-written by anyone but Studio.
+V3 and V4 only if practical in Studio; Part 2's C and D answer the same questions.
 
-**Part 2 — isolation files**, 1756-L81ES v35 on the realism plant with the safety task,
-each against its twin that reads a safety program tag instead (the devices identical in
-every file of the family; the 1734 rack and the 1756 local card from round 5's proven
-blocks, the drive from a zero-error capture):
+**Part 2 — isolation files**, 1756-L81ES v35 on the realism plant with the safety task, AOIs
+of the project's own design (not AxisSTO's text):
 
-| file(s) | 100 safety rungs of | discriminates |
-|---|---|---|
-| `safe_op_ctl` | `XIC(SfBit[i]) OTE(SfOut[i])`, safety program BOOLs | the control |
-| `safe_op_named_100`, `_named_200` | `XIC(SCard1:I.Pt0nData)`, a named 1734-IB8S/B | a named safety card's connection member (two counts) |
-| `safe_op_slot_100`, `_slot_200` | `XIC(SRACK_1:2:I.Pt0nData)`, an unnamed card through its adapter's slot | the slot-path spelling RS-03 / RS-10 / RS-17 use (two counts) |
-| `safe_op_local_100` | `XIC(Local:3:I.Pt0n.Status)`, a 1756-IB16S in the local chassis | the local-chassis spelling |
-| `safe_op_drive_100` | `XIC(Drv1:SI.STOActive)`, an integrated-safety drive | a drive's safety-connection member |
-| `safe_op_out_100` | `XIC(SfBit[i]) OTE(SCard2:O.Pt0nData)`, a named 1734-OB8S/B | a safety output card's member as a destination |
-| `safe_dcs_tag_20`, `safe_dcs_mod_20` | DCS with its two channels on program BOOLs / on a named card's points | DCS with module-tag channels |
-| `safe_aoi_tmr_def`, `safe_aoi_tmr_20` | a safety AOI with four TIMER locals and TON / TOF inside (own design), the definition alone and 20 instances + 20 calls | timers in a safety AOI |
-| `safe_aoi_modarg_20`, `safe_aoi_tagarg_20` | 20 calls of a 2-in / 2-out safety AOI, arguments a drive's `SI` / `SO` members against program BOOLs | module-tag arguments to a safety AOI call |
+| file(s) | content | control | reads, by candidate |
+|---|---|---|---|
+| A1 `safe_aoiarg_a8tag_5`, A2 `_a8tag_20` | an AOI with 8 Required BOOL parameters (6 in, 2 out), 20 program instances, 5 / 20 calls, operands on safety program BOOLs; a 2198-D012-ERS3 with integrated safety present (proven block) | each other (the slope) | per-call slope 364 if the +44 is per call; 496 if 22 an operand |
+| A3 `safe_aoiarg_a8mod_20` | A2 with five operands the drive's `SI` members and two its `SO` members | A2 | a module-member operand's own cost in a call |
+| A4 `safe_aoiarg_p16a2_20` | an AOI with 16 parameters, 2 Required, 20 instances, 20 calls | `safe_aoi_call_20` | per parameter or per operand |
+| B1 `safe_aoitmr_def` | a safety AOI with 14 BOOL and 2 DINT parameters, an ONS and four TIMER locals, six rungs of TON / TOF / ONS / MOV / XIC / OTE | `safe_n00` | timers inside a safety AOI's definition |
+| B2 `safe_aoitmr_inst20` | B1 + 20 program-scope instances, no calls | B1 | the instance block: 136 unpacked, 88 packed (candidate 6) |
+| C1 `safe_par_local50` | 50 safety program BOOLs, `Usage` absent | `safe_n00` | the control |
+| C2, C3, C4 `safe_par_public50`, `_output50`, `_input50` | C1's 50 as Public / Output / Input | C1 | each usage's own cost (candidate 2); Public 0 in standard memory |
+| C5 `safe_par_aoiout20` | B2's 20 instances as `Usage="Output"` | B2 | an AOI-typed Output parameter (~300 if it carries RS-17 alone) |
+| D1, D2 `safe_desc_ctl50_l50`, `_l200` | 50 controller-scope safety BOOLs, each with a 50 / 200-character description | `safe_tag_bool_50` | 0 if free; +10.8 KB / +43 KB at 4.3 a character (candidate 3) |
+| D3 `safe_desc_prg50_l200` | C1's 50 with 200-character descriptions | C1 | the same at program scope |
+| E1 `safe_dcs_chain5x4` | the 20 DCS of `safe_dcs_20` as 4 rungs of 5 chained, nothing else | `safe_dcs_20` | a chained DCS (candidate 4) |
+| F1 `safe_rtn_idle_dcs20` | `safe_dcs_20`'s 20 rungs in a safety routine nothing calls | `safe_dcs_20` + the routine shell | content of an uncalled routine (candidate 5) |
+| G1, G2 `safe_op_ctl_100`, `safe_op_slot_100` | 100 rungs `XIC(SfBit[i]) OTE(SfOut[i])` / `XIC(Adapter:1:I.Pt0nData) OTE(SfOut[i])`, a 1734-IB8S/B present in both | each other | confirms ~1.4 an operand (the refuted lead) |
 
 **Part 3 — rebuilds of files that never reached a clean reading** (generators fixed, lint
 refuses the defects): `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` (the 5069-OB16/B
@@ -152,18 +157,21 @@ error-log line).
 
 **Part 4 — the v32 baseline on content** (firmware-matrix exemption: firmware is the
 variable): the realism plant on a 5069-L320ERMS2 at v32 and at v35, no safety content,
-2 files. RS-06 / RS-09 (v32) read +1.65% / +1.66%, about the 11,240 v32 delta that was read
-off bare files; if the plant at v32 reads 11,240 more than at v35 the delta is right and
-the lead dies, otherwise the delta scales with content.
+2 files. RS-06 / RS-09 (v32) read +1.65% / +1.66% standard, about the 11,240 v32 delta that
+was read off bare files; if the plant at v32 reads 11,240 more than at v35 the delta is right
+and the lead dies, otherwise the delta scales with content.
 
-**Size:** 4 Studio variants and 22 generated files (14 isolation + 6 rebuilt + 2). Every Part 2 file
-needs its devices' blocks matched against zero-error captures
-(`scripts/check_proven_blocks.py`) before hand-over.
+**Size:** 4 Studio variants (V3 / V4 if practical) and 26 generated files (18 isolation + 6
+rebuilt + 2). A1 to A3 carry the drive from the local template (`gen_safety_io.py --local`, the
+2026-10-19 exception route); files with a drive or a 1734 safety card are checked against
+zero-error captures (`scripts/check_proven_blocks.py`) before hand-over.
 
-**Deferred, under the floor on the programs in this checkout** (re-check on the seventeen
-before testing): a STRING member in a UDT array (4 an element, OQ-STRSHAPE; 0 to 500 such
-elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3 to 5 a
-program, OQ-MODREPEAT).
+**Not in batch B:** the generic −1.0% to −1.8% on the eight other programs (152 + 4.08 a
+safety rung, or 54 + 42 a device + 0.58 a bit instruction; no single mechanism, inside a few
+percent). **Deferred, under the floor on the programs in this checkout** (re-check on the
+seventeen before testing): a STRING member in a UDT array (4 an element, OQ-STRSHAPE; 0 to
+500 such elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3
+to 5 a program, OQ-MODREPEAT).
 
 ### 0ze. ST, FBD and SFC instructions and data types — QUEUED after 0zd (owner, 2026-10-22)
 

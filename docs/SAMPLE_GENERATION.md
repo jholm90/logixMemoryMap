@@ -376,14 +376,16 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Next: safety batch B, the last of 2 — SPECIFIED, NOT BUILT (TASKS 0zd)
+## Next: safety batch B, the last of 2 — SPECIFIED, NOT BUILT (TASKS 0zd, revised 2026-10-22)
 
-Four Studio-made variants of RS-17 (the owner's), 14 isolation files on the L81ES plant
-(safety logic reading safety I/O tags named, by slot path, through `Local` and on a drive;
-DCS on module channels; a safety AOI with timers; a safety AOI call with module-tag
-arguments), 6 rebuilds (the two 5069-OB16/B files with their ConfigID, the four `strx`
-EQU / NEQ with a BOOL destination) and the realism plant on a 5069-L320ERMS2 at v32 and v35.
-Not built until the owner approves the spec.
+Four Studio-made variants of RS-17 (the owner's: its AxisSTO calls, then its instances and
+definition, then its safety-tag descriptions, then its program parameters), 18 isolation
+files on the L81ES plant (a safety AOI call's operand count and kind, an AOI with TIMER
+locals and its instances, program parameters by usage, descriptions on safety tags, DCS
+chained on a rung, content in an uncalled routine, one module-operand pair), 6 rebuilds (the
+two 5069-OB16/B files with their ConfigID, the four `strx` EQU / NEQ with a BOOL destination)
+and the realism plant on a 5069-L320ERMS2 at v32 and v35. Not built until the owner approves
+the spec.
 
 ## Captured 2026-10-21: safety pit stop, batch A of 2 — 217 readings (TASKS 0zb)
 

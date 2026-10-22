@@ -29,7 +29,9 @@ programs the **standard figure reads mean 1.34%, worst −2.45%** (from 1.58% / 
 as its unlocked re-export): what is left is −2.0% to −2.45% on three ST-heavy programs that
 is no longer ST (OQ-STSHAPE) and +1.65% on one program at v32 (a firmware-delta lead). The
 **safety figure** reads −1.0% to −1.8% on nine programs and −5.6% to −8.3% on the three
-that address safety I/O tags from safety logic (OQ-SAFETYLOGICIO); every safety device
+revisions of one program whose safety content nothing has measured: a safety AOI call with
+eight operands, program parameters, safety-tag descriptions (OQ-SAFETYLOGICIO; the module-operand
+lead it was opened on is refuted by the other programs); every safety device
 type is measured and any other is priced by the device law. Batch B, the last, is
 specified (TASKS 0zd) and waits for approval. **The figure above for the seventeen is not
 re-scored since the scalar AOI law of 2026-10-21** (an estimated −100 KB across them).
