@@ -410,6 +410,14 @@ waits.
   address, safety network number, description and comment replaced) go through the
   repository under `samples/generated/safety/` so the capture tooling reads them; once
   captured they are removed from the repository and its history.
+- **Customer files are never deleted.** Nothing in `samples/local/` or the session's chat
+  uploads is deleted, moved, overwritten or cleaned up unless the owner gives the explicit
+  instruction **DELETE CUSTOMER FILES**. No other wording, cleanup rule or disk-space concern
+  overrides this. Uploads are **copied**, never moved, into `samples/local/` (archives unpacked
+  beside their originals, which stay where they arrived). They vanish between sessions only
+  because each cloud session starts on a fresh machine and `samples/local/` is gitignored: at
+  the start of a session, check what is there, and ask for what is missing rather than
+  re-deriving or guessing.
 - **Confidential files move over chat, never through the repository.** A real
   export, a variant of one, or anything else derived from customer content is sent
   and received in conversation and written to `samples/local/`. It is never
