@@ -16,6 +16,11 @@ STRING; C a 40-character custom string StrX40; D DINT; R REAL) in arrays SuA / S
 [400], DINT / REAL arrays, index tag Ix. 400 calls each, one a rung, every destination
 distinct; realism floor; 1756-L81E v35; each against `strx_n00`.
 
+The EQU / NEQ files write a bit of the UDT's DINT member: a bit of its REAL member, as
+first built, is refused by Studio (lint `bit_specifier_on_real`); rebuilt 2026-10-22 as `_r2` (the
+first build's rows keep their suspect readings) with the inventory unchanged, so they still
+difference against the captured `strx_n00`.
+
 Run: python -m sample_gen.gen_string_shapes
 """
 
@@ -52,10 +57,10 @@ def plan() -> list[tuple[str, list[str], str]]:
         return [fmt.format(i=i) for i in range(N)]
     files = [
         ("n00", [], "control, no added rungs"),
-        ("equ_elem", calls("EQU(SsA[{i}],SsB[{i}])OTE(SuC[{i}].R.0);"), "EQU on STRING array elements"),
-        ("equ_member", calls("EQU(SuA[{i}].S,SuB[{i}].S)OTE(SuC[{i}].R.0);"), "EQU on STRING UDT members"),
-        ("equ_vidx", calls("EQU(SsA[Ix],SsB[{i}])OTE(SuC[{i}].R.0);"), "EQU, one STRING behind a tag index"),
-        ("neq_member", calls("NEQ(SuA[{i}].S,SuB[{i}].S)OTE(SuC[{i}].R.0);"), "NEQ on STRING UDT members"),
+        ("equ_elem_r2", calls("EQU(SsA[{i}],SsB[{i}])OTE(SuC[{i}].D.0);"), "EQU on STRING array elements"),
+        ("equ_member_r2", calls("EQU(SuA[{i}].S,SuB[{i}].S)OTE(SuC[{i}].D.0);"), "EQU on STRING UDT members"),
+        ("equ_vidx_r2", calls("EQU(SsA[Ix],SsB[{i}])OTE(SuC[{i}].D.0);"), "EQU, one STRING behind a tag index"),
+        ("neq_member_r2", calls("NEQ(SuA[{i}].S,SuB[{i}].S)OTE(SuC[{i}].D.0);"), "NEQ on STRING UDT members"),
         ("mov_member", calls("MOV(SuA[{i}].S,SuB[{i}].S);"), "MOV STRING member to STRING member"),
         ("mov_vidx_member", calls("MOV(SuA[Ix].S,SuB[{i}].S);"), "MOV, the source a STRING member behind a tag index"),
         ("cop_member", calls("COP(SuA[{i}].S,SuB[{i}].S,1);"), "COP STRING member to STRING member, length 1"),
@@ -82,8 +87,15 @@ def make(sample_id: str, rungs: list[str]) -> str:
     return build_l5x(target_name=target, **with_baseline(extra_rungs_xml=body, **inventory()))
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+    import re
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", metavar="REGEX", help="build only the sample_ids this matches")
+    args = ap.parse_args([] if argv is None else argv)
     for sample_id, rungs, what in plan():
+        if args.only and not re.search(args.only, sample_id):
+            continue
         out = OUT_ROOT / f"{sample_id}.L5X"
         predicted = write_sample(make(sample_id, rungs), out)
         shown = f"{N} x `{rungs[1]}` -- {what}" if rungs else what
@@ -93,4 +105,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1:])

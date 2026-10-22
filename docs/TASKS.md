@@ -100,7 +100,39 @@ explain only part of the −72 a line; the module law has never been read on the
 floor (every round-2 `modrep_*` file is a blind prediction); and packed 5069 cards' type
 sharing is untested until `safe_io6_5069_*` reads.
 
-### 0zd. Safety batch B, the last of 2 — SPEC ONLY, not generated; owner's approval needed (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
+### 0zd. Safety batch B, the last of 2 — BUILT 2026-10-22 (32 files), awaiting conversion and capture; the four Studio variants are the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
+
+**Built 2026-10-22** (owner's go-ahead the same day): `gen_safety_round7.py` (26 files: Part 2
+as revised below plus no-call controls for each AOI family, a fourth mixed-rung file and Part
+4's one missing file), the two `safe_io6_5069_*` rebuilt by `gen_safety_round6`, and the four
+STRING files rebuilt as `strx_*_r2` (`gen_string_shapes --only`; the first build's rows keep
+their suspect readings, and the capture tool skips a sample id already read). Every file
+passed lint and the realism floor; the two drive files passed `check_proven_blocks.py` (0
+unproven) and go through `samples/generated/safety/` by the 2026-10-19 exception.
+
+**Predicted before any reading** (engine of 2026-10-22; each is the reading if the candidate
+costs nothing):
+
+| file | safety | what a different reading means |
+|---|---:|---|
+| `safe_aoiarg_a8_inst20` | 4,866 | instance block of a 10-BOOL AOI (unpacked; packed reads less) |
+| `safe_aoiarg_a8tag_5` / `_20` | 6,934 / 12,394 | slope 364 a call if the +44 is per call; 496 if 22 an operand |
+| `safe_aoiarg_p16_inst20` / `_call20` | 5,302 / 9,710 | per-call 207 (as SafeAoiA's 208) unless a parameter not passed costs |
+| `safe_aoiarg_a8mod_ctl` / `_20` | 9,583 / 17,111 | the calls 7,528, as on tags, unless a module-member operand costs more |
+| `safe_aoitmr_def` / `_inst20` | 2,498 / 6,498 | timers in a safety AOI; the instances 200 each unpacked, ~152 packed |
+| `safe_par_local50` | 6,210 | the control |
+| `safe_par_public50` / `_output50` / `_input50` | 6,210 each | each usage's own cost |
+| `safe_par_aoiout20` | 6,498 | an Output AOI parameter (~300 each would explain RS-17) |
+| `safe_desc_ctl50_l50` / `_l200` | 3,010 each | +10.8 KB / +43 KB at 4.3 a character |
+| `safe_desc_prg50_l200` | 6,210 | the same at program scope |
+| `safe_dcs_chain5x4` | 13,794 | a chained DCS costs what one alone does |
+| `safe_rtn_idle_dcs20` | 14,074 | content of an uncalled routine compiled (less if not) |
+| `safe_op_ctl_100` / `safe_op_slot_100` | 8,715 / 7,915 | a slot-path operand charged nothing; 8,715 if it costs a program BOOL's 8 |
+| `safe_mix_ctl` / `_50` / `_100` / `_100_cmt` | 5,922 / 12,342 / 18,346 / 18,346 | ~4 a rung over the engine reproduces the real programs' generic residual |
+| `safe_base_5069l320_v32` | 1,410 (standard 853,762) | standard: the v32 delta on a 5069 plant (the 1756-L81ES plant read +11,256) |
+| `safe_io6_5069_ob16_1` / `_mix_2_2` | standard 846,574 / 850,844 | OQ-MODREPEAT's packed 5069 cards |
+| `strx_equ_elem_r2` … `strx_neq_member_r2` | standard 1,256,194 (`_vidx` 1,332,994) | OQ-STRSHAPE's STRING EQU / NEQ operands |
+
 
 **Owner's direction 2026-10-22:** close the safety work first; the ST / FBD / SFC instruction
 work (0ze) waits for it. Batch A's readings left the safety figure on RS-02 / RS-03 / RS-17

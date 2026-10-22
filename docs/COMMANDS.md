@@ -299,7 +299,8 @@ The standard-figure half of the safety pit stop (TASKS 0zb): `python -m sample_g
 [PREFIX]` (`stshape_*`, OQ-STSHAPE; a prefix such as `stshape_aoi_` builds only those) and
 `python -m sample_gen.gen_module_repeat [--only REGEX]` (`modrep_*`, OQ-MODREPEAT) and
 `python -m sample_gen.gen_aoi_bool_instances` (`aoibool_*`, OQ-AOIBOOLINST) and
-`python -m sample_gen.gen_string_shapes` (`strx_*`, OQ-STRSHAPE). The local safety files:
+`python -m sample_gen.gen_safety_round7 [--local] [--only REGEX]` (batch B, OQ-SAFETYLOGICIO, TASKS 0zd; `--local` the two drive files) and
+`python -m sample_gen.gen_string_shapes [--only REGEX]` (`strx_*`, OQ-STRSHAPE). The local safety files:
 `python -m sample_gen.gen_safety_io --local [--only REGEX]` (into the git-ignored
 `samples/local/safety_io/`, from the templates in `samples/local/safety_io_blocks.json`).
 

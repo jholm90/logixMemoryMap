@@ -376,16 +376,19 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Next: safety batch B, the last of 2 — SPECIFIED, NOT BUILT (TASKS 0zd, revised 2026-10-22)
+## Built 2026-10-22: safety batch B, the last of 2 — 32 files awaiting conversion and capture (TASKS 0zd)
 
-Four Studio-made variants of RS-17 (the owner's: its AxisSTO calls, then its instances and
-definition, then its safety-tag descriptions, then its program parameters), 18 isolation
-files on the L81ES plant (a safety AOI call's operand count and kind, an AOI with TIMER
-locals and its instances, program parameters by usage, descriptions on safety tags, DCS
-chained on a rung, content in an uncalled routine, one module-operand pair), 6 rebuilds (the
-two 5069-OB16/B files with their ConfigID, the four `strx` EQU / NEQ with a BOOL destination)
-and the realism plant on a 5069-L320ERMS2 at v32 and v35. Not built until the owner approves
-the spec.
+`gen_safety_round7.py`, 26 files on the L81ES plant (the two drive files by `--local`): a
+safety AOI call's operand count (8 against the measured 2), its parameters not passed (16, 2
+Required), module-member operands on a 2198-D012-ERS3's `SI` / `SO`, each family with a
+no-call control; a safety AOI with TIMER locals and its 20 instances; program parameters
+Local / Public / Output / Input and AOI instances as Output; descriptions on safety tags at
+both scopes; DCS chained five to a rung; DCS rungs in an uncalled routine; a 1734-IB8S/B
+without a module name read by slot path against program BOOLs; a mixed-rung family (control,
+50, 100, 100 with a comment on every rung) of eight shapes real safety routines use; and the
+safety base on 5069-L320ERMS2 v32. Rebuilt: `safe_io6_5069_ob16_1` / `_mix_2_2` (ConfigID)
+and `strx_*_r2` (a DINT bit for the destination). Each file's blind prediction is in TASKS
+0zd; Studio-made variants of RS-17 are the owner's.
 
 ## Captured 2026-10-21: safety pit stop, batch A of 2 — 217 readings (TASKS 0zb)
 
