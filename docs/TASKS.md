@@ -169,13 +169,33 @@ program, OQ-MODREPEAT).
 
 The owner supplied the Logix 5000 language manuals for Sequential Function Charts,
 Structured Text and Function Block Diagram (chat-only, never in the repository) for the
-concepts. Not started: the safety work closes first. What it needs before any spec: an
-inventory of what the real programs actually use (RS-01 alone carries 7 SFC routines with
-272 steps and FBD — the reason it is not counted); for each instruction its operand
-signature and backing data type (FBD_* function-block structures, SFC_STEP / SFC_ACTION /
-SFC_STOP, PIDE and the other process blocks), from Studio-made exports rather than from
-memory, so lint can refuse a wrong one; then count sweeps per construct as for ladder and
-ST. The floor rule decides which ones get files.
+concepts. Not started: the safety work closes first.
+
+**Where the engine stands, per language (2026-10-22):**
+
+| | data (backing tags) | logic |
+|---|---|---|
+| ST | every predefined type the real set uses | statement shapes exact (OQ-STSHAPE, 39 files); instruction calls through the ladder weight table (four ST/RLL pairs, identical but for the routine); not measured: CASE, WHILE / REPEAT, non-retentive assignment, functions inside expressions, the ST-only blocks (TONR / TOFR / RTOR, CTUD, OSRI / OSFI) |
+| FBD | 22 FBD / SFC structures probed exact (OQ-FBDSFC, `predefprobe_*`) | **priced at zero**; `coverage.py` flags it |
+| SFC | SFC_STEP / SFC_ACTION / SFC_STOP probed exact | **priced at zero**; `coverage.py` flags it |
+
+RS-01 (7 SFC routines, 272 steps, FBD sheets) reads −8.2% standard, the largest standard
+error in the safety set; FBD and SFC logic is the likely cause and is why it is not counted.
+
+**Method, in order:**
+
+1. Inventory the real programs (read-only parse): routines by language, ST statements by
+   construct, ST / FBD calls by mnemonic, FBD blocks, wires and sheets, SFC steps,
+   transitions, actions, branches and stops. The floor rule (0.5% of real instructions)
+   decides what gets files; a construct absent from the real set waits.
+2. One Studio-made seed export per family, from the owner: each construct in valid form, so
+   lint carries every element's required attributes. An FBD sheet or SFC chart written from
+   memory is a build failure waiting to happen (as the 2198 blocks were).
+3. Count sweeps per construct as for ladder and ST (control, 1, n, 2n), solved together.
+4. For the long tail, a structural law, as the safety device law did for devices: an
+   unmeasured instruction priced from its operand count and types and its backing tag,
+   fitted on the measured ones and checked leave-one-out. An unseen predefined type sized
+   from the export's own L5K data, one DINT per value, as the FBD / SFC structures were.
 
 ### 0zb. Safety batch A of 2 — CAPTURED 2026-10-21 and WIRED (OQ-STSHAPE, OQ-MODREPEAT, OQ-STRSHAPE, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
 
