@@ -28,6 +28,7 @@ has already cost whole sessions.
 
 from __future__ import annotations
 
+import copy
 import math
 import re
 from dataclasses import dataclass, field
@@ -1635,11 +1636,25 @@ class MemoryModel:
     aoi_scalar_instance: AoiScalarInstanceModel = AoiScalarInstanceModel()
 
 
+# (path, file text) -> the model built from it. Parsing the YAML is ~0.2 s and this is
+# called per priced file; the file is still read on every call, so an edit is picked up.
+_MODEL_CACHE: dict[tuple[str, str], "MemoryModel"] = {}
+
+
 def load_memory_model(path: str | Path | None = None) -> MemoryModel:
+    """The model in `path` (default memory_model.yaml). Every call returns a new, independent
+    object, as when the file was parsed each time."""
     path = Path(path) if path else _DEFAULT_PATH
     with open(path, "r", encoding="utf-8") as f:
-        raw = yaml.safe_load(f)
+        text = f.read()
+    key = (str(path.resolve()), text)
+    model = _MODEL_CACHE.get(key)
+    if model is None:
+        model = _MODEL_CACHE[key] = _build_memory_model(yaml.safe_load(text))
+    return copy.deepcopy(model)
 
+
+def _build_memory_model(raw: dict) -> MemoryModel:
     atomic_types = {
         name: AtomicType(bytes=v["bytes"], confidence=v["confidence"])
         for name, v in raw["atomic_types"].items()

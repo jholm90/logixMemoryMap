@@ -55,11 +55,13 @@ def write_sample(l5x_text: str, out_path: Path) -> int:
     before the file ever ships, since l5x2acd conversion succeeding does
     NOT mean the ladder logic would actually verify in Studio 5000
     (confirmed empirically, see lint.py's docstring)."""
-    lint_or_raise(l5x_text, context=str(out_path))
+    # Lint and the realism floor only read the file, so they share lint's parse; the engine
+    # adds stand-in definitions to the tree it prices, so it parses its own.
+    root = lint_or_raise(l5x_text, context=str(out_path))
     predicted = predicted_bytes(l5x_text)
     # The realism floor (lint.realism_findings): >= 5 I/O nodes, >= 25% fill,
     # no output bit written twice. Every file generated from here on.
-    realism_or_raise(l5x_text, predicted, context=str(out_path))
+    realism_or_raise(l5x_text, predicted, context=str(out_path), root=root)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(l5x_text, encoding="utf-8")
     return predicted
@@ -74,8 +76,8 @@ def write_sample_unmodeled(l5x_text: str, out_path: Path) -> None:
     manifest row (predicted_bytes=0, category, description) since those
     vary per generator -- this only writes the file. The realism floor applies
     except for fill, which needs a prediction this file cannot have."""
-    lint_or_raise(l5x_text, context=str(out_path))
-    realism_or_raise(l5x_text, None, context=str(out_path))
+    root = lint_or_raise(l5x_text, context=str(out_path))
+    realism_or_raise(l5x_text, None, context=str(out_path), root=root)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(l5x_text, encoding="utf-8")
 

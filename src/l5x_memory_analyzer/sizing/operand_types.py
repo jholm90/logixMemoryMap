@@ -80,8 +80,20 @@ class OperandTypes:
                  members: dict[str, dict[str, str]]) -> None:
         self._scopes = scopes
         self._members = members
+        # operand -> its type. The tables above are complete once the file is read, so an
+        # operand spelled again (most of a program's are) resolves to what it did before.
+        self._resolved: dict[str, str | None] = {}
 
     def resolve(self, operand: str, _depth: int = 0) -> str | None:
+        if _depth:
+            return self._resolve(operand, _depth)
+        try:
+            return self._resolved[operand]
+        except KeyError:
+            resolved = self._resolved[operand] = self._resolve(operand, 0)
+            return resolved
+
+    def _resolve(self, operand: str, _depth: int) -> str | None:
         operand = operand.strip()
         if not operand or _depth > _MAX_ALIAS_DEPTH:
             return None

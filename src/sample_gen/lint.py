@@ -465,6 +465,8 @@ def _split_top_level_args(s: str) -> list[str]:
     (e.g. an array-index or bit-subscript operand shouldn't fracture the
     split). Returns [] for an empty/whitespace-only string."""
     s = s.strip()
+    if "(" not in s and "[" not in s and ")" not in s and "]" not in s:
+        return s.split(",") if s else []
     if not s:
         return []
     parts = []
@@ -484,26 +486,54 @@ def _split_top_level_args(s: str) -> list[str]:
     return parts
 
 
+# Rung text -> its call sites. A pure function of the text, and every check reads the
+# same rungs, so each rung is scanned once (bounded: cleared whole when full).
+_CALL_SITE_CACHE: dict[str, tuple[tuple[str, str], ...]] = {}
+_UP_TO_BRACKET = re.compile(r"[^()\[\]]*")
+
+
 def _call_sites(text: str) -> list[tuple[str, str]]:
     """Finds every "NAME(...)" call in rung text and returns (name,
     args_string) pairs, args_string being everything between the matching
     parens (balanced against nested brackets/parens inside, e.g. an
     array-index operand)."""
+    sites = _CALL_SITE_CACHE.get(text)
+    if sites is None:
+        if len(_CALL_SITE_CACHE) >= 200_000:
+            _CALL_SITE_CACHE.clear()
+        sites = _CALL_SITE_CACHE[text] = tuple(_scan_call_sites(text))
+    return list(sites)
+
+
+def _scan_call_sites(text: str) -> list[tuple[str, str]]:
     sites = []
     for m in _INSTRUCTION_CALL.finditer(text):
         name = m.group(1)
         start = m.end()  # just past the opening "("
-        depth = 1
-        i = start
-        while i < len(text) and depth > 0:
-            if text[i] in "([":
-                depth += 1
-            elif text[i] in ")]":
-                depth -= 1
-            i += 1
-        if depth == 0:
-            sites.append((name, text[start:i - 1]))
+        end = _UP_TO_BRACKET.match(text, start).end()
+        if end < len(text) and text[end] in ")]":
+            # Nothing opens before the call closes.
+            sites.append((name, text[start:end]))
+            continue
+        args = _call_args_scan(text, start)
+        if args is not None:
+            sites.append((name, args))
     return sites
+
+
+def _call_args_scan(text: str, start: int) -> str | None:
+    """Everything between the "(" ending at `start` and its matching close, one character
+    at a time (None if it never closes): the reference _scan_call_sites' fast path is
+    tested against."""
+    depth = 1
+    i = start
+    while i < len(text) and depth > 0:
+        if text[i] in "([":
+            depth += 1
+        elif text[i] in ")]":
+            depth -= 1
+        i += 1
+    return text[start:i - 1] if depth == 0 else None
 
 
 def _all_rung_texts(root: ET.Element) -> list[str]:
@@ -744,6 +774,9 @@ def _udt_member_types(root: ET.Element) -> dict[str, dict[str, str]]:
     return result
 
 
+_SUBSCRIPT_RE = re.compile(r"\[[^\]]*\]")
+
+
 def _resolve_operand_type(operand: str, tag_types: dict[str, str],
                           udt_members: dict[str, dict[str, str]] | None = None) -> str | None:
     """Best-effort DataType for a rung operand: the base tag's type, then each
@@ -757,7 +790,9 @@ def _resolve_operand_type(operand: str, tag_types: dict[str, str],
     XIC. That false positive is why no generated file carried a member-path
     operand, while half of all real operands are member paths.
     """
-    operand = re.sub(r"\[[^\]]*\]", "", operand.strip())
+    operand = operand.strip()
+    if "[" in operand:
+        operand = _SUBSCRIPT_RE.sub("", operand)
     m = _BASE_TAG_NAME_RE.match(operand)
     if not m:
         return None
@@ -789,6 +824,14 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
     conservative bias as every other type-sensitive check in this
     project."""
     findings = []
+    # Operand -> resolved type for this pass: the tables do not change within it.
+    resolved: dict[str, str | None] = {}
+
+    def resolve(operand: str) -> str | None:
+        if operand not in resolved:
+            resolved[operand] = _resolve_operand_type(operand, tag_types, udt_members)
+        return resolved[operand]
+
     for text in rung_texts:
         for mnemonic, args_str in _call_sites(text):
             if mnemonic not in _BIT_LEVEL_INSTRUCTIONS:
@@ -801,7 +844,7 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
             if bit:
                 # A bit of an integer is valid; a bit of a REAL is not ("Invalid bit
                 # specifier", 400 errors on each of strx_equ_* / strx_neq_member).
-                base_type = _resolve_operand_type(operand[:bit.start()], tag_types, udt_members)
+                base_type = resolve(operand[:bit.start()])
                 if base_type in ("REAL", "LREAL"):
                     findings.append(LintFinding(
                         "bit_specifier_on_real",
@@ -809,7 +852,7 @@ def _bit_level_findings(rung_texts: list[str], tag_types: dict[str, str],
                         f"as an invalid bit specifier: {text.strip()!r}",
                     ))
                 continue
-            resolved_type = _resolve_operand_type(operand, tag_types, udt_members)
+            resolved_type = resolve(operand)
             if resolved_type and resolved_type != "BOOL":
                 findings.append(LintFinding(
                     "bit_level_instruction_on_non_bool_operand",
@@ -1738,8 +1781,10 @@ def _module_configdata_findings(root: ET.Element) -> list[LintFinding]:
     return findings
 
 
-def lint_l5x(l5x_text: str) -> list[LintFinding]:
-    root = ET.fromstring(l5x_text)
+def lint_l5x(l5x_text: str, root: ET.Element | None = None) -> list[LintFinding]:
+    """Every finding for this file. `root`, when given, is l5x_text already parsed (lint only
+    reads it), so a caller that parses the file once can share it."""
+    root = ET.fromstring(l5x_text) if root is None else root
     findings: list[LintFinding] = []
 
     findings.extend(_platform_standard_findings(root))
@@ -1785,46 +1830,55 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
         aoi_tag_types.update(_tag_types_from(aoi_el, "LocalTag"))
         findings.extend(_bit_level_findings(_all_rung_texts(aoi_el), aoi_tag_types, udt_members))
 
+    # SIZE is a confirmed exception to the bracket rule ('s
+    # own Studio-5000-verified COP_Samples.L5X:
+    # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
+    # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
+    # FLL/BTD, SIZE's first operand is the whole array, not one
+    # element of it, so a bare tag immediately after "SIZE(" is
+    # not a missing-subscript bug.
+    # MCSV is the second confirmed whole-array exception, same
+    # class as SIZE and on the same evidence standard: the
+    # build-clean export writes
+    # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
+    # CAM_PROFILE[10] with NO subscript. A cam profile is passed as
+    # the whole profile array, never one element of it, so a bare
+    # array tag after "MCSV(" is correct, not a missing-subscript
+    # bug. Kept as a mnemonic-specific lookbehind rather than a
+    # blanket CAM_PROFILE exemption, because MAPC/MCCP DO take a
+    # subscripted element and must still be caught.
+    array_tag_patterns = [
+        (tag, re.compile(r"(?<!SIZE\()(?<!MCSV\(MCSV,)\b" + re.escape(tag) + r"\b(?!\s*\[)"))
+        for tag in array_tags
+    ]
     for text in rung_texts:
         # An AOI InOut Parameter declared with Dimensions takes the WHOLE
         # array as its argument, bare, with no [index] -- real corpus:
         # LOG_HMIDisplay Dimensions="25" and BitArray Dimensions="1024"
         # are both passed that way. Same class of exception as SIZE/MCSV
-        # below, but it cannot be a mnemonic lookbehind because the array
+        # above, but it cannot be a mnemonic lookbehind because the array
         # can sit at any argument position of any AOI call, so the whole
         # call site is exempted instead (found generating
         # aoistr_real_* -- the first files this project ever built with an
-        # array InOut param actually wired to a caller).
-        aoi_call_spans = [
-            m.span() for m in _INSTRUCTION_CALL.finditer(text)
-            if m.group(1) in aoi_names
-        ]
-        aoi_arg_regions = []
-        for start, _ in aoi_call_spans:
-            close = text.find(")", start)
-            aoi_arg_regions.append((start, len(text) if close < 0 else close))
+        # array InOut param actually wired to a caller). Found only for a rung
+        # that names an array tag at all.
+        aoi_arg_regions = None
 
-        for tag in array_tags:
-            # SIZE is a confirmed exception to the bracket rule ('s
-            # own Studio-5000-verified COP_Samples.L5X:
-            # SIZE(COP_Source,0,COP_Size); compiles clean against a plain
-            # DINT[10] array with NO [index] subscript) -- unlike CPS/COP/
-            # FLL/BTD, SIZE's first operand is the whole array, not one
-            # element of it, so a bare tag immediately after "SIZE(" is
-            # not a missing-subscript bug.
-            # MCSV is the second confirmed whole-array exception, same
-            # class as SIZE and on the same evidence standard: the
-            # build-clean export writes
-            # `MCSV(MCSV,Cam_Profile,Src,Dst,Dst,Dst);` against a plain
-            # CAM_PROFILE[10] with NO subscript. A cam profile is passed as
-            # the whole profile array, never one element of it, so a bare
-            # array tag after "MCSV(" is correct, not a missing-subscript
-            # bug. Kept as a mnemonic-specific lookbehind rather than a
-            # blanket CAM_PROFILE exemption, because MAPC/MCCP DO take a
-            # subscripted element and must still be caught.
-            pattern = re.compile(r"(?<!SIZE\()(?<!MCSV\(MCSV,)\b" + re.escape(tag) + r"\b(?!\s*\[)")
+        for tag, pattern in array_tag_patterns:
+            if tag not in text:
+                continue  # the pattern matches the tag's own text
+            found = list(pattern.finditer(text))
+            if not found:
+                continue
+            if aoi_arg_regions is None:
+                aoi_arg_regions = []
+                for m in _INSTRUCTION_CALL.finditer(text):
+                    if m.group(1) in aoi_names:
+                        start = m.span()[0]
+                        close = text.find(")", start)
+                        aoi_arg_regions.append((start, len(text) if close < 0 else close))
             hits = [
-                m for m in pattern.finditer(text)
+                m for m in found
                 if not any(lo <= m.start() < hi for lo, hi in aoi_arg_regions)
             ]
             if hits:
@@ -1870,14 +1924,17 @@ def lint_l5x(l5x_text: str) -> list[LintFinding]:
     return findings
 
 
-def lint_or_raise(l5x_text: str, context: str = "") -> None:
+def lint_or_raise(l5x_text: str, context: str = "", root: ET.Element | None = None) -> ET.Element:
     """Convenience wrapper for generator scripts: raise loudly instead of
-    silently shipping a file with one of these two known error classes."""
-    findings = lint_l5x(l5x_text)
+    silently shipping a file with one of these two known error classes. Returns the
+    parsed file, for a caller that reads it next (lint does not change it)."""
+    root = ET.fromstring(l5x_text) if root is None else root
+    findings = lint_l5x(l5x_text, root)
     if findings:
         lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
         prefix = f"{context}: " if context else ""
         raise ValueError(f"{prefix}lint found {len(findings)} issue(s):\n{lines}")
+    return root
 
 
 # --- The realism floor ------------------------------------------------------
@@ -1929,12 +1986,14 @@ def output_bit_duplicates(root: ET.Element) -> list[str]:
     return dup
 
 
-def realism_findings(l5x_text: str, predicted: int | None) -> list[LintFinding]:
+def realism_findings(l5x_text: str, predicted: int | None,
+                     root: ET.Element | None = None) -> list[LintFinding]:
     """The realism floor. `predicted` None skips the fill check (a file the
-    engine cannot price, e.g. one carrying an unmodeled AXIS structure)."""
+    engine cannot price, e.g. one carrying an unmodeled AXIS structure). `root`, when
+    given, is l5x_text already parsed (only read here)."""
     from l5x_memory_analyzer.sizing.controller_budgets import load_controller_budgets
 
-    root = ET.fromstring(l5x_text)
+    root = ET.fromstring(l5x_text) if root is None else root
     findings = []
     nodes = io_node_count(root)
     if nodes < MIN_IO_NODES:
@@ -1961,8 +2020,9 @@ def realism_findings(l5x_text: str, predicted: int | None) -> list[LintFinding]:
     return findings
 
 
-def realism_or_raise(l5x_text: str, predicted: int | None, context: str = "") -> None:
-    findings = realism_findings(l5x_text, predicted)
+def realism_or_raise(l5x_text: str, predicted: int | None, context: str = "",
+                     root: ET.Element | None = None) -> None:
+    findings = realism_findings(l5x_text, predicted, root)
     if findings:
         lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
         prefix = f"{context}: " if context else ""

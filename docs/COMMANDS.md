@@ -38,20 +38,28 @@ on it.
 ## 2. Tests
 
 ```bash
-python -m pytest -q
+python -m pytest -q -n auto     # every core (pytest-xdist, in the dev extras)
+python -m pytest -q             # one process
 ```
 
 `pyproject.toml` sets `pythonpath = ["src"]` and `testpaths = ["tests"]`, so bare
 `pytest` works from the repo root once dev extras are installed
 (`pip install -e ".[dev]"`).
 
-Where the time goes (2026-10-19, 7 minutes cold): the `regenerate` fixture rebuilding
-deleted batch files for `test_aoi_and_motion_laws` and the alarm tests (200 s), and the
-waiting-batch guards in `test_build_guards`, which lint and price every committed file not
-yet captured (a minute while a 4.5 MB realism-floor batch waits; near nothing once it is
-captured). The fixture now keeps what it rebuilds in the git-ignored `.cache/regenerate/`,
-keyed by a hash of every generator source and data file, so only the first run after a
-generator change pays the 200 s. Delete `.cache/` to force a rebuild.
+How long it takes (2026-10-23, 4 cores): about 36 s with `-n auto` and 110 s in one process, cold cache or warm (595 s and 338 s before TASKS 0zf).
+
+What keeps it there:
+
+- The `regenerate` fixture keeps what it rebuilds in the git-ignored `.cache/regenerate/`,
+  keyed per call by the requested generators, every `sample_gen` module they import and the
+  package's data files, so a generator edit rebuilds only the families built from it (an edit
+  to a module they all import, such as `manifest.py` or `lint.py`, still rebuilds them all). It does not price what it rebuilds (that price only ever reached the manifest),
+  and a lock lets parallel workers share the cache. Delete `.cache/` to force a rebuild.
+- The engine scans each distinct rung once per process (the rung and routine caches in
+  `parser/logic.py`), builds the memory model once per file content, and remembers each
+  operand's type per scope, so a batch of files on the same plant pays for the plant once.
+- The waiting-batch guards in `test_build_guards` are one test per waiting file, so `-n`
+  spreads them.
 
 ---
 

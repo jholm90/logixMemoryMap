@@ -100,6 +100,86 @@ explain only part of the −72 a line; the module law has never been read on the
 floor (every round-2 `modrep_*` file is a blind prediction); and packed 5069 cards' type
 sharing is untested until `safe_io6_5069_*` reads.
 
+### 0zf. Backend speed — DONE 2026-10-23 (target 14×, with every output unchanged)
+
+**Where the time went (measured before any change, 1756-L81E plant files of 4.5 MB):**
+
+| | before |
+|---|---|
+| writing one generated file (lint, price, realism) | 2.5 s: lint 0.82, price 1.51, realism 0.13 |
+| pricing one plant file | 1.25 s, ~85% of it re-scanning ~19,000 rungs character by character, ~15 scans a rung, every routine parsed twice |
+| `load_memory_model()` | 0.2 s a call (the YAML re-parsed), 61 call sites, once per priced file |
+| operand types | ~19,000 resolutions a file, mostly of the same spellings |
+| ST CASE-selector regex | backtracked without bound: 1.35 s on 4,937 characters of one real program's ST, for no match |
+| `regenerate` fixture | priced every rebuilt file and discarded the price; keyed on every generator file, so one edit rebuilt every family |
+| waiting-batch guards | one test each, every file in series |
+| full suite | 595 s cold (9 min 55 s), 338 s warm |
+
+**What changed** (no sizing constant, rule or test expectation):
+
+- `parser/logic.py`: every rung helper split into a per-rung function; a rung's facts are
+  computed once per distinct rung text and a routine's combined facts once per distinct
+  routine (bounded caches), so the plant rungs every generated file shares are scanned once a
+  process. The two argument scanners take a fast path when no argument nests a bracket, with
+  the original one-character scan kept as the reference and as the nested path. AOI calls are
+  found from each rung's named calls instead of a regex alternation of every AOI name.
+  A rung with no v36+ mnemonic is remembered as already canonical.
+- `sizing/report.py`: the RLL routines are parsed once per report, not twice.
+- `sizing/constants.py`: the model is built once per file content and handed out as a deep
+  copy, so every caller still gets its own object.
+- `sizing/operand_types.py`: each scope remembers what an operand spelling resolved to.
+- `sizing/structured_text.py`: CASE selectors are counted in one pass (`case_selector_count`)
+  instead of by a regex that backtracked without bound on long runs of words and whitespace.
+- `sample_gen/lint.py`: call sites cached per rung text, with the same fast path; lint and the
+  realism floor share one parse in `write_sample`.
+- `tests/conftest.py`: the cache key is per requested generator and the `sample_gen` modules it
+  imports; rebuilt files are not priced (a stand-in that refuses arithmetic makes a generator
+  whose content depends on its own prediction fail loudly); a lock lets parallel workers share
+  the cache. `test_build_guards` runs one test per waiting file; `test_batch_a_laws` prices
+  each control once. `pytest-xdist` added to the dev extras.
+
+**How the outputs were proven unchanged:**
+
+1. **Every output of 1,058 files, byte for byte.** The engine as committed before this work
+   (7cdf52d) was copied under another package name and run side by side with the new code on every distinct file
+   on disk (the 79 in `samples/local/`, 501 in `samples/generated/`, the test cache): every
+   `build_report` line item and error, the safety-partition hand-over, `build_safety_report`,
+   the parsed `RoutineLogic` of every routine and AOI, lint findings, realism findings, and for
+   the 79 real files the UI's `/api/report`, `/api/rungs`, `/api/alarms` and `/api/xref`.
+   Compared as exact reprs with a fixed hash seed, so even dict and set order: **0 differences.**
+2. **Every helper on every rung.** Each old helper against its new one on 8,276,389 rung and
+   ST texts from the same files, single rungs and whole routines, `_extract_call_args` at every
+   `(` and `_split_call_args` at every opener: **0 mismatches.** The one-pass CASE-selector
+   count equals the regex on all 143 ST routines in those files, raw and comment-stripped.
+3. The full suite passes, and `tests/test_parser_fast_paths.py` (new) fuzzes every fast path
+   against its reference scan, so the equivalence stays enforced.
+
+**After** (same machine, 4 cores, one run at a time with nothing else running):
+
+| | before | after |
+|---|---|---|
+| writing one generated file (12 `modrep_*`: build, lint, price, realism) | 2.28 s | 0.75 s, the same predictions |
+| pricing 8 plant files in one process | 11.07 s | 2.73 s (the first 0.74 s, each further one ~0.25 s) |
+| pricing 11 real programs, standard + safety | 14.76 s | 3.81 s |
+| the real program with the most ST (4,937 characters) | 2.18 s | 0.46 s |
+| full suite, cold cache | 595 s | 109 s one process, **36 s `-n 4` (16.5×)** |
+| full suite, warm cache | 338 s | 103 s one process, **33 s `-n 4` (10.2×)** |
+
+The old figures are the engine and suite as committed before this work, timed on the same
+machine (the old suite's warm cache was its own complete one).
+
+**Open: the last lint change is not yet compared on every file.** Array-tag patterns compiled
+once per file with rungs that do not contain the tag's text skipped, and bit-operand types
+remembered within one pass (0.51 → 0.35 s a plant file), came after the 1,058-file comparison
+and the suite timings. `test_lint` and `test_build_guards` pass on it; its old-vs-new lint
+comparison over every file was stopped at 701 of 1,098 when the work was halted, before any
+result was printed. Run that comparison (old `lint_l5x` against new, findings repr-equal, every
+file on disk) before trusting it further.
+
+Not done, and why: a warm run at 14× needs ~24 s, and what is left is spread thin -- XML
+parsing (~0.08 s a 4.5 MB file, ~200 parses a run), lint (~0.35 s a plant file) and the pricing
+pass (~0.25 s) -- each further cut worth 10-15%.
+
 ### 0zd. Safety batch B, the last of 2 — BUILT 2026-10-22 (36 files), awaiting conversion and capture; the four Studio variants are the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
 
 **Built 2026-10-22** (owner's go-ahead the same day): `gen_safety_round7.py` (26 files: Part 2

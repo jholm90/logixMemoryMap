@@ -62,7 +62,15 @@ def built(regenerate):
 
 
 def _engine(path: Path, model=None) -> int:
-    return sum(e.bytes for e in build_report(ET.parse(path).getroot(), model or load_memory_model())[0])
+    if model is None:
+        return _engine_default(path)
+    return sum(e.bytes for e in build_report(ET.parse(path).getroot(), model)[0])
+
+
+@lru_cache(maxsize=None)
+def _engine_default(path: Path) -> int:
+    """The shared control files are priced once, not once per test."""
+    return sum(e.bytes for e in build_report(ET.parse(path).getroot(), load_memory_model())[0])
 
 
 @pytest.mark.parametrize("shape", ST_SHAPES)

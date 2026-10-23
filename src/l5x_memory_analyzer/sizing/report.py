@@ -139,16 +139,16 @@ def build_report(root: ET.Element, model: MemoryModel,
     # against. The cap applies to the FILE-WIDE total across every AOI's
     # and every JSR target's own surcharge-eligible content combined, not
     # per-entity, so it has to be computed once, up front, before either
-    # per-entity loop below applies its own share of it. A cheap early
-    # parse of the RLL routines (re-parsed again by name below where the
-    # rest of the function needs the full RoutineLogic objects, not just
-    # this instruction-count total) keeps this pre-pass self-contained.
+    # per-entity loop below applies its own share of it. The RLL routines are
+    # parsed once, here: nothing below changes the tree, and the routine pass
+    # further down reads the same list.
     _surcharge_aoi_instr = sum(
         sum(r.instruction_counts.values()) for r in aoi_internal_logic.values()
     )
+    all_routines = parse_rll_routines(root)
     _surcharge_jsr_instr = sum(
         sum(r.instruction_counts.values())
-        for r in parse_rll_routines(root)
+        for r in all_routines
         if r.is_jsr_target
     )
     _uncapped_total_surcharge = (
@@ -491,8 +491,6 @@ def build_report(root: ET.Element, model: MemoryModel,
     alarm_entries, alarm_conditions = size_alarm_conditions(
         root, model, tag_types, _udt_member_types
     )
-
-    all_routines = parse_rll_routines(root)
 
     # Target routine name -> declared param count, from every real JSR(...)
     # call site across the whole file (OQ-JSRPARAMCOST, wired).

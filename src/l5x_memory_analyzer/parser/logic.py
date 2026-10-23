@@ -8,6 +8,7 @@ not guessed at here. Any routine whose Type is not RLL is skipped, and
 
 from __future__ import annotations
 
+import functools
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -59,9 +60,19 @@ _V36_CALL = re.compile(
 )
 
 
+# Rung texts already found to hold no v36+ mnemonic, which canonicalize to themselves
+# whatever the file's AOIs (bounded: cleared whole when full).
+_NO_V36_MNEMONIC: set[str] = set()
+
+
 def canonical_rung_text(text: str, aoi_names: frozenset[str] = frozenset()) -> str:
     """Rung text with every v36+ mnemonic spelled the v35 way."""
-    if "(" not in text:
+    if "(" not in text or text in _NO_V36_MNEMONIC:
+        return text
+    if _V36_CALL.search(text) is None:
+        if len(_NO_V36_MNEMONIC) >= _RUNG_FACTS_LIMIT:
+            _NO_V36_MNEMONIC.clear()
+        _NO_V36_MNEMONIC.add(text)
         return text
     return _V36_CALL.sub(
         lambda m: m.group(1) if m.group(1) in aoi_names else V36_MNEMONIC_ALIASES[m.group(1)],
@@ -193,15 +204,20 @@ def _cpt_call_detail(text: str, start: int) -> CptCall | None:
     return None
 
 
+def _cpt_calls_one(text: str) -> tuple[CptCall, ...]:
+    if "CPT(" not in text:
+        return ()
+    calls = []
+    for m in _CPT_CALL_START.finditer(text):
+        call = _cpt_call_detail(text, m.end())
+        if call is not None:
+            calls.append(call)
+    return tuple(calls)
+
+
 def _cpt_calls(rung_texts: list[str]) -> list[CptCall]:
     """One entry per real CPT(...) call found across every rung."""
-    calls: list[CptCall] = []
-    for text in rung_texts:
-        for m in _CPT_CALL_START.finditer(text):
-            call = _cpt_call_detail(text, m.end())
-            if call is not None:
-                calls.append(call)
-    return calls
+    return [call for text in rung_texts for call in _cpt_calls_one(text)]
 
 
 # Instructions whose real cost varies by OPERAND data type (OQ-OPERANDTYPE,
@@ -222,6 +238,11 @@ _TYPE_SENSITIVE_INSTRUCTIONS = frozenset({
 })
 
 
+# Everything up to the next paren. When that paren closes the call, no argument
+# nests one, and the arguments are a plain split on commas.
+_UP_TO_PAREN = re.compile(r"[^()]*")
+
+
 def _extract_call_args(text: str, start: int) -> list[str] | None:
     """text[start] is the character right after a matched 'MNEMONIC('.
     Returns EVERY top-level comma-separated argument (unlike
@@ -230,6 +251,17 @@ def _extract_call_args(text: str, start: int) -> list[str] | None:
     principle (not seen in this project's real corpus for these
     instructions, but handled correctly regardless). Returns None if the
     parens never balance (malformed/truncated, don't guess)."""
+    end = _UP_TO_PAREN.match(text, start).end()
+    if end == len(text):
+        return None
+    if text[end] == ")":
+        return text[start:end].split(",")
+    return _extract_call_args_scan(text, start)
+
+
+def _extract_call_args_scan(text: str, start: int) -> list[str] | None:
+    """_extract_call_args, one character at a time: the reference its fast path is
+    tested against, and the path for an argument that nests a paren."""
     depth = 1
     args: list[str] = []
     arg_start = start
@@ -310,15 +342,12 @@ def series_output_extra_count(rung_texts: list[str]) -> int:
     legs and reads the same -36/rung as the series form -- so bracket content is
     counted exactly like inline content and no bracket parsing is needed.
     """
-    total = 0
-    for text in rung_texts:
-        outputs = sum(
-            1 for match in _ANY_CALL_START.finditer(text)
-            if match.group(1) in _OUTPUT_MNEMONICS
-        )
-        if outputs > 1:
-            total += outputs - 1
-    return total
+    return sum(_series_output_extra_one(text) for text in rung_texts)
+
+
+def _series_output_extra_one(text: str) -> int:
+    outputs = sum(1 for mnemonic in _ANY_CALL_START.findall(text) if mnemonic in _OUTPUT_MNEMONICS)
+    return outputs - 1 if outputs > 1 else 0
 
 
 _ANY_CALL_START = re.compile(r"\b([A-Z][A-Z0-9_]{1,9})\(")
@@ -332,12 +361,20 @@ def sbr_ret_operand_count(rung_texts: list[str]) -> int:
     and the cost is per TARGET rather than per operand (OQ-VERIFINSTR), so the
     caller only needs to know whether this is nonzero.
     """
+    return sum(_sbr_ret_operands_one(text) for text in rung_texts)
+
+
+_SBR_RET_CALL = re.compile(r"\b(SBR|RET)\(")
+
+
+def _sbr_ret_operands_one(text: str) -> int:
+    if "SBR(" not in text and "RET(" not in text:
+        return 0
     total = 0
-    for text in rung_texts:
-        for match in re.finditer(r"\b(SBR|RET)\(", text):
-            args = _extract_call_args(text, match.end())
-            if args:
-                total += sum(1 for a in args if a.strip())
+    for match in _SBR_RET_CALL.finditer(text):
+        args = _extract_call_args(text, match.end())
+        if args:
+            total += sum(1 for a in args if a.strip())
     return total
 
 
@@ -378,6 +415,7 @@ def word_destination_count(rung_texts: list[str], types: dict[str, str]) -> int:
 
 _BIT_MNEMONICS = frozenset({"XIC", "XIO", "OTE", "OTL", "OTU", "ONS"})
 _ANY_NAMED_CALL = re.compile(r"\b([A-Za-z_]\w*)\(")
+_MEMBER_OR_INDEX = re.compile(r"[.\[]")
 
 
 def inout_operand_instruction_count(rung_texts: list[str], inout_names: frozenset[str]) -> int:
@@ -400,7 +438,7 @@ def inout_operand_instruction_count(rung_texts: list[str], inout_names: frozense
             args = _extract_call_args(text, match.end())
             if not args:
                 continue
-            roots = [re.split(r"[.\[]", a.strip())[0] for a in args]
+            roots = [_MEMBER_OR_INDEX.split(a.strip())[0] for a in args]
             positions = range(len(args))
             if mnemonic not in _BIT_MNEMONICS:
                 dest = _DESTINATION_ARG.get(mnemonic)
@@ -420,14 +458,18 @@ def _typed_instruction_calls(rung_texts: list[str]) -> list[tuple[str, list[str]
     needs the tag table, which this structural parser deliberately doesn't
     have access to; that resolution happens at the sizing layer (see
     sizing/logic.py), same split of responsibility as _cpt_calls above."""
-    calls: list[tuple[str, list[str]]] = []
-    for text in rung_texts:
-        for m in _TYPED_CALL_START.finditer(text):
-            args = _extract_call_args(text, m.end())
-            if args is None:
-                continue
-            calls.append((m.group(1), [a.strip() for a in args]))
-    return calls
+    return [(mnemonic, list(operands)) for text in rung_texts
+            for mnemonic, operands in _typed_calls_one(text)]
+
+
+def _typed_calls_one(text: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    calls = []
+    for m in _TYPED_CALL_START.finditer(text):
+        args = _extract_call_args(text, m.end())
+        if args is None:
+            continue
+        calls.append((m.group(1), tuple(a.strip() for a in args)))
+    return tuple(calls)
 
 
 _OPERAND_ROOT = re.compile(r"(?<![\w.\]])([A-Za-z_][A-Za-z0-9_]*)(?![\w(])")
@@ -445,27 +487,28 @@ def _operand_refs(rung_texts: list[str]) -> tuple[tuple[str, str, str], ...]:
     (("XIC", "B", "bit"), ("XIC", "Idx", "index")); 'MOV(D,E[1])' -> (("MOV", "D", "bare"),
     ("MOV", "E", "word")). Member names are skipped; keyword and label operands come back
     too, and the sizer keeps only the roots that name a tag."""
+    return tuple(ref for text in rung_texts for ref in _operand_refs_one(text))
+
+
+def _operand_refs_one(text: str) -> tuple[tuple[str, str, str], ...]:
     refs: list[tuple[str, str, str]] = []
-    for text in rung_texts:
-        for m in _INSTRUCTION_CALL.finditer(text):
-            args = _extract_call_args(text, m.end())
-            if args is None:
-                continue
-            mnemonic = m.group(1)
-            outer = "bit" if mnemonic in BIT_INSTRUCTIONS else "word"
-            for arg in args:
-                depth = [0] * (len(arg) + 1)
-                d = 0
-                for i, ch in enumerate(arg):
-                    if ch == "[":
-                        d += 1
-                    elif ch == "]":
-                        d -= 1
-                    depth[i] = d
-                bare = outer == "word" and _BARE_NAME.fullmatch(arg.strip()) is not None
+    for m in _INSTRUCTION_CALL.finditer(text):
+        args = _extract_call_args(text, m.end())
+        if args is None:
+            continue
+        mnemonic = m.group(1)
+        outer = "bit" if mnemonic in BIT_INSTRUCTIONS else "word"
+        for arg in args:
+            bare = outer == "word" and _BARE_NAME.fullmatch(arg.strip()) is not None
+            if "[" in arg or "]" in arg:
+                # A root is inside a subscript when more brackets open than close before it.
                 for root in _OPERAND_ROOT.finditer(arg):
-                    kind = "index" if depth[root.start()] > 0 else ("bare" if bare else outer)
-                    refs.append((mnemonic, root.group(1), kind))
+                    at = root.start()
+                    inside = arg.count("[", 0, at) - arg.count("]", 0, at) > 0
+                    refs.append((mnemonic, root.group(1), "index" if inside else ("bare" if bare else outer)))
+            else:
+                kind = "bare" if bare else outer
+                refs.extend((mnemonic, name, kind) for name in _OPERAND_ROOT.findall(arg))
     return tuple(refs)
 
 
@@ -487,20 +530,25 @@ def _jsr_calls(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     original OQ-JSRPARAMCOST fit (input args only, from group_param_count's
     always-empty RET()) completely missed this cost -- ~40,000/1,000 calls
     unmodeled for 2 return args."""
-    calls: list[tuple[str, int, int]] = []
-    for text in rung_texts:
-        for m in _JSR_CALL_START.finditer(text):
-            args = _extract_call_args(text, m.end())
-            if args is None or len(args) < 2:
-                continue
-            target = args[0].strip()
-            count_text = args[1].strip()
-            if not count_text.isdigit():
-                continue
-            n_in = int(count_text)
-            m_out = max(0, len(args) - 2 - n_in)
-            calls.append((target, n_in, m_out))
-    return calls
+    return [call for text in rung_texts for call in _jsr_calls_one(text)]
+
+
+def _jsr_calls_one(text: str) -> tuple[tuple[str, int, int], ...]:
+    if "JSR(" not in text:
+        return ()
+    calls = []
+    for m in _JSR_CALL_START.finditer(text):
+        args = _extract_call_args(text, m.end())
+        if args is None or len(args) < 2:
+            continue
+        target = args[0].strip()
+        count_text = args[1].strip()
+        if not count_text.isdigit():
+            continue
+        n_in = int(count_text)
+        m_out = max(0, len(args) - 2 - n_in)
+        calls.append((target, n_in, m_out))
+    return tuple(calls)
 
 
 _RET_CALL = re.compile(r"\bRET\(([^()]*)\)")
@@ -508,26 +556,36 @@ _RET_CALL = re.compile(r"\bRET\(([^()]*)\)")
 
 def ret_operand_counts(rung_texts: list[str]) -> tuple[int, ...]:
     """Operands of each RET that returns values, in rung order."""
+    return tuple(n for text in rung_texts for n in _ret_operand_counts_one(text))
+
+
+def _ret_operand_counts_one(text: str) -> tuple[int, ...]:
+    if "RET(" not in text:
+        return ()
     counts = []
-    for text in rung_texts:
-        for m in _RET_CALL.finditer(text):
-            args = [a for a in m.group(1).split(",") if a.strip()]
-            if args:
-                counts.append(len(args))
+    for m in _RET_CALL.finditer(text):
+        args = [a for a in m.group(1).split(",") if a.strip()]
+        if args:
+            counts.append(len(args))
     return tuple(counts)
 
 
 def jsr_call_args(rung_texts: list[str]) -> list[tuple[str, tuple[str, ...]]]:
     """(target, parameter arguments) for every JSR call -- the same calls
     _jsr_calls counts, with the arguments after the target and count."""
-    calls: list[tuple[str, tuple[str, ...]]] = []
-    for text in rung_texts:
-        for m in _JSR_CALL_START.finditer(text):
-            args = _extract_call_args(text, m.end())
-            if args is None or len(args) < 2 or not args[1].strip().isdigit():
-                continue
-            calls.append((args[0].strip(), tuple(a.strip() for a in args[2:])))
-    return calls
+    return [call for text in rung_texts for call in _jsr_call_args_one(text)]
+
+
+def _jsr_call_args_one(text: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    if "JSR(" not in text:
+        return ()
+    calls = []
+    for m in _JSR_CALL_START.finditer(text):
+        args = _extract_call_args(text, m.end())
+        if args is None or len(args) < 2 or not args[1].strip().isdigit():
+            continue
+        calls.append((args[0].strip(), tuple(a.strip() for a in args[2:])))
+    return tuple(calls)
 
 
 # Indirect (tag-driven) array addressing (OQ-INDIRECT, wired).
@@ -560,18 +618,23 @@ def _indirect_index_kinds(rung_texts: list[str]) -> list[str]:
     """One entry per real array-index bracket expression found, classified
     as 'tag' or 'tag_offset' -- direct/literal indices and anything this
     can't confidently classify are simply not included (0 cost)."""
-    kinds: list[str] = []
-    for text in rung_texts:
-        for m in _ARRAY_INDEX.finditer(text):
-            content = m.group(1).strip()
-            if _PURE_LITERAL_INDEX.match(content):
-                continue
-            if _TAG_INDEX.match(content):
-                kinds.append("tag")
-            elif _TAG_OFFSET_INDEX.match(content):
-                kinds.append("tag_offset")
-            # else: unresolved shape, deliberately not guessed at
-    return kinds
+    return [kind for text in rung_texts for kind in _indirect_index_kinds_one(text)]
+
+
+def _indirect_index_kinds_one(text: str) -> tuple[str, ...]:
+    if "[" not in text:
+        return ()
+    kinds = []
+    for m in _ARRAY_INDEX.finditer(text):
+        content = m.group(1).strip()
+        if _PURE_LITERAL_INDEX.match(content):
+            continue
+        if _TAG_INDEX.match(content):
+            kinds.append("tag")
+        elif _TAG_OFFSET_INDEX.match(content):
+            kinds.append("tag_offset")
+        # else: unresolved shape, deliberately not guessed at
+    return tuple(kinds)
 
 
 def _array_path_before(text: str, bracket_start: int) -> str:
@@ -598,28 +661,33 @@ def _indirect_index_sites(rung_texts: list[str]) -> list[tuple[str, str, str]]:
     brackets _indirect_index_kinds counts. `what follows` is 'member' for
     `Arr[Idx].Name`, 'bit' for `Arr[Idx].3` or `Arr[Idx].[Bit]`, else ''. The
     array path lets sizing resolve the element type (OQ-INDIRECTUDT)."""
-    sites: list[tuple[str, str, str]] = []
-    for text in rung_texts:
-        for m in _ARRAY_INDEX.finditer(text):
-            content = m.group(1).strip()
-            if _PURE_LITERAL_INDEX.match(content):
-                continue
-            if _TAG_INDEX.match(content):
-                kind = "tag"
-            elif _TAG_OFFSET_INDEX.match(content):
-                kind = "tag_offset"
-            else:
-                continue
-            bracket = text.index("[", m.start())
-            after = text[m.end():m.end() + 2]
-            if after[:1] == "." and (after[1:2].isalpha() or after[1:2] == "_"):
-                follows = "member"
-            elif after[:1] == "." and after[1:2] in "0123456789[" and after[1:2]:
-                follows = "bit"
-            else:
-                follows = ""
-            sites.append((kind, _array_path_before(text, bracket), follows))
-    return sites
+    return [site for text in rung_texts for site in _indirect_index_sites_one(text)]
+
+
+def _indirect_index_sites_one(text: str) -> tuple[tuple[str, str, str], ...]:
+    if "[" not in text:
+        return ()
+    sites = []
+    for m in _ARRAY_INDEX.finditer(text):
+        content = m.group(1).strip()
+        if _PURE_LITERAL_INDEX.match(content):
+            continue
+        if _TAG_INDEX.match(content):
+            kind = "tag"
+        elif _TAG_OFFSET_INDEX.match(content):
+            kind = "tag_offset"
+        else:
+            continue
+        bracket = text.index("[", m.start())
+        after = text[m.end():m.end() + 2]
+        if after[:1] == "." and (after[1:2].isalpha() or after[1:2] == "_"):
+            follows = "member"
+        elif after[:1] == "." and after[1:2] in "0123456789[" and after[1:2]:
+            follows = "bit"
+        else:
+            follows = ""
+        sites.append((kind, _array_path_before(text, bracket), follows))
+    return tuple(sites)
 
 
 # CMP's own surcharges (wired, real data confirms the existing
@@ -684,18 +752,23 @@ def _cmp_calls(rung_texts: list[str]) -> list[CmpCall]:
     why every arithmetic CMP shape in the corpus sat at a real negative
     residual while every bare-tag and bare-literal shape was exact.
     """
-    calls: list[CmpCall] = []
-    for text in rung_texts:
-        for m in _CMP_CALL_START.finditer(text):
-            expr = _extract_single_arg(text, m.end())
-            if expr is None:
-                continue
-            calls.append(CmpCall(
-                is_compound=bool(_CMP_COMPOUND_OPERATOR.search(expr)),
-                has_float_literal=bool(_CMP_FLOAT_LITERAL.search(expr)),
-                operators=_CPT_OPERATOR_TOKEN.findall(expr),
-            ))
-    return calls
+    return [call for text in rung_texts for call in _cmp_calls_one(text)]
+
+
+def _cmp_calls_one(text: str) -> tuple[CmpCall, ...]:
+    if "CMP(" not in text:
+        return ()
+    calls = []
+    for m in _CMP_CALL_START.finditer(text):
+        expr = _extract_single_arg(text, m.end())
+        if expr is None:
+            continue
+        calls.append(CmpCall(
+            is_compound=bool(_CMP_COMPOUND_OPERATOR.search(expr)),
+            has_float_literal=bool(_CMP_FLOAT_LITERAL.search(expr)),
+            operators=_CPT_OPERATOR_TOKEN.findall(expr),
+        ))
+    return tuple(calls)
 
 
 @dataclass(frozen=True)
@@ -876,17 +949,19 @@ def _branch_bracket_instruction_count(rung_texts: list[str]) -> int:
     preceded by an identifier character (that shape is an array index,
     e.g. "Tag[5]", handled entirely separately by _ARRAY_INDEX/
     _indirect_index_kinds above, not a branch)."""
+    return sum(_branch_bracket_one(text) for text in rung_texts)
+
+
+def _branch_bracket_one(text: str) -> int:
     total = 0
-    for text in rung_texts:
-        i = 0
-        n = len(text)
-        while i < n:
-            if text[i] == "[" and not (i > 0 and (text[i - 1].isalnum() or text[i - 1] == "_")):
-                group_total, next_i = _parse_branch_group(text, i)
-                total += group_total
-                i = next_i
-            else:
-                i += 1
+    i = text.find("[")
+    while i != -1:
+        if not (i > 0 and (text[i - 1].isalnum() or text[i - 1] == "_")):
+            group_total, next_i = _parse_branch_group(text, i)
+            total += group_total
+            i = text.find("[", next_i)
+        else:
+            i = text.find("[", i + 1)
     return total
 
 
@@ -933,15 +1008,18 @@ def aoi_real_input_args(rung_texts: list[str], aoi_names: frozenset[str],
     tag there as a conversion, like the typed-call literal law."""
     if not aoi_names or not real_slots:
         return ()
-    pattern = re.compile(
-        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+    return _aoi_real_input_args(rung_texts, [_named_calls_one(t) for t in rung_texts], aoi_names, real_slots)
+
+
+def _aoi_real_input_args(rung_texts, named_calls, aoi_names, real_slots) -> tuple[str, ...]:
     out: list[str] = []
-    for text in rung_texts:
-        for match in pattern.finditer(text):
-            slots = real_slots.get(match.group(1), ())
+    matcher = _aoi_name_matcher(frozenset(aoi_names))
+    for text, calls in zip(rung_texts, named_calls):
+        for name, paren in _aoi_calls_in(text, calls, aoi_names, matcher):
+            slots = real_slots.get(name, ())
             if not any(slots):
                 continue
-            args = _split_call_args(text, match.end() - 1)[1:]
+            args = _split_call_args(text, paren)[1:]
             out.extend(arg.strip() for is_real, arg in zip(slots, args) if is_real)
     return tuple(out)
 
@@ -970,21 +1048,54 @@ def aoi_call_sites(
     """
     if not aoi_names:
         return 0, 0, 0
-    pattern = re.compile(
-        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+    return _aoi_call_sites(rung_texts, [_named_calls_one(t) for t in rung_texts], aoi_names, input_positions)
+
+
+def _aoi_call_sites(rung_texts, named_calls, aoi_names, input_positions) -> tuple[int, int, int]:
     calls = params = input_refs = 0
-    for text in rung_texts:
-        for match in pattern.finditer(text):
+    matcher = _aoi_name_matcher(frozenset(aoi_names))
+    for text, named in zip(rung_texts, named_calls):
+        for name, paren in _aoi_calls_in(text, named, aoi_names, matcher):
             calls += 1
-            args = _split_call_args(text, match.end() - 1)[1:]
+            args = _split_call_args(text, paren)[1:]
             params += len(args)
             if input_positions is None:
                 continue
-            slots = input_positions.get(match.group(1), ())
+            slots = input_positions.get(name, ())
             for is_input, arg in zip(slots, args):
                 if is_input and not _CHEAP_LITERAL.match(arg):
                     input_refs += 1
     return calls, params, input_refs
+
+
+def _named_calls_one(text: str) -> tuple[tuple[str, int], ...]:
+    """(name, index of its "(") for every identifier immediately followed by "(" --
+    instruction or AOI alike, each the whole identifier."""
+    return tuple((m.group(1), m.end() - 1) for m in _ANY_NAMED_CALL.finditer(text))
+
+
+_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
+
+@functools.lru_cache(maxsize=64)
+def _aoi_name_matcher(aoi_names: frozenset[str]) -> re.Pattern | None:
+    """None when every name is a plain identifier: a call to one is then exactly a
+    whole identifier followed by "(", and the named calls already found say which.
+    Otherwise the literal alternation, longest name first."""
+    if all(_IDENTIFIER.fullmatch(n) for n in aoi_names):
+        return None
+    return re.compile(
+        r"\b(" + "|".join(re.escape(n) for n in sorted(aoi_names, key=len, reverse=True)) + r")\(")
+
+
+def _aoi_calls_in(text: str, named_calls, aoi_names, matcher) -> list[tuple[str, int]]:
+    """(AOI name, index of its "(") for every call to one of `aoi_names` in this rung."""
+    if matcher is None:
+        return [(name, paren) for name, paren in named_calls if name in aoi_names]
+    return [(m.group(1), m.end() - 1) for m in matcher.finditer(text)]
+
+
+_UP_TO_BRACKET = re.compile(r"[^()\[\]{}]*")
 
 
 def _split_call_args(text: str, open_paren: int) -> list[str]:
@@ -996,6 +1107,20 @@ def _split_call_args(text: str, open_paren: int) -> list[str]:
     raising: an under-count of parameters is a small sizing error, an exception
     loses the whole file.
     """
+    if open_paren < len(text) and text[open_paren] in "([{":
+        end = _UP_TO_BRACKET.match(text, open_paren + 1).end()
+        if end == len(text) or text[end] in ")]}":
+            # Nothing nests before the call closes: every comma is top-level.
+            parts = text[open_paren + 1:end].split(",")
+            if not parts[-1].strip():
+                parts.pop()
+            return parts
+    return _split_call_args_scan(text, open_paren)
+
+
+def _split_call_args_scan(text: str, open_paren: int) -> list[str]:
+    """_split_call_args, one character at a time: the reference its fast path is tested
+    against, and the path for an argument that nests a bracket."""
     depth = 0
     args: list[str] = []
     current = ""
@@ -1024,6 +1149,11 @@ def _count_instructions(rung_texts: list[str]) -> dict[str, int]:
         for mnemonic in _INSTRUCTION_CALL.findall(text):
             counts[mnemonic] = counts.get(mnemonic, 0) + 1
     return counts
+
+
+def _instruction_counts_one(text: str) -> tuple[tuple[str, int], ...]:
+    """One rung's mnemonic counts, in order of first appearance."""
+    return tuple(_count_instructions([text]).items())
 
 
 def routine_language(routine_el: ET.Element) -> str:
@@ -1055,14 +1185,24 @@ def count_instructions_in_text(rung_texts: list[str]) -> dict[str, int]:
     """Public wrapper over the same mnemonic scanner the sizer itself uses --
     so sizing/coverage.py counts instructions exactly the way size_routine()
     does, rather than re-implementing the regex and drifting from it."""
-    return _count_instructions(rung_texts)
+    counts: dict[str, int] = {}
+    for text in rung_texts:
+        # A rung the parsers have already read is not scanned again.
+        facts = _RUNG_FACTS.get(text)
+        for mnemonic, n in (facts.counts if facts is not None else _instruction_counts_one(text)):
+            counts[mnemonic] = counts.get(mnemonic, 0) + n
+    return counts
 
 
 def _jsr_targets(rung_texts: list[str]) -> set[str]:
     targets: set[str] = set()
     for text in rung_texts:
-        targets.update(_JSR_TARGET.findall(text))
+        targets.update(_jsr_targets_one(text))
     return targets
+
+
+def _jsr_targets_one(text: str) -> tuple[str, ...]:
+    return tuple(_JSR_TARGET.findall(text)) if "JSR(" in text else ()
 
 
 def jsr_calls_in_text(rung_texts: list[str]) -> list[tuple[str, int, int]]:
@@ -1070,6 +1210,107 @@ def jsr_calls_in_text(rung_texts: list[str]) -> list[tuple[str, int, int]]:
     confidence path reads parameter counts off the authoritative parse rather
     than re-implementing the regex and drifting from it."""
     return _jsr_calls(rung_texts)
+
+
+class _RungFacts:
+    """Everything parse_rll_routines and parse_aoi_internal_logic read off one rung's
+    text alone, each field exactly what its helper returns for that one rung."""
+
+    __slots__ = ("counts", "cpt_calls", "typed_calls", "indirect_index_kinds", "indirect_index_sites",
+                 "cmp_calls", "jsr_targets", "jsr_calls", "operand_refs", "jsr_call_args",
+                 "ret_operand_counts", "branch_brackets", "series_output_extras", "sbr_ret_operands",
+                 "named_calls")
+
+    def __init__(self, text: str):
+        self.counts = _instruction_counts_one(text)
+        self.cpt_calls = _cpt_calls_one(text)
+        self.typed_calls = _typed_calls_one(text)
+        self.indirect_index_kinds = _indirect_index_kinds_one(text)
+        self.indirect_index_sites = _indirect_index_sites_one(text)
+        self.cmp_calls = _cmp_calls_one(text)
+        self.jsr_targets = _jsr_targets_one(text)
+        self.jsr_calls = _jsr_calls_one(text)
+        self.operand_refs = _operand_refs_one(text)
+        self.jsr_call_args = _jsr_call_args_one(text)
+        self.ret_operand_counts = _ret_operand_counts_one(text)
+        self.branch_brackets = _branch_bracket_one(text)
+        self.series_output_extras = _series_output_extra_one(text)
+        self.sbr_ret_operands = _sbr_ret_operands_one(text)
+        self.named_calls = _named_calls_one(text)
+
+
+# Rung text -> its facts. A pure function of the text, so a rung seen before (the same
+# rung in another file of a batch, or repeated in one program) is never scanned again.
+# Bounded: cleared whole when full.
+_RUNG_FACTS: dict[str, _RungFacts] = {}
+_RUNG_FACTS_LIMIT = 200_000
+
+
+def _rung_facts(text: str) -> _RungFacts:
+    facts = _RUNG_FACTS.get(text)
+    if facts is None:
+        if len(_RUNG_FACTS) >= _RUNG_FACTS_LIMIT:
+            _RUNG_FACTS.clear()
+        facts = _RUNG_FACTS[text] = _RungFacts(text)
+    return facts
+
+
+def _sum_counts(facts: list[_RungFacts]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for f in facts:
+        for mnemonic, n in f.counts:
+            counts[mnemonic] = counts.get(mnemonic, 0) + n
+    return counts
+
+
+class _RoutineFacts:
+    """A routine's rung facts combined in rung order: each field what the routine parsers
+    build from those rungs, held immutable and copied out for each RoutineLogic."""
+
+    __slots__ = ("counts", "cpt_calls", "typed_calls", "indirect_index_kinds", "indirect_index_sites",
+                 "cmp_calls", "jsr_targets", "jsr_calls", "operand_refs", "jsr_call_args",
+                 "ret_operand_counts", "branch_brackets", "series_output_extras", "sbr_ret_operands",
+                 "named_calls")
+
+    def __init__(self, rung_texts: tuple[str, ...]):
+        facts = [_rung_facts(t) for t in rung_texts]
+        self.counts = tuple(_sum_counts(facts).items())
+        self.cpt_calls = tuple(c for f in facts for c in f.cpt_calls)
+        self.typed_calls = tuple(c for f in facts for c in f.typed_calls)
+        self.indirect_index_kinds = tuple(k for f in facts for k in f.indirect_index_kinds)
+        self.indirect_index_sites = tuple(x for f in facts for x in f.indirect_index_sites)
+        self.cmp_calls = tuple(c for f in facts for c in f.cmp_calls)
+        self.jsr_targets = tuple(t for f in facts for t in f.jsr_targets)
+        self.jsr_calls = tuple(c for f in facts for c in f.jsr_calls)
+        self.operand_refs = tuple(r for f in facts for r in f.operand_refs)
+        self.jsr_call_args = tuple(a for f in facts for a in f.jsr_call_args)
+        self.ret_operand_counts = tuple(n for f in facts for n in f.ret_operand_counts)
+        self.branch_brackets = sum(f.branch_brackets for f in facts)
+        self.series_output_extras = sum(f.series_output_extras for f in facts)
+        self.sbr_ret_operands = sum(f.sbr_ret_operands for f in facts)
+        self.named_calls = tuple(f.named_calls for f in facts)
+
+    def jsr_target_set(self) -> set[str]:
+        """The JSR targets as a set built in rung order, as each rung's were added."""
+        targets: set[str] = set()
+        targets.update(self.jsr_targets)
+        return targets
+
+
+# A routine's rung texts -> their combined facts; a routine seen before (the same routine
+# in another file of a batch) is not combined again. Bounded: cleared whole when full.
+_ROUTINE_FACTS: dict[tuple[str, ...], _RoutineFacts] = {}
+_ROUTINE_FACTS_LIMIT = 20_000
+
+
+def _routine_facts(rung_texts: list[str]) -> _RoutineFacts:
+    key = tuple(rung_texts)
+    facts = _ROUTINE_FACTS.get(key)
+    if facts is None:
+        if len(_ROUTINE_FACTS) >= _ROUTINE_FACTS_LIMIT:
+            _ROUTINE_FACTS.clear()
+        facts = _ROUTINE_FACTS[key] = _RoutineFacts(key)
+    return facts
 
 
 def parse_rll_routines(
@@ -1128,37 +1369,44 @@ def parse_rll_routines(
                         rung_texts.append(canonical_rung_text(text_el.text, aoi_names))
             per_routine_rung_texts[routine_name] = rung_texts
 
+        per_routine_facts = {name: _routine_facts(texts) for name, texts in per_routine_rung_texts.items()}
         program_jsr_targets: set[str] = set()
-        for rung_texts in per_routine_rung_texts.values():
-            program_jsr_targets |= _jsr_targets(rung_texts)
+        for facts in per_routine_facts.values():
+            program_jsr_targets |= facts.jsr_target_set()
 
         for routine_name, rung_texts in per_routine_rung_texts.items():
-            aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
-                rung_texts, aoi_names, input_positions)
+            facts = per_routine_facts[routine_name]
+            named_calls = facts.named_calls
+            if aoi_names:
+                aoi_calls, aoi_call_params, aoi_input_refs = _aoi_call_sites(
+                    rung_texts, named_calls, aoi_names, input_positions)
+            else:
+                aoi_calls, aoi_call_params, aoi_input_refs = 0, 0, 0
             routines.append(RoutineLogic(
                 program_name=program_name,
                 routine_name=routine_name,
                 rung_count=len(rung_texts),
-                instruction_counts=_count_instructions(rung_texts),
+                instruction_counts=dict(facts.counts),
                 aoi_call_count=aoi_calls,
                 aoi_call_param_count=aoi_call_params,
                 aoi_call_input_ref_count=aoi_input_refs,
-                aoi_real_input_args=aoi_real_input_args(rung_texts, aoi_names, real_slots),
+                aoi_real_input_args=(_aoi_real_input_args(rung_texts, named_calls, aoi_names, real_slots)
+                                     if aoi_names and real_slots else ()),
                 is_jsr_target=routine_name in program_jsr_targets,
                 is_safety_program=is_safety_program,
-                cpt_calls=_cpt_calls(rung_texts),
-                typed_calls=_typed_instruction_calls(rung_texts),
-                indirect_index_kinds=_indirect_index_kinds(rung_texts),
-                indirect_index_sites=_indirect_index_sites(rung_texts),
-                cmp_calls=_cmp_calls(rung_texts),
-                jsr_target_names=frozenset(_jsr_targets(rung_texts)),
-                jsr_calls=_jsr_calls(rung_texts),
-                operand_refs=_operand_refs(rung_texts),
-                jsr_call_args=jsr_call_args(rung_texts),
-                ret_operand_counts=ret_operand_counts(rung_texts),
-                branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
-                series_output_extras=series_output_extra_count(rung_texts),
-                sbr_ret_operands=sbr_ret_operand_count(rung_texts),
+                cpt_calls=list(facts.cpt_calls),
+                typed_calls=[(m, list(ops)) for m, ops in facts.typed_calls],
+                indirect_index_kinds=list(facts.indirect_index_kinds),
+                indirect_index_sites=list(facts.indirect_index_sites),
+                cmp_calls=list(facts.cmp_calls),
+                jsr_target_names=frozenset(facts.jsr_target_set()),
+                jsr_calls=list(facts.jsr_calls),
+                operand_refs=facts.operand_refs,
+                jsr_call_args=list(facts.jsr_call_args),
+                ret_operand_counts=facts.ret_operand_counts,
+                branch_bracket_instruction_count=facts.branch_brackets,
+                series_output_extras=facts.series_output_extras,
+                sbr_ret_operands=facts.sbr_ret_operands,
             ))
 
     return routines
@@ -1216,8 +1464,13 @@ def parse_aoi_internal_logic(
                     rung_texts.append(canonical_rung_text(text_el.text, declared_aoi_names))
         if not rung_texts:
             continue
-        aoi_calls, aoi_call_params, aoi_input_refs = aoi_call_sites(
-            rung_texts, declared_aoi_names, input_positions)
+        facts = _routine_facts(rung_texts)
+        named_calls = facts.named_calls
+        if declared_aoi_names:
+            aoi_calls, aoi_call_params, aoi_input_refs = _aoi_call_sites(
+                rung_texts, named_calls, declared_aoi_names, input_positions)
+        else:
+            aoi_calls, aoi_call_params, aoi_input_refs = 0, 0, 0
         # The AOI's own parameters and local tags ARE its tag table -- nothing
         # outside the definition is addressable from its rungs.
         internal_types = {
@@ -1232,23 +1485,24 @@ def parse_aoi_internal_logic(
             program_name="",
             routine_name=name,
             rung_count=len(rung_texts),
-            instruction_counts=_count_instructions(rung_texts),
+            instruction_counts=dict(facts.counts),
             # An AOI can call another AOI from inside its own logic, and that
             # call costs the same as one in a Program rung.
             aoi_call_count=aoi_calls,
             aoi_call_param_count=aoi_call_params,
             aoi_call_input_ref_count=aoi_input_refs,
-            aoi_real_input_args=aoi_real_input_args(rung_texts, declared_aoi_names, real_slots),
-            cpt_calls=_cpt_calls(rung_texts),
-            typed_calls=_typed_instruction_calls(rung_texts),
-            indirect_index_kinds=_indirect_index_kinds(rung_texts),
-            indirect_index_sites=_indirect_index_sites(rung_texts),
-            cmp_calls=_cmp_calls(rung_texts),
-            branch_bracket_instruction_count=_branch_bracket_instruction_count(rung_texts),
+            aoi_real_input_args=(_aoi_real_input_args(rung_texts, named_calls, declared_aoi_names, real_slots)
+                                 if declared_aoi_names and real_slots else ()),
+            cpt_calls=list(facts.cpt_calls),
+            typed_calls=[(m, list(ops)) for m, ops in facts.typed_calls],
+            indirect_index_kinds=list(facts.indirect_index_kinds),
+            indirect_index_sites=list(facts.indirect_index_sites),
+            cmp_calls=list(facts.cmp_calls),
+            branch_bracket_instruction_count=facts.branch_brackets,
             word_destination_count=word_destination_count(rung_texts, internal_types),
             inout_operand_instruction_count=inout_operand_instruction_count(
                 rung_texts, frozenset(el.get("Name", "") for el in aoi_el.iter("Parameter")
                                       if el.get("Usage") == "InOut")),
-            series_output_extras=series_output_extra_count(rung_texts),
+            series_output_extras=facts.series_output_extras,
         )
     return result

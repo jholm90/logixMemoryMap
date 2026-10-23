@@ -66,6 +66,28 @@ _WHILE = re.compile(r"\bWHILE\b", re.I)
 # A CASE selector is "<literal or range> :" at the start of a line -- ":="
 # is an assignment and must not match, hence the negative lookahead.
 _CASE_SELECTOR = re.compile(r"^\s*[\w.,\s]+:(?!=)", re.M)
+# _CASE_SELECTOR's character class, as one run.
+_SELECTOR_RUN = re.compile(r"[\w.,\s]*")
+
+
+def case_selector_count(code: str) -> int:
+    """len(_CASE_SELECTOR.findall(code)), in one pass. The pattern backtracks without bound
+    on a long run of words and whitespace holding no ':' -- 1.3 s on 4,937 characters of one
+    real program's ST, for no match. What it counts: from a line start, the run of word, '.',
+    ',' and whitespace characters, when that run is not empty and ends at a ':' not followed by
+    '='. Any line start inside the run decides exactly as the run's start did, so the scan
+    resumes at the first line start after the run."""
+    count, start, n = 0, 0, len(code)
+    while True:
+        end = _SELECTOR_RUN.match(code, start).end()
+        if end > start and end < n and code[end] == ":" and code[end + 1:end + 2] != "=":
+            count += 1
+        newline = code.find("\n", end)
+        if newline == -1:
+            return count
+        start = newline + 1
+
+
 # An ASSIGNMENT statement: "<lhs> := <rhs>;". Counting these rather than
 # counting ";" terminators is deliberate and was a real bug when first
 # written the naive way: END_IF; END_FOR; END_WHILE; END_CASE; all end in a
@@ -212,7 +234,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 ],
                 if_blocks=len(_IF.findall(code)),
                 elsif_branches=len(_ELSIF.findall(code)),
-                case_selectors=len(_CASE_SELECTOR.findall(code)),
+                case_selectors=case_selector_count(code),
                 for_blocks=len(_FOR.findall(code)),
                 while_blocks=len(_WHILE.findall(code)),
                 code_text=code,
