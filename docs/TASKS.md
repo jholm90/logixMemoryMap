@@ -168,13 +168,12 @@ sharing is untested until `safe_io6_5069_*` reads.
 The old figures are the engine and suite as committed before this work, timed on the same
 machine (the old suite's warm cache was its own complete one).
 
-**Open: the last lint change is not yet compared on every file.** Array-tag patterns compiled
-once per file with rungs that do not contain the tag's text skipped, and bit-operand types
-remembered within one pass (0.51 → 0.35 s a plant file), came after the 1,058-file comparison
-and the suite timings. `test_lint` and `test_build_guards` pass on it; its old-vs-new lint
-comparison over every file was stopped at 701 of 1,098 when the work was halted, before any
-result was printed. Run that comparison (old `lint_l5x` against new, findings repr-equal, every
-file on disk) before trusting it further.
+**The last lint change, compared on every file (closed 2026-10-23).** Array-tag patterns
+compiled once per file with rungs that do not contain the tag's text skipped, and bit-operand
+types remembered within one pass (0.51 → 0.35 s a plant file), came after the 1,058-file
+comparison and the suite timings. Old `lint_l5x` against new, and old `realism_findings`
+against new, on all 1,098 files then on disk: 2,391 findings, **0 mismatches**. Full suite on
+it: 788 passed, 10 skipped, 39 s with `-n 4`.
 
 Not done, and why: a warm run at 14× needs ~24 s, and what is left is spread thin -- XML
 parsing (~0.08 s a 4.5 MB file, ~200 parses a run), lint (~0.35 s a plant file) and the pricing
