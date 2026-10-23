@@ -89,8 +89,10 @@ Full reasoning and the elimination table are in `docs/ROADMAP.md`.
 
 ## How accuracy is measured
 
-**On real programs only.** The seventeen real production exports in
-`samples/local/` are the held-out set and the sole basis for any headline number.
+**On real programs only.** The real production exports in `samples/local/` (nineteen
+standard-processor programs counted, and the safety controllers RS-01 to RS-17) are the
+held-out set and the sole basis for any headline number. The current figure for every one
+of them is in `docs/REAL_PROGRAM_REPORT.md`.
 
 **A real program heavy with source-protected content is excluded from the accuracy
 figures.** The engine cannot see inside `<EncodedData>` and prices it at a minimum, so
@@ -102,13 +104,30 @@ excluded file's figure alongside, never silently.
 **The max always travels with the mean.** The honest claim is *mean 1.60%, worst
 case 3.63%, read the worst case as up to 4%.* The worst file is 2.3× the mean.
 
-**Lead with the blind test, not the mean.** The seventeen are gitignored customer
-files nobody outside the project can audit, and the model was tuned while sixteen
-of them were available. One was not: a 7.89 MB program predicted at **+2.15%**
-before its actual was used for anything. That is the only unambiguous demonstration
-that the model generalises. **Predict every future export and write the number down
-before the capacity reading is taken** — a file reconciled after the fact is a
-fitting input, not a test.
+**Lead with the blind test, not the mean.** The real programs are gitignored customer
+files nobody outside the project can audit, and the model was tuned while they were
+available. The one blind file (a 7.89 MB program, +2.15% when it was scored) is no longer
+on disk and its record was deleted on 2026-10-23, so there is no blind figure on the
+current engine until another export arrives unseen. **Predict every future export and
+write the number down before the capacity reading is taken** — a file reconciled after
+the fact is a fitting input, not a test.
+
+## Reports are on customer programs only (owner's decision, 2026-10-23)
+
+**Every summary or results report is on the real customer programs, standard and safety,
+and on nothing else.** The generated test files are internal instruments: they never
+appear in a report, and a report is never a reason to rebuild one. **Every number is the
+current engine's, priced live**, never a stored prediction. A real program with a reading
+and no file on disk is no reference: its record is deleted, not reported.
+
+`scripts/real_program_report.py` writes it. The public copy, `docs/REAL_PROGRAM_REPORT.md`,
+names programs by label only (`realprog_NN`, `RS-NN`) and keeps a dated history row per
+run, so the repository carries a public log; the script refuses to write it if any file
+name, controller name or name fragment from the local tables would appear, and
+`tests/test_repo_confidentiality.py` checks it again. The copy with names goes to
+`samples/local/reports/`. Regenerate it with any engine change that moves a real figure
+and commit it with that change. Safety-controller readings by label are in
+`samples/real_safety_readings.csv`.
 
 **The generated corpus is a measurement instrument**, not evidence the tool works.
 The model is fitted on it, so a corpus pass rate is circular. Report corpus rates
@@ -170,7 +189,13 @@ OB8) and a plant over 25% of an L81E. `write_sample()` refuses a file below the 
 and so does the waiting-batch test.
 
 **1756-L7x and 1769 are dead architecture.** No further test files, no further
-development, and neither may be cited as a reason the model is out of spec. Existing
+development, and neither may be cited as a reason the model is out of spec.
+**Exception, owner's decision 2026-10-23: the 1769 Compact GuardLogix programs (RS-11 to
+RS-16, 1769-L30ERMS and L33ERMS at v30 and v32) are in scope**, the standard and the safety
+partition both, until each reads within about 5%: they are customer programs and were
+reading −5% to −12% standard and +28% to +42% safety. Test files for them are built on
+those catalogs and firmwares, generated in whatever number the gap needs. Every other 1769
+and every 1756-L7x stays dead. Existing
 wiring and captures stay — they cost nothing to keep — but nothing new is invested
 there. When a corpus-wide number is dragged down by those rows, **report the figure
 excluding them and say so.** Do not lead with the contaminated number and explain it

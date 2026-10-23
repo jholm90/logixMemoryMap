@@ -1,0 +1,19 @@
+label,standard_from,standard_bytes,safety_bytes,read_date,counted_standard,counted_safety,note
+RS-01,realprog_38,,83129,2026-10-19,no,yes,7 SFC and 2 FBD routines: SFC is out of scope
+RS-02,realprog_48,,124952,2026-10-23,yes,yes,
+RS-03,,2819627,197262,2026-10-19,yes,yes,signed and locked
+RS-04,realprog_41,,26858,2026-10-19,yes,yes,
+RS-04u,,510176,26858,2026-10-19,no,no,RS-04 with its source protection removed; not counted twice
+RS-05,realprog_40,,22987,2026-10-19,yes,yes,
+RS-06,,655664,34288,2026-10-19,yes,yes,
+RS-07,realprog_13,,34995,2026-10-19,yes,yes,
+RS-08,realprog_37,,31910,2026-10-19,yes,yes,
+RS-09,,658680,34288,2026-10-19,yes,yes,
+RS-10,realprog_39,,50058,2026-10-19,yes,yes,
+RS-11,,622636,17656,2026-10-19,yes,yes,
+RS-12,,518040,17656,2026-10-19,yes,yes,
+RS-13,,624084,17656,2026-10-19,yes,yes,
+RS-14,,707484,20548,2026-10-19,yes,yes,
+RS-15,,785944,24104,2026-10-19,yes,yes,
+RS-16,realprog_42,,,2026-09-23,yes,no,standard reading's file inferred from platform; no safety reading
+RS-17,realprog_49,,197262,2026-10-23,yes,yes,RS-03 before its signature and lock

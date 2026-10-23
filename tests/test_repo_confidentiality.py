@@ -10,6 +10,7 @@ same rules on the tree itself.
 from __future__ import annotations
 
 import csv
+import re
 import os
 import subprocess
 from pathlib import Path
@@ -56,3 +57,31 @@ def test_no_real_program_is_tracked():
             if known.get(stem, "real_program") == "real_program":
                 bad.append(path)
     assert not bad, f"tracked files that no generator wrote: {bad[:10]}"
+
+
+def test_public_report_names_no_customer_program():
+    """docs/REAL_PROGRAM_REPORT.md names programs by label only (scripts/real_program_report.py
+    refuses to write it otherwise); checked again here wherever the local name tables exist."""
+    import importlib.util
+    import pytest
+    local = SAMPLES / "local"
+    if not (local / "aliases.csv").exists():
+        pytest.skip("no local name tables on this machine")
+    spec = importlib.util.spec_from_file_location("rpr", REPO / "scripts" / "real_program_report.py")
+    rpr = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rpr)
+    names = []
+    for table in ("aliases.csv", "safety_aliases.csv"):
+        if (local / table).exists():
+            with open(local / table, encoding="utf-8") as f:
+                names += [r["file"] for r in csv.DictReader(f)]
+    report = (REPO / "docs" / "REAL_PROGRAM_REPORT.md").read_text(encoding="utf-8")
+    assert not rpr.leaks(report, rpr.forbidden_tokens(names))
+
+
+def test_safety_readings_are_keyed_by_label():
+    known = _manifest()
+    with open(SAMPLES / "real_safety_readings.csv", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert all(re.fullmatch(r"RS-\d\d[a-z]?", r["label"]) for r in rows)
+    assert all(not r["standard_from"] or r["standard_from"] in known for r in rows)

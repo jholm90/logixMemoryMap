@@ -237,6 +237,19 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `real_program_report.py` — the customer-program report
+
+Every customer program on file (standard processors and safety controllers), priced live by
+the current engine against its Capacity readings; never the generated corpus. Writes the
+public `docs/REAL_PROGRAM_REPORT.md` (labels only, a dated history row per run) and the local
+`samples/local/reports/real_program_report_<date>.html / .csv` (with names). Refuses to write
+the public copy if a customer file name, controller name or name fragment would appear. Needs
+`samples/local/` (the program files and the two alias tables); about a minute on all cores.
+
+```
+python scripts/real_program_report.py
+```
+
 ### `quick_eval.py` — the accuracy check
 
 `--real-only` evaluates the real production exports and nothing else — no generated
