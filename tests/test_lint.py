@@ -705,3 +705,16 @@ def test_a_5069_lists_both_embedded_ports_as_every_real_export_does():
             '<EthernetPort Port="2" Label="A2" PortEnabled="true"/>') in l5x and "OpcUaInfo" not in l5x
     l81 = build_l5x("PlatL81", tags_xml="", processor_type="1756-L81ES", safety_level="SIL2")
     assert '<EthernetPort Port="1" Label="1" PortEnabled="true"/>' in l81 and 'Label="A1"' not in l81
+
+
+def test_cgl_batch_is_pinned_to_the_1769_programs_platforms():
+    """Cgl (gen_cgl_1769.py, OQ-CGL1769) may be a 1769-L30ERMS or L33ERMS at v32 or v35 and
+    nothing else: not v30 (the conversion tooling cannot build it), not the standard, not
+    another 1769."""
+    for proc in ("1769-L30ERMS", "1769-L33ERMS"):
+        for major in ("32", "35"):
+            assert _platform_kinds(name="CglL30v32Base", proc=proc, major=major) == set()
+    assert "non_standard_processor" in _platform_kinds(name="CglL30v32Base", proc="1769-L30ERMS", major="30")
+    assert "non_standard_processor" in _platform_kinds(name="CglL30v32Base", proc="1756-L81E")
+    assert "non_standard_processor" in _platform_kinds(name="CglL30v32Base", proc="1769-L33ERM", major="32")
+    assert "non_standard_processor" in _platform_kinds(proc="1769-L30ERMS", major="32")

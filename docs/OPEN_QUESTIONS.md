@@ -1,6 +1,6 @@
 # Open Questions
 
-**Six, each waiting only on a capture or on the seventeen.** Opened 2026-10-23: OQ-UDTLAYOUT (the deep dive into the owner's capture of that day). Closed 2026-10-23: OQ-SERIESREAL,
+**Seven, each waiting only on a capture or on the seventeen.** Opened 2026-10-23: OQ-UDTLAYOUT (the deep dive into the owner's capture of that day) and OQ-CGL1769 (the 1769 Compact GuardLogix programs, in scope by the owner's decision of that day). Closed 2026-10-23: OQ-SERIESREAL,
 OQ-STSHAPE and OQ-SAFETYPARTITION (their laws wired and exact, their open items moved or
 closed), and on real exposure a standard array tag's +4, a further 1734-AENTR/C adapter, a
 safety structure's member read by standard logic and FBD logic (BOUNDED, under the floor) and a
@@ -37,6 +37,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-STRSHAPE** | Every STRING shape exact against its control. Open: a UDT array element holding STRINGs reads 4 above the engine (a STRING member at 88, or a custom string at 48), worth up to 0.9 points on the three programs the standard figure reads lowest; EQU / NEQ (rebuilt). Section 4. | batch B (`strm_*`, `strx_*_r2`); batch C (`strn_*`, the nested shape) |
 | **OQ-MODREPEAT** | Nine catalogs' repeat rates wired; a module-defined type is defined once a project. Open: packed 5069 cards on a controller's bus; zero-connection modules still on the flat 2,344 (RS-07 seven, 16,408 bytes). Section 3. | batch B (`safe_io6_5069_*`); batch C (`zcm_*`) |
 | **OQ-UDTMEMBERNAME** | The wired member-name pool does not fit its own four-DINT sweep or the safety rounds' short-named UDTs; a candidate fits those and misses the BOOL arm by 8. Section 2. | batch C (`udtpool_*`, 16) |
+| **OQ-CGL1769** | The 1769 Compact GuardLogix programs RS-11 to RS-16. Standard −5% to −12% until a 1769 safety catalog took its standard twin's blank baseline (provisional, 2026-10-23): now +1.4% / +2.6% / +1.4% / −2.4% / +3.2% / −0.25%. Safety +28% to +42%, every one high, unexplained. Section 7. | the `cgl_*` batch (TASKS 0zi, 36 files at v32 and v35, built) |
 | **OQ-UDTLAYOUT** | Reopened from OQ-ALIGN 2026-10-23. A UDT is priced as the plain sum of its members; the one realistic mixed UDT captured reads 240 an element against 216, and `strx_*` 4 an element high, both exactly an aligned layout. A layout that keeps every packed capture exact (210 of 210) takes the nineteen to 1.130% / −2.66%. Section 6. | batch D (TASKS 0zh, specified); batch B `strm_*`, batch C `strn_*` |
 
 ---
@@ -394,3 +395,71 @@ OQ-ARRAYTAG4).
 | **The layout that fits every capture** ("hostlast") | Non-BOOL members in declaration order, each at a multiple of its alignment (SINT 1, INT 2, DINT / REAL 4, LINT 8; a STRING, custom string, predefined structure or nested UDT its own largest member); **the hidden SINTs that back BOOL members after them**; a nested UDT not tail-padded; a UDT array element (at top level or as a member) rounded to its alignment, 4 at least. Re-priced on 301 rebuilt captures of every UDT family (udtslot, udtmn, defscale, dscale2, stringarray, stringoverhead, udtstring, arraypack, udtarrayalign, pool, opshape, progscope, blkstr, stringcop, ...): **210 exact before, 210 after**, nothing moved; the messy and `strx` files become exact. Full natural alignment: 210 → 184 (the 26 `opshape`). Fitted on three discriminating captures, so the layout is a hypothesis, not a measurement (CLAUDE.md failure mode 2). |
 | **Why OQ-ALIGN read "no padding"** | Its sweeps were BOOL / DINT shapes on scalar tags and homogeneous arrays, where the scalar tag's 8-byte slot and an array element's 4-byte rounding absorb the padding. |
 | **Test** | **Batch D (TASKS 0zh), SPECIFIED, NOT BUILT:** one array of 200 of one UDT per file on the realism plant, each shape chosen so packed, hostlast and natural predict different element sizes. Batch B's `strm_*` and batch C's `strn_*` also read this: hostlast predicts what the STRING-at-88 reading does (`strm_s2_400` +1,600, the other three 0). Not wired until a capture decides; wiring needs the full residual census (CLAUDE.md, "Cost of measurement"). |
+
+## 7. OQ-CGL1769 — the 1769 Compact GuardLogix programs, opened 2026-10-23
+
+**In scope by the owner's decision of 2026-10-23**, the one exception to 1769 being dead
+architecture (CLAUDE.md): RS-11 to RS-16, six customer programs on 1769-L30ERMS and L33ERMS at
+v30 and v32, to within about 5% in each partition.
+
+**Standard partition.** On the engine of that morning the six read −8.98 / −9.93 / −8.98 /
+−11.55 / −5.08 / −7.57%. A 1769 safety catalog had no `catalog_baseline_delta`, which is keyed
+by the exact ProcessorType, so its empty project was priced at the L8x's 18 to 24 KB; a 1769
+blank reads 58 to 83 KB. The 1769-L30ERM / L33ERM blank's +64,736 is now applied to its safety
+variant (ASSUMED, `memory_model.yaml`): a 1756-L81ES and a 5069 safety catalog carry their
+standard twin's empty project, the safety task shell apart. The six read **+1.42 / +2.56 / +1.40
+/ −2.40 / +3.16 / −0.25%**. The v30 programs read high and the v32 ones low, which is the shape
+of a baseline that moves with firmware: the L16ER blank rises 58,720 → 63,456 → 69,632 from v31
+to v32 to v35, so a v30 or v32 1769 blank is below the v35 value applied. The base files read it.
+
+Not settled, and the batch reads both: whether a module's I/O lands in the figure read (a 1769
+Capacity tab, like the L7x's, reports I/O memory apart from data and logic; the engine prices
+35 to 42 KB of `module_io` in each of the six), and whether content costs on a 1769 what it
+costs on an L81E (the per-station rate, against the plant's exact L81E rate).
+
+**Safety partition.** +28.6% (RS-11 / RS-12 / RS-13, one safety program, 22,709 against
+17,656), +28.5% (RS-14), +42.3% (RS-15); RS-16 has no safety reading. Every term is priced at
+its 1756-L81ES v35 / 5069 value: the base 1,394, routine shells, rung logic, and 8,599 of safety
+I/O in RS-11 (two 1734-IB8S/B, one 1734-OB8S/A). RS-15 reads 10,200 high and carries three
+Kinetix 5500 safety drives priced 10,731. Either the 1769 prices safety I/O well below the L8x,
+or the base, the routine shells or the rungs differ; the readings on file cannot tell which.
+
+**The `cgl_*` batch** (TASKS 0zi): every safety and standard term the six carry, on each
+catalog at v32, each a step on its arm's base. **v32 is the floor: the conversion tooling cannot
+build a v30 project** (owner, 2026-10-23), so the four v30 programs (RS-11 to RS-13, RS-15) are
+reached from v32 and the firmware step on the safety catalog itself, which `cgl_l30v35_base` and
+`cgl_l33v35_base` read (engine 413,130 and 709,578; the
+engine's ladder puts v35 11,240 below v32, the L16ER blank reads 6,176 above). Predicted before
+any reading, engine of 2026-10-23 (the reading is the engine's less the plant's 1,794 where the
+engine is right):
+
+| step | `l30v32` standard / safety | `l33v32` standard / safety |
+|---|---:|---:|
+| `base` | 424,370 / 1,410 | 720,818 / 1,410 |
+| `plant2x` | +296,448 / +0 | +592,896 / +0 |
+| `dint400` | +38,400 / +0 | +38,400 / +0 |
+| `udtdef20` | +9,760 / +0 | +9,760 / +0 |
+| `logic400` | +21,140 / +0 | +21,140 / +0 |
+| `progs10` | +18,040 / +0 | +18,040 / +0 |
+| `mods` | +15,441 / +0 | +15,441 / +0 |
+| `safecontent` | +3,200 / +6,544 | +3,200 / +6,544 |
+| `safertn8` | +0 / +2,800 | +0 / +2,800 |
+| `saferung60` | +0 / +3,576 | +0 / +3,576 |
+| `safeinstr` | +0 / +5,008 | +0 / +5,008 |
+| `sio_ib8s` | +4,063 / +7,026 | +4,063 / +7,026 |
+| `sio_ib8s1c` | +3,363 / +3,258 | +3,363 / +3,258 |
+| `sio_ob8s` | +3,288 / +3,457 | +3,288 / +3,457 |
+| `sio_mix` | +6,044 / +8,599 | +6,044 / +8,599 |
+
+Twins on the 1756-L81ES v35 standard plant, against safe_n00: `safe_cgl_rung60` (842,474 /
+4,986) and `safe_cgl_rtn8` (842,474 / 4,210). The Kinetix 5500 safety drive with its axis on
+`l33v32`: `safe_iol_cgl32_h008s_1` / `_2` (748,694 / 4,987 and
+773,802 / 8,564).
+
+**What decides it.** The base files give the 1769 baseline on each catalog at v32 and v35;
+`plant2x` gives the content rate (the L30ERMS `plant2x` and the L33ERMS `base` carry the same
+content, so the catalogs difference directly); `mods` gives whether module I/O is in the figure;
+the `safe*` steps price the safety base, routine shells, rungs and DCS / CROUT on a 1769; the
+`sio_*` steps price each 1734 safety card type and their sum; the drive files price RS-15's
+Kinetix. Whatever each reads is wired, and the six re-priced against it; a v30 baseline is
+taken from the v32 reading and the 1769 firmware ladder, and says so.

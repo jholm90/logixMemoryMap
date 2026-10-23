@@ -55,7 +55,9 @@ def blocks(text: str) -> list[str]:
 
 
 def normalise(block: str) -> str:
-    for attr in ("Name", "Address", "MotionModule", "AxisID"):
+    # A safety drive's SafetyNetwork is its host controller's own number, so it is set per
+    # project like the name and address: the same drive on another controller carries another.
+    for attr in ("Name", "Address", "MotionModule", "AxisID", "SafetyNetwork"):
         block = re.sub(rf'{attr}="[^"]*"', f'{attr}=""', block)
     return re.sub(r"\s+", " ", block)
 
@@ -72,7 +74,9 @@ def proven_blocks() -> dict[str, str]:
     --record to write those back into the file before the batch is deleted.
     """
     import json
-    proven: dict[str, str] = dict(json.loads(PROVEN_FILE.read_text())["kinetix"]) if PROVEN_FILE.exists() else {}
+    # Re-normalised on load: a key recorded before a field joined normalise() still matches.
+    proven: dict[str, str] = ({normalise(k): v for k, v in json.loads(PROVEN_FILE.read_text())["kinetix"].items()}
+                              if PROVEN_FILE.exists() else {})
     for row in load_manifest(resolve_local=False):
         if not (row.get("actual_bytes") or "").strip():
             continue

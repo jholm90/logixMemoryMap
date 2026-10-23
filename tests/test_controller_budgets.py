@@ -23,7 +23,7 @@ def test_prefix_match_ignores_safety_suffix():
 
 
 def test_unknown_processor_returns_none_not_a_guess():
-    assert TABLE.lookup("1769-L33ERMS") is None  # older CompactLogix 5370, not in table
+    assert TABLE.lookup("1769-L16ER-BB1B") is None  # CompactLogix 5370 below the L3x tier, not in table
     assert TABLE.lookup(None) is None
     assert TABLE.lookup("totally-fake-part") is None
 
@@ -38,3 +38,11 @@ def test_divided_architecture_sums_both_pools_for_display():
 def test_longest_prefix_wins():
     b = TABLE.lookup("5069-L3100ERMS3")
     assert b.catalog_prefix == "5069-L3100ER"
+
+
+def test_compact_guardlogix_5370_safety_catalogs_have_both_partitions():
+    # OQ-CGL1769: the 1769 programs RS-11 to RS-16 run on 1769-L30ERMS and L33ERMS.
+    assert TABLE.lookup("1769-L30ERMS").display_total_bytes == 1048576
+    assert TABLE.lookup("1769-L33ERMS").display_total_bytes == 2097152
+    assert TABLE.lookup_safety("1769-L30ERMS").display_total_bytes == 524288
+    assert TABLE.lookup_safety("1769-L33ERMS").display_total_bytes == 1048576

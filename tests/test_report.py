@@ -314,6 +314,13 @@ def test_catalog_baseline_delta_applies_to_confirmed_1769_processor_type():
     assert catalog_entry.data_type == "CATALOG_BASELINE"
 
 
+def test_compact_guardlogix_5370_takes_its_standard_twins_baseline():
+    # OQ-CGL1769, provisional: 1769-L30ERMS / L33ERMS carry the L30ERM / L33ERM blank's delta.
+    for catalog in ("1769-L30ERMS", "1769-L33ERMS"):
+        by_path = {e.path: e for e in build_report(_blank_root("35.05", catalog), MODEL)[0]}
+        assert by_path["catalog_baseline_delta"].bytes == 64736
+
+
 def test_catalog_baseline_delta_is_exact_string_match_not_prefix():
     # A single suffix character changes the real value by over 13,000
     # bytes (1769-L24ER-QB1B=67,160 vs -QBFC1B=80,832) -- an unconfirmed

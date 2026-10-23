@@ -194,8 +194,12 @@ development, and neither may be cited as a reason the model is out of spec.
 RS-16, 1769-L30ERMS and L33ERMS at v30 and v32) are in scope**, the standard and the safety
 partition both, until each reads within about 5%: they are customer programs and were
 reading −5% to −12% standard and +28% to +42% safety. Test files for them are built on
-those catalogs and firmwares, generated in whatever number the gap needs. Every other 1769
-and every 1756-L7x stays dead. Existing
+those catalogs, generated in whatever number the gap needs, **at v32 or later and never at
+v30: the conversion tooling cannot build a v30 project** (owner, 2026-10-23), so the four
+v30 programs are reached from v32 and the firmware step the v35 bases read. Every other 1769
+and every 1756-L7x stays dead. Since a 1769 safety catalog took its standard twin's blank
+baseline (provisional, 2026-10-23) the six read inside 3.2% standard; safety is still +28% to
++42%, and the `cgl_*` batch (TASKS 0zi, OQ-CGL1769) reads both partitions on both catalogs at v32. Existing
 wiring and captures stay — they cost nothing to keep — but nothing new is invested
 there. When a corpus-wide number is dragged down by those rows, **report the figure
 excluding them and say so.** Do not lead with the contaminated number and explain it

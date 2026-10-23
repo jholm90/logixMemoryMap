@@ -376,6 +376,23 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
+## Built 2026-10-23: the 1769 Compact GuardLogix batch — 36 files awaiting conversion and capture (TASKS 0zi)
+
+`gen_cgl_1769.py` (34, `samples/generated/cgl/`) and `gen_safety_io --local --only cgl32` (2,
+`samples/generated/safety/`), for the 1769 programs RS-11 to RS-16 (OQ-CGL1769; in scope by the
+owner's decision of 2026-10-23, the one 1769 exception). **v32 is the floor: the conversion
+tooling cannot build a v30 project.** Two arms, 1769-L30ERMS and L33ERMS at v32, each the
+realism plant at over 25% of its controller (480 stations on the 1 MB L30ERMS, 960 on the 2 MB
+L33ERMS) with the safety task, and fifteen single steps on each base: the plant doubled,
+controller DINTs, UDT definitions, standard rungs, standard programs, the real programs' module
+mix, round 4's safety content step, safety routines, safety rungs, DCS / CROUT, and each 1734
+safety card type and their sum. The base alone at v35 on each catalog (the firmware step), two
+1756-L81ES v35 twins and two Kinetix 5500 safety-drive files. The 1769 shape (ProductCode, bus
+size, two Ethernet ports, SafetyInfo and the controller's safety network number as the v32
+exports have them, the AENTR/C at revision 6 below v35) is from the real exports' structure
+only; names, addresses and network numbers are this project's. Lint pins the `Cgl` prefix to
+the two catalogs at v32 and v35.
+
 ## Built 2026-10-23: batch C — 27 files awaiting conversion and capture (TASKS 0zg)
 
 All 1756-L81E v35 on the realism plant. `gen_udt_name_pool.py`, 16 `udtpool_*`: one UDT

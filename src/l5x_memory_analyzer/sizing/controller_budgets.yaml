@@ -41,6 +41,13 @@ processors:
   "5069-L330ER": { bytes: 3145728, confidence: ASSUMED }  # 3 MB
   "5069-L3100ER": { bytes: 10485760, confidence: ASSUMED } # 10 MB
 
+  # Compact GuardLogix 5370 -- 1769-L3x, unified memory, published user memory (the
+  # safety catalogs' standard partition). In scope for the 1769 programs RS-11 to RS-16
+  # only (owner, 2026-10-23); also the denominator of the realism floor for the cgl_*
+  # batch (OQ-CGL1769).
+  "1769-L30ER": { bytes: 1048576, confidence: ASSUMED }   # 1 MB
+  "1769-L33ER": { bytes: 2097152, confidence: ASSUMED }   # 2 MB
+
   # ControlLogix 5580 -- 1756-L8x, unified memory
   # 1756-L81E upgraded ASSUMED->KNOWN: a real Studio 5000
   # Controller Properties -> Capacity tab (v35.11, offline compile, no
@@ -83,6 +90,8 @@ safety_processors:
   "1756-L82E": { bytes: 2621440, confidence: ASSUMED }    # 2.5 MB
   "1756-L83E": { bytes: 5242880, confidence: ASSUMED }    # 5 MB
   "1756-L84E": { bytes: 6291456, confidence: ASSUMED }    # 6 MB
+  "1769-L30ER": { bytes: 524288, confidence: ASSUMED }    # 0.5 MB
+  "1769-L33ER": { bytes: 1048576, confidence: ASSUMED }   # 1 MB
   "5069-L306ER": { bytes: 314573, confidence: ASSUMED }   # 0.3 MB
   "5069-L310ER": { bytes: 524288, confidence: ASSUMED }   # 0.5 MB
   "5069-L320ER": { bytes: 1048576, confidence: ASSUMED }  # 1 MB

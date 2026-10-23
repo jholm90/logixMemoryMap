@@ -701,7 +701,11 @@ import. A file with its own safety task pays the shell once, through
 
 - **v36 and v37** — no real sample at all.
 - **v38** — its only capture is flagged as an unreliable reading.
-- **The 1769 series** — real range 69,600 to 98,944, not modelled at all.
+- **The 1769 series** — real range 69,600 to 98,944, wired per exact catalog at v35 only. The
+  safety catalogs 1769-L30ERMS / L33ERMS take their standard twin's +64,736 (provisional,
+  2026-10-23, OQ-CGL1769); at v30 and v32, the firmwares of the six real 1769 programs, it is
+  unmeasured. The `cgl_*` base files read it at v32 and v35; v30 cannot be built by the
+  conversion tooling and is taken from those and the 1769 firmware ladder.
 - **Dual-IP / DLR controller configuration costs +40 bytes.** One reading, one
   controller, not wired.
 

@@ -1380,6 +1380,17 @@ catalog_baseline_delta:
   '1769-L27ERM-QBFC1B': { bytes: 80832, confidence: ASSUMED }
   '1769-L30ERM': { bytes: 64736, confidence: ASSUMED }
   '1769-L33ERM': { bytes: 64736, confidence: ASSUMED }
+  # Compact GuardLogix 5370, the safety catalogs of the 1769 programs RS-11 to RS-16 (in
+  # scope, owner 2026-10-23). PROVISIONAL (OQ-CGL1769): the L30ERM / L33ERM blank's delta,
+  # on the same hardware tier, applied to its safety variant -- a 1756-L81ES and a 5069
+  # safety catalog carry the same empty-project baseline as their standard twin, beyond the
+  # safety task shell that is charged on its own. Until 2026-10-23 these two strings had no
+  # entry, so a 1769 safety project was priced at the L8x's 18 to 24 KB empty project
+  # against a 1769 blank's 58 to 83 KB. Unmeasured at v30 and v32, the two firmwares the
+  # real programs run (the L16ER blank rises 58,720 -> 63,456 -> 69,632 from v31 to v32
+  # to v35); the cgl_* batch reads it on both catalogs at both.
+  '1769-L30ERMS': { bytes: 64736, confidence: ASSUMED }
+  '1769-L33ERMS': { bytes: 64736, confidence: ASSUMED }
 
   # 1756-L7x, wired. 30 real captures sat unreconciled here and
   # were the single worst family in the corpus (up to -63%).

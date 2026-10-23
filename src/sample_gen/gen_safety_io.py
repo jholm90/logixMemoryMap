@@ -273,7 +273,12 @@ def local_plan() -> list[tuple[str, str, dict]]:
                       "5069-L330ERMS2's port 4, against safe_base_5069l330_v35", {"h008": n}))
         files.append((f"safe_iol_pf527_{n}", f"{n} PowerFlex 527-STO CIP Safety with its axis and a motion group on the "
                       "L81ES plant, against safe_n00", {"pf527": n}))
-    return [(sid, f"{OQ}: {desc}", kw) for sid, desc, kw in files]
+    # The 1769 Compact GuardLogix programs (OQ-CGL1769, owner 2026-10-23): RS-15 carries three
+    # Kinetix 5500 safety drives on a 1769-L33ERMS at v30; built at v32, the floor.
+    for n in (1, 2):
+        files.append((f"safe_iol_cgl32_h008s_{n}", f"{n} 2198-H008-ERS2 (Kinetix 5500, safety) with its axis on a "
+                      "1769-L33ERMS v32's Ethernet port, against cgl_l33v32_base (OQ-CGL1769)", {"cgl_h008": n}))
+    return [(sid, desc if "OQ-CGL1769" in desc else f"{OQ}: {desc}", kw) for sid, desc, kw in files]
 
 
 # (catalog, safety template): the integrated-safety drives of the real programs.
@@ -333,6 +338,14 @@ def local_make(sample_id: str, kw: dict) -> str:
         # slot 1 is the partner's
         return with_modules(l5x, [local_block(k, f"SafeCard{slot}", "Local", "1", str(slot), snn)
                                   for slot, k in ((2, "1756ib16s"), (3, "1756obv8s"))])
+    if "cgl_h008" in kw:
+        from sample_gen import gen_cgl_1769 as CGL
+        l5x = CGL.build_arm(sample_id, "l33v32")
+        drives = [_motion_rpi(local_block("2198h008s", f"Drv{i + 1}", "Local", "2", f"192.168.1.{20 + i}",
+                                          CGL.CONTROLLER_SNN)) for i in range(kw["cgl_h008"])]
+        axes = [_MOTION_GROUP_TAG_XML] + [local_axis("axis_h008", f"Drv{i + 1}_Axis", f"Drv{i + 1}:Ch1", 700000001 + i)
+                                          for i in range(kw["cgl_h008"])]
+        return with_tags(with_modules(l5x, drives), axes)
     if "h008" in kw:
         name = "SafeBase" + "".join(w.capitalize() for w in sample_id.split("_")[1:])
         l5x = R4.build_base(name, "5069-L330ERMS2", "35", "35.05", content=False)

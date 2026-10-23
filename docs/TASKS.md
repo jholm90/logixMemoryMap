@@ -295,6 +295,39 @@ seventeen before testing): a STRING member in a UDT array (4 an element, OQ-STRS
 500 such elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3
 to 5 a program, OQ-MODREPEAT).
 
+### 0zi. The 1769 Compact GuardLogix batch — BUILT 2026-10-23 (36 files, v32 and v35), awaiting conversion and capture (OQ-CGL1769)
+
+**Owner's request 2026-10-23:** the 1769 programs RS-11 to RS-16 to within about 5% in both
+partitions, with as many test files as that takes; reports on customer programs only
+(CLAUDE.md). Expected movement: the standard figure is already inside 3.2% on a provisional
+baseline (OPEN_QUESTIONS Section 7); the safety figure, +28% to +42%, is the target.
+
+**v32 is the floor (owner, 2026-10-23): the conversion tooling cannot build a v30 project.** A
+first build with v30 arms was withdrawn before it left this machine. The four v30 programs
+(RS-11 to RS-13, RS-15) are reached from v32 and the firmware step the v35 bases read.
+
+**Built:** `gen_cgl_1769.py`, 34 files in `samples/generated/cgl/`: fifteen steps on each of
+1769-L30ERMS and L33ERMS at v32, the base alone on each at v35, and two 1756-L81ES v35 twins;
+and `gen_safety_io --local --only cgl32`, two Kinetix 5500 safety-drive files on `l33v32`, copied
+to `samples/generated/safety/` under the owner's exception for local safety I/O files (their
+drive block matches the clean `safe_iol_h008s_1` capture's, the safety network number apart;
+`check_proven_blocks.py` passes). The withdrawn v30 drive builds, `safe_iol_cgl_h008s_*`, stay in
+`samples/local/safety_io/` (nothing there is deleted) and have no manifest row. Every file
+lint-clean and above the realism floor; the 1769 capacities it is judged against are the
+published 1 MB / 2 MB (`controller_budgets.yaml`, ASSUMED). Lint pins the `Cgl` prefix to the
+two catalogs at v32 and v35 and nothing else. What each step is and its prediction in both
+partitions: OPEN_QUESTIONS Section 7.
+
+**Capture, two things this batch needs that no earlier one did:**
+
+1. **The standard figure is Data and Logic memory.** The capture script's 1769 path presses
+   Estimate and reads Edit8. For `cgl_l30v32_base` and `cgl_l30v32_mods`, also note the I/O
+   memory used by hand: it says whether module I/O is inside the figure the six were read on.
+2. **The safety reading on a 1769 Capacity tab is unverified.** The script reads the L8x's
+   control (Edit6). Before the run, open one `cgl_*` file and check by hand that the value the
+   script records as safety is the safety memory used; if it is not, send the control's name
+   (Window Spy) and nothing in the batch is captured until it is fixed.
+
 ### 0zh. The 2026-10-23 capture: tooling, re-score, deep dive, batch D — batch D SPECIFIED, NOT BUILT (ask before generating)
 
 **Done the same day.** The capture tooling refuses to commit anything confidential

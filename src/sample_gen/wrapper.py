@@ -138,7 +138,8 @@ def _5069_bus_size(processor_type: str) -> str:
 # _1769_MODULES_XML for the real, verbatim per-catalog data. build_l5x()
 # raises for those catalogs rather than silently building a wrong file.
 _1769_BUS_SIZE_BY_MODEL = {
-    "L33": "17",  # confirmed, a real export (1769-L33ERMS)
+    "L30": "9",   # confirmed, real exports (1769-L30ERMS at v30 and v32; the L30ERM blank's own block)
+    "L33": "17",  # confirmed, real exports (1769-L33ERMS at v30 and v32)
 }
 _1769_BUS_SIZE_DEFAULT = "17"  # unconfirmed for any model not in the table above
 
@@ -186,6 +187,9 @@ _PRODUCT_CODES = {
     "1769-L27ERM-QBFC1B": "151",
     "1769-L30ERM": "156",
     "1769-L33ERM": "110",
+    # Compact GuardLogix 5370, each from real exports' Local module at v30 and v32.
+    "1769-L30ERMS": "176",
+    "1769-L33ERMS": "177",
     "5069-L306ER": "196",
     "5069-L306ERM": "189",
     "5069-L306ERMS2": "226",

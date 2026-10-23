@@ -428,12 +428,17 @@ _SAFETY_ROUTINE_ORDINARY = frozenset({
 })
 
 
+def _is_safety_controller(root: ET.Element) -> bool:
+    """SafetyInfo carries a SafetyLevel: only a safety controller's does."""
+    info = root.find(".//SafetyInfo")
+    return info is not None and info.get("SafetyLevel") is not None
+
+
 def _safety_instruction_findings(root: ET.Element) -> list[LintFinding]:
     """A safety-routine instruction outside a safety program, or on a controller
     that is not a safety controller, does not build."""
     findings: list[LintFinding] = []
-    info = root.find(".//SafetyInfo")
-    safety_controller = info is not None and info.get("SafetyLevel") is not None
+    safety_controller = _is_safety_controller(root)
     aoi_names = {a.get("Name") for a in root.iter("AddOnInstructionDefinition")}
     for program in root.iter("Program"):
         in_safety = program.get("Class") == "Safety"
@@ -1312,6 +1317,16 @@ _PLATFORM_EXEMPT_NAME_PREFIXES = (
 #     standard's safety twin, 1756-L81ES at v35, and on nothing else.
 _PLATFORM_PINNED_ALTERNATES = {"SafePart": ("1756-L81ES", "35")}
 
+# Narrower than an exemption and wider than a pin: the prefix allows exactly these
+# platforms and refuses everything else, the standard included.
+#
+#   Cgl -- gen_cgl_1769.py (OQ-CGL1769). The 1769 Compact GuardLogix programs RS-11 to
+#     RS-16 are in scope by the owner's decision of 2026-10-23, the one exception to 1769
+#     being dead architecture; their catalogs and firmwares are the variable under test.
+#     v32 is the floor: the conversion tooling cannot build a v30 project.
+_PLATFORM_PINNED_SETS = {"Cgl": {("1769-L30ERMS", "32"), ("1769-L30ERMS", "35"),
+                                 ("1769-L33ERMS", "32"), ("1769-L33ERMS", "35")}}
+
 
 def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
     """Generated test files must be 1756-L81E at MajorRev 35.
@@ -1338,6 +1353,14 @@ def _platform_standard_findings(root: ET.Element) -> list[LintFinding]:
     # states a processor or firmware can state the wrong one.
     processor = controller.get("ProcessorType")
     major = controller.get("MajorRev")
+    for prefix, allowed in _PLATFORM_PINNED_SETS.items():
+        if name.startswith(prefix):
+            if (processor, major) not in allowed:
+                findings.append(LintFinding(
+                    kind="non_standard_processor",
+                    detail=(f"controller {name!r} is {processor} v{major}; the {prefix} prefix allows "
+                            f"only {sorted(allowed)}")))
+            return findings
     if processor is not None and processor != want_processor:
         findings.append(LintFinding(
             kind="non_standard_processor",
@@ -1457,9 +1480,7 @@ def _safety_module_findings(root: ET.Element) -> list[LintFinding]:
     (confirmed: silently passed 0 findings on a rebuilt copy of the exact
     file that produced the real Studio error). Checking the attribute is
     the reliable, zero-false-positive signal."""
-    safety_info_el = root.find(".//SafetyInfo")
-    has_safety_controller = safety_info_el is not None and safety_info_el.get("SafetyLevel") is not None
-    if has_safety_controller:
+    if _is_safety_controller(root):
         return []
     findings: list[LintFinding] = []
     for mod_el in root.iter("Module"):

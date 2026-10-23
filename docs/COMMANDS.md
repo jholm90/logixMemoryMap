@@ -237,6 +237,18 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `gen_cgl_1769.py` — the 1769 Compact GuardLogix batch (OQ-CGL1769)
+
+Fifteen steps on each of 1769-L30ERMS / L33ERMS at v32 (the floor: the conversion tooling
+cannot build v30), the base alone on each at v35, and two 1756-L81ES twins, into
+`samples/generated/cgl/`; the Kinetix 5500 safety drives on 1769 are `gen_safety_io --local
+--only cgl32`. TASKS 0zi has the capture notes.
+
+```
+PYTHONPATH=src python -m sample_gen.gen_cgl_1769 [--only REGEX]
+PYTHONPATH=src python -m sample_gen.gen_safety_io --local --only cgl32
+```
+
 ### `real_program_report.py` — the customer-program report
 
 Every customer program on file (standard processors and safety controllers), priced live by
