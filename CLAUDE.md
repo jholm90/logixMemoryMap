@@ -393,6 +393,14 @@ scheduled **program named for alarms**. They are measured by different files.
 check whether the feature appears in `samples/local/` at all. If it does not, it
 waits.
 
+## SFC is never worked (owner's decision, 2026-10-23)
+
+**Sequential Function Charts are out of scope permanently** — not parked, not waiting on
+the 1% rule. No SFC question, test file, lint rule, seed request or pricing work, ever.
+The engine keeps pricing a chart's logic at zero; its steps', actions' and stops' backing
+tags are ordinary data and stay priced. RS-01, the one real program on disk with charts,
+stays uncounted for that reason. A plan or spec that includes SFC is wrong on its face.
+
 ## Repository rules
 
 - **All development happens on `main`.** Never create, work on, or push to a feature

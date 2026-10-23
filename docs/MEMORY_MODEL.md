@@ -200,7 +200,8 @@ safety controller and on its 1756-L81E twin alike: their pool reads 0. One candi
 `8 × ceil(Σ max(0, len − 2) / 8)` (names of up to 2 characters free), fits the DINT arm
 and both safety UDTs exactly and misses the BOOL arm by 8. Not wired: the seventeen
 real programs are the test of any change here, and the BOOL / DINT disagreement says
-the form is not yet known. As wired:
+the form is not yet known. **Test: batch C `udtpool_*`** (16 one-definition files at name
+lengths 1 to 12, TASKS 0zg). As wired:
 
 **A UDT definition's declared members' own names cost an 8-aligned pool**, the
 same law an AOI definition's members follow:
@@ -576,7 +577,9 @@ the layout.
 ### SFC and function-block families — ASSUMED
 
 Read off real decorated-XML data with zero variance across the instances found,
-but not capture-confirmed.
+but not capture-confirmed. These are the backing TAGS, priced as data. The chart and
+diagram LOGIC is priced at zero: FBD under the noise floor (two routines in the real
+programs), SFC out of scope permanently (owner's decision, 2026-10-23).
 
 | Type | Bytes | Instances seen |
 |---|---:|---:|
@@ -1157,7 +1160,10 @@ this wrong.
   flat 2,344 (`zero_connection_module`) with a coverage notice. `rack_1756_n12` to `_n16`,
   which add a 1756-CNB/D and a 1756-HYD02 to `_n10`, read +2,384 to +3,458 against +504:
   those modules cost less than the flat rate, by amounts not yet separated. `Local` is
-  excluded because its overhead is already in the project baseline.
+  excluded because its overhead is already in the project baseline. **Under test (batch C,
+  `zcm_*`, OQ-MODREPEAT):** the zero-connection catalogs real programs carry on the flat rate —
+  an inhibited generic ETHERNET-MODULE placeholder, a 1783-NATR, a 1756-L75 peer controller; one
+  real program carries seven, 16,408 bytes at the flat rate.
 - **Rack-aliased POINT I/O cards** are priced: declared data plus the
   `rack_aliased_module` overhead from the pioconn_* sweep (OQ-POINTIOCONN). They no
   longer raise a notice; the old one said they were uncharged, which had stopped

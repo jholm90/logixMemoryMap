@@ -55,7 +55,17 @@ FIND, DTOS, STOD, RTOS, STOR, UPPER, CONCAT, COP, MOV — is exact against its c
 ST shape is measured and wired** (`stshape_*`, 39 files exact; MEMORY_MODEL, "The shapes
 real ST is written in"). In the safety routines every instruction is priced; what is not
 yet measured is an operand that names a safety I/O module's connection tag (about 900 of
-them across the ten, OPEN_QUESTIONS Section 8).
+them across the ten, OPEN_QUESTIONS Section 5).
+
+**Census of 2026-10-23 (read only, every real program on disk).** ST beyond the measured
+shapes, in the three ST programs (319 to 784 ST statements, 8,550 to 23,472 ladder
+instructions each): CASE 5, EXIT 3 to 5, TONR 3 to 9, OSRI 2 to 6, SIZE 1 a program — each under
+0.1% of instructions, so under the floor and not measured; no WHILE, REPEAT or non-retentive
+assignment anywhere. FBD: two routines in seventeen programs (one sheet of ten blocks, one of four
+SCL and two MUL), logic priced at zero, under the floor. SFC: one program (seven charts, 272
+steps), logic priced at zero, out of scope permanently (owner's decision). Their backing
+structures are priced as data. A scalar word operand in a safety routine: none in any real
+program.
 
 ## How far "exact" reaches (2026-10-04)
 

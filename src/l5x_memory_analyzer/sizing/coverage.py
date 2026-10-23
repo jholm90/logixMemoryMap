@@ -94,8 +94,8 @@ _KNOWN_USER_AOI = frozenset({"SCP"})
 _SIZED_ROUTINE_TYPES = frozenset({"RLL", "ST"})
 
 _ROUTINE_TYPE_NOTES = {
-    "FBD": ("Function Block Diagram", "no open question yet -- no real data"),
-    "SFC": ("Sequential Function Chart", "no open question yet -- no real data"),
+    "FBD": ("Function Block Diagram", "not priced: under the noise floor in the real programs"),
+    "SFC": ("Sequential Function Chart", "not priced: out of scope"),
 }
 
 

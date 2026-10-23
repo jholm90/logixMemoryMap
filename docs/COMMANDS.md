@@ -309,7 +309,9 @@ The standard-figure half of the safety pit stop (TASKS 0zb): `python -m sample_g
 `python -m sample_gen.gen_aoi_bool_instances` (`aoibool_*`, OQ-AOIBOOLINST) and
 `python -m sample_gen.gen_safety_round7 [--local] [--only REGEX]` (batch B, OQ-SAFETYLOGICIO, TASKS 0zd; `--local` the two drive files) and
 `python -m sample_gen.gen_string_shapes [--only REGEX]` (`strx_*`, OQ-STRSHAPE) and
-`python -m sample_gen.gen_string_members [--only REGEX]` (`strm_*`, which string member a UDT array pays for). The local safety files:
+`python -m sample_gen.gen_string_members [--only REGEX]` (`strm_*`, which string member a UDT array pays for; `strn_*`, the same nested in a scalar UDT tag, batch C). Batch C (TASKS 0zg):
+`python -m sample_gen.gen_udt_name_pool [--only REGEX]` (`udtpool_*`, OQ-UDTMEMBERNAME) and
+`python -m sample_gen.gen_zero_conn_modules [--only REGEX]` (`zcm_*`, OQ-MODREPEAT). The local safety files:
 `python -m sample_gen.gen_safety_io --local [--only REGEX]` (into the git-ignored
 `samples/local/safety_io/`, from the templates in `samples/local/safety_io_blocks.json`).
 

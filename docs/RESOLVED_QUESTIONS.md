@@ -33,6 +33,225 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 ---
 
+# Closed 2026-10-23
+
+Three questions whose laws are wired and exact, and five items closed on their real exposure,
+from a read-only census of every real program on disk (the seventeen safety-controller exports;
+the seventeen standard programs are not in this checkout). Nothing here changed a constant.
+
+## OQ-SERIESREAL — the series-output law with no duplicated bits
+
+**SOLVED and wired (option A, 2026-09-25); closed 2026-10-23.** −12 per writing instruction after
+the first in a rung (OTE / OTL / OTU, word-destination writers, TON), exact in all 38 files that
+isolate it, in every series, branch and leg shape. It was kept open as the record of why the
+headline rose when it was wired (0.58% → 2.18%, all seventeen under-predicting): the agreement
+without it was a compensating error. What it was cancelling has since been found and wired —
+literal typing (OQ-LITREAL), motion-structure members, module operand typing and the 92-file
+batch — and the seventeen read 0.97% / 2.57% with the law in place. What is left of the residual
+is OQ-REALUNDER's.
+
+
+`OQ-SERIESOUTPUT` measured −12 per output after the first, exactly, on 16+ files —
+every one near-empty and, bar the three `srout_oteuniq` files, writing the same bits in
+every rung. Applying it to the real set makes every real file worse. 18 of the 25 worst
+generated files are this one law.
+
+| | |
+|---|---|
+| **Mechanism** | the discount belongs to the calibration shape (empty controller, repeated bits), not to series outputs as real ladder has them |
+| **Expected movement** | none directly — the law is not wired. If it vanishes here, the engine is right to leave it out and the contradiction is closed; if it holds, real programs carry 0.5–1.5% of bytes the model over-charges, and the true residual is that much larger |
+| **Batch built** | 1,600 distinct output BOOLs, each written once, a distinct condition per rung, identical tags in all 8: `realism_srout_series_k{01,02,04,08}` (1600/k rungs of XIC then k OTEs), `_branch_k{02,08}` (parallel legs), `_inter_k{02,08}` (k XIC-OTE pairs per rung — the instruction list of k01 exactly, only rung packing moves) |
+| **Captured** | **The law holds, exactly.** Against `_series_k01`, per extra output: −12 at k = 2, 4, 8 in series; `_branch_k{02,08}` identical to series; `_inter_k{02,08}` (a condition before every output) identical too. The L9/v38 density rungs (`XIC … MOV … OTE`) show it again, −12 per rung on 1,600 rungs. So it is not the empty controller, not repeated bits, and not a single condition. |
+| **Real shapes** | Of real extra outputs (rungs with 2+ writing instructions): 27% plain series, 12% output-only branch legs, **61% branch legs each carrying their own conditions** — the one shape never built |
+| **Batch built** (styles) | `gen_series_styles.py`, `samples/generated/srstyle/`, 14 files, one tag inventory, each output written once, realism floor: `srsty_k01` control; `_legs_k{02,04,08}` (legs with own conditions); `_prelegs_k{02,04}` (shared + own conditions); `_legs2_k04` (two conditions per leg); `_nested_k04`; `_mid_k03` (output mid-rung then legs); `_otl_k04` (series latches); `_mixlegs_k04` (OTE/OTL/MOV/OTE legs); `_ton_k01` / `_ton_k04` / `_tonlegs_k04` (timers, which the counter does not count as writers). Each residual against its control is the discount for that shape |
+| **Captured (styles)** | All 14 `srsty_*` files, zero errors. Against `srsty_k01` / `srsty_ton_k01`, every shape reads exactly −12 per extra writer: `_legs_k{02,04,08}`, `_prelegs_k{02,04}`, `_legs2_k04`, `_nested_k04`, `_mid_k03`, `_otl_k04`, `_mixlegs_k04`, `_ton_k04`, `_tonlegs_k04`. TON is a writer for this law although the counter did not count it. |
+| **Trial** | Counter extended with TON, `apply: true`: all 38 series files (`realism_srout_*`, `srsty_*`) exact. Real set, seventeen counted: **0.58% → 2.18%**, all seventeen under-predicting, 1.19% to 4.31%. Reverted, pending decision. The law is right on every file that isolates it, so the real set's agreement without it is a compensating error (CLAUDE.md failure mode 3): something real programs carry is under-charged by about the size of the discount. Wiring it means the headline reads ~2% until that is found |
+| **Still contradicted** | Applied to the real set it takes 0.77% → **2.48%**; applied only to branch-free rungs, 0.77% → 1.16%. Either real multi-output rungs are shaped differently from every measured form, or the per-instruction weights already absorb it for real rung mixes. The one real shape never built is **branch legs that each carry their own conditions**, `[XIC(a)OTE(x),XIC(b)OTE(y)]`. Unwired until that is measured |
+
+## OQ-STSHAPE — the Structured Text shapes real programs use, opened 2026-10-20
+
+**SOLVED and wired (2026-10-21); closed 2026-10-23.** Every Structured Text shape the real
+programs write above the noise floor is measured exact on its own file (39 `stshape_*`) and
+wired. The census of 2026-10-23 found nothing else above the floor: in the three ST programs
+(319 to 784 ST statements, 8,550 to 23,472 ladder instructions) CASE 5, EXIT 3 to 5, TONR 3 to 9,
+OSRI 2 to 6 and SIZE 1 a program, each under 0.1% of instructions; no WHILE, REPEAT or
+non-retentive assignment in any real program; AOI-internal ST about 110 statements a program, +4
+a statement at most (the four `stshape_aoi_*` rebuilds were dropped from batch B for that). The
+three programs' remaining −2.0% to −2.45% standard is not ST: 35 to 49% of their predicted bytes
+are scalar tags of UDTs holding STRINGs, against 3 to 5% in the programs that read well —
+OQ-STRSHAPE's test (batch B `strm_*`, batch C `strn_*`). The capture errors stay recorded below.
+
+
+| | |
+|---|---|
+| **The bar** | The seventeen standard programs carry about 1,510 ST lines in all, so this moves them by under 0.1 point. It is opened for the standard figure on real safety-controller programs (TASKS 0zb, owner's direction 2026-10-20), where it is the largest term: RS-05, RS-08 and RS-10 read −3.30%, −3.42% and −2.78% on the standard figure, −42,240 / −53,725 / −81,592 bytes, against 576 / 756 / 1,126 executable ST lines — −73, −71 and −72 a line. The engine charges about 70 a line there, so real ST costs about twice what it is priced at. |
+| **Mechanism** | The ST law (MEMORY_MODEL, structured_text) was measured on `D0 := D1 + D2;`, `IF B0 THEN`, `FOR StIdx := 0 TO 9 DO` and literal array indexes. In the three programs: 444 / 250 / 170 member-path destinations, 298 / 206 / 122 tag indexes, 141 / 102 / 69 IF / ELSIF conditions carrying 185 / 133 / 85 comparisons and 117 / 84 / 51 AND / OR / NOT, 59 / 43 / 33 BOOL destinations, 39 / 27 / 19 ELSE. Priced by analogy with ladder (a comparison as CMP, a tag index at 84 / 108, a member after it +40), these make up roughly half to two-thirds of the gap; the rest is unexplained until measured. |
+| **Fixed without a constant, 2026-10-20** | `/* */` comments stripped (charged as code before); ST operand types through the routine's own scope; operands read whole; subscripts not counted as operators or literals. All 79 measured ST files unmoved. |
+| **Test** | `stshape_*`, 43 files (TASKS 0zb): each real shape at 400 statements, 200 IF blocks or 50 FOR blocks, against `stshape_n00` (or `stshape_aoi_n00`) and its sibling. Captured 2026-10-21 (batch A), 42 readings; `stshape_vidx_src400` captured against another window (title "TeamViewer options") and its capture columns are cleared, recapture in batch B. |
+| **Captured and wired, 2026-10-21** | 39 program-routine files clean (`stshape_vidx_src400` recaptured on the retry, 902,936: a tag-indexed source costs the 84 an indexed destination does). **Every shape exact after wiring** (MEMORY_MODEL, "The shapes real ST is written in"): a tag index 84, an index expression 108, a member after it +40, a tag-indexed BOOL +20 — the rung's own `indirect_index` constants, wherever the index sits — and a second index in one statement 8 less; conditions +16 a comparison, +4 an AND, +16 an OR, +20 more on a REAL; ELSE +28; a BOOL destination 28 from a BOOL or NOT (its right-hand side priced as a condition: AND 32, comparison 44), 44 from a literal; a float literal in a one-operator REAL assignment +4. The 79 earlier ST captures do not move. **RS-05 / RS-08 / RS-10: −3.43 / −3.64 / −3.08% → −2.38 / −2.45 / −2.01%** (with the scalar AOI law). |
+| **Left at closing** | **The remaining 2.0–2.45% on those three is not ST.** Every real ST shape is now a measured one (BOOL destinations 146 literal, 38 copy, 18 comparison; conditions comparisons, AND, OR); AOI-internal ST is 80 statements each (+4 a statement at most); UDT array elements with STRING members 0 to 250 each (OQ-STRSHAPE); no FBD or SFC routine. What carries 30 to 58 KB in each is not identified from the readings. The AOI-internal +4 a statement waits on batch B's rebuilt files. |
+| **Capture errors** | **CAPTURE ERRORS: 4 row(s)** — `stshape_aoi_n00`, `_assign400`, `_if200`, `_param400`, one error each, "Rung 0: Missing output instruction": the call rung `StAoi(StAoiInst);` is an AOI with no visible output parameter alone on a rung, which does not verify. The AOI's own ST routine is compiled with its definition and the four differ only inside it, so their differences are probably sound, but they are suspect and no law rests on them: `gen_st_shapes` puts a NOP after the call and the four are rebuilt in batch B. |
+
+## OQ-SAFETYPARTITION — sizing the safety memory partition
+
+**SOLVED and wired; closed 2026-10-23.** The safety partition is priced (`sizing/safety.py`) and
+exact to the byte on all 393 captured safety files on 1756-L81ES v32 / v34 / v35 and the 5069
+safety controllers at v31 and v35: the base, safety tags at both scopes, every safety and ordinary
+instruction in a safety routine, safety AOIs, tag mapping (free), the signature and the lock (0
+safety, at most 144 standard), SIL3 (the partner 528 standard, nothing in safety), produced /
+consumed safety tags, every safety I/O device type in the real programs (18) and any other by the
+device law (within 3.4%). On the real programs: −1.0% to −1.8% on eight, −5.6% / −8.3% / −7.3% on
+RS-02 / RS-03 / RS-17. Where its open items went:
+
+1. RS-02 / RS-03 / RS-17, and the eight others' generic 300 to 1,036 bytes low: OQ-SAFETYLOGICIO
+   (batch B).
+2. `safe_io6_5069_ob16_1` / `_mix_2_2`, never converted (the 5069-OB16/B ConfigID): rebuilt in
+   batch B; OQ-MODREPEAT owns them too.
+3. `safe_sil2_5069l320s3_n00`, never converted, cause unknown: abandoned. It was only the SIL3
+   files' control, and those read exact without it.
+4. The 1734 first-card standard term carrying its test rack's adapter (~630 on a real mixed rack,
+   once a program): BOUNDED, under the floor.
+5. A scalar word operand inside a safety routine (priced 4, 8 in standard logic): in no real
+   program — no scalar SINT / INT / DINT / REAL / LINT safety tag is named alone in any safety
+   routine of the twelve 1756 / 5069 safety programs — so nothing to measure (TASKS 0y item 1 not
+   built). An encoded (safety-locked) safety AOI's logic: unmeasurable, priced at a minimum.
+
+The capture errors stay recorded below.
+
+
+| | |
+|---|---|
+| **Evidence** | A safety controller keeps safety tags and safety logic in a partition that standard Capacity does not count (MEMORY_MODEL, "Safety memory is a separate partition"). Until 2026-10-18 the engine priced nothing in that partition and folded Class="Safety" logic and tags into the standard total (6.7 KB to 22.8 KB on the seven real safety files with readings); both are now wired from the `safe_*` captures (below). The capture script reads the safety value as `safety_bytes` since 2026-10-17. Safety-family instructions in the real set: ESTOP 4, ROUT 4, RIN 1 (INSTRUCTION_COVERAGE); the rest of the real safety logic is ordinary instructions in safety routines. |
+| **Expected movement** | **Zero on the seventeen-program headline**: safety processors are excluded from accuracy by rule. The payoff is a new reported number, safety memory used, for GuardLogix users, plus TASKS 2 (removing safety content from the standard total, 0.7 to 1.9 points on the seven safety files, toward under-prediction). |
+| **Needed before any spec** | 1. A screenshot of Controller Properties > Capacity on a safety project, and the Window Spy control names of its safety fields, so the capture script can record the safety reading next to the standard one. 2. A Studio-made seed project: 1756-L81ES at v35, File > New defaults, one Safety task/program/routine with one rung per instruction the safety routine offers, Studio-created backing tags, a few safety tags of each atomic type, verified with 0 errors, exported to L5X with both Capacity readings. It supplies syntax and backing-tag types and proves the L5X-to-ACD converter handles safety content; as one total it cannot separate per-instruction costs. 3. The real safety exports (13, 38 to 41, and the 5069-L306ERS2 program) back in `samples/local/`, to rank what real safety programs use before anything is built. |
+| **Method once those are in** | Count sweeps on the seed's shapes (each safety-routine instruction at several rung counts, each safety tag type at several counts, the safety task/program/routine shell, safety tags read from standard logic), each differenced against its own zero-content control, specced in TASKS and approved before generation. Safety files need a 1756-L81ES v35 exemption in `lint.py` and CLAUDE.md, the same narrow form as `PlatNine`. |
+| **Seed readings, 2026-10-17** (Studio-made, 1756-L81ES, v34, SIL2/PLd, kept in `samples/local/`) | `L81ES.L5X`, File > New (MainTask/MainProgram/MainRoutine plus SafetyTask/SafetyProgram/MainRoutine, no content): **standard 18,408, safety 1,394.** Engine 18,408, exact (13,296 baseline + 4,816 routine base + 296 safety shell). `L81ES_Sample.L5X`, the same plus three controller-scope safety tags (FPMS : FIVE_POS_MODE_SELECTOR, RIN : REDUNDANT_INPUT, ROUT : REDUNDANT_OUTPUT) and one rung each of FPMS, ROUT and RIN in the safety routine: **standard 18,576 (+168), safety 2,754 (+1,360).** The engine prices the three tags as ordinary standard tags (120 + 136 + 120 = 376) and the three instructions at 0, so it reads 208 high on the standard side. 168 = 3 × 56, the alias-tag formula 56 + 8 × floor(len / 8) at names under 8 characters: a hypothesis from one point with three unknowns, not wired. Instruction syntax and backing-tag types are as exported: `RIN(RIN,AUTOMATIC,A,B,CircuitReset,FaultReset)`, `ROUT(ROUT,NEGATIVE,Enable,Feedback1,Feedback2,FaultReset)`, `FPMS(FPMS,Input1,...,Input5,FaultReset)`. |
+| **Seed 2, handed over 2026-10-17** | The safety routine's instruction set (a Studio scrap of every instruction it offers) checked against the weight table: 37 never sized. One rung each, one backing tag each (`<MNEMONIC>_1`), BOOL operands on one safety `SBit : BOOL[64]`, ATAN2 on `SReal : REAL[8]`. **Filled in full** (operand order from the seed's RIN shape or known): ESTOP, ENPEN, DIN (as RIN), LC, CROUT, DCS, SMAT, ATAN2; the enum spellings in LC, CROUT, DCS and SMAT are not confirmed. **Backing tag only, other operands `?`** (order not known here; Rockwell's help site is unreachable from the sandbox): THRS, THRSe, DCST, DCSTL, DCSTM, DCSRT, DCM, TSAM, TSSM, FSBM, DCA, DCAF; the metal-form set CPM, CBIM, CBSSM, CBCM, CSM, EPMS, AVC, MMVC, MVC; the drive-safety set SFX, SS1, SS2, SBC, SOS, SDI, SLS, SLP. Backing types are the predefined names already sized in `memory_model.yaml` (DCI_STOP, MUTING_*, CB_*, SAFE_*, SAFELY_*...). The completed export is the syntax source for generation. **Real use:** ESTOP 4, ROUT 4, LC 2, RIN 1; the other 33 have none, so under the floor rule they get their seed rung and no generated sweep. |
+| **Operand = member rule** | In the seed's decorated data, each safety instruction's operands after its backing tag are exactly the backing structure's members between `EnableIn` and `EnableOut`, in declaration order: REDUNDANT_INPUT (ResetType, ChannelA, ChannelB, CircuitReset, FaultReset), REDUNDANT_OUTPUT (FeedbackType, Enable, Feedback1, Feedback2, FaultReset), FIVE_POS_MODE_SELECTOR (Input1 to Input5, FaultReset). A `*Type` member is a drop-down keyword in the rung (AUTOMATIC, NEGATIVE), not a tag. Member names known: the three seed types, EMERGENCY_STOP (ChannelA, ChannelB, CircuitReset, FaultReset), CONFIGURABLE_ROUT (Actuate, Feedback1, Feedback2, InputStatus, OutputStatus, Reset; a real call, `gen_instruction_firstpass.py`). Inferred from the family, unconfirmed: ENABLE_PENDANT and DIVERSE_INPUT as EMERGENCY_STOP; LIGHT_CURTAIN as ChannelA, ChannelB, InputFilterTime, MuteLightCurtain, CircuitReset, FaultReset (operand order confirmed by a real call, `coverage.py`). The other 29 backing types: member names unknown. A helper project went out 2026-10-17 to get them: the seed's empty L81ES with one Class="Safety" tag of each of the 36 backing types (empty `<Structure>` bodies, the form the predefined probe imported with 0 errors) plus `SReal : REAL[8]`. Opened and re-exported by Studio, its decorated data lists every member; it is a discovery file, not a capture, and is not kept in the repository. Not used: the seed-2 rungs are being built by hand in Studio instead, and that export is the syntax source. |
+| **Seed 2 in, 2026-10-17** | A Studio-made v35 safety routine, one rung per instruction, every operand filled (36 instructions), with its printed ladder naming each operand. Every call shape is in `docs/SAFETY_INSTRUCTIONS.md`. It corrects the operand = member rule: settings come first (drop-down keywords written with their spaces, `EQUIVALENT - ACTIVE HIGH`, and times as numbers or tags), then inputs as the backing tag's own members; the drive-safety instructions also take the SFX tag and end with separate output tags. THRSe was invisible to the parser (the only lowercase mnemonic) and is now counted. A routine export cannot be compared with a reading: the measurement needs the whole project exported plus its standard and safety Capacity values, and the same two values for an empty v35 L81ES. |
+| **Measured, 2026-10-18** (112 files, 1756-L81ES v35, zero build errors, both readings on every row) | Every sweep exact, to the byte, at every count. **Controller-scope safety tag:** 56 + 8 × floor(len / 8) standard (the alias-tag formula; four name lengths) and the data block in safety (8 × ceil((28 + data) / 8) as fitted here; round 2 corrected it to 24 + data for a scalar and 32 + data for an array, the 28 having fitted only because every round-1 size was 4 mod 8), the same for BOOL, SINT, INT, DINT and REAL at 10, 50 and 200 tags; a BOOL[256] pays 64 safety. **Safety-program tag:** 0 standard, both halves safety: DINT 96, and all 39 backing structures with zero residual. **Safety-instruction rungs:** 0 standard; per-rung safety costs in MEMORY_MODEL (ESTOP, RIN, ROUT 360 and LC 436 exact at 10/50/200). The routine's NOP: 16 safety, 0 standard. **Safety base:** 1,394 with no rungs at v34 and v35 alike. **Standard logic reading a safety BOOL:** 28 a rung against 20 on standard tags, +8 per safety operand (one shape). The safety partition does not move with standard content: `safe_ref_*` read 1,474 throughout. `safe_n00` reads −1,810 against the old engine: the realism plant's −1,794 (OQ-REALISMFLOOR, every baseline file) plus the safety NOP's 16, now removed. |
+| **Wired, 2026-10-18** | Rounds 1 to 3 (271 files): `sizing/report.py` leaves safety-program tags, aliases and logic out of the standard total, charges a controller-scope safety tag its name entry, each extra safety program 64 + its name, a safety AOI its definition less 800, and standard logic 8 / 4 per safety bit / word operand; `sizing/safety.py` prices the safety partition (base, tags, aliases, shells, every safety and ordinary instruction, safety AOIs and their calls, encoded (safety-locked) ones at a minimum), shown by the CLI and the UI as its own bar. **Safety: all 271 files exact to the byte. Standard: 249 exact against the realism plant's −1,794; the other 22 within 32 bytes of it** (Still open, 2). Both Studio seeds exact on both partitions. |
+| **Measured, round 4, 2026-10-19** (31 of 32 files captured, zero errors; `safe_aoi_call_60` converted but has no capture row) | **Safety exact on all 28 safety files, before any change.** Tag mapping at 0 / 1 / 10 / 50 / 200 pairs: 0 in both partitions. Safety AOI instances at 5 and 60 and calls at 5; definitions with 3/3 and 6/6 BOOL parameters and 9 locals move only the standard share; 10 internal rungs +180 safety. Routine names of 16 / 24 / 40 characters +8 / +16 / +32. ATAN2, COP, FLL at 100 rungs on their corrections. The safety base and one content step on 5069-L330ERMS2, 5069-L320ERMS2 (v35) and 1756-L81ES v32 / v34: the same 1,410 and +6,544 safety everywhere, +3,200 standard everywhere. **Standard:** the 5069 bases read 280 / 296 below the engine (the safety shell charged twice, below); MOV from a scalar safety DINT 8 a rung, not 4; the UDT twins on 1756-L81E read the same −16 / −32 as on the L81ES, and the array twin the same +4 per array tag, so neither is a safety term. Three warnings, all `safe_rtn_name*`'s designed uncalled routine. |
+| **Wired, 2026-10-19** | 1. `safety_capable_baseline_delta` (296) only when the file has no safety task: it is the safety task/program shell Studio creates for a safety controller whose file carries none (the firmware-matrix 5069 S2/S3 files had none), and a file with its own safety task is already charged that shell; 5069-L320ERMS2 now reads exactly the plant constant, L330ERMS2 +16. 2. Standard logic naming a scalar atomic safety tag alone pays 8 (`standard_scalar_operand_bytes`), exact on `safe_sref2_mov_50` and consistent with `safe_comp_2`'s twelve. 3. KNOWN now: routine names (five buckets), the ATAN2 / COP / FLL corrections (20 and 100 rungs), the safety AOI split and call terms (six definitions, instances at 5/20/60, calls at 5/20). No other file moved; the real safety programs' standard predictions drop 296 on every 5069 and nothing else changes. |
+| **Measured, safety I/O, 2026-10-19** (41 captured, every one converted `ok`) | **Safety: each CIP Safety device a fixed cost by its safety connections' data type, nothing once, exact at 1 / 2 / 4:** 1756-IB16S (`AB:5000_SDI16`) 6,049; 1756-OBV8S (`AB:5000_SDO8`) 4,497 (the pair reads their sum); BNI00HN 3,901; PowerFlex 527 and 2198-H008-ERS2 (both `AB:CIP_Drive_Safety1`) 3,577; 2198-D012/D020/D032/D057-ERS3 integrated safety (`AB:CIP_Motion_Device_Safety2`) 4,717 each with or without axes; 2198-S086-ERS3 (`AB:CIP_Motion_Device_Safety1`) 4,123. **Standard:** each device a first-of-catalog cost and a per-device cost beyond the module sizing (MEMORY_MODEL, "Safety I/O"). Wired; every file now reads the plant constant on both partitions, except two standard-engine terms that are not safety's: a 2198-D012-ERS3 with axes reads like the other D0xx drives (+2,222 against the engine), and a non-safety S086 with its axis +1,958. `safe_aoi_call_60` (+12,728 safety for 60 calls) exact. Real safety programs: safety from −18…−66% to −1.5…−44%, every remaining gap naming unpriced 1734 cards. **CAPTURE ERRORS: 5 row(s)** — `safe_iol_kx_d012_std_1` / `_2` (the proven non-safety D012 block reports a bus-sharing error, "Primary Bus Sharing Group 3 contains a module configured as Shared DC ... with no module configured as Shared AC/DC"; its reading equals the other D0xx controls' to the byte, so not used for any law); and three files that never converted (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` (their 5069-OB16/B module-sweep block carries no ExtendedProperties ConfigID, which every compiled export of the catalog carries; `gen_safety_round6.std_card` now adds it, lint refuses the catalog without it, `module_without_configid`; rebuilt in batch B), and `safe_sil2_5069l320s3_n00` (5069-L320ERMS3 at SIL2; the same catalog at SIL3 converted and captured, `safe_sil3_5069_n00`; **cause unknown** — the converter log carries only the abort, and the Studio error-log line is needed). |
+| **Round 5, 2026-10-19** | Safety I/O built (TASKS 0za, 17 files): 1734-IB8S/B and OB8S/B at 1 / 2 / 4 / 8 in a further rack, the IB8S without its test-output connection, a mixed rack, a second rack, and 5069-IB8S/A and OBV8S/A at 1 / 2 / 4 on a 5069-L330ERMS2. The Kinetix safety drive, 1756 safety I/O and PowerFlex 527 wait on a Studio-made export each or permission for derived templates. |
+| **Round 6, 2026-10-20** (TASKS 0zb, batch A of 2) | **27 files in the repository** (`gen_safety_round6.py`): 1734-OB8S/A (`AB:1734_OB8S+AB:1734_OB8S_Safety3`, RS-06 / RS-09), 1734-IB8S/B with one connection (`AB:1734_IB8S_Safety6`, beside `safe_io_ib8s1c_4`), 442G-MABLB (`AB:442G_MABB_E0JP4679`, RS-07), each at 1 and 2 on the L81ES plant; **SIL3**, never measured before (RS-01 / RS-03 / RS-07 / RS-17): the 1756-L81ES with its 1756-L8SP partner empty and with round 4's content step, 2 and 4 1734-IB8S/B at SIL3, the 5069-L320ERMS3 at SIL2 (its own control) and at SIL3 empty / stepped / with 2 5069-IB8S/A; **safety produced and consumed tags** to a peer 5069-L306ERS2 (RS-03 / RS-17): the message UDT alone, 1 and 2 produced, the peer alone, 1 and 2 consumed, one of each — measured in the safety partition though standard produced / consumed tags stay force-closed below the floor; the **v31 5069-L310ERS2** base and its content step (RS-04's platform); four standard packed 5069 cards on the 5069-L330ERMS2 base (OQ-MODREPEAT). **13 local files** (templates from compiled real exports, CLAUDE.md exception of 2026-10-19, handed over to go into `samples/generated/safety/`): the generic Ethernet safety device for a robot (`AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes`, RS-04 / RS-07) and the FANUC R30iB Plus (`FR:Safety_RobotPlus_8Bytes`, RS-01) at 1 and 2; the revision-11 2198-D032-ERS3 with network STO (`AB:CIP_Drive_Safety2`, RS-01) at 1 and 2, `safe_iol_kinsafe_n` with the drive swapped; RS-04's packed 5069 cards (`AB:5000_SDI8_Packed`, `AB:5000_DO8_Packed+AB:5000_SDO8_Packed`, module revision 1) at 1 and 2 on the v31 L310ERS2; the round-5 Kinetix drive and the 1756-IB16S + OBV8S pair at SIL3. With round 5's 17 (still to capture) every safety device type in the ten counted programs has a file; what stays unmeasurable is the encoded AxisSTO safety AOI of RS-02 / RS-03 (source-protected). Partner fix: a 1756-L8SP block needs the ExtendedProperties ConfigID 100 a compiled export carries; lint now refuses one without. |
+| **Safety figure, engine of 2026-10-20** | Prediction against reading: RS-05 −1.5%, RS-10 −15.3%, RS-06 / RS-09 −20.9%, RS-03 −25.1%, RS-17 −24.1%, RS-08 −39.5%, RS-07 −42.0%, RS-04 / RS-04u −43.0%, RS-01 −44.0% (not counted), RS-02 −8.4%. Every gap names unpriced devices, and each has a batch-A or round-5 file: 1734-IB8S/B (`Safety2`, RS-01 / 02 / 03 / 07 / 10 / 17) and 1734-OB8S/B (`Safety1`) `safe_io_*`; one-connection IB8S (`Safety6`, RS-06 / 09) `safe_io6_ib8s1c_*`; OB8S/A (`Safety3`) `safe_io6_ob8sa_*`; 5069-IB8S/A and OBV8S/A (RS-08) `safe_io_5069_*`; the packed 5069 cards (RS-04) `safe_iol_5069p_*`; the robot interfaces (RS-04 / RS-07, RS-01) `safe_iol_gensafe_*`, `safe_iol_fanucs_*`; the 442G (RS-07) `safe_io6_442g_*`; the revision-11 STO drives (RS-01) `safe_iol_kx11_*`; SIL3 (RS-01 / 03 / 07 / 17) `safe_sil3_*`; the produced / consumed pair (RS-03 / 17) `safe_pc6_*`; v31 (RS-04) `safe_base_5069l310_v31*`. The encoded AxisSTO safety AOI of RS-02 / RS-03 stays a minimum. |
+| **Measured, batch A, 2026-10-21** (round 5's 17, round 6's 27 and the 13 local files; zero build errors but the two non-safety D012 controls; three files never converted) | **Safety: every device type exact at every count built, additive, SIL3 the same as SIL2.** Twelve new types (MEMORY_MODEL, "Safety I/O"): 1734-IB8S/B with and without its output connection 3,513 / 1,629, OB8S/B and OB8S/A 3,457, 5069-IB8S/A 2,513 (packed 1,873), 5069-OBV8S/A 4,497 (packed 3,741), 442G 3,621, FANUC and the generic robot interface 3,745, the revision-11 2198-D032-ERS3 3,578. **Produced / consumed safety tags** 3,788 / 1,169 safety beyond the data block, exact at 1 and 2 and additive; standard exact already. **SIL3**: the 1756-L8SP partner 528 standard (it was charged the flat 2,344), nothing in safety; SIL3 cards, drives, pair, empty base and content step (`safe_sil3_step`, read on the retry of 2026-10-21) identical to SIL2 in both partitions, on the 1756-L81ES and the 5069-L320ERMS3. The peer 5069-L306ERS2 costs 560 standard and nothing in safety. The v31 5069-L310ERS2 base and step exact. **Standard:** each type a first-device and a per-device term (fitted at every count). |
+| **Wired, 2026-10-21** | The twelve types; **the device law for any other safety device** — 1,653 per safety input connection + 1,814 per output connection + 16 per byte of connection data, every one of the 18 measured types within 3.4%, each left out of its own fit within 115 bytes (5.5%); priced from the law alone the twelve real programs' safety figure moves at most 1.1 points — and its standard side for an unmeasured catalog (600, +162 with an output connection, +1,242 a standard connection, plus its types' definitions when first defined: a further copy within −312..+248 of the measured ones); the produced / consumed terms; the partner and peer. Standard terms keyed by device key where a catalog has two safety shapes. **All 393 safety files on disk: safety exact on every one; standard at the plant constant except the 1734 cards' fit residuals (−145..+75) and `safe_io_racks_2x2` (+489, its second safety-only adapter).** |
+| **The 1769 rows, engine of 2026-10-22** (dead architecture: excluded, not worked) | Re-priced with the rest: standard RS-11 / RS-12 / RS-13 −8.98 / −9.93 / −8.98%, RS-14 −11.55%, RS-15 −5.08%; **safety +28.6% (RS-11 to RS-13), +28.5% (RS-14), +42.3% (RS-15)**, from −20% to −30% blind: the 1756 / 5069 device and logic laws over-price a 1769 safety partition by 5 to 10 KB. Reported here so the figure is not lost; by the platform-scope rule nothing is invested in it. RS-16 has no reading (dropped); one further local file is an Emulate 5570 project with no reading. |
+| **Real safety programs, engine of 2026-10-21** | Safety figure (prediction minus reading): RS-01 −1.2%, RS-04 / RS-04u −1.1%, RS-05 −1.5%, RS-06 / RS-09 −1.3%, RS-07 −1.0%, RS-08 −1.8%, RS-10 −1.2%; **RS-02 −5.6%, RS-03 −8.3%, RS-17 −7.3%** (OQ-SAFETYLOGICIO). Standard figure: RS-02 −1.89%, RS-03 −0.27%, RS-04u −0.61% (locked −2.80%), RS-05 −2.38%, RS-06 / RS-09 +1.65% / +1.66%, RS-07 +0.25%, RS-08 −2.45%, RS-10 −2.01%, RS-17 −0.26%; RS-01 −8.19% not counted (7 SFC routines, 272 steps, and FBD). **Mean 1.34%, worst −2.45% on the ten** (1.58% / −3.64% before batch A); the scalar AOI law moved RS-02 by −0.80 points of that. RS-06 / RS-09 (one program on two v32 controllers) read +1.65%, about the 11,240 v32 baseline delta. **The delta is not the cause (2026-10-22):** the engine reproduces the plant's own bases on content at v31 and v32 to the plant's constant offset (5069-L310ERS2 v31 −1,794 exactly, 1756-L81ES v32 −1,778, 5069-L320ERMS2 v35 −1,794), so the +1.65% is content priced at v32, not the baseline; `safe_base_5069l320_v32` (batch B) closes the last platform. Module content is 39 KB of RS-06's prediction, too little to carry 11 KB alone. Not yet decomposed. |
+| **Open at closing** (where each went: above) | 1. **RS-02 / RS-03 / RS-17 on the safety figure** — OQ-SAFETYLOGICIO (OQ-SAFETYLOGICIO). 2. **The eight others (nine files) read 300 to 1,036 low on the safety figure**: 152 + 4.08 a safety rung fits them (leave-one-out rms 89); module-tag operands are about 1.4 bytes each, not the cause (OQ-SAFETYLOGICIO). 3. **Never converted** (retried 2026-10-21, same abort): `safe_io6_5069_ob16_1` / `_mix_2_2` (the 5069-OB16/B block without its ConfigID; fixed in `gen_safety_round6`, lint refuses it; rebuilt in batch B) and `safe_sil2_5069l320s3_n00` (5069-L320ERMS3 at SIL2; its SIL3 twins converted; **cause unknown — the Studio error-log line is needed**). 4. The 1734 first-card standard term carries the test rack's adapter (~630 low on a real mixed rack). 5. Not measured: a scalar word operand inside a safety routine (priced 4; 8 in standard logic); an encoded (safety-locked) safety AOI's logic. Measured and closed: the signature and the lock (0 safety, at most 144 standard), SIL3, produced / consumed tags. |
+| **Confidence, 2026-10-21** | **Measured exact, wired:** everything in the 2026-10-19 row below, plus every safety I/O device type in the twelve real programs, SIL3, produced / consumed safety tags and the peer controller. **A program whose safety logic names only safety tags is expected exact to tens of bytes on the safety figure on these platforms; one that addresses safety I/O tags in its safety logic reads low by OQ-SAFETYLOGICIO's amount.** An unmeasured safety device is priced by the device law (within about 3%). |
+| **Confidence, 2026-10-19, after round 4** | **Measured exact, wired:** every safety tag shape at both scopes (atomics, structures, LINT, UDTs, arrays, AOI instances, aliases, names 4 to 40), the base and one content step on 1756-L81ES v32 / v34 / v35 and 5069-L330ERMS2 / L320ERMS2 v35, routine and program shells and routine names to 40 characters, all 39 safety instructions with operands anywhere, ordinary logic in a safety routine (the law covering every instruction of the palette, its three corrections at two counts), standard logic reading safety tags, safety AOIs (six definitions, instances to 60, calls to 20), and tag mapping (free). **Safety: 299 of 299 captured files exact to the byte.** **On a program with no safety I/O, signed or not, the safety figure is expected exact to tens of bytes on these platforms.** **Not yet priced:** safety I/O (in every real safety program, so their safety predictions are minimums), the signature and the lock. |
+| **CAPTURE** | two Studio-made readings above; the `safe_*` batch (119 files) built 2026-10-17, rebuilt the same day with the Local module's ProductCode corrected (164 → 211); the rebuilt files convert (about 90 s each), except all seven `safe_std_*` (control included, so a tag, not a rung): Studio rejected the BOOL array `SIn` as an invalid tag name — it is the SIN function, matched case-insensitively. Renamed to `SfIn`/`SfOut`/`SfTmr`/`SfDa`/`SfDb`/`SfRa`/`SfRb`/`SfRc`; `validate_logix_name` and lint now refuse any name equal to an expression function or operator. The seven failed files are abandoned, never captured, and rebuilt 2026-10-18 as `safe_std_*_r2`, awaiting conversion. The other 112 converted and captured 2026-10-18 with zero errors and a safety reading on every row. Rounds 2 and 3 (152 files) captured 2026-10-18, zero errors. Round 4: 32 files converted `ok` 2026-10-19 (hashes match the committed files), 31 captured with zero errors (three designed warnings); `safe_aoi_call_60` has no capture row. |
+
+### Blind predictions — real safety programs, 2026-10-18
+
+Seventeen real safety programs, predicted on both partitions by the engine of 2026-10-18 before any Capacity reading was taken; the standard column re-predicted 2026-10-19, still before any reading, after round 4 removed a double-charged safety shell (every 5069 row 296 lower; nothing else moved). Label and file-hash prefix only; the key is `samples/local/safety_aliases.csv` (git-ignored). Read each against its own Capacity tab, standard and safety. **Every one carries content the engine does not yet price in the safety partition** (the right-hand columns), so a safety reading above the prediction by about that content's size is expected, not a model error; 1769 rows are dead architecture and are not tuned on.
+
+| label | sha-256 | platform | standard | safety | safety I/O modules (unpriced) | tag-map pairs | signed / locked | other |
+|---|---|---|---:|---:|---:|---:|---|---|
+| RS-01 | `752e0a1ffded` | 1756-L81ES v32.11 | 1,829,092 | 39,438 | 12 | 0 | yes / yes | v32 (base measured at v34/v35) |
+| RS-02 | `01f580f9e815` | 1756-L81ES v35.11 | 1,479,644 | 44,318 | 16 | 0 | no / no | encoded (safety-locked) safety AOI (minimum) |
+| RS-03 | `b561fb3dd64b` | 1756-L81ES v35.14 | 2,809,860 | 67,086 | 25 | 1 | yes / yes | encoded (safety-locked) safety AOI (minimum) |
+| RS-17 | `eca51f2acf20` | 1756-L81ES v35.14 | 2,808,372 | 69,058 | 25 | 1 | no / no | an earlier revision of RS-03 with its safety signature and lock removed; its safety AOI in clear text, priced whole |
+| RS-04 | `a2482118129e` | 5069-L310ERS2 v31.12 | 496,929 | 15,322 | 4 | 3 | yes / yes | v31 (base measured at v34/v35) |
+| RS-05 | `a56a78264b31` | 5069-L320ERMS2 v34.11 | 1,234,386 | 18,746 | 2 | 1 | yes / yes |  |
+| RS-06 | `2408d3a7c51c` | 5069-L320ERMS2 v32.11 | 673,888 | 16,382 | 6 | 0 | no / no | v32 (base measured at v34/v35) |
+| RS-07 | `843ea76ed63c` | 5069-L320ERMS3 v35.11 | 1,071,773 | 16,402 | 6 | 8 | no / no |  |
+| RS-08 | `3dc33183e17d` | 5069-L330ERMS2 v34.14 | 1,513,827 | 19,310 | 5 | 1 | yes / yes |  |
+| RS-09 | `725c7eda172e` | 5069-L330ERMS2 v32.13 | 678,252 | 16,382 | 6 | 0 | no / no | v32 (base measured at v34/v35) |
+| RS-10 | `3451c8af3cc3` | 5069-L340ERS2 v35.11 | 2,845,175 | 34,610 | 4 | 1 | no / no |  |
+| RS-11 | `2c50a52a64fa` | 1769-L30ERMS v30.11 | 571,978 | 14,110 | 4 | 0 | no / no | dead architecture; v30 (base measured at v34/v35) |
+| RS-12 | `e060d6900501` | 1769-L30ERMS v30.12 | 471,851 | 14,110 | 4 | 0 | no / no | dead architecture; v30 (base measured at v34/v35) |
+| RS-13 | `e12cca1a2ccd` | 1769-L30ERMS v30.14 | 573,330 | 14,110 | 4 | 0 | yes / yes | dead architecture; v30 (base measured at v34/v35) |
+| RS-14 | `4f6521c6d420` | 1769-L30ERMS v32.13 | 656,281 | 15,802 | 4 | 0 | yes / yes | dead architecture; v32 (base measured at v34/v35) |
+| RS-15 | `96dde6b4e9fe` | 1769-L33ERMS v30.14 | 753,452 | 16,858 | 6 | 0 | yes / yes | dead architecture; v30 (base measured at v34/v35) |
+| RS-16 | `5b9bf99acaf1` | 1769-L33ERMS v32.13 | 852,085 | 12,390 | 6 | 0 | no / no | dead architecture; v32 (base measured at v34/v35) |
+
+### Readings, 2026-10-19 — the blind test scored
+
+Capacity read on 16 of the 17 (RS-16 dropped, not to be read). Prediction minus reading, as a share of the reading.
+
+| label | standard read | standard error | safety read | safety error | safety gap (read − predicted) |
+|---|---:|---:|---:|---:|---:|
+| RS-01 | 2,007,604 | −8.89% | 83,129 | −52.6% | 43,691 |
+| RS-02 | 1,510,245 | −2.03% | 124,952 | −64.5% | 80,634 |
+| RS-03 | 2,819,627 | −0.35% | 197,262 | −66.0% | 130,176 |
+| RS-04 | 511,973 | −2.94% | 26,858 | −43.0% | 11,536 |
+| RS-05 | 1,279,555 | −3.53% | 22,987 | −18.4% | 4,241 |
+| RS-06 | 655,664 | +2.78% | 34,288 | −52.2% | 17,906 |
+| RS-07 | 1,074,245 | −0.23% | 34,995 | −53.1% | 18,593 |
+| RS-08 | 1,572,161 | −3.71% | 31,910 | −39.5% | 12,600 |
+| RS-09 | 658,680 | +2.97% | 34,288 | −52.2% | 17,906 |
+| RS-10 | 2,935,942 | −3.09% | 50,058 | −30.9% | 15,448 |
+| RS-17 | 2,817,995 | −0.34% | 197,262 | −65.0% | 128,204 |
+| RS-11 (1769) | 622,636 | −8.14% | 17,656 | −20.1% | 3,546 |
+| RS-12 (1769) | 518,040 | −8.92% | 17,656 | −20.1% | 3,546 |
+| RS-13 (1769) | 624,084 | −8.13% | 17,656 | −20.1% | 3,546 |
+| RS-14 (1769) | 707,484 | −7.24% | 20,548 | −23.1% | 4,746 |
+| RS-15 (1769) | 785,944 | −4.13% | 24,104 | −30.1% | 7,246 |
+
+**Standard figure on 1756 / 5069 safety controllers: mean 2.20%, worst −3.71% on ten programs.** Blind on the safety figure throughout; on the standard figure blind for three (RS-02, RS-03, RS-17) — seven others already had a standard reading on file (`realprog_13`, `realprog_37` to `_42`), which safety processors keep out of every fit, so they were not tuned on, but they were not unseen. RS-01 is not counted (decided 2026-10-19): it carries 7 SFC and 2 FBD routines, languages the engine does not size, so its −8.89% measures the missing languages, not the model. RS-16 is dropped and will not be read. Nine of the ten others inside 3.6%. The 1769 rows (dead architecture) read −4% to −9% and are not tuned on.
+
+**Safety figure: −18% to −66%, every one low, and the gap is safety I/O.** It scales with the safety module count (about 2 to 3 KB a 1734 / 5069 safety module, about 5 KB a Kinetix safety drive, a 1756 safety module more). A per-family charge fitted on these readings does not hold up: leave-one-out misses run from +34% to −56%, and one constant a module leaves ±30%. So safety I/O is measured from Studio seeds, not fitted (TASKS 0x item 1).
+
+**Signature and lock cost nothing in safety:** RS-03 (signed and locked) and RS-17 (an earlier revision with both removed, its safety AOI in clear text) read the same 197,262. On the standard side RS-03 reads 1,632 more than RS-17 against 1,488 predicted for their content difference, so the signature and the lock together cost at most about 144 standard. RS-06 and RS-09 (the same safety content on 5069-L320ERMS2 and L330ERMS2, v32) read the same 34,288, as predicted (16,382 each).
+
+## OQ-ARRAYTAG4 — a standard array tag on the realism plant reads +4
+
+**BOUNDED, closed 2026-10-23.** Found by the safety rounds and confirmed on a plain 1756-L81E: every standard array tag
+added to the realism plant reads 4 above the engine (`safetwin_sref_ctl`, six `BOOL[64]` /
+`DINT[64]` arrays, +24; `safe_sref2_ctl`, one, +4; `safe_ref_*`, `safe_sref_*`,
+`safe_comp_2` the same per array). Scalars added beside them read exact, and the
+bare-baseline array sweeps (`array_dint_*`, `boolarray_n*`) were exact, but the plant
+carries no array tag of its own, so whether this is a plant-context term, a short-name
+term (these names are 4 to 6 characters) or a size term is not separable from the files
+on disk. Real exposure: a few hundred array tags a program, about 0.05% at +4 each, in the
+direction that reduces the real under-prediction. A discriminating set is specced in
+TASKS 0y.
+
+Real exposure: 7 to 72 array tags in the real safety-controller programs on disk (288 bytes at
++4, 0.01%), a few hundred in the seventeen (about 0.05%), in the direction that reduces the
+under-prediction. Under the floor in effect; the eight `arrtag_*` files of TASKS 0y item 4 are
+not built.
+
+## OQ-AENTRREPEAT — a further 1734-AENTR/C adapter reads 470 to 830 below its price
+
+**BOUNDED, closed 2026-10-23.** Three readings: 467 (`modrep_1734_ie2c_c_rack`'s sixth rack), 634
+(`safe_io_racks_2x2`'s second safety rack), 826 (`l9v38_m_pointio`'s sixth rack); the first copy
+reads −66; the catalog has no repeat rate. The real programs on disk carry 0 to 7 adapters (RS-03
+/ RS-17 seven, RS-01 five, RS-02 three, the rest 0 to 2): at most six further copies, about 3.6
+KB, 0.13% of the program, toward a deeper under-prediction. Not wired. It is the likely owner of
+the realism plant's constant −1,794 (four further adapters at about 450), which every plant file
+carries and every difference against the plant cancels.
+
+## OQ-SAFESTRUCTMEMBER — a safety structure's member read by standard logic
+
+**BOUNDED, closed 2026-10-23.** Standard logic naming a member of a safety structure tag pays 8
+for a BOOL member (a bit operand, measured) and 4 for any other; the word-member case was never
+measured (TASKS 0y item 2). Real exposure: 20 to 248 member operands a program, bit and word
+members together; at 4 bytes each off at most, under 1 KB and 0.04%. Not built.
+
+## OQ-FBD — Function Block Diagram logic
+
+**BOUNDED, closed 2026-10-23.** The engine prices an FBD routine's logic at zero and reports it as
+a coverage gap; its backing structures (FBD_TIMER, SCALE and the rest) are priced exact
+(`predefprobe_*`). Real exposure on disk: two FBD routines in seventeen programs — one sheet of
+ten blocks (ADD, BAND, BNOT, BOR, PI, RLIM, two SCL, SEL, SUB) in RS-01 and one of four SCL and two
+MUL in RS-07 — about 2 KB at most, under 0.2% of either program. Under the floor; not worked.
+
+## OQ-SFC — Sequential Function Chart logic
+
+**OUT OF SCOPE, permanently (owner's decision, 2026-10-23; CLAUDE.md, "SFC is never worked").**
+The engine prices a chart's logic at zero; its steps', actions' and stops' backing tags
+(SFC_STEP, SFC_ACTION, SFC_STOP, probed exact) and its transitions' BOOLs stay priced as data. One
+real program on disk carries charts (RS-01: seven, 272 steps, 318 transitions, 199 actions, 92
+branches) and stays uncounted for that reason. No question, test file, lint rule or pricing work.
+
+---
+
 # Batch A of 2026-10-21
 
 217 files captured (162 built 2026-10-20, round 5's 17, 13 local safety I/O files, the
@@ -615,7 +834,7 @@ Arrays are deliberately untouched: padding elements instead improves the real fi
 more and destroys the tags category, so that gain is absorbing some other missing
 term.
 
-## OQ-UDTMEMBERNAME — REOPENED 2026-10-19, now OPEN_QUESTIONS section 5
+## OQ-UDTMEMBERNAME — REOPENED 2026-10-19, now OPEN_QUESTIONS section 2
 
 Solved 2026-09 as an 8-aligned pool, `8 × ceil(Σ(len + 1) / 8)`, the largest single
 real-file gain in the project and still wired. Re-priced live, its own four-DINT sweep

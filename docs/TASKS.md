@@ -218,11 +218,11 @@ costs nothing):
 **Owner's direction 2026-10-22:** close the safety work first; the ST / FBD / SFC instruction
 work (0ze) waits for it. Batch A's readings left the safety figure on RS-02 / RS-03 / RS-17
 at −5.6% / −8.3% / −7.3%, outside the owner's tolerance, and −1.0% to −1.8% on the eight
-other programs (OPEN_QUESTIONS Section 8).
+other programs (OPEN_QUESTIONS Section 5).
 
 **Revised 2026-10-22 after a census of every real safety program.** The first version of
 this spec aimed most of its files at module-tag operands in safety logic. The other programs
-refute that: 1.4 bytes an operand, 5 to 8 at most (Section 8). What is left is content only
+refute that: 1.4 bytes an operand, 5 to 8 at most (OPEN_QUESTIONS Section 5). What is left is content only
 these three programs carry and nothing has measured. Each candidate gets its own files, and
 each file states what it reads under each candidate, so one capture decides.
 
@@ -295,11 +295,70 @@ seventeen before testing): a STRING member in a UDT array (4 an element, OQ-STRS
 500 such elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3
 to 5 a program, OQ-MODREPEAT).
 
-### 0ze. ST, FBD and SFC instructions and data types — QUEUED after 0zd (owner, 2026-10-22)
+### 0zg. Batch C — BUILT 2026-10-23 (27 files), awaiting conversion and capture (OQ-UDTMEMBERNAME, OQ-MODREPEAT, OQ-STRSHAPE)
 
-The owner supplied the Logix 5000 language manuals for Sequential Function Charts,
-Structured Text and Function Block Diagram (chat-only, never in the repository) for the
-concepts. Not started: the safety work closes first.
+**Owner's request 2026-10-23:** another batch, and every open question closed that can be.
+What closed and why is in RESOLVED_QUESTIONS, "Closed 2026-10-23"; every question left is
+answered by batch B or by this batch, except OQ-REALUNDER, which needs `quick_eval.py` run on
+the seventeen. SFC is out of scope permanently (owner, the same day; CLAUDE.md).
+
+**What it is aimed at, and the real exposure that earns each family a slot** (census of the
+real programs on disk, read only, 2026-10-23):
+
+| family | files | question | real exposure | expected movement |
+|---|---:|---|---|---|
+| `udtpool_*` | 16 | OQ-UDTMEMBERNAME: the member-name pool's form | 31 to 125 UDT definitions a real program, 509 to 2,284 members, names averaging 9 to 11 characters | about 3 a member if the candidate holds: 1.5 to 7 KB a program toward under-prediction, judged on the seventeen before it is wired |
+| `zcm_*` | 7 | OQ-MODREPEAT: zero-connection modules on the flat 2,344 | RS-07 seven (16,408 bytes), RS-05 two, RS-10 one | at the 320 to 625 every measured zero-connection catalog costs: RS-07 +0.25% → about −0.9%, RS-05 −0.3 and RS-10 −0.07 points |
+| `strn_*` | 4 | OQ-STRSHAPE: the nested shape | 35 to 49% of RS-05 / RS-08 / RS-10's predicted bytes | none of its own: confirms in the real shape whatever batch B's `strm_*` find (up to 0.9 points) |
+
+**Spec.** Every file 1756-L81E v35 on the realism plant, lint-clean and above the realism floor
+(`write_sample`, `tests/test_build_guards.py`); nothing taken from a real export but catalog
+identity fields (catalog, product type and code, revision, the 1783-NATR's profile properties).
+
+| file(s) | varies | held fixed | discriminates | against |
+|---|---|---|---|---|
+| `udtpool_dint_n4_len{01,02,03,04,08,12}` | member-name length | one definition `PoolUdtA` (8-character name, used by no tag), 4 DINT members | wired `8·ceil(Σ(len+1)/8)` against the candidate `8·ceil(Σmax(0,len−2)/8)`: they part at len 2 (16 / 0), 4 (24 / 8), 8 (40 / 24) and 12 (56 / 40), lengths the old sweeps could not separate | `realism_base_f25` and each other |
+| `udtpool_dint_n8_len{01,02,04,12}` | the same at 8 members | | per name or per character | the same |
+| `udtpool_bool_n4_len{01,02,03,04,08,12}` | the same on BOOL members | one run, one hidden SINT | whether BOOL names follow the DINT form (the BOOL arm read a flat −8 at lengths 2 to 32) | the same |
+| `zcm_eth_n{01,02,04}` | count | inhibited ETHERNET-MODULE, no connection, on the controller's Ethernet port, 8-character names | a placeholder's own cost; whether a further copy costs the same | `realism_base_f25` |
+| `zcm_natr_n{01,02}` | count | 1783-NATR on the controller's Ethernet port | its cost | the same |
+| `zcm_l75_n{01,02}` | count | 1756-L75 (revision 28, keying disabled) in the local chassis, slots 1 and 2 | a peer controller's cost (a 5069-L306ERS2 peer read 560) | the same |
+| `strn_{s2,c2,sc,sd}_400` | the STRING-holding UDT array nested as the one member of a scalar UDT tag | the inner UDT and its 400 elements, `strm_*`'s exactly | whether `strm_*`'s finding holds in the nested shape | each its `strm_*` twin (batch B) |
+
+`confound_check.py` reports two dimensions on two of these designs, by construction: each module
+in a count sweep brings its own name (all 8 characters; the module-name law is KNOWN), and each
+nested twin adds one outer UDT definition (200, the same under both pool forms) and changes the
+tag's form. Both are priced terms; the reading against the engine is the measurement.
+
+**Predicted before any reading** (engine of 2026-10-23; each reading is the engine's less the
+plant's 1,794 if the engine is right):
+
+| file | engine | reading under the alternative |
+|---|---:|---|
+| `udtpool_dint_n4_len01` / `02` / `03` / `04` / `08` / `12` | 842,418 / 842,426 / 842,426 / 842,434 / 842,450 / 842,466 | candidate: 8 / 16 / 8 / 16 / 16 / 16 lower |
+| `udtpool_dint_n8_len01` / `02` / `04` / `12` | 842,490 / 842,498 / 842,514 / 842,578 | candidate: 16 / 24 / 24 / 24 lower |
+| `udtpool_bool_n4_len01` / `02` / `03` / `04` / `08` / `12` | 842,450 / 842,458 / 842,458 / 842,466 / 842,482 / 842,498 | candidate: 8 / 16 / 8 / 16 / 16 / 16 lower; the old BOOL arm: 8 lower throughout |
+| `zcm_eth_n01` / `02` / `04` | 844,522 / 846,866 / 851,554 | 2,024 a module lower if a placeholder costs what an ETHERNET-BRIDGE does (320) |
+| `zcm_natr_n01` / `02` | 844,522 / 846,866 | the same |
+| `zcm_l75_n01` / `02` | 844,522 / 846,866 | 1,784 a module lower at the peer controller's 560 |
+| `strn_s2_400` / `_c2_400` / `_sc_400` / `_sd_400` | 911,682 / 878,082 / 895,682 / 879,682 | each its twin's reading + 200 |
+
+**Not in batch C, with the reason** (RESOLVED_QUESTIONS, "Closed 2026-10-23"): SFC (out of
+scope, owner); FBD logic (two routines, 16 blocks in seventeen programs); the ST constructs no
+file has measured (CASE, EXIT, TONR, OSRI, SIZE: each under 0.1% of instructions); a scalar word
+operand in a safety routine (in no real program); a safety structure's member read by standard
+logic (under 1 KB a program); a standard array tag's +4 (0.05% at most); a further 1734-AENTR/C
+adapter (0.13% at most). 0y's items 1, 2 and 4 are those; its item 3 is `udtpool_*`.
+
+### 0ze. ST, FBD and SFC — CLOSED 2026-10-23 (SFC out of scope permanently, owner; FBD and the unmeasured ST constructs under the floor)
+
+Queued 2026-10-22 behind the safety work. Closed on the census of 2026-10-23 and the owner's
+decision the same day (RESOLVED_QUESTIONS, "Closed 2026-10-23"): **SFC is never worked**
+(CLAUDE.md); FBD logic is two routines and 16 blocks in seventeen real programs, about 2 KB;
+every ST construct the real programs write above the floor is measured (OQ-STSHAPE), and the
+rest (CASE 5, EXIT 3 to 5, TONR 3 to 9, OSRI 2 to 6, SIZE 1 a program; no WHILE, REPEAT or
+non-retentive assignment) is each under 0.1% of instructions. The method this item carried
+(seed exports, count sweeps, a structural law for FBD and SFC) is withdrawn. As it stood:
 
 **Where the engine stands, per language (2026-10-22):**
 
@@ -307,25 +366,10 @@ concepts. Not started: the safety work closes first.
 |---|---|---|
 | ST | every predefined type the real set uses | statement shapes exact (OQ-STSHAPE, 39 files); instruction calls through the ladder weight table (four ST/RLL pairs, identical but for the routine); not measured: CASE, WHILE / REPEAT, non-retentive assignment, functions inside expressions, the ST-only blocks (TONR / TOFR / RTOR, CTUD, OSRI / OSFI) |
 | FBD | 22 FBD / SFC structures probed exact (OQ-FBDSFC, `predefprobe_*`) | **priced at zero**; `coverage.py` flags it |
-| SFC | SFC_STEP / SFC_ACTION / SFC_STOP probed exact | **priced at zero**; `coverage.py` flags it |
+| SFC | SFC_STEP / SFC_ACTION / SFC_STOP probed exact | **priced at zero**; out of scope permanently (owner, 2026-10-23) |
 
-RS-01 (7 SFC routines, 272 steps, FBD sheets) reads −8.2% standard, the largest standard
-error in the safety set; FBD and SFC logic is the likely cause and is why it is not counted.
-
-**Method, in order:**
-
-1. Inventory the real programs (read-only parse): routines by language, ST statements by
-   construct, ST / FBD calls by mnemonic, FBD blocks, wires and sheets, SFC steps,
-   transitions, actions, branches and stops. The floor rule (0.5% of real instructions)
-   decides what gets files; a construct absent from the real set waits.
-2. One Studio-made seed export per family, from the owner: each construct in valid form, so
-   lint carries every element's required attributes. An FBD sheet or SFC chart written from
-   memory is a build failure waiting to happen (as the 2198 blocks were).
-3. Count sweeps per construct as for ladder and ST (control, 1, n, 2n), solved together.
-4. For the long tail, a structural law, as the safety device law did for devices: an
-   unmeasured instruction priced from its operand count and types and its backing tag,
-   fitted on the measured ones and checked leave-one-out. An unseen predefined type sized
-   from the export's own L5K data, one DINT per value, as the FBD / SFC structures were.
+RS-01 (7 SFC routines, 272 steps, FBD sheets) reads −8.2% standard and stays uncounted:
+SFC is out of scope.
 
 ### 0zb. Safety batch A of 2 — CAPTURED 2026-10-21 and WIRED (OQ-STSHAPE, OQ-MODREPEAT, OQ-STRSHAPE, OQ-AOIBOOLINST, OQ-SAFETYPARTITION)
 
@@ -460,7 +504,7 @@ IB8S/OBV8S, 1756 IB16S/OBV8S, PowerFlex 527, BNI00HN. The signature and the lock
 (RS-03 = RS-17), so 0x's Studio-made lock variant drops to a check of the standard side
 (at most about 144). RS-16 is dropped; RS-01's standard figure is not counted (SFC/FBD).
 
-### 0y. Round 5 — SPEC ONLY, not generated; approval needed (OQ-SAFETYPARTITION, OQ-UDTMEMBERNAME, OQ-REALUNDER)
+### 0y. Round 5 spec — CLOSED 2026-10-23: item 0 captured in batch A; items 1, 2 and 4 closed on real exposure (RESOLVED_QUESTIONS, "Closed 2026-10-23"); item 3 built as batch C's `udtpool_*` (0zg)
 
 What round 4 left open that a generated file can answer, plus the two standard-engine
 terms its twins exposed. Same platform and plant as rounds 2 to 4 unless stated: the

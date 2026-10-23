@@ -376,6 +376,18 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
+## Built 2026-10-23: batch C — 27 files awaiting conversion and capture (TASKS 0zg)
+
+All 1756-L81E v35 on the realism plant. `gen_udt_name_pool.py`, 16 `udtpool_*`: one UDT
+definition used by no tag, every member name one length (1 to 12), four or eight DINT members or
+four BOOLs, for the member-name pool's form (OQ-UDTMEMBERNAME). `gen_zero_conn_modules.py`, 7
+`zcm_*`: an inhibited generic ETHERNET-MODULE placeholder with no connection at 1 / 2 / 4, a
+1783-NATR and a 1756-L75 peer controller at 1 / 2, the zero-connection catalogs real programs
+carry on the flat rate (OQ-MODREPEAT); identity fields are the catalogs' own, names and
+addresses the project's. `gen_string_members.py --only '^strn_'`, 4 `strn_*`: each `strm_*`
+file's 400 elements as the one array member of a scalar UDT tag, the nested shape real programs
+hold most STRINGs in (OQ-STRSHAPE). Each file's blind prediction is in TASKS 0zg.
+
 ## Built 2026-10-22: safety batch B, the last of 2 — 36 files awaiting conversion and capture (TASKS 0zd)
 
 `gen_safety_round7.py`, 26 files on the L81ES plant (the two drive files by `--local`): a
