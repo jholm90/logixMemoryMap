@@ -49,3 +49,6 @@ docs/demo/
 
 # Test fixtures' rebuilt generator output, reused between runs (tests/conftest.py).
 .cache/
+
+# Customer programs written by the capture tooling (never tracked)
+samples/generated/Customer/

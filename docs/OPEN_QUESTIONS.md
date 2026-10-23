@@ -226,6 +226,42 @@ Studio-side substitute — delete a category in Logix Designer, read Capacity tw
 declined: each reading costs a bench session. A residual model fitted on the real
 programs is judged by leave-one-out only and must beat 0.007 points.
 
+### Re-scored 2026-10-23 on nineteen standard programs (owner's capture of the same day)
+
+Every program with a fresh reading, standard processors only, priced by the engine of
+2026-10-23 (the scalar AOI law included). Labels key to the git-ignored
+`samples/local/aliases_20261023.csv`. RP-17 (39 source-protected routines, export 33's file)
+excluded: −2.97%. The safety-controller rows read as already recorded. Readings arrived with
+the files: fitting inputs, not blind.
+
+| label | platform | prediction − reading |
+|---|---|---:|
+| RP-01 | 1756-L83E v35 | -1.43% |
+| RP-02 | 1756-L82E v35 | -2.83% |
+| RP-03 | 1756-L83E v35 | -1.34% |
+| RP-04 | 1756-L82E v35 | -1.41% |
+| RP-05 | 1756-L83E v35 | -1.24% |
+| RP-06 | 5069-L330ERM v35 | -0.18% |
+| RP-07 | 1756-L81E v35 | +0.73% |
+| RP-08 | 1756-L83E v32 | -1.51% |
+| RP-09 | 1756-L81E v35 | +0.27% |
+| RP-10 | 1756-L83E v32 | -0.76% |
+| RP-11 | 1756-L81E v35 | -2.04% |
+| RP-12 | 1756-L82E v32 | -2.06% |
+| RP-13 | 1756-L81E v35 | -0.88% |
+| RP-14 | 1756-L83E v35 | -1.78% |
+| RP-15 | 1756-L81E v35 | +0.81% |
+| RP-16 | 1756-L81E v35 | +0.24% |
+| RP-18 | 1756-L83E v35 | -1.16% |
+| RP-19 | 1756-L83E v32 | -1.38% |
+| RP-20 | 1756-L83E v35 | -1.67% |
+
+**Mean 1.25%, worst −2.83% (RP-02), 3/19 inside 0.5%, 15/19 under-predicting.** Against
+0.97% / 2.57% before the scalar AOI law: the law moved the set toward under-prediction as
+estimated. Stopping rule NOT MET. Three over 2%: RP-02, RP-11, RP-12 (−2.0 to −2.8%).
+Exports in the old numbering not yet mapped to these labels; `quick_eval.py` still reads
+`realprog_NN` paths.
+
 ### The standard figure on real safety-controller programs — not counted toward accuracy
 
 Safety processors are excluded from accuracy (CLAUDE.md), but their standard Capacity is the
