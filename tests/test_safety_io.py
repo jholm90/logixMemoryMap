@@ -78,21 +78,26 @@ def test_a_safety_device_is_priced_by_its_connections_types_and_an_unseen_one_by
 
 
 def test_the_device_law_reproduces_every_measured_device_type_within_three_and_a_half_percent():
-    """Each measured type's safety cost against the law that prices an unmeasured one."""
+    """Each measured type's safety cost against the law that prices an unmeasured one. The
+    devices come from the safety I/O generators, built in memory, and the templates built
+    locally (samples/local/safety_io, git-ignored); without the local ones the set is short."""
     import xml.etree.ElementTree as ET
     from pathlib import Path
     import pytest
     from l5x_memory_analyzer.sizing.constants import load_memory_model
     from l5x_memory_analyzer.sizing.safety_io import device_key, safety_devices
+    from sample_gen import gen_safety_io, gen_safety_round6
     sio = load_memory_model().safety_io
-    root = Path(__file__).parent.parent / "samples" / "generated" / "safety"
-    files = sorted(root.glob("safe_io*_1.L5X")) + sorted(root.glob("safe_iol_*_1.L5X"))
-    if not files:
-        pytest.skip("the safety batch is not on disk")
+    local = Path(__file__).parent.parent / "samples" / "local" / "safety_io"
+    roots = [ET.fromstring(mod.make(sid, kw)) for mod in (gen_safety_io, gen_safety_round6)
+             for sid, _desc, kw in mod.plan() if sid.startswith("safe_io") and sid.endswith("_1")]
+    roots += [ET.parse(f).getroot() for f in sorted(local.glob("safe_iol_*_1.L5X"))]
     seen = {}
-    for f in files:
-        for d in safety_devices(ET.parse(f).getroot()):
+    for root in roots:
+        for d in safety_devices(root):
             seen.setdefault(device_key(d), d)
+    if len(seen) < 18 and not local.is_dir():
+        pytest.skip("the locally built safety I/O templates are not on this machine")
     assert len(seen) == 18
     for key, d in seen.items():
         law, real = sio.unseen_safety_bytes(d), sio.safety_bytes[key]
