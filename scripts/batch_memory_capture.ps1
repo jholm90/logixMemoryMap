@@ -209,6 +209,25 @@ if (-not (Test-Path $CapturesPath)) {
 # The spec side is still READ, to resolve sample_id and category for each file.
 $manifest = @(Import-Csv $ManifestPath)
 $captures = @(Import-Csv $CapturesPath)
+# A REAL PROGRAM -- any file no generator wrote -- is captured like any other, but its row
+# goes to samples\local\real_captures.csv (git-ignored), never to captures.csv: the row
+# carries the program's name, its window title and its build messages, and captures.csv
+# is pushed to a public repository. When samples\local\aliases.csv (columns label,file)
+# maps the file to a manifest label such as realprog_44, captures.csv also gets a row
+# under that label carrying the numbers only. Drawn after a capture run put 25 customer
+# program names, titles and error text into captures.csv and pushed them.
+$generatedIds = @{}
+$manifest | Where-Object { $_.category -ne 'real_program' } | ForEach-Object { $generatedIds[$_.sample_id] = $true }
+$localDir = Join-Path (Split-Path $PSScriptRoot -Parent) "samples\local"
+$RealCapturesPath = Join-Path $localDir "real_captures.csv"
+$realCaptures = if (Test-Path $RealCapturesPath) { @(Import-Csv $RealCapturesPath) } else { @() }
+$aliasByFile = @{}
+$aliasesPath = Join-Path $localDir "aliases.csv"
+if (Test-Path $aliasesPath) {
+    Import-Csv $aliasesPath | ForEach-Object {
+        if ($_.label -and $_.file) { $aliasByFile[[System.IO.Path]::GetFileNameWithoutExtension($_.file)] = $_.label }
+    }
+}
 # safety_bytes arrived after captures.csv already held thousands of rows.
 # Export-Csv takes its header from the FIRST object it writes, so a column that
 # only the new rows carried would be dropped silently; every row gets it here.
@@ -244,6 +263,8 @@ $captures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITL
         $loggedIds[$_.sample_id] = $true
         if ($pathById.ContainsKey($_.sample_id)) { $alreadyLogged[$pathById[$_.sample_id]] = $true }
     }
+$realCaptures | Where-Object { $_.actual_bytes -and ($_.notes -notmatch 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC') } |
+    ForEach-Object { $loggedIds[$_.sample_id] = $true }
 $mismatchFlagged = @{}
 $captures | Where-Object { $_.notes -match 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC' } |
     ForEach-Object { if ($pathById.ContainsKey($_.sample_id)) { $mismatchFlagged[$pathById[$_.sample_id]] = $true } }
@@ -296,7 +317,9 @@ foreach ($row in $remaining) {
     $l5xPath = if ([System.IO.Path]::IsPathRooted($row.l5x_path)) { $row.l5x_path } `
                else { Join-Path (Split-Path $PSScriptRoot -Parent) $row.l5x_path }
     $category = Get-Category $l5xPath
-    $existing = $captures | Where-Object { $_.sample_id -eq $meta.Id } | Select-Object -First 1
+    $isReal = -not $generatedIds.ContainsKey($meta.Id)
+    $pool = if ($isReal) { $realCaptures } else { $captures }
+    $existing = $pool | Where-Object { $_.sample_id -eq $meta.Id } | Select-Object -First 1
     $fileSw = [System.Diagnostics.Stopwatch]::StartNew()
 
     Write-Host ""
@@ -511,11 +534,38 @@ foreach ($row in $remaining) {
         }
         $existing.safety_bytes = $safetyValue
     } else {
-        $captures += [pscustomobject]@{
+        $newRow = [pscustomobject]@{
             sample_id = $meta.Id; actual_bytes = $blocksUsed
             controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
             window_title = $windowTitle; error_log = $errorLog; safety_bytes = $safetyValue
+        }
+        if ($isReal) { $realCaptures += $newRow } else { $captures += $newRow }
+    }
+    if ($isReal) {
+        $realCaptures | Export-Csv -Path $RealCapturesPath -NoTypeInformation -Encoding utf8
+        $label = $aliasByFile[$meta.Id]
+        if ($label) {
+            # Numbers and flag keywords only: no name, title, message or error text.
+            $flags = (([regex]::Matches($notes, 'WINDOW TITLE MISMATCH|ZERO CAPACITY|COUNTER NOT NUMERIC|SAFETY NOT READ|CAPACITY NOT NUMERIC|PROCTYPE-UNREAD') |
+                ForEach-Object { $_.Value }) -join '; ')
+            $fields = [ordered]@{
+                actual_bytes = $blocksUsed; controller_model = $declaredProc; firmware_rev = $declaredFw
+                date_tested = $date; notes = $flags; error_count = $errorCount; warning_count = $warningCount
+                message_value = ""; window_title = ""; error_log = ""; safety_bytes = $safetyValue
+            }
+            $labelRow = $captures | Where-Object { $_.sample_id -eq $label } | Select-Object -First 1
+            if (-not $labelRow) {
+                $labelRow = [pscustomobject]@{ sample_id = $label }
+                $captures += $labelRow
+            }
+            foreach ($k in $fields.Keys) {
+                if ($labelRow.PSObject.Properties.Name -contains $k) { $labelRow.$k = $fields[$k] }
+                else { $labelRow | Add-Member -NotePropertyName $k -NotePropertyValue $fields[$k] }
+            }
+            Write-Host "  real program: logged locally, and as $label in captures.csv (numbers only)"
+        } else {
+            Write-Host "  real program: logged to samples\local\real_captures.csv only (no label in samples\local\aliases.csv)"
         }
     }
     $captures | Export-Csv -Path $CapturesPath -NoTypeInformation -Encoding utf8

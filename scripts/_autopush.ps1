@@ -14,6 +14,63 @@
 # A real rebase conflict aborts cleanly and says so rather than leaving
 # things mid-rebase.
 
+# NOTHING CONFIDENTIAL LEAVES THIS MACHINE. Both push functions stage, then call
+# this before committing. A staged path is refused when it is under samples/local/,
+# under any folder named Customer or PROGRAMS, or is a project file (.L5X, .L5K,
+# .ACD, .zip, .7z) that no generator wrote: its name is not a non-real sample_id
+# in samples/manifest.csv. On a refusal nothing is committed or pushed and the
+# index is reset; the working tree is untouched.
+#
+# Drawn after a capture run swept 23 customer programs, dropped into
+# samples/generated/Customer/ to be converted, onto the public repository:
+# Push-AllChanges staged everything untracked and only .gitignore stood in the way.
+function Get-ConfidentialStaged {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
+    $generatedIds = @{}
+    $manifestPath = Join-Path $RepoRoot "samples\manifest.csv"
+    if (Test-Path $manifestPath) {
+        Import-Csv $manifestPath | Where-Object { $_.category -ne 'real_program' } |
+            ForEach-Object { $generatedIds[$_.sample_id] = $true }
+    }
+    $refused = @()
+    # The two result logs are committed, and a row names its file: a new row for a
+    # file no generator wrote puts a real program's name, window title and error
+    # text into a public file. Every added line must name a manifest sample.
+    $knownIds = @{}
+    if (Test-Path $manifestPath) { Import-Csv $manifestPath | ForEach-Object { $knownIds[$_.sample_id] = $true } }
+    foreach ($log in @('samples/captures.csv', 'samples/convert_log.csv')) {
+        foreach ($line in @(git diff --cached -U0 -- $log)) {
+            if ($line -notmatch '^\+' -or $line -match '^\+\+\+') { continue }
+            $first = (($line.Substring(1) -split ',', 2)[0]).Trim('"')
+            if ($first -eq 'sample_id' -or $first -eq 'l5x_path') { continue }
+            $id = [System.IO.Path]::GetFileNameWithoutExtension(($first -replace '\\', '/'))
+            if (-not $knownIds.ContainsKey($id)) { $refused += "${log}: row for '$id'" }
+        }
+    }
+    foreach ($path in @(git diff --cached --name-only --diff-filter=ACMR)) {
+        $q = $path -replace '\\', '/'
+        if ($q -like 'samples/local/*' -or $q -match '(^|/)(Customer|PROGRAMS)/') { $refused += $q; continue }
+        if ($q -match '\.(l5x|l5k|acd|zip|7z)$') {
+            $id = [System.IO.Path]::GetFileNameWithoutExtension($q)
+            if (-not $generatedIds.ContainsKey($id)) { $refused += $q }
+        }
+    }
+    return ,$refused
+}
+
+function Test-SafeToCommit {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
+    $refused = Get-ConfidentialStaged -RepoRoot $RepoRoot
+    if ($refused.Count -eq 0) { return $true }
+    git reset -q
+    Write-Host ""
+    Write-Host "NOT COMMITTED, NOT PUSHED: $($refused.Count) staged file(s) are not generated test files." -ForegroundColor Red
+    Write-Host "Real exports belong in samples\local\ (git-ignored), never under samples\generated\." -ForegroundColor Red
+    $refused | Select-Object -First 20 | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+    Write-Host "Move them out (or delete the copies there), then rerun. Nothing was lost: the index was reset, files are untouched." -ForegroundColor Red
+    return $false
+}
+
 function Push-RepoFile {
     param(
         [Parameter(Mandatory = $true)][string]$RepoRoot,
@@ -31,6 +88,7 @@ function Push-RepoFile {
         }
 
         git add $fileFull
+        if (-not (Test-SafeToCommit -RepoRoot $RepoRoot)) { return }
         git commit -m $CommitMessage *>$null
 
         git fetch origin main *>$null
@@ -57,12 +115,10 @@ function Push-RepoFile {
 # Stages and pushes EVERYTHING dirty in the working tree (git add -A,
 # not just tracked files -- new/untracked files get swept in too), one
 # commit, same fetch/rebase/push-to-main mechanism as Push-RepoFile.
-# Still respects .gitignore (git add -A never adds an ignored path), so
-# this project's own no-proprietary-L5X-in-git rule (CLAUDE.md) still
-# holds as long as real customer exports stay gitignored like they're
-# supposed to -- but there is no per-file review step here: whatever is
-# dirty when this runs gets committed and pushed, without you choosing
-# file-by-file. If you're mid-edit on something you don't want pushed
+# Respects .gitignore, and Test-SafeToCommit refuses the whole commit if anything
+# staged is not a generated test file (see above) -- .gitignore alone was not
+# enough. Otherwise there is no per-file review step: whatever is dirty when this
+# runs gets committed and pushed, without you choosing file-by-file. If you're mid-edit on something you don't want pushed
 # yet, commit/stash it separately (or gitignore it) before running a
 # batch script, since this no longer asks first.
 function Push-AllChanges {
@@ -80,6 +136,7 @@ function Push-AllChanges {
         }
 
         git add -A
+        if (-not (Test-SafeToCommit -RepoRoot $RepoRoot)) { return }
         git commit -m $CommitMessage *>$null
 
         git fetch origin main *>$null

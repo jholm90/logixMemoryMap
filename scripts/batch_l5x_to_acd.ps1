@@ -339,6 +339,20 @@ $logText = Get-Content -LiteralPath $logPath -Raw
 $logText = $logText -replace [regex]::Escape("$repoRoot\"), ""
 $logText = $logText -replace 'C:\\Users\\[^\\]+\\source\\repos\\ra-logix-designer-vcs-custom-tools\\', '<logix-sdk-tools>\'
 $logText = $logText -replace 'C:\\Users\\[^\\",]+\\', 'C:\Users\<user>\'
+# Only generated test files go into the committed log. A real export converted here
+# (from samples\local, or dropped anywhere else) keeps its row in the scratch log beside
+# the ACDs, the one the capture script reads; its name, path and messages never enter the
+# repository. Line endings are kept as written.
+$generatedIds = @{}
+Import-Csv (Join-Path $repoRoot "samples\manifest.csv") | Where-Object { $_.category -ne 'real_program' } |
+    ForEach-Object { $generatedIds[$_.sample_id] = $true }
+$nl = if ($logText -match "`r`n") { "`r`n" } else { "`n" }
+$keptLines = foreach ($line in ($logText -split "`r?`n")) {
+    $first = (($line -split ',', 2)[0]).Trim('"')
+    if ($first -eq '' -or $first -eq 'l5x_path') { $line; continue }
+    if ($generatedIds.ContainsKey([System.IO.Path]::GetFileNameWithoutExtension(($first -replace '\\', '/')))) { $line }
+}
+$logText = $keptLines -join $nl
 Set-Content -LiteralPath $repoLogPath -Value $logText -NoNewline
 . (Join-Path $PSScriptRoot "_autopush.ps1")
 
