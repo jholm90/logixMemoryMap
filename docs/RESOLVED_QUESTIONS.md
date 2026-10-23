@@ -785,6 +785,8 @@ operand. `confound_check.py` refused both before any file was submitted.
 
 ## OQ-ALIGN — UDT member padding
 
+**REOPENED 2026-10-23 as OQ-UDTLAYOUT (OPEN_QUESTIONS Section 6).** The one realistic mixed UDT captured, and the 17 `strx_*` files, read exactly an aligned layout; the sweeps below were shapes where the 8-byte tag slot and the 4-byte array element absorb padding. As first written:
+
 **SOLVED.** No alignment padding between members at all. `BOOL, DINT, BOOL` = 6
 bytes; `DINT, BOOL, BOOL` = 5. A run of consecutive BOOLs shares one backing byte and
 **a non-BOOL member breaks the run**, forcing the next BOOL onto a fresh byte.

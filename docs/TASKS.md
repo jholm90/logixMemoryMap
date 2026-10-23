@@ -295,6 +295,49 @@ seventeen before testing): a STRING member in a UDT array (4 an element, OQ-STRS
 500 such elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3
 to 5 a program, OQ-MODREPEAT).
 
+### 0zh. The 2026-10-23 capture: tooling, re-score, deep dive, batch D — batch D SPECIFIED, NOT BUILT (ask before generating)
+
+**Done the same day.** The capture tooling refuses to commit anything confidential
+(`scripts/_autopush.ps1`, `Test-SafeToCommit`; a real program's capture row goes to
+`samples/local/real_captures.csv`, a numbers-only row to `captures.csv` under its label;
+`tests/test_repo_confidentiality.py`). The 23 customer programs the previous run committed were
+purged from history (owner, 2026-10-23). The nineteen standard programs on disk re-scored:
+**1.262% / −2.83%** (OPEN_QUESTIONS Section 1). The 521 captured generator files deleted.
+
+**Deep-dive result:** the common shortfall is UDT layout (OQ-UDTLAYOUT, OPEN_QUESTIONS Section
+6). Up to 0.29 points of mean are at stake (1.262% → 0.970% under full natural alignment; 1.130%
+under the "hostlast" layout, the one consistent with every capture checked). realprog_44's
+excess is its ST (member arrays behind a tag index, 1,244 sites, unmeasured). Rest in Section 1.
+
+**Batch D — one question, eleven files.** Each file is the realism plant plus one UDT definition
+and one array tag of 200 of it, 1756-L81E v35, against `realism_base_f25`; the UDT is the only
+variable. Element sizes (a top-level array rounds its element to the UDT's alignment, 4 at
+least):
+
+| file | members, in order | packed (wired) | hostlast | natural | discriminates |
+|---|---|---:|---:|---:|---|
+| `udtlay_sd2` | SINT, DINT, SINT, DINT | 12 | 16 | 16 | DINT after a SINT |
+| `udtlay_bd2` | BOOL, DINT, BOOL, DINT | 12 | 12 | 16 | BOOL backing SINTs placed last, or in order |
+| `udtlay_bsbd` | BOOL, SINT, BOOL, DINT | 8 | 12 | 8 | the same, the other way round |
+| `udtlay_id2` | INT, DINT, INT, DINT | 12 | 16 | 16 | DINT after an INT |
+| `udtlay_ir2` | INT, REAL, INT, REAL | 12 | 16 | 16 | REAL after an INT |
+| `udtlay_dl` | DINT, LINT | 12 | 16 | 16 | LINT on 8 |
+| `udtlay_sds` | STRING, DINT, STRING | 176 | 180 | 180 | DINT and STRING after an 86-byte STRING |
+| `udtlay_cs2` | SINT, 40-char custom string, SINT, custom string | 92 | 96 | 96 | a custom string after a SINT |
+| `udtlay_su2` | SINT, {DINT, DINT}, SINT, {DINT, DINT} | 20 | 24 | 24 | a nested UDT after a SINT |
+| `udtlay_st2` | SINT, TIMER, SINT, TIMER | 28 | 32 | 32 | a predefined structure after a SINT |
+| `udtlay_nsa` | SINT, {INT, REAL, BOOL}[3] | 28 | 40 | 40 | a nested-UDT member array (the shape realprog_44 and the messy UDT hold) |
+
+Each wrong reading is 800 bytes (2,400 on `udtlay_nsa`) from the right one, a hundred times
+the noise floor. Batch B's `strm_*` and batch C's `strn_*` read the same question for STRINGs.
+Real exposure: padding sites in the real UDT definitions — nested UDT 310, DINT 188, STRING 105,
+REAL 80, TIMER 47, DINT[] 41, STRING[] 29, MOTION_INSTRUCTION 14 — 1.3 to 41.6 KB a program.
+
+**Owner's decisions needed:** (1) build batch D; (2) once B / D read, the full residual census
+before the layout is wired (every UDT-bearing family regenerated and re-priced; the 301-row UDT
+census of 2026-10-23 is scoped evidence, not that check); (3) which reading the six programs
+that re-read ~20 KB lower should keep (Section 1).
+
 ### 0zg. Batch C — BUILT 2026-10-23 (27 files), awaiting conversion and capture (OQ-UDTMEMBERNAME, OQ-MODREPEAT, OQ-STRSHAPE)
 
 **Owner's request 2026-10-23:** another batch, and every open question closed that can be.

@@ -236,6 +236,9 @@ of 174 UDT definitions.
   a fresh SINT for bits 8–15, and so on.
 - **No alignment padding between members at all.** `BOOL, DINT, BOOL` = 1+4+1 =
   6 bytes. `DINT, BOOL, BOOL` = 4+1 = 5 bytes.
+  **CONTRADICTED 2026-10-23 (OQ-UDTLAYOUT):** a realistic mixed UDT reads 240 an array
+  element against 216 priced, and the `strx_*` UDT 228 against 224, both exactly an aligned
+  layout. Still wired; batch D (TASKS 0zh) decides.
 - **A non-BOOL member breaks a BOOL run**, forcing the next BOOL onto a fresh
   backing byte.
 - A nested UDT member's size is that UDT's own total, computed recursively, with

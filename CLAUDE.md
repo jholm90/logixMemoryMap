@@ -47,11 +47,11 @@ instruction in a rung, exact in all 38 files that isolate it, timers included. B
 the same set read 0.58% / 2.37%, but only because that over-charge was cancelling a real
 ~2% under-charge nobody has found yet. **Finding that ~2% is the work now** (TASKS 0k).
 
-**Not re-scored since 2026-10-21.** The scalar AOI instance law (OQ-AOIBOOLINST, closed by
-batch A) re-prices every scalar AOI instance: −0.01% to −0.80% on the real safety programs,
-an estimated −100 KB across the seventeen, toward under-prediction. The seventeen are not
-in this checkout; the figures above stand until `scripts/quick_eval.py` runs on the
-owner's machine.
+**Re-scored 2026-10-23 on nineteen standard programs: mean 1.262%, worst −2.83%**, 7/19 inside
+1%, sum-weighted −1.29% (fresh readings by the capture tool; realprog_44..47 new). The scalar
+AOI instance law took 0.16 points of that. The deep dive found the common shortfall in UDT
+layout — the engine sums a UDT's members unaligned, and an aligned layout that keeps every
+packed capture exact takes the set to 1.130% / −2.66% (OQ-UDTLAYOUT, batch D specified).
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the

@@ -1,6 +1,6 @@
 # Open Questions
 
-**Five, each waiting only on a capture or on the seventeen.** Closed 2026-10-23: OQ-SERIESREAL,
+**Six, each waiting only on a capture or on the seventeen.** Opened 2026-10-23: OQ-UDTLAYOUT (the deep dive into the owner's capture of that day). Closed 2026-10-23: OQ-SERIESREAL,
 OQ-STSHAPE and OQ-SAFETYPARTITION (their laws wired and exact, their open items moved or
 closed), and on real exposure a standard array tag's +4, a further 1734-AENTR/C adapter, a
 safety structure's member read by standard logic and FBD logic (BOUNDED, under the floor) and a
@@ -37,6 +37,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-STRSHAPE** | Every STRING shape exact against its control. Open: a UDT array element holding STRINGs reads 4 above the engine (a STRING member at 88, or a custom string at 48), worth up to 0.9 points on the three programs the standard figure reads lowest; EQU / NEQ (rebuilt). Section 4. | batch B (`strm_*`, `strx_*_r2`); batch C (`strn_*`, the nested shape) |
 | **OQ-MODREPEAT** | Nine catalogs' repeat rates wired; a module-defined type is defined once a project. Open: packed 5069 cards on a controller's bus; zero-connection modules still on the flat 2,344 (RS-07 seven, 16,408 bytes). Section 3. | batch B (`safe_io6_5069_*`); batch C (`zcm_*`) |
 | **OQ-UDTMEMBERNAME** | The wired member-name pool does not fit its own four-DINT sweep or the safety rounds' short-named UDTs; a candidate fits those and misses the BOOL arm by 8. Section 2. | batch C (`udtpool_*`, 16) |
+| **OQ-UDTLAYOUT** | Reopened from OQ-ALIGN 2026-10-23. A UDT is priced as the plain sum of its members; the one realistic mixed UDT captured reads 240 an element against 216, and `strx_*` 4 an element high, both exactly an aligned layout. A layout that keeps every packed capture exact (210 of 210) takes the nineteen to 1.130% / −2.66%. Section 6. | batch D (TASKS 0zh, specified); batch B `strm_*`, batch C `strn_*` |
 
 ---
 
@@ -226,41 +227,70 @@ Studio-side substitute — delete a category in Logix Designer, read Capacity tw
 declined: each reading costs a bench session. A residual model fitted on the real
 programs is judged by leave-one-out only and must beat 0.007 points.
 
-### Re-scored 2026-10-23 on nineteen standard programs (owner's capture of the same day)
+### Re-scored 2026-10-23: nineteen standard programs, mean 1.262%, worst −2.83%
 
-Every program with a fresh reading, standard processors only, priced by the engine of
-2026-10-23 (the scalar AOI law included). Labels key to the git-ignored
-`samples/local/aliases_20261023.csv`. RP-17 (39 source-protected routines, export 33's file)
-excluded: −2.97%. The safety-controller rows read as already recorded. Readings arrived with
-the files: fitting inputs, not blind.
+Every standard-processor program with a reading on disk (the owner's capture of 2026-10-23, read
+by the capture tool from the L5X), engine of 2026-10-23, `scripts/quick_eval.py --real-only`:
+**mean 1.262%, worst −2.83% (realprog_44), 7/19 inside 1%, 15/19 inside 2%, sum-weighted
+−1.29%.** Stopping rule NOT MET. realprog_33 (39 source-protected routines) excluded: −2.97%.
+Absent from disk: realprog_07, _26, _29, _30, _31, _43. Labels key to the git-ignored
+`samples/local/aliases.csv`; realprog_44 to _47 are new and arrived with their readings (fitting
+inputs, not blind).
 
-| label | platform | prediction − reading |
-|---|---|---:|
-| RP-01 | 1756-L83E v35 | -1.43% |
-| RP-02 | 1756-L82E v35 | -2.83% |
-| RP-03 | 1756-L83E v35 | -1.34% |
-| RP-04 | 1756-L82E v35 | -1.41% |
-| RP-05 | 1756-L83E v35 | -1.24% |
-| RP-06 | 5069-L330ERM v35 | -0.18% |
-| RP-07 | 1756-L81E v35 | +0.73% |
-| RP-08 | 1756-L83E v32 | -1.51% |
-| RP-09 | 1756-L81E v35 | +0.27% |
-| RP-10 | 1756-L83E v32 | -0.76% |
-| RP-11 | 1756-L81E v35 | -2.04% |
-| RP-12 | 1756-L82E v32 | -2.06% |
-| RP-13 | 1756-L81E v35 | -0.88% |
-| RP-14 | 1756-L83E v35 | -1.78% |
-| RP-15 | 1756-L81E v35 | +0.81% |
-| RP-16 | 1756-L81E v35 | +0.24% |
-| RP-18 | 1756-L83E v35 | -1.16% |
-| RP-19 | 1756-L83E v32 | -1.38% |
-| RP-20 | 1756-L83E v35 | -1.67% |
+| label | platform | engine | with the hostlast UDT layout (OQ-UDTLAYOUT, not wired) | |
+|---|---|---:|---:|---|
+| realprog_44 | 1756-L82E | -2.83% | -2.66% | new 2026-10-23 |
+| realprog_16 | 1756-L82E | -2.06% | -1.98% |  |
+| realprog_27 | 1756-L81E | -2.04% | -1.98% | re-read -20,456 against the reading on file |
+| realprog_46 | 1756-L83E | -2.04% | -1.93% | new 2026-10-23 |
+| realprog_36 | 1756-L83E | -1.67% | -1.55% |  |
+| realprog_09 | 1756-L83E | -1.51% | -1.33% |  |
+| realprog_01 | 1756-L83E | -1.43% | -0.74% |  |
+| realprog_06 | 1756-L82E | -1.41% | -0.77% | re-read -19,928 against the reading on file |
+| realprog_47 | 1756-L83E | -1.38% | -1.16% | new 2026-10-23 |
+| realprog_45 | 1756-L83E | -1.34% | -1.19% | new 2026-10-23 |
+| realprog_32 | 1756-L83E | -1.24% | -0.89% |  |
+| realprog_35 | 1756-L83E | -1.16% | -0.89% |  |
+| realprog_17 | 1756-L81E | -0.88% | -0.82% |  |
+| realprog_34 | 1756-L83E | -0.76% | -0.51% |  |
+| realprog_08 | 5069-L330ERM | -0.18% | -0.05% | re-read -21,440 against the reading on file |
+| realprog_28 | 1756-L81E | +0.24% | +0.34% | re-read -20,936 against the reading on file |
+| realprog_14 | 1756-L81E | +0.27% | +0.73% | re-read -728 against the reading on file |
+| realprog_10 | 1756-L81E | +0.73% | +0.81% | re-read -24,896 against the reading on file |
+| realprog_18 | 1756-L81E | +0.81% | +1.14% | re-read -19,392 against the reading on file |
 
-**Mean 1.25%, worst −2.83% (RP-02), 3/19 inside 0.5%, 15/19 under-predicting.** Against
-0.97% / 2.57% before the scalar AOI law: the law moved the set toward under-prediction as
-estimated. Stopping rule NOT MET. Three over 2%: RP-02, RP-11, RP-12 (−2.0 to −2.8%).
-Exports in the old numbering not yet mapped to these labels; `quick_eval.py` still reads
-`realprog_NN` paths.
+**Six earlier exports re-read about 20 KB lower** than the reading on file (−19,392 to −24,896;
+realprog_14 −728), across programs of 0.9 to 5.2 MB, while ten others re-read to the byte. The
+readings on file for those six were not taken by the capture tool from an L5X-built ACD; the new
+ones were, as every generated file is. Which one the model should predict is the owner's to
+settle (TASKS 0zh); the table uses the new readings.
+
+**What the deep dive found (2026-10-23):**
+
+- **The common shortfall is tag data, and it is UDT layout** (OQ-UDTLAYOUT, Section 6). Scaling
+  one category at a time, fitted on the real set as a diagnostic only, `controller_tag` by 2%
+  gives the best worst case of any category (LOO 0.74%, max 1.72%). The engine sizes a UDT as the
+  plain sum of its members. The one realistic mixed UDT ever captured reads 240 an array element
+  against 216 priced, exactly a naturally aligned layout. A layout that also keeps every packed
+  capture exact (below) takes the set to **1.130% / −2.66%**, full natural alignment to
+  **0.970% / −2.32%**.
+- **The scalar AOI law (OQ-AOIBOOLINST) took 0.16 points of mean** (1.099% without it): it
+  lowered every program 1 to 40 KB. It is right on 22 isolation files and moved 70 of 75 AOI
+  captures closer; it uncovered a shortfall rather than causing one.
+- **ST is realprog_44's own extra, not the common term.** realprog_44 carries 3,051 ST
+  statements (308 KB priced), the other three over 2% almost none. Its ST is mostly copies
+  (DINT 1,100, BOOL 275, INT 234, a custom string 89) through deep member paths with a tag index
+  on an array that is itself a member, 1,244 times, a shape no file has measured; at ~45 more a
+  site it would carry the program's excess over the common shortfall. Its four unsized
+  encoder-diagnostic tags are under 1 KB.
+- **Zero-connection modules** on the flat 2,344: realprog_16 carries four peer controllers,
+  realprog_47 five, realprog_35 four; batch C's `zcm_*` prices them, in the over-prediction
+  direction.
+- **Eliminated on these nineteen:** event tasks, periodic tasks, AOI definitions, parameters and
+  locals, alarm conditions, documentation volume (rung comments, descriptions, member comments;
+  every program downloads its documentation), MSG, aliases, SBR / RET, COP / FLL — none beats a
+  uniform size scaling under leave-one-out (0.777% / 2.20%), which is itself a fit on the real set
+  and not wired.
 
 ### The standard figure on real safety-controller programs — not counted toward accuracy
 
@@ -348,3 +378,15 @@ OQ-ARRAYTAG4).
 | **Candidates — none measured, ranked by fit** | 1. **Operands of a safety AOI call beyond two.** Every measured safety call passed two (`SafeAoiA(Inst, AiIn[i], AiOut[i])`, +44 a call over the standard call law); AxisSTO passes eight on a 16-parameter AOI. Read per operand or per parameter, the +44 is 22 / 11 each, and the 29 calls are short **3.8 KB in both revisions**, most of RS-02's ~4.5 KB. 2. **Program parameters in the safety program**: RS-02 38 `Usage="Public"` BOOLs; RS-17 59 Public (BOOL, TIMER, DCI_STOP) and the 29 AxisSTO instances as `Usage="Output"`. Public is free in standard memory (OQ-PUBLICTAG); Input / Output have never been measured in either partition, and no other real safety program has one. Carrying RS-17's further ~8.7 KB alone, an Output AOI parameter would cost ~300, about twice its data block. 3. **Descriptions on safety tags**: RS-02 31 (1,019 characters), RS-17 94 (3,261), every other program 0 to 3. 4.3 to 4.4 a character fits both revisions by itself, but descriptions and comments are free in standard memory (`tagcomment_*`, `udt*comment_*`), member comments are free in safety (above), and RS-04u's 83 characters would put it 440 over. 4. **DCS chained 2 to 10 on a rung with nothing else** (RS-02's 24; every measured DCS stood alone on its rung): RS-06's one chain of three bounds it near 40 an instruction, ≤ 0.9 KB. 5. **Content in an uncalled safety routine**: measured only as one NOP (`safe_rtn_idle_*`); RS-02's ten subroutines are never called. Priced as if called; if they are not compiled the engine over-charges RS-02. 6. **The AxisSTO instance layout**: priced unpacked (116 an element, block 136); packed (60, block 88) would mean 1.4 KB over-charged on RS-17, the true remainder larger. |
 | **From OQ-SAFETYPARTITION (closed 2026-10-23)** | The eight other programs' generic 300 to 1,036 bytes low on the safety figure (152 + 4.08 a safety rung, leave-one-out rms 89) is this question's too: batch B's `safe_mix_*` family tests a per-rung residual on the realism plant. A scalar word operand in a safety routine, the one other candidate left there, is in no real program. |
 | **Test (batch B, TASKS 0zd, BUILT 2026-10-22: 26 files, blind predictions recorded)** | Studio-made variants of RS-17 measure the AxisSTO calls and the instances with their definition in place. Isolation files measure each candidate alone, each against a control in its own family: a safety AOI call's operand count and kind, program parameters by usage, descriptions on safety tags, DCS chained on a rung, content in an uncalled routine, an AxisSTO-like AOI's instances; one module-operand pair confirms the bound above; a mixed-rung family tests the generic per-rung residual. |
+
+---
+
+## 6. OQ-UDTLAYOUT — a UDT's members are aligned, reopened from OQ-ALIGN 2026-10-23
+
+| | |
+|---|---|
+| **The bar** | On the nineteen real standard programs the engine reads 1.29% low sum-weighted, and tag data is ~60% of their bytes. A UDT is priced as the plain sum of its members (OQ-ALIGN, "no alignment padding"). Under the layout below the nineteen move +1.3 KB to +41.6 KB each, **1.262% → 1.130% mean, −2.83% → −2.66% worst**; under full natural alignment 0.970% / −2.32%. In the real UDT definitions the members that land off their boundary are a nested UDT (310 sites), DINT (188), STRING (105), REAL (80), TIMER (47), DINT[] (41), STRING[] (29), MOTION_INSTRUCTION (14), BOOL[] (12), COUNTER (9), INT (8), LINT (6). |
+| **Evidence** | `mixedudt_messy_*` (the one realistic mixed UDT captured: STRING, scattered BOOLs, a nested-UDT array, a custom string, DINT[8], LINT, SINT, REAL): **240.3 an array element read, 216 priced**; laid out aligned it is 240, and the three files then sit on a flat −64 / −64 / −56, which is already the definition-only file's −64 (the member-name pool, OQ-UDTMEMBERNAME). `strx_*` (17 files, batch A): every one read 4,808 above the engine, 4 an element of a UDT holding two STRINGs, a custom string, a DINT and a REAL; aligned, all 17 land on the realism plant's own −1,794 (−1,786). **Against it:** `opshape_*` (26 files), a UDT of BOOL, DINT and a nested {BOOL, DINT} in a 4-element array, reads exactly packed (12 an element); full natural alignment puts it 16 over. |
+| **The layout that fits every capture** ("hostlast") | Non-BOOL members in declaration order, each at a multiple of its alignment (SINT 1, INT 2, DINT / REAL 4, LINT 8; a STRING, custom string, predefined structure or nested UDT its own largest member); **the hidden SINTs that back BOOL members after them**; a nested UDT not tail-padded; a UDT array element (at top level or as a member) rounded to its alignment, 4 at least. Re-priced on 301 rebuilt captures of every UDT family (udtslot, udtmn, defscale, dscale2, stringarray, stringoverhead, udtstring, arraypack, udtarrayalign, pool, opshape, progscope, blkstr, stringcop, ...): **210 exact before, 210 after**, nothing moved; the messy and `strx` files become exact. Full natural alignment: 210 → 184 (the 26 `opshape`). Fitted on three discriminating captures, so the layout is a hypothesis, not a measurement (CLAUDE.md failure mode 2). |
+| **Why OQ-ALIGN read "no padding"** | Its sweeps were BOOL / DINT shapes on scalar tags and homogeneous arrays, where the scalar tag's 8-byte slot and an array element's 4-byte rounding absorb the padding. |
+| **Test** | **Batch D (TASKS 0zh), SPECIFIED, NOT BUILT:** one array of 200 of one UDT per file on the realism plant, each shape chosen so packed, hostlast and natural predict different element sizes. Batch B's `strm_*` and batch C's `strn_*` also read this: hostlast predicts what the STRING-at-88 reading does (`strm_s2_400` +1,600, the other three 0). Not wired until a capture decides; wiring needs the full residual census (CLAUDE.md, "Cost of measurement"). |
