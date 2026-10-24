@@ -38,12 +38,17 @@ function Get-ConfidentialStaged {
     # text into a public file. Every added line must name a manifest sample.
     $knownIds = @{}
     if (Test-Path $manifestPath) { Import-Csv $manifestPath | ForEach-Object { $knownIds[$_.sample_id] = $true } }
+    # The STAGED file is parsed as CSV, not its diff read line by line: a multi-line field
+    # (a build error log) puts lines in the diff that are no row's start, and feeding their
+    # text to a path function threw "Illegal characters in path" and stopped the commit.
     foreach ($log in @('samples/captures.csv', 'samples/convert_log.csv')) {
-        foreach ($line in @(git diff --cached -U0 -- $log)) {
-            if ($line -notmatch '^\+' -or $line -match '^\+\+\+') { continue }
-            $first = (($line.Substring(1) -split ',', 2)[0]).Trim('"')
-            if ($first -eq 'sample_id' -or $first -eq 'l5x_path') { continue }
-            $id = [System.IO.Path]::GetFileNameWithoutExtension(($first -replace '\\', '/'))
+        if (-not (git diff --cached --name-only -- $log)) { continue }
+        $staged = (git show ":$log") -join "`n"
+        $key = if ($log -like '*captures.csv') { 'sample_id' } else { 'l5x_path' }
+        foreach ($row in @($staged | ConvertFrom-Csv)) {
+            $first = [string]$row.$key
+            if (-not $first) { continue }
+            $id = ($first -replace '\\', '/') -replace '^.*/', '' -replace '\.[^.]*$', ''
             if (-not $knownIds.ContainsKey($id)) { $refused += "${log}: row for '$id'" }
         }
     }
