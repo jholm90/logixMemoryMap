@@ -704,8 +704,10 @@ import. A file with its own safety task pays the shell once, through
 - **The 1769 series** — real range 69,600 to 98,944, wired per exact catalog at v35 only. The
   safety catalogs 1769-L30ERMS / L33ERMS take their standard twin's +64,736 (provisional,
   2026-10-23, OQ-CGL1769); at v30 and v32, the firmwares of the six real 1769 programs, it is
-  unmeasured. The `cgl_*` base files read it at v32 and v35; v30 cannot be built by the
-  conversion tooling and is taken from those and the 1769 firmware ladder.
+  measured on the `cgl_*` bases at v32 and v35 (2026-10-24): a 1769 follows the L16ER blanks'
+  firmware ladder (v32 6,176 below v35), not the L8x one; v30 is extrapolated one step below v31.
+  Its safety partition has its own base (1,040), safety I/O per device and logic deltas
+  (`memory_model.yaml compact_guardlogix_5370`, OPEN_QUESTIONS OQ-CGL1769).
 - **Dual-IP / DLR controller configuration costs +40 bytes.** One reading, one
   controller, not wired.
 

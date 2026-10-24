@@ -295,7 +295,12 @@ seventeen before testing): a STRING member in a UDT array (4 an element, OQ-STRS
 500 such elements a real safety program); a further 1734-AENTR/C adapter (470 to 830 over, 3
 to 5 a program, OQ-MODREPEAT).
 
-### 0zi. The 1769 Compact GuardLogix batch — BUILT 2026-10-23 (36 files, v32 and v35), awaiting conversion and capture (OQ-CGL1769)
+### 0zi. The 1769 Compact GuardLogix batch — CAPTURED and WIRED 2026-10-24 (36 files; three bad reads to recapture) (OQ-CGL1769)
+
+**Result:** the six read standard −0.25% to −4.86% and safety −0.7% to −3.3%, inside the owner's 5%
+(OPEN_QUESTIONS Section 7). Left: recapture `cgl_l30v32_logic400`, `cgl_l33v32_logic400`,
+`cgl_l33v32_plant2x` (program memory recorded as the I/O value; capture script fixed).
+
 
 **Owner's request 2026-10-23:** the 1769 programs RS-11 to RS-16 to within about 5% in both
 partitions, with as many test files as that takes; reports on customer programs only

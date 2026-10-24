@@ -4611,3 +4611,34 @@ instruction_accuracy:
   UPPER: {samples: 2, mean_pct: 0.0089, worst_pct: 0.0140}
   XOR: {samples: 1, mean_pct: 0.0000, worst_pct: 0.0000}
   XPY: {samples: 3, mean_pct: 0.0101, worst_pct: 0.0232}
+
+# 1769 Compact GuardLogix 5370 (OQ-CGL1769), the cgl_* batch of 2026-10-24: 1769-L30ERMS and
+# L33ERMS at v32 (and the base at v35), each step against its arm's base, zero build errors.
+compact_guardlogix_5370:
+  # Firmware: a 1769's empty project moves with firmware the way the 1769 standard
+  # catalogs' does, not the L8x ladder: v32 -> v35 reads +6,176 on both safety catalogs,
+  # exactly the L16ER fwmatrix step. Relative to v35 (where catalog_baseline_delta was
+  # measured), replacing the L8x firmware terms for any 1769- processor. v31 to v38 from the
+  # L16ER blanks; v30 extrapolated one step below v31 (no v30 file can be built).
+  processor_prefix: '1769-'
+  firmware_ladder_bytes: { 30: -15648, 31: -10912, 32: -6176, 33: -1336, 34: -624, 35: 0, 38: 1824 }
+  firmware_ladder_confidence: FITTED
+  # Safety partition, for a 1769-L3xERMS: the base (1,056 read with its one-NOP MainRoutine,
+  # against 1,410 on every L81ES / 5069 base).
+  safety_processor_pattern: '^1769-L3\dERMS$'
+  safety_base_bytes: 1040
+  # A safety device by catalog and its count of safety connection types (cgl_*_sio_*, the
+  # mix exactly additive; the Kinetix 5500 at 1 and 2 drives).
+  safety_io_bytes: { '1734-IB8S/B:2': 2180, '1734-IB8S/B:1': 744, '1734-OB8S/A:2': 2124,
+                     '1734-OB8S/B:2': 2124, '2198-H008-ERS2:1': 2148 }
+  # Any other device: its L8x price times what the measured four read against theirs
+  # (5,048 / 8,599 for the mix).
+  safety_io_unmeasured_ratio: 0.587
+  # Logic: an ordinary instruction's tag operand reads 7.5 less (saferung60, 165 operands,
+  # -1,240); DCS and CROUT 62 less each (safeinstr, -496 for 8); RIN 44 less (safecontent,
+  # -440 for 10, its 50 safety DINTs taken at their L8x price); a safety routine beyond the
+  # first 12 more (safertn8, +96 for 8). One file each: FITTED.
+  safety_operand_delta_milli: -7515
+  safety_instruction_delta_bytes: { DCS: -62, CROUT: -62, RIN: -44 }
+  safety_routine_delta_bytes: 12
+  safety_confidence: FITTED

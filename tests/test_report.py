@@ -598,3 +598,10 @@ def test_a_context_aois_internal_routines_are_context_too():
     ctx = ContextNames(aois=frozenset({"Blinker"}))
     assert classify_path("aoi_definitions/Blinker/Logic", ctx) == "context"
     assert classify_path("aoi_definitions/Other/Logic", ctx) == "target"
+
+
+def test_1769_follows_its_own_firmware_ladder():
+    # OQ-CGL1769: cgl_l30v32_base and cgl_l30v35_base read 6,176 apart, the L16ER step.
+    def total(sw):
+        return sum(e.bytes for e in build_report(_blank_root(sw, "1769-L30ERMS"), MODEL)[0])
+    assert total("35.05") - total("32.04") == 6176

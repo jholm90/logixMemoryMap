@@ -1634,6 +1634,9 @@ class MemoryModel:
     zero_connection_adapters: frozenset = frozenset()
     # A scalar AOI instance's packed BOOLs and rounded slot (OQ-AOIBOOLINST).
     aoi_scalar_instance: AoiScalarInstanceModel = AoiScalarInstanceModel()
+    # 1769 Compact GuardLogix 5370 (OQ-CGL1769): its firmware ladder and its safety
+    # partition's measured terms; memory_model.yaml compact_guardlogix_5370.
+    compact_guardlogix: dict = field(default_factory=dict)
 
 
 # (path, file text) -> the model built from it. Parsing the YAML is ~0.2 s and this is
@@ -1829,6 +1832,7 @@ def _build_memory_model(raw: dict) -> MemoryModel:
         udt_tag_extra=raw.get("definition_scale_correction", {}).get("udt_tag_extra", 0),
         aoi_instance_extra=raw.get("definition_scale_correction", {}).get("aoi_instance_extra", 0),
         aoi_scalar_instance=AoiScalarInstanceModel(**raw.get("aoi_scalar_instance", {})),
+        compact_guardlogix=dict(raw.get("compact_guardlogix_5370", {})),
         aoi_definition_extra=raw.get("definition_scale_correction", {}).get("aoi_definition_extra", 0),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],

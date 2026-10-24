@@ -18,6 +18,8 @@ MEMORY_MODEL.md, "Safety memory is a separate partition".
 
 from __future__ import annotations
 
+import re
+
 import xml.etree.ElementTree as ET
 from dataclasses import replace
 
@@ -46,13 +48,20 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
     if not has_safety_partition(root):
         return [], []
     sp = model.safety_partition
+    # A 1769 Compact GuardLogix prices its base, routines, logic and safety I/O by its own
+    # measured terms (OQ-CGL1769; memory_model.yaml compact_guardlogix_5370).
+    cgl = model.compact_guardlogix
+    ctl = root.find("Controller")
+    on_cgl = bool(cgl and ctl is not None
+                  and re.fullmatch(cgl["safety_processor_pattern"], ctl.get("ProcessorType") or ""))
     # A protected AOI's stand-in (its visible parameters) lets its instances and calls
     # be priced; idempotent, so the standard pass finds it already in place.
     add_protected_aoi_standins(root)
     data_types = {**parse_data_types(root), **parse_aoi_definitions(root)}
     tags = parse_tags(root)
     rows: list[tuple[str, str, str, int, str]] = [
-        ("safety/base", "project_baseline", "", sp.base_bytes, sp.base_confidence)]
+        ("safety/base", "project_baseline", "", cgl["safety_base_bytes"] if on_cgl else sp.base_bytes,
+         cgl["safety_confidence"] if on_cgl else sp.base_confidence)]
     errors: list[SizeError] = []
 
     # Tags: a name entry and a data block, split by scope (the controller-scope name
@@ -97,9 +106,12 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
                       if not (first is not None and r.program_name == first.get("Name")
                               and r.routine_name == first.get("MainRoutineName"))]
     if extra_routines:
-        rows.append(("safety/routines", "task_program_shell", "",
-                     sum(sp.routine_shell(r.routine_name or "") for r in extra_routines),
-                     weakest(sp.shell_confidence, sp.routine_name_confidence)))
+        shells = sum(sp.routine_shell(r.routine_name or "") for r in extra_routines)
+        basis = weakest(sp.shell_confidence, sp.routine_name_confidence)
+        if on_cgl:
+            shells += cgl["safety_routine_delta_bytes"] * len(extra_routines)
+            basis = weakest(basis, cgl["safety_confidence"])
+        rows.append(("safety/routines", "task_program_shell", "", shells, basis))
 
     # Logic: a safety instruction its measured rung cost; any other its standard engine
     # cost plus a cost per tag operand.
@@ -114,6 +126,8 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
     for routine in safety_routines:
         own = {mn: c for mn, c in routine.instruction_counts.items() if mn in sp.rung_bytes}
         size = sum(sp.rung_bytes[mn] * c for mn, c in own.items())
+        if on_cgl:
+            size += sum(cgl["safety_instruction_delta_bytes"].get(mn, 0) * c for mn, c in own.items())
         basis = "KNOWN"
         for mn in own:
             basis = weakest(basis, sp.rung_confidence(mn))
@@ -123,8 +137,11 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
                 replace(routine, instruction_counts=ordinary), model.logic_instructions, tag_types,
                 charge_shell=False, operand_types=operand_types.for_program(routine.program_name))
             names = controller_names | program_names.get(routine.program_name or "", set())
-            size += std + sum(sp.operand_cost(kind) for mn, root_name, kind in routine.operand_refs
-                              if mn not in sp.rung_bytes and root_name in names)
+            operands = [kind for mn, root_name, kind in routine.operand_refs
+                        if mn not in sp.rung_bytes and root_name in names]
+            size += std + sum(sp.operand_cost(kind) for kind in operands)
+            if on_cgl:
+                size += round(cgl["safety_operand_delta_milli"] * len(operands) / 1000)
             basis = weakest(basis, weakest(std_basis, sp.ordinary_instruction_confidence))
             delta = sum(sp.ordinary_delta_bytes.get(mn, 0) * c for mn, c in ordinary.items())
             if delta:
@@ -157,7 +174,14 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
 
     # Safety I/O: each CIP Safety device its measured cost by its connections' types; a
     # device of types not yet measured by the device law, and reported.
-    io_rows, unmeasured = safety_io_rows(safety_devices(root), model)
+    devices = safety_devices(root)
+    io_rows, unmeasured = safety_io_rows(devices, model)
+    if on_cgl:
+        table = cgl["safety_io_bytes"]
+        io_rows = [(path, cat, key, table.get(f"{d.catalog}:{len(d.families)}",
+                                              round(size * cgl["safety_io_unmeasured_ratio"])),
+                    weakest(basis, cgl["safety_confidence"]))
+                   for d, (path, cat, key, size, basis) in zip(devices, io_rows)]
     rows += io_rows
     sio = model.safety_io
     for key, count in sorted(unmeasured.items()):

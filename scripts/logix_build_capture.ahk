@@ -650,7 +650,11 @@ Status(msg) {
 				Status("Read Test value: " ButtonTest)
         Sleep 250
 				
-				if OCDValue = "0" AND ButtonTest != "Redundancy Enabled"{
+				; On a 1769, Edit3 is the I/O pool, not program memory: once an earlier
+				; Estimate has filled it, it is non-zero and was taken as the program figure
+				; (three cgl_* rows read 9,200, their I/O value). A 1769 title always goes on
+				; to Estimate and Edit8.
+				if (OCDValue = "0" OR InStr(WindowTitle, "[1769-")) AND ButtonTest != "Redundancy Enabled"{
 					Status("Reading 1769 Edit8 value")
 											Sleep 50
 							Send "{Tab}"

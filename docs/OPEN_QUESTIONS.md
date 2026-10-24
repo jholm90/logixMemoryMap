@@ -37,7 +37,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 | **OQ-STRSHAPE** | Every STRING shape exact against its control. Open: a UDT array element holding STRINGs reads 4 above the engine (a STRING member at 88, or a custom string at 48), worth up to 0.9 points on the three programs the standard figure reads lowest; EQU / NEQ (rebuilt). Section 4. | batch B (`strm_*`, `strx_*_r2`); batch C (`strn_*`, the nested shape) |
 | **OQ-MODREPEAT** | Nine catalogs' repeat rates wired; a module-defined type is defined once a project. Open: packed 5069 cards on a controller's bus; zero-connection modules still on the flat 2,344 (RS-07 seven, 16,408 bytes). Section 3. | batch B (`safe_io6_5069_*`); batch C (`zcm_*`) |
 | **OQ-UDTMEMBERNAME** | The wired member-name pool does not fit its own four-DINT sweep or the safety rounds' short-named UDTs; a candidate fits those and misses the BOOL arm by 8. Section 2. | batch C (`udtpool_*`, 16) |
-| **OQ-CGL1769** | The 1769 Compact GuardLogix programs RS-11 to RS-16. Standard −5% to −12% until a 1769 safety catalog took its standard twin's blank baseline (provisional, 2026-10-23): now +1.4% / +2.6% / +1.4% / −2.4% / +3.2% / −0.25%. Safety +28% to +42%, every one high, unexplained. Section 7. | the `cgl_*` batch (TASKS 0zi, 36 files at v32 and v35, built) |
+| **OQ-CGL1769** | The 1769 Compact GuardLogix programs RS-11 to RS-16. Standard −5% to −12% until a 1769 safety catalog took its standard twin's blank baseline (provisional, 2026-10-23): now +1.4% / +2.6% / +1.4% / −2.4% / +3.2% / −0.25%. Captured and wired 2026-10-24: standard −0.25% to −4.86%, safety −0.7% to −3.3%. Three bad reads to recapture. Section 7. | recapture of three `cgl_*` rows |
 | **OQ-UDTLAYOUT** | Reopened from OQ-ALIGN 2026-10-23. A UDT is priced as the plain sum of its members; the one realistic mixed UDT captured reads 240 an element against 216, and `strx_*` 4 an element high, both exactly an aligned layout. A layout that keeps every packed capture exact (210 of 210) takes the nineteen to 1.130% / −2.66%. Section 6. | batch D (TASKS 0zh, specified); batch B `strm_*`, batch C `strn_*` |
 
 ---
@@ -478,6 +478,37 @@ capture script read Edit6 as safety on every platform, which on a 1769 is the pr
 - **The 1769 safety base reads 1,056 against 1,410**: 354 below every L81ES / 5069 base.
   Every 1769 safety program pays that base once; it is 2% of RS-11's safety reading, so the
   +28% is mostly elsewhere (the `sio_*` and `safe*` steps).
+
+**Captured 2026-10-24 and WIRED** (36 files, zero build errors; three rows bad reads, below).
+`memory_model.yaml compact_guardlogix_5370`:
+
+- **Firmware.** v32 → v35 reads +6,176 on both safety catalogs, exactly the L16ER blanks' step;
+  a 1769 now follows that ladder (v31 to v38 from the L16ER blanks, v30 one step below v31,
+  extrapolated: no v30 file can be built) in place of the L8x ladder, which put v32 11,240
+  ABOVE v35. Every base then reads the engine's less 1,922 (L30ERMS) or plus 558 (L33ERMS):
+  the catalogs carry identical content (the L30ERMS `plant2x` and the L33ERMS base read 16
+  apart), so the 2,480 between them is the content rate below, not the catalog.
+- **Safety, exact on all 33 good files:** base 1,040 (1,056 with the MainRoutine's NOP,
+  against 1,410 on every L81ES / 5069 base); 1734-IB8S/B with both connections 2,180, with
+  the input only 744, 1734-OB8S/A 2,124, Kinetix 5500 2198-H008-ERS2 2,148 (L8x: 3,513 /
+  1,629 / 3,457 / 3,577), the mix exactly additive; an ordinary instruction's tag operand
+  7.5 less, DCS / CROUT 62 less, RIN 44 less, a further routine 12 more (one file each,
+  FITTED). The L81ES twins `safe_cgl_rung60` / `_rtn8` read the engine's L8x price exactly.
+- **Standard content, not wired:** twice the plant reads +2,496 above the engine's rate
+  (+0.84%); 400 DINTs exact; 20 UDT definitions 48 each low; 10 programs 52 each high; the
+  module mix +13,464 program and +2,888 I/O pool against +15,441 (a 1769 reports part of a
+  module's cost in its I/O memory); the safety cards' standard side 0 to +1,000.
+
+**The six now read:** standard −2.89 / −2.61 / −2.90 / −4.86 / −0.25 / −2.22%, safety
+−3.3% (RS-11 to RS-13) / −3.1% (RS-14) / −0.7% (RS-15); were −5% to −12% and +28% to +42%.
+Inside the owner's 5% on both partitions. RS-14 (−4.86%) is the one near the line, and the
+plant rate's +0.84% is the direction it needs; the unwired standard terms above are the next
+step if it moves.
+
+**Bad reads, to recapture:** `cgl_l30v32_logic400`, `cgl_l33v32_logic400` and
+`cgl_l33v32_plant2x` recorded program memory 9,200, their I/O value: the capture script took
+Edit3 (on a 1769, the I/O pool) as the program figure once an earlier Estimate had filled it.
+Fixed (a 1769 title always goes on to Estimate and Edit8); the three rows are not used.
 
 **What decides it.** The base files give the 1769 baseline on each catalog at v32 and v35;
 `plant2x` gives the content rate (the L30ERMS `plant2x` and the L33ERMS `base` carry the same

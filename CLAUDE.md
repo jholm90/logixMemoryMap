@@ -197,9 +197,9 @@ reading −5% to −12% standard and +28% to +42% safety. Test files for them ar
 those catalogs, generated in whatever number the gap needs, **at v32 or later and never at
 v30: the conversion tooling cannot build a v30 project** (owner, 2026-10-23), so the four
 v30 programs are reached from v32 and the firmware step the v35 bases read. Every other 1769
-and every 1756-L7x stays dead. Since a 1769 safety catalog took its standard twin's blank
-baseline (provisional, 2026-10-23) the six read inside 3.2% standard; safety is still +28% to
-+42%, and the `cgl_*` batch (TASKS 0zi, OQ-CGL1769) reads both partitions on both catalogs at v32. Existing
+and every 1756-L7x stays dead. Since the `cgl_*` batch was captured and wired (2026-10-24,
+OQ-CGL1769: the 1769's own firmware ladder, its safety base, safety I/O and safety logic
+terms) the six read standard −0.25% to −4.86% and safety −0.7% to −3.3%. Existing
 wiring and captures stay — they cost nothing to keep — but nothing new is invested
 there. When a corpus-wide number is dragged down by those rows, **report the figure
 excluding them and say so.** Do not lead with the contaminated number and explain it

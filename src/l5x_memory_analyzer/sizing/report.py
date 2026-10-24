@@ -1309,6 +1309,23 @@ def build_report(root: ET.Element, model: MemoryModel,
             f"{processor_type}_V{software_revision.split('.')[0]}_CORRECTION",
             pfc_bytes, pfc_basis,
         ))
+    # A 1769's empty project follows its own firmware ladder, not the L8x one (OQ-CGL1769):
+    # one correcting line takes the L8x terms back to their v35 value and applies the 1769 step.
+    cgl = model.compact_guardlogix
+    if (scope.is_whole_controller and cgl and processor_type
+            and processor_type.startswith(cgl["processor_prefix"]) and software_revision):
+        major = int(software_revision.split(".")[0])
+        ladder = cgl["firmware_ladder_bytes"]
+        if major in ladder:
+            l8x_here = fw_bytes + pfc_bytes
+            l8x_v35 = (model.firmware_baseline_delta.delta_for("35.05")[0]
+                       + model.processor_firmware_correction.correction_for(processor_type, "35.05")[0])
+            step = ladder[major] - l8x_here + l8x_v35
+            if step:
+                baseline_delta_entries.append((
+                    "catalog_firmware_ladder", "project_baseline", f"1769_V{major}_LADDER",
+                    step, cgl["firmware_ladder_confidence"]))
+
     # The 296 is the safety task/program shell Studio creates for a safety controller
     # whose file carries none (the fwmatrix 5069 S2/S3 files); a file with its own safety
     # task is already charged that shell above (round 4's 5069 bases, OQ-SAFETYPARTITION).
