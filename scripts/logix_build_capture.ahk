@@ -701,7 +701,7 @@ Status(msg) {
 							
 							
 							;Send "{Enter}"
-							Sleep 500
+							Sleep 5500
 							OCDValue := StripCommas(Trim(ControlGetText("Edit8", "A")))
 					}					
 				}
