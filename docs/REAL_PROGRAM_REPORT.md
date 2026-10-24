@@ -7,16 +7,16 @@ standard-processor export, `RS-NN` for a safety-controller export); the names st
 gitignored `samples/local/`. Error is engine minus reading, as a share of the reading:
 negative means the engine predicts too little.
 
-**Run 2026-10-23, engine `ba22e27`.**
+**Run 2026-10-24, engine `833dad2`.**
 
 ## Summary
 
 - **Standard processors, counted: 19 programs, mean 1.262%, worst −2.832%**, 7/19 inside 1%, 15/19 inside 2%, sum-weighted −1.287%. Stopping rule (mean under 1% and worst under 2%): **NOT MET**.
 - Not counted: realprog_33 (39 source-protected blocks), −2.97%.
 - **Safety controllers, standard partition** (1756 / 5069, counted): 1.56% / −2.80% on 10 programs.
-- **1769 Compact GuardLogix, standard partition**: 1.86% / +3.16% on 6 programs.
-- **Safety partition** (every safety controller with a safety reading): 11.77% / +42.32% on 16 programs.
-  Of those, 1756 / 5069: 2.89% / −8.32% on 11; 1769: 31.33% / +42.32% on 5.
+- **1769 Compact GuardLogix, standard partition**: 2.62% / −4.86% on 6 programs.
+- **Safety partition** (every safety controller with a safety reading): 2.85% / −8.32% on 16 programs.
+  Of those, 1756 / 5069: 2.89% / −8.32% on 11; 1769: 2.76% / −3.34% on 5.
 
 ## Standard processors
 
@@ -61,12 +61,12 @@ Two readings each on the Capacity tab: the standard partition and the safety par
 | RS-09 | 5069-L330ERMS2 | v32.13 | 669,585 | 658,680 | +1.66% | 33,828 | 34,288 | −1.3% |  |
 | RS-10 | 5069-L340ERS2 | v35.11 | 2,876,821 | 2,935,942 | −2.01% | 49,438 | 50,058 | −1.2% | standard reading is realprog_39's |
 | RS-17 | 1756-L81ES | v35.14 | 2,810,589 | 2,817,995 | −0.26% | 182,826 | 197,262 | −7.3% | standard reading is realprog_49's; RS-03 before its signature and lock |
-| RS-11 | 1769-L30ERMS | v30.11 | 631,448 | 622,636 | +1.42% | 22,709 | 17,656 | +28.6% |  |
-| RS-12 | 1769-L30ERMS | v30.12 | 531,321 | 518,040 | +2.56% | 22,709 | 17,656 | +28.6% |  |
-| RS-13 | 1769-L30ERMS | v30.14 | 632,800 | 624,084 | +1.40% | 22,709 | 17,656 | +28.6% |  |
-| RS-14 | 1769-L30ERMS | v32.13 | 690,494 | 707,484 | −2.40% | 26,395 | 20,548 | +28.5% |  |
-| RS-15 | 1769-L33ERMS | v30.14 | 810,785 | 785,944 | +3.16% | 34,304 | 24,104 | +42.3% |  |
-| RS-16 | 1769-L33ERMS | v32.13 | 882,433 | 884,640 | −0.25% | 19,105 |  |  | standard reading is realprog_42's; standard reading's file inferred from platform; no safety reading |
+| RS-11 | 1769-L30ERMS | v30.11 | 604,640 | 622,636 | −2.89% | 17,067 | 17,656 | −3.3% |  |
+| RS-12 | 1769-L30ERMS | v30.12 | 504,513 | 518,040 | −2.61% | 17,067 | 17,656 | −3.3% |  |
+| RS-13 | 1769-L30ERMS | v30.14 | 605,992 | 624,084 | −2.90% | 17,067 | 17,656 | −3.3% |  |
+| RS-14 | 1769-L30ERMS | v32.13 | 673,078 | 707,484 | −4.86% | 19,907 | 20,548 | −3.1% |  |
+| RS-15 | 1769-L33ERMS | v30.14 | 783,977 | 785,944 | −0.25% | 23,940 | 24,104 | −0.7% |  |
+| RS-16 | 1769-L33ERMS | v32.13 | 865,017 | 884,640 | −2.22% | 13,782 |  |  | standard reading is realprog_42's; standard reading's file inferred from platform; no safety reading |
 
 ## History
 
@@ -77,3 +77,4 @@ programs and readings on file that day.
 |---|---|---:|---:|---:|---:|---:|---|---|---|
 | 2026-10-23 | `f19bdea` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 8.68% / −11.55% | 11.77% / +42.32% |
 | 2026-10-23 | `ba22e27` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 1.86% / +3.16% | 11.77% / +42.32% |
+| 2026-10-24 | `833dad2` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 2.62% / −4.86% | 2.85% / −8.32% |
