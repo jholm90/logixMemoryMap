@@ -151,6 +151,8 @@ def test_custom_string_type_data_member_rounds_to_nearest_8_tie_down():
 
 
 def test_bool_packing_run_broken_by_non_bool_member():
+    # (Hidden hosts named as Studio names them: ZZZZZZZZZZ...; the hostlast layout,
+    # OQ-UDTLAYOUT, puts them after the DINT, so neither has padding.)
     # BOOL/DINT/BOOL takes 8+32+8 of space where DINT/BOOL/BOOL
     # takes 32+8 -- a run of consecutive BOOLs
     # shares one backing SINT, but a non-BOOL member breaks the run and the
@@ -158,15 +160,15 @@ def test_bool_packing_run_broken_by_non_bool_member():
     # hidden-SINT-per-run XML shape (see parser/datatypes.py), not something
     # this code re-derives independently.
     bool_dint_bool = DataTypeDef(name="BoolDintBool", members=[
-        Member(name="_hidden01", data_type="SINT", dimension=0),
+        Member(name="ZZZZZZZZZZBoolDintBo0", data_type="SINT", dimension=0),
         Member(name="FlagA", data_type="BIT", dimension=0),
         Member(name="Count", data_type="DINT", dimension=0),
-        Member(name="_hidden02", data_type="SINT", dimension=0),
+        Member(name="ZZZZZZZZZZBoolDintBo2", data_type="SINT", dimension=0),
         Member(name="FlagB", data_type="BIT", dimension=0),
     ])
     dint_bool_bool = DataTypeDef(name="DintBoolBool", members=[
         Member(name="Count", data_type="DINT", dimension=0),
-        Member(name="_hidden01", data_type="SINT", dimension=0),
+        Member(name="ZZZZZZZZZZDintBoolBo1", data_type="SINT", dimension=0),
         Member(name="FlagA", data_type="BIT", dimension=0),
         Member(name="FlagB", data_type="BIT", dimension=0),
     ])
@@ -174,6 +176,18 @@ def test_bool_packing_run_broken_by_non_bool_member():
 
     assert size("BoolDintBool", data_types=data_types) == (6, "KNOWN")  # 8+32+8 bits
     assert size("DintBoolBool", data_types=data_types) == (5, "KNOWN")  # 32+8 bits
+
+
+def test_hostlast_layout_aligns_members_and_puts_bool_hosts_last():
+    # OQ-UDTLAYOUT: SINT, then DINT on its 4-byte boundary, then REAL; the BOOL host after them.
+    mixed = DataTypeDef(name="Mixed", members=[
+        Member(name="S", data_type="SINT", dimension=0),
+        Member(name="ZZZZZZZZZZMixed1", data_type="SINT", dimension=0),
+        Member(name="F", data_type="BIT", dimension=0),
+        Member(name="D", data_type="DINT", dimension=0),
+        Member(name="R", data_type="REAL", dimension=0),
+    ])
+    assert size("Mixed", data_types={"Mixed": mixed})[0] == 13  # S 1, pad 3, D 4, R 4, host 1
 
 
 def test_self_referential_udt_raises():

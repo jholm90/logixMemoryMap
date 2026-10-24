@@ -33,6 +33,221 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 ---
 
+# Closed 2026-10-24
+
+The capture of batch B (26 safety files), batch C (27) and the 1769 batch (36), zero build
+errors; three 1769 rows bad reads (program memory recorded as the I/O value; capture script
+fixed, to recapture). Every figure against the engine of 2026-10-24.
+
+| question | result | wired |
+|---|---|---|
+| OQ-UDTLAYOUT | The aligned "hostlast" layout, specified 2026-10-23 and never built for, predicted blind all twelve STRING-holding UDT files (`strm_*`, `strn_*`, `strx_*_r2`) within 16; the tight sum missed four by 1,584 to 4,808 | **yes**, `memory_model.yaml udt.layout`; nineteen 1.262% / −2.83% → 1.158% / −2.66%; nothing else on disk moved; batch D withdrawn |
+| OQ-STRSHAPE | Every STRING shape exact under the layout; the nested shape (`strn_*`) reads its outer UDT 16 below the 200 charged | by the layout; the −16 under the noise floor's double |
+| OQ-MODREPEAT | Zero-connection modules: inhibited ETHERNET-MODULE 272, 1756-L75 peer 240, 1783-NATR 480, exact at every count (flat rate 2,344). Packed 5069 cards on the controller's bus: 5069-OB16/B exact, two 5069-IB16/A about 890 each above (one file, 0.14% of the programs that carry them) | **yes** (the three catalogs); the IB16 under the floor |
+| OQ-SAFETYLOGICIO | Safety-program tag as an Output parameter +184 (BOOL) / +208 (AOI instance); a safety AOI call's operands beyond two 34.67 each; a module point read by slot path costs as through a tag. Left, under the floor: an AOI instance's layout (−24 to −45 an instance), DCS chained (−12 a rung), mixed rungs (−1.6 a rung) | **yes**; RS-02 / RS-03 / RS-17 safety −5.6 / −8.3 / −7.3% → −0.7 / −1.7 / −0.7%; the eleven 1756 / 5069 safety figures 2.89% / −8.32% → 0.72% / −1.69% |
+| OQ-UDTMEMBERNAME | Four and eight DINT members: the candidate `8·ceil(Σmax(0,len−2)/8)` exact on 9 of 10 (8 low at 8 one-character names); four BOOL members: the wired form less 8 at every length. A mixed UDT's form is not measured | no: a mixed rule would be a guess, and the whole term is 0.2% of a program at most, toward deeper under-prediction |
+| OQ-CGL1769 | The 1769's own firmware ladder; safety base 1,040, safety I/O per device, logic deltas; safety exact on all 33 good files | **yes**; the six standard −0.22..−4.33%, safety −0.4..−3.1% (owner's target 5%) |
+
+**CAPTURE ERRORS: 0 row(s)** on these questions.
+
+## Moved from OPEN_QUESTIONS 2026-10-24
+
+## 2. OQ-UDTMEMBERNAME — the UDT member-name pool, reopened 2026-10-19
+
+| | |
+|---|---|
+| **The bar** | Real programs carry about 174 UDT definitions with member names of about 12 characters. The wired pool charges `8 × ceil(Σ(len + 1) / 8)` a definition; the candidate below charges about 3 a member less, on the order of 5 KB (0.1 to 0.5%) a real program, **in the direction that deepens the real under-prediction**. So a change here is judged on the seventeen real programs, which are not in this session's checkout, and is not wired from generated rows alone. |
+| **Why reopened** | Re-priced live (the generators' own files rebuilt in memory, no files written), the sweeps the law was derived from do not all fit it: four BOOL members, lengths 2 to 32, a flat −8 (the form fits, the level is 8 high); four DINT members, lengths 2 / 7 / 16 / 32: −16 / −8 / −16 / −16 (not flat); nested UDT, lengths 2 and 32: −32 / −32; BOOL count 1 / 2 / 4 / 8 / 16 at length 7: +8 / 0 / −8 / −24 / −48. The AOI-name controls read 0. Safety rounds 2 and 4: `SafeUdtS` (D, R, B1, B2) and `SafeUdtL` (D0..D9) read 16 and 32 below the engine on a 1756-L81ES and on its 1756-L81E twin alike, so their pool is 0. |
+| **Candidate** | `8 × ceil(Σ max(0, len − 2) / 8)`, names of up to two characters free: exact on the DINT arm and both safety UDTs, 8 off on the BOOL length arm. The BOOL member-count arm moves with the BOOL count, not the names, so a BOOL-run term is mixed in it. |
+| **Test — batch C, BUILT 2026-10-23** | `gen_udt_name_pool.py`, 16 files on the plant, each one UDT definition (`PoolUdtA`, used by no tag) whose member names are all one length: `udtpool_dint_n4_len{01,02,03,04,08,12}`, `udtpool_dint_n8_len{01,02,04,12}`, `udtpool_bool_n4_len{01,02,03,04,08,12}`, each against `realism_base_f25` (TASKS 0zg). Each manifest row records the wired and candidate pools: the reading is the engine's less the plant's 1,794 under the wired form, less again 8 to 24 under the candidate. Whichever form fits all three arms then goes against the seventeen before it is wired. |
+
+---
+
+---
+
+### 3. OQ-MODREPEAT — what a further module costs, any catalog, any count; opened 2026-10-20
+
+| | |
+|---|---|
+| **The bar** | RS-06 and RS-09 (one program on two controllers) over-predicted by +2.32% / +2.52%. RS-09 carries two more 1732E-IB16M12R/A than RS-06 and reads 3,016 above it where the engine predicted 4,364: about 700 a copy where 1,432 was charged. Five Ethernet catalogs measured once each paid full price for every copy. The owner's direction (2026-10-20): the law has to handle any I/O module used by anyone, any number of times, not the catalogs measured. |
+| **Law, wired 2026-10-20** (MEMORY_MODEL, "A module-defined type is defined once per project") | A module's connection tags carry Rockwell's own data types; a project defines each once. A module whose vendor-prefixed types an earlier module already defined pays its overhead less their UDT-law definitions. It reproduces the nine measured repeat discounts within −72..+104 and one at +240 (440C-CR30), across catalogs as well as copies. An unseen catalog is a base (1,064 for one connection or none, 2,579 for two or more) plus its new types. Not applied to EDS-profile types, CIP Safety devices, rack-aliased cards, adapters and bridges, or a copy whose own repeat rate is measured. |
+| **Found 2026-10-20 on 34 existing captures** | The `rack_5069_*` family (one to twelve 5069 cards behind a 5069-AENTR, ten racks with 64 cards in one file, all zero errors) had never been re-priced under the law. With every type shared, the ten-rack file read 29,422 under (−16.6%). The cards' channel types have **no vendor prefix** (`CHANNEL_DI:I:0`): they are defined by every module that carries one, a copy an earlier module defined costing 76 more; the prefixed types are shared. A joint fit (adapter, the 76, each catalog's first copy) leaves rms 17, max 41 bytes on all 34. The adapter, charged the flat 2,344 zero-connection rate, costs 625; the 5069-SERIAL/A 367. The nine 5069 catalogs without an entry were priced blind by the unseen law first: eight within −247..+329 of their own single-card capture, six within ±85; then wired from those captures. |
+| **Census** | 251 clean module captures, engine before and after the law: total \|error\| 214,854 → 131,710, inside ±8 117 → 128. The ten-rack file read +12,402 (+7.0%) before the law, −29,422 with every type shared, +570 (+0.32%) now, and every other 5069 rack is within ±0.35%; nothing outside them moved under the channel-type rule; the 497 batch-A files on disk unmoved by it. Real safety-controller programs (prediction minus reading): RS-06 +2.32% → +1.78%, RS-09 +2.52% → +1.80%, RS-03 / RS-17 +0.41% → +0.23%, RS-07 −0.12% → +0.04%; RS-02 −0.72% → −1.19% (four PowerFlex 525 sharing two types, and the D012 first-copy correction +4,008), RS-05 / RS-08 / RS-10 −0.1 to −0.3 point (their packed 5069-IB16 / OB16 sharing `AB:5000_DI16_Packed:I:0` and the rest, and their ETHERNET-MODULEs the configuration type). |
+| **Open, 2026-10-20** (superseded below) | (1) Packed 5069 cards on a 5069 controller's own bus share their types under the law as fitted on standard-data cards in racks; the real ones (RS-05 / RS-08 two IB16 and two OB16, RS-10 three of each) are measured by `safe_io6_5069_*`. A catalog's entry is one number whatever its data format: 5069-IB16/A's (measured packed) priced its standard-data rack card within 3 bytes; 5069-OB16/B's (measured standard) prices the packed real cards, which `safe_io6_5069_ob16_1` reads. (2) The 1756-CNB/D, 1756-HYD02 and similar zero-connection modules cost less than the flat 2,344 (`rack_1756_n12` to `_n16` +2,384 to +3,458), not separated. (3) The D012 bare-drive `asmclose_2198_d012_*` rows read +4,008 now, as the with-axis shape requires; a drive with no axis exists in no real program. |
+| **Test** | `modrep_*`, 36 files on the L81E plant against `realism_base_f25` (TASKS 0zb): round 1, the five catalogs at 1 / 2 / 4; round 2, one class of module each, every one a blind prediction — 1756-IF8/A and 1756-OF8/B (chassis analog), 843E encoders (two prefixed and two prefix-less types on an Ethernet device), PowerFlex 755-EENET at 1 / 2 / 4; 1 / 2 / 4 1734-IE2C/C on their own connections in a sixth POINT rack; 5069-OB16/B one rack × one card, one × four, four × one (a per-card cost inside a rack against a per-copy cost); generic ETHERNET-MODULE one, a second sharing its input type, a second sharing only the configuration type. Plus `safe_io6_5069_*`, 4 files (packed 5069-IB16 / OB16 on the 5069-L330ERMS2 safety base). Captured 2026-10-21 (batch A): all 36 `modrep_*` and the two `safe_io6_5069_ib16_*`, zero errors. |
+| **Captured and wired, 2026-10-21** | All 36 `modrep_*` and the two `safe_io6_5069_ib16_*` clean. **Every first copy was already exact; each further copy costs the same at 2 and at 4**, so the nine catalogs carry their measured `repeat_bytes` and every `modrep_*` file now reads exact against its first copy. The law's own repeat, the error for an unmeasured catalog: 1732E +56 / +40, EX260 −72, 843E −40, PowerFlex 525 −224, 1734-IE2C +221, PowerFlex 755 +632 a copy. **The 843E's prefix-less types are shared** (paid again they charged 2,647 a copy against 1,535): a type is the module's own only on a 5069 card. **Per-channel configuration is per copy** (the owner: "specialty cards with lots of configuration per channel that can't be reduced"): the 1756-IF8 / OF8 read 432 / 744 a copy above the law, 2.28 / 2.16 times their nested per-channel configuration (189.5 / 345 bytes packed), the five cards without any −221..+72; wired as 2.2 × those bytes for a further copy of a catalog without its own rate (IF8 −14, OF8 +15 from the law alone). The declared data omits nested structure members (the IF8's 239 bytes of per-channel configuration, the OF8's 628); recorded, not altered. |
+| **Still open, 2026-10-23** | (1) **Packed 5069 cards on a controller's own bus**: a second packed 5069-IB16/A reads 568 below the engine (`safe_io6_5069_ib16_2`); the OB16/B never converted, rebuilt in batch B (`safe_io6_5069_ob16_1`, `_mix_2_2`). RS-05 / RS-08 / RS-10 carry two or three of each. (2) **Zero-connection modules on the flat rate, re-scoped on real exposure.** The 1756-CNB/D / HYD02 case is in no real program on disk. What is: inhibited generic ETHERNET-MODULE placeholders with no connection (an HMI or NAT address kept in the tree: RS-05 two, RS-07 four, RS-10 one), a 1756-L75 and a 1756-L84ES peer controller and a 1783-NATR (RS-07) — seven modules and 16,408 bytes at the flat 2,344 in RS-07 alone, while every zero-connection catalog measured costs 320 to 625 (ETHERNET-BRIDGE 320, 1756-L8SP 528, 5069-L306ERS2 560, 5069-AENTR 625). **Test: batch C `zcm_*`, BUILT 2026-10-23** (`gen_zero_conn_modules.py`, 7 files: the placeholder at 1 / 2 / 4, the 1783-NATR at 1 / 2, the 1756-L75 at 1 / 2, each against `realism_base_f25`; TASKS 0zg). |
+| **Closed 2026-10-23** | A further 1734-AENTR/C adapter reading 470 to 830 below its price: BOUNDED, under the floor (RESOLVED_QUESTIONS, OQ-AENTRREPEAT). |
+| **Capture errors** | **CAPTURE ERRORS: 2 row(s)** — `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` never converted (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): the 5069-OB16/B module-sweep block carries no ExtendedProperties ConfigID (711 packed on a controller's bus in every real export carrying one, 110 in standard data on an adapter), and Studio refuses the catalog without it; the IB16/A sweep block imported without one. `gen_safety_round6.std_card` adds it, lint refuses a 5069-OB16 without it (`module_without_configid`), both rebuilt in batch B. Still open (1) above rests on these two. |
+
+---
+
+---
+
+### 4. OQ-STRSHAPE — STRING operands the way real programs write them, opened 2026-10-20
+
+| | |
+|---|---|
+| **The bar** | The string instructions' weights were confirmed on the realism floor on STRING array elements (`blkstr_*`: CONCAT, DTOS, COP, SIZE) and MOV of a STRING costs a DINT MOV (OQ-STRINGMOV). The ten counted real safety-controller programs write them otherwise: 2,424 STRING operands of EQU and 2,151 of MOV are members behind an index; 777 INSERT (weighed once, near-empty), 713 CONCAT (264 operands custom-typed), 191 MID. The seventeen standard programs carry 1,850 CONCAT, and OQ-REALUNDER's one string-heavy lead (CONCAT count tracking the residual at ten times CONCAT's own weight) was never explained. |
+| **Mechanism** | Unknown: the operand-shape surcharges (OQ-INDIRECTUDT: +40 a member after a tag index, +108 on a STRING array) were measured on numeric instructions; whether a STRING operand's member path or custom type adds its own cost is not. |
+| **Test** | `strx_*`, 21 files (`gen_string_shapes.py`, TASKS 0zb): one inventory in every file (STRING arrays, a UDT with STRING, a 40-character custom string, DINT and REAL members, an index tag), 400 calls each, every destination distinct: EQU on elements / members / behind an index, NEQ, MOV member and behind an index, COP member, CONCAT member and custom-typed, INSERT, MID (and behind an index), DELETE, FIND, DTOS, STOD, RTOS, STOR, UPPER; each against `strx_n00`. Captured 2026-10-21 (batch A), 21 readings. LOWER left out: lint does not know it and no real program uses it. |
+| **Captured, 2026-10-21** | 17 clean files. **Every STRING shape exact against `strx_n00`**: MOV and COP of members and behind tag indexes, CONCAT of members and of a custom string type, INSERT, MID (and behind an index), DELETE, FIND, DTOS, STOD, RTOS, STOR, UPPER — the string instructions' weights hold on the shapes real programs write. **The control itself reads 4,808 below the engine: 4 an element of the UDT array holding a STRING, a 40-character custom string, DINT and REAL members (engine 224 an element, real 228).** Which member carries it — the STRING padded to 88, or the custom string to 48 — is not separable from these files; it contradicts the "no alignment padding" of OQ-STRINGUDTMEMBER for one of them. Real exposure: 0 to 500 such elements a real safety program (RS-05 0, RS-10 20, RS-08 250), a few KB at most. |
+| **Exposure recounted, 2026-10-22** | The "a few KB at most" above counted only array elements that hold a STRING directly. Counted as STRING members nested anywhere in a UDT tag, with every array multiplicity, the three programs the standard figure reads 2.0–2.45% low carry **3,880 / 2,744 / 12,677** (RS-05 / RS-08 / RS-10; RS-08 also 2,361 custom strings), the others 327 to 1,623. A STRING array's element is already 88 (`string_array.builtin_per_element`, KNOWN); a STRING inside a UDT is priced 86. At 88 there the standard figure on the eight programs moves 1.44% → about 1.21% (RS-10 −2.01 → −1.15%, RS-05 −2.38 → −1.78%, RS-04u −0.61 → −0.14%; RS-07 and RS-06 move away by 0.2 and 0.4 points); the custom-string reading (44 → 48) moves it to 1.42%. Not wired: `strx_n00` cannot tell them apart. **Test:** `strm_s2_400`, `_c2_400`, `_sc_400`, `_sd_400` (`gen_string_members.py`, built 2026-10-22, batch B): two STRINGs read +1,600 and the others nothing if a STRING member is 88; two custom strings +3,200 and the STRING + custom string +1,600 if the custom string is 48; STRING + DINT nothing either way. |
+| **Nested twins — batch C, BUILT 2026-10-23** | The real programs hold most of those STRINGs one level down: a scalar tag of a UDT whose member is an array of the STRING-holding UDT, the shape 35 to 49% of RS-05 / RS-08 / RS-10's predicted bytes sit in. `strn_s2_400`, `_c2_400`, `_sc_400`, `_sd_400` (`gen_string_members.py`) carry each `strm_*` file's 400 elements as that member of one scalar tag. Each differs from its twin by one outer UDT definition (200, the same under both member-name pool forms) and the tag's form; engine twin + 200. A pair reading twin + 200 says the twin's finding holds in the nested shape; anything else is a term of the nested shape itself (TASKS 0zg). |
+| **Capture errors** | **CAPTURE ERRORS: 4 row(s)** — `strx_equ_elem`, `strx_equ_member`, `strx_equ_vidx`, `strx_neq_member`, 400 errors each, "OTE, Operand 0: Invalid bit specifier": the generator wrote each comparison's result to `SuC[i].R.0`, a bit of a REAL member. All four read 16 below `strx_n00`, so none of their 400 rungs reached the controller; the rows measure nothing about EQU / NEQ. Lint now refuses a bit subscript on a REAL (`bit_specifier_on_real`); `gen_string_shapes` writes a BOOL destination and the four are rebuilt in batch B. |
+
+
+---
+
+---
+
+### 5. OQ-SAFETYLOGICIO — what RS-02 / RS-03 / RS-17 carry in the safety partition that nothing has measured, opened 2026-10-21
+
+| | |
+|---|---|
+| **The bar** | After batch A the safety figure reads −1.0% to −1.8% on the eight other real safety programs and **−5.6% / −8.3% / −7.3% on RS-02 / RS-03 / RS-17** (one machine's program at three revisions): 6,960 / 16,408 / 14,436 bytes. The owner's tolerance on the safety figure is a few percent. The standard figure is not involved. |
+| **Opened on a lead that the other programs refute (2026-10-22)** | The question was opened on module-tag operands in safety logic (slot-path card points at ~24 an operand, drive members at ~34). A census of every real safety program's safety content (all routines, operands by spelling, tags, devices, AOIs, parameters, documentation) bounds them: RS-01 has 129 adapter slot-path operands (`Adapter:1:I.Pt04Data`), RS-06 42 drive `SI` / `SO` members and 43 slot-path operands, RS-08 68 `Local:1:I` points, RS-04u 60, and each reads 300 to 1,036 low in all. Fitted with the rung count, a module operand in an ordinary safety instruction costs **about 1.4 bytes**, and at most 5 to 8 even if each program's whole gap were its operands. On RS-17's 316 that is ~0.4 KB, not the 7.5 KB the lead claimed. |
+| **Ruled out with existing data** | Device blocks: RS-02 and RS-17's drives, cards and local pair carry exactly the connections, sizes and revisions of the measured templates, and devices are additive at 1 / 2 / 4 drives, 1 to 8 IB8S and a second rack; standard-only drives leave the safety reading at 1,410 (`safe_iol_kinstd_*`). Rung comments (RS-01 15,129 characters), safety-tag member comments (RS-10 3,240, RS-07 1,749, RS-05 1,565), cards without a module name (RS-10 2, RS-08 4), SIL3 (RS-01, RS-07), the lock and signature (RS-03 reads RS-17's 197,262 with every safety element identical but the AOI exported encoded): each sits in a program 0.3 to 1 KB low. The AxisSTO call routine is identical in RS-02 and RS-17 (29 calls, nine operands each, 14 rungs of two calls), so whatever it costs it cannot explain RS-17's increase over RS-02. |
+| **What is left to explain** | **Generic, all eleven:** the eight others fit 152 + 4.08 a safety rung (leave-one-out rms 89 bytes) or 54 + 42 a device + 0.58 a bit instruction (81); not identified, inside a few percent, and no single test targets it. **Specific to the three:** RS-02 and RS-03 export AxisSTO encoded, priced at a minimum (its locals and logic, 1,972 = RS-03 − RS-17 at identical readings). Less that and the generic term: **RS-02 ~4.5 KB, RS-17 ~13.2 KB**. |
+| **Candidates — none measured, ranked by fit** | 1. **Operands of a safety AOI call beyond two.** Every measured safety call passed two (`SafeAoiA(Inst, AiIn[i], AiOut[i])`, +44 a call over the standard call law); AxisSTO passes eight on a 16-parameter AOI. Read per operand or per parameter, the +44 is 22 / 11 each, and the 29 calls are short **3.8 KB in both revisions**, most of RS-02's ~4.5 KB. 2. **Program parameters in the safety program**: RS-02 38 `Usage="Public"` BOOLs; RS-17 59 Public (BOOL, TIMER, DCI_STOP) and the 29 AxisSTO instances as `Usage="Output"`. Public is free in standard memory (OQ-PUBLICTAG); Input / Output have never been measured in either partition, and no other real safety program has one. Carrying RS-17's further ~8.7 KB alone, an Output AOI parameter would cost ~300, about twice its data block. 3. **Descriptions on safety tags**: RS-02 31 (1,019 characters), RS-17 94 (3,261), every other program 0 to 3. 4.3 to 4.4 a character fits both revisions by itself, but descriptions and comments are free in standard memory (`tagcomment_*`, `udt*comment_*`), member comments are free in safety (above), and RS-04u's 83 characters would put it 440 over. 4. **DCS chained 2 to 10 on a rung with nothing else** (RS-02's 24; every measured DCS stood alone on its rung): RS-06's one chain of three bounds it near 40 an instruction, ≤ 0.9 KB. 5. **Content in an uncalled safety routine**: measured only as one NOP (`safe_rtn_idle_*`); RS-02's ten subroutines are never called. Priced as if called; if they are not compiled the engine over-charges RS-02. 6. **The AxisSTO instance layout**: priced unpacked (116 an element, block 136); packed (60, block 88) would mean 1.4 KB over-charged on RS-17, the true remainder larger. |
+| **From OQ-SAFETYPARTITION (closed 2026-10-23)** | The eight other programs' generic 300 to 1,036 bytes low on the safety figure (152 + 4.08 a safety rung, leave-one-out rms 89) is this question's too: batch B's `safe_mix_*` family tests a per-rung residual on the realism plant. A scalar word operand in a safety routine, the one other candidate left there, is in no real program. |
+| **Test (batch B, TASKS 0zd, BUILT 2026-10-22: 26 files, blind predictions recorded)** | Studio-made variants of RS-17 measure the AxisSTO calls and the instances with their definition in place. Isolation files measure each candidate alone, each against a control in its own family: a safety AOI call's operand count and kind, program parameters by usage, descriptions on safety tags, DCS chained on a rung, content in an uncalled routine, an AxisSTO-like AOI's instances; one module-operand pair confirms the bound above; a mixed-rung family tests the generic per-rung residual. |
+
+---
+
+### 6. OQ-UDTLAYOUT — a UDT's members are aligned, reopened from OQ-ALIGN 2026-10-23
+
+| | |
+|---|---|
+| **The bar** | On the nineteen real standard programs the engine reads 1.29% low sum-weighted, and tag data is ~60% of their bytes. A UDT is priced as the plain sum of its members (OQ-ALIGN, "no alignment padding"). Under the layout below the nineteen move +1.3 KB to +41.6 KB each, **1.262% → 1.130% mean, −2.83% → −2.66% worst**; under full natural alignment 0.970% / −2.32%. In the real UDT definitions the members that land off their boundary are a nested UDT (310 sites), DINT (188), STRING (105), REAL (80), TIMER (47), DINT[] (41), STRING[] (29), MOTION_INSTRUCTION (14), BOOL[] (12), COUNTER (9), INT (8), LINT (6). |
+| **Evidence** | `mixedudt_messy_*` (the one realistic mixed UDT captured: STRING, scattered BOOLs, a nested-UDT array, a custom string, DINT[8], LINT, SINT, REAL): **240.3 an array element read, 216 priced**; laid out aligned it is 240, and the three files then sit on a flat −64 / −64 / −56, which is already the definition-only file's −64 (the member-name pool, OQ-UDTMEMBERNAME). `strx_*` (17 files, batch A): every one read 4,808 above the engine, 4 an element of a UDT holding two STRINGs, a custom string, a DINT and a REAL; aligned, all 17 land on the realism plant's own −1,794 (−1,786). **Against it:** `opshape_*` (26 files), a UDT of BOOL, DINT and a nested {BOOL, DINT} in a 4-element array, reads exactly packed (12 an element); full natural alignment puts it 16 over. |
+| **The layout that fits every capture** ("hostlast") | Non-BOOL members in declaration order, each at a multiple of its alignment (SINT 1, INT 2, DINT / REAL 4, LINT 8; a STRING, custom string, predefined structure or nested UDT its own largest member); **the hidden SINTs that back BOOL members after them**; a nested UDT not tail-padded; a UDT array element (at top level or as a member) rounded to its alignment, 4 at least. Re-priced on 301 rebuilt captures of every UDT family (udtslot, udtmn, defscale, dscale2, stringarray, stringoverhead, udtstring, arraypack, udtarrayalign, pool, opshape, progscope, blkstr, stringcop, ...): **210 exact before, 210 after**, nothing moved; the messy and `strx` files become exact. Full natural alignment: 210 → 184 (the 26 `opshape`). Fitted on three discriminating captures, so the layout is a hypothesis, not a measurement (CLAUDE.md failure mode 2). |
+| **Why OQ-ALIGN read "no padding"** | Its sweeps were BOOL / DINT shapes on scalar tags and homogeneous arrays, where the scalar tag's 8-byte slot and an array element's 4-byte rounding absorb the padding. |
+| **Test** | **Batch D (TASKS 0zh), SPECIFIED, NOT BUILT:** one array of 200 of one UDT per file on the realism plant, each shape chosen so packed, hostlast and natural predict different element sizes. Batch B's `strm_*` and batch C's `strn_*` also read this: hostlast predicts what the STRING-at-88 reading does (`strm_s2_400` +1,600, the other three 0). Not wired until a capture decides; wiring needs the full residual census (CLAUDE.md, "Cost of measurement"). |
+
+### 7. OQ-CGL1769 — the 1769 Compact GuardLogix programs, opened 2026-10-23
+
+**In scope by the owner's decision of 2026-10-23**, the one exception to 1769 being dead
+architecture (CLAUDE.md): RS-11 to RS-16, six customer programs on 1769-L30ERMS and L33ERMS at
+v30 and v32, to within about 5% in each partition.
+
+**Standard partition.** On the engine of that morning the six read −8.98 / −9.93 / −8.98 /
+−11.55 / −5.08 / −7.57%. A 1769 safety catalog had no `catalog_baseline_delta`, which is keyed
+by the exact ProcessorType, so its empty project was priced at the L8x's 18 to 24 KB; a 1769
+blank reads 58 to 83 KB. The 1769-L30ERM / L33ERM blank's +64,736 is now applied to its safety
+variant (ASSUMED, `memory_model.yaml`): a 1756-L81ES and a 5069 safety catalog carry their
+standard twin's empty project, the safety task shell apart. The six read **+1.42 / +2.56 / +1.40
+/ −2.40 / +3.16 / −0.25%**. The v30 programs read high and the v32 ones low, which is the shape
+of a baseline that moves with firmware: the L16ER blank rises 58,720 → 63,456 → 69,632 from v31
+to v32 to v35, so a v30 or v32 1769 blank is below the v35 value applied. The base files read it.
+
+Not settled, and the batch reads both: whether a module's I/O lands in the figure read (a 1769
+Capacity tab, like the L7x's, reports I/O memory apart from data and logic; the engine prices
+35 to 42 KB of `module_io` in each of the six), and whether content costs on a 1769 what it
+costs on an L81E (the per-station rate, against the plant's exact L81E rate).
+
+**Safety partition.** +28.6% (RS-11 / RS-12 / RS-13, one safety program, 22,709 against
+17,656), +28.5% (RS-14), +42.3% (RS-15); RS-16 has no safety reading. Every term is priced at
+its 1756-L81ES v35 / 5069 value: the base 1,394, routine shells, rung logic, and 8,599 of safety
+I/O in RS-11 (two 1734-IB8S/B, one 1734-OB8S/A). RS-15 reads 10,200 high and carries three
+Kinetix 5500 safety drives priced 10,731. Either the 1769 prices safety I/O well below the L8x,
+or the base, the routine shells or the rungs differ; the readings on file cannot tell which.
+
+**The `cgl_*` batch** (TASKS 0zi): every safety and standard term the six carry, on each
+catalog at v32, each a step on its arm's base. **v32 is the floor: the conversion tooling cannot
+build a v30 project** (owner, 2026-10-23), so the four v30 programs (RS-11 to RS-13, RS-15) are
+reached from v32 and the firmware step on the safety catalog itself, which `cgl_l30v35_base` and
+`cgl_l33v35_base` read (engine 413,130 and 709,578; the
+engine's ladder puts v35 11,240 below v32, the L16ER blank reads 6,176 above). Predicted before
+any reading, engine of 2026-10-23 (the reading is the engine's less the plant's 1,794 where the
+engine is right):
+
+| step | `l30v32` standard / safety | `l33v32` standard / safety |
+|---|---:|---:|
+| `base` | 424,370 / 1,410 | 720,818 / 1,410 |
+| `plant2x` | +296,448 / +0 | +592,896 / +0 |
+| `dint400` | +38,400 / +0 | +38,400 / +0 |
+| `udtdef20` | +9,760 / +0 | +9,760 / +0 |
+| `logic400` | +21,140 / +0 | +21,140 / +0 |
+| `progs10` | +18,040 / +0 | +18,040 / +0 |
+| `mods` | +15,441 / +0 | +15,441 / +0 |
+| `safecontent` | +3,200 / +6,544 | +3,200 / +6,544 |
+| `safertn8` | +0 / +2,800 | +0 / +2,800 |
+| `saferung60` | +0 / +3,576 | +0 / +3,576 |
+| `safeinstr` | +0 / +5,008 | +0 / +5,008 |
+| `sio_ib8s` | +4,063 / +7,026 | +4,063 / +7,026 |
+| `sio_ib8s1c` | +3,363 / +3,258 | +3,363 / +3,258 |
+| `sio_ob8s` | +3,288 / +3,457 | +3,288 / +3,457 |
+| `sio_mix` | +6,044 / +8,599 | +6,044 / +8,599 |
+
+Twins on the 1756-L81ES v35 standard plant, against safe_n00: `safe_cgl_rung60` (842,474 /
+4,986) and `safe_cgl_rtn8` (842,474 / 4,210). The Kinetix 5500 safety drive with its axis on
+`l33v32`: `safe_iol_cgl32_h008s_1` / `_2` (748,694 / 4,987 and
+773,802 / 8,564).
+
+**First readings, by hand, 2026-10-24** (not yet in `captures.csv`; the capture run records
+them). A 1769 Capacity tab after Estimate shows three pools: program memory used Edit8 / total
+Edit6, I/O memory used Edit3 / total Edit1, safety memory used Edit13 / total Edit11. **The
+capture script read Edit6 as safety on every platform, which on a 1769 is the program TOTAL
+(1,048,576)**; it now reads Edit13 on a 1769 title (`SAFETY_CTRL_1769`).
+
+| file | program | I/O | safety | engine standard / safety |
+|---|---:|---:|---:|---:|
+| `cgl_l30v32_base` | 405,032 | 9,200 | 1,056 | 424,370 / 1,410 |
+| `cgl_l30v32_mods` | 418,496 | 12,088 | 1,056 | 439,811 / 1,410 |
+
+- **Module I/O lands partly in the I/O pool.** The module step reads +13,464 program and
+  +2,888 I/O (+16,352 together) against the engine's +15,441: the engine's module price is
+  close to the two pools together, so a 1769 reading of program memory alone sees about 18%
+  of a module's cost less than the engine charges.
+- **The base reads 19,338 below the engine's standard figure (−4.6%)**, 10,138 below with
+  the I/O pool added. Less the plant's own −1,794, the provisional +64,736 baseline is about
+  8 to 17 KB too high at v32 — the direction the L16ER firmware ladder said (v32 below v35).
+  Not wired on one file: the v35 bases and the content steps separate baseline from rate.
+- **The 1769 safety base reads 1,056 against 1,410**: 354 below every L81ES / 5069 base.
+  Every 1769 safety program pays that base once; it is 2% of RS-11's safety reading, so the
+  +28% is mostly elsewhere (the `sio_*` and `safe*` steps).
+
+**Captured 2026-10-24 and WIRED** (36 files, zero build errors; three rows bad reads, below).
+`memory_model.yaml compact_guardlogix_5370`:
+
+- **Firmware.** v32 → v35 reads +6,176 on both safety catalogs, exactly the L16ER blanks' step;
+  a 1769 now follows that ladder (v31 to v38 from the L16ER blanks, v30 one step below v31,
+  extrapolated: no v30 file can be built) in place of the L8x ladder, which put v32 11,240
+  ABOVE v35. Every base then reads the engine's less 1,922 (L30ERMS) or plus 558 (L33ERMS):
+  the catalogs carry identical content (the L30ERMS `plant2x` and the L33ERMS base read 16
+  apart), so the 2,480 between them is the content rate below, not the catalog.
+- **Safety, exact on all 33 good files:** base 1,040 (1,056 with the MainRoutine's NOP,
+  against 1,410 on every L81ES / 5069 base); 1734-IB8S/B with both connections 2,180, with
+  the input only 744, 1734-OB8S/A 2,124, Kinetix 5500 2198-H008-ERS2 2,148 (L8x: 3,513 /
+  1,629 / 3,457 / 3,577), the mix exactly additive; an ordinary instruction's tag operand
+  7.5 less, DCS / CROUT 62 less, RIN 44 less, a further routine 12 more (one file each,
+  FITTED). The L81ES twins `safe_cgl_rung60` / `_rtn8` read the engine's L8x price exactly.
+- **Standard content, not wired:** twice the plant reads +2,496 above the engine's rate
+  (+0.84%); 400 DINTs exact; 20 UDT definitions 48 each low; 10 programs 52 each high; the
+  module mix +13,464 program and +2,888 I/O pool against +15,441 (a 1769 reports part of a
+  module's cost in its I/O memory); the safety cards' standard side 0 to +1,000.
+
+**The six now read:** standard −2.89 / −2.61 / −2.90 / −4.86 / −0.25 / −2.22%, safety
+−3.3% (RS-11 to RS-13) / −3.1% (RS-14) / −0.7% (RS-15); were −5% to −12% and +28% to +42%.
+Inside the owner's 5% on both partitions. RS-14 (−4.86%) is the one near the line, and the
+plant rate's +0.84% is the direction it needs; the unwired standard terms above are the next
+step if it moves.
+
+**Bad reads, to recapture:** `cgl_l30v32_logic400`, `cgl_l33v32_logic400` and
+`cgl_l33v32_plant2x` recorded program memory 9,200, their I/O value: the capture script took
+Edit3 (on a 1769, the I/O pool) as the program figure once an earlier Estimate had filled it.
+Fixed (a 1769 title always goes on to Estimate and Edit8); the three rows are not used.
+
+**What decides it.** The base files give the 1769 baseline on each catalog at v32 and v35;
+`plant2x` gives the content rate (the L30ERMS `plant2x` and the L33ERMS `base` carry the same
+content, so the catalogs difference directly); `mods` gives whether module I/O is in the figure;
+the `safe*` steps price the safety base, routine shells, rungs and DCS / CROUT on a 1769; the
+`sio_*` steps price each 1734 safety card type and their sum; the drive files price RS-15's
+Kinetix. Whatever each reads is wired, and the six re-priced against it; a v30 baseline is
+taken from the v32 reading and the 1769 firmware ladder, and says so.
+
+
 # Closed 2026-10-23
 
 Three questions whose laws are wired and exact, and five items closed on their real exposure,

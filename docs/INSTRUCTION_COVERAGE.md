@@ -371,3 +371,11 @@ own full parameter list. A verified MAM shape, transplanted from a project Studi
 compiled, is in `MEMORY_MODEL.md`. **Do not retry with a guessed variant.**
 
 **CTD** is untested deliberately — zero real usage.
+
+## Safety routines, 2026-10-24 (batch B)
+
+A safety AOI call pays 34.67 a further operand beyond its first two (on top of its operands'
+own cost); a module I/O point read by slot path in a safety routine costs what the same point
+read through a tag does (8 for a bit instruction). On a 1769 Compact GuardLogix an ordinary
+instruction's tag operand costs 7.5 less, DCS / CROUT 62 less and RIN 44 less
+(OQ-CGL1769). RESOLVED_QUESTIONS, "Closed 2026-10-24".

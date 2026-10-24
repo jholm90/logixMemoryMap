@@ -123,6 +123,8 @@ class PredefinedArrayStructure:
 @dataclass(frozen=True)
 class UdtModel:
     alignment_confidence: str
+    layout: str = "tight"
+    natural_alignment: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -1637,6 +1639,8 @@ class MemoryModel:
     # 1769 Compact GuardLogix 5370 (OQ-CGL1769): its firmware ladder and its safety
     # partition's measured terms; memory_model.yaml compact_guardlogix_5370.
     compact_guardlogix: dict = field(default_factory=dict)
+    # memory_model.yaml safety_partition as read, for its batch-B keys (OQ-SAFETYLOGICIO).
+    safety_partition_raw: dict = field(default_factory=dict)
 
 
 # (path, file text) -> the model built from it. Parsing the YAML is ~0.2 s and this is
@@ -1833,6 +1837,7 @@ def _build_memory_model(raw: dict) -> MemoryModel:
         aoi_instance_extra=raw.get("definition_scale_correction", {}).get("aoi_instance_extra", 0),
         aoi_scalar_instance=AoiScalarInstanceModel(**raw.get("aoi_scalar_instance", {})),
         compact_guardlogix=dict(raw.get("compact_guardlogix_5370", {})),
+        safety_partition_raw=dict(raw.get("safety_partition", {})),
         aoi_definition_extra=raw.get("definition_scale_correction", {}).get("aoi_definition_extra", 0),
         standalone_atomic_tag_slot_bytes=raw["standalone_atomic_tag_slot"]["bytes"],
         standalone_atomic_tag_slot_confidence=raw["standalone_atomic_tag_slot"]["confidence"],
@@ -1903,7 +1908,9 @@ def _build_memory_model(raw: dict) -> MemoryModel:
             custom_array_base=raw["string_array"]["custom_array_base"],
             custom_per_element=raw["string_array"]["custom_per_element"],
         ),
-        udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"]),
+        udt=UdtModel(alignment_confidence=raw["udt"]["alignment_confidence"],
+                     layout=raw["udt"].get("layout", "tight"),
+                     natural_alignment=dict(raw["udt"].get("natural_alignment", {}))),
         array=ArrayModel(
             atomic_confidence=raw["array"]["atomic_confidence"],
             udt_confidence=raw["array"]["udt_confidence"],

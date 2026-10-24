@@ -660,6 +660,14 @@ zero_connection_module:
     # the safety partition.
     '1756-L8SP': { bytes: 528, confidence: KNOWN }
     '5069-L306ERS2': { bytes: 560, confidence: KNOWN }
+    # Batch C's zcm_* (OQ-MODREPEAT, captured 2026-10-24, zero errors), each exact at every
+    # count against the realism plant: an inhibited generic ETHERNET-MODULE with no
+    # connection (an HMI or NAT address kept in the tree) 272 at 1, 2 and 4; a 1756-L75 peer
+    # controller in the local chassis 240 at 1 and 2; a 1783-NATR 480 at 1 and 2. No repeat
+    # discount. The flat rate above charged each 2,344.
+    'ETHERNET-MODULE': { bytes: 272, confidence: KNOWN }
+    '1756-L75': { bytes: 240, confidence: KNOWN }
+    '1783-NATR': { bytes: 480, confidence: KNOWN }
 
 # repeat_bytes (OQ-BUILDFAIL-OPEN / OQ-MODULEIO): the SECOND and
 # later modules of the SAME catalog in one project cost LESS than the first.
@@ -1658,11 +1666,17 @@ string_array:
   custom_per_element: 4
 
 udt:
-  # No alignment/padding between members -- tight packing, declared order.
-  # Confirmed (OQ-ALIGN, RESOLVED_QUESTIONS.md): the
-  # field-experience call, 100% confident, and every real UDT test across
-  # the whole sweep (dozens of samples) landed on predictions consistent
-  # with tight-packing. Was UNKNOWN, now KNOWN.
+  # Layout "hostlast" (OQ-UDTLAYOUT, wired 2026-10-24): every non-BOOL member at its natural
+  # boundary in declaration order, the hidden SINTs that back BOOL members after them, a
+  # nested UDT not tail-padded; a UDT element of an array rounds up to its own alignment,
+  # 4 at least. A STRING, a custom string and a predefined structure align to 4; a BOOL
+  # array member to 4. Kept every packed capture exact (210 of 210) when it was found, and
+  # then predicted blind all twelve STRING-holding UDT files of batches B and C within 16
+  # (the tight sum missed four of them by 1,584 to 4,808). An AOI's layout is untouched.
+  # Replaced the tight packing of OQ-ALIGN, which held only for UDTs whose members fall on
+  # their boundaries anyway.
+  layout: hostlast
+  natural_alignment: { SINT: 1, USINT: 1, INT: 2, UINT: 2, DINT: 4, UDINT: 4, REAL: 4, LINT: 8, ULINT: 8, LREAL: 8 }
   alignment_confidence: KNOWN
 
 array:
@@ -2159,6 +2173,16 @@ safety_io:
   standard_confidence: FITTED
 
 safety_partition:
+  # Batch B (OQ-SAFETYLOGICIO, captured 2026-10-24, zero errors), each against safe_n00 or
+  # its own control. A safety-program tag passed as an Output program parameter pays a
+  # further cost (safe_par_output50: 50 BOOL +9,208; safe_par_aoiout20: 20 AOI instances
+  # +4,152; Input, Public and local read exact). A safety AOI call pays per operand beyond
+  # its first two (safe_aoiarg_a8tag_5 / _20: +212 a call of 8 operands, slope exact between
+  # 5 and 20; safe_aoiarg_p16_call20, 2 operands: +4). FITTED, one shape each.
+  output_parameter_atomic_bytes: 184
+  output_parameter_structured_bytes: 208
+  aoi_call_operand_milli: 34667
+  batch_b_confidence: FITTED
   base_bytes: 1394
   base_confidence: KNOWN
   data_header_bytes: 24

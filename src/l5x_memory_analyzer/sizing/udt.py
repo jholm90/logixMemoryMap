@@ -152,11 +152,37 @@ def compute_array_size(
         # itself). Does NOT apply to atomic-type arrays (untested at this
         # rounding question, atomic array sizing stays dimension*element_size
         # unchanged).
-        element_bytes = -(-element_bytes // 4) * 4
+        step = max(udt_alignment(data_type, data_types, model), 4) if model.udt.layout == "hostlast" else 4
+        element_bytes = -(-element_bytes // step) * step
         array_confidence = model.array.udt_confidence
     else:
         array_confidence = model.array.atomic_confidence
     return element_bytes * element_count, weakest(element_confidence, array_confidence)
+
+
+# The hidden SINT Studio declares to back a UDT's BOOL members.
+HIDDEN_HOST_PREFIX = "ZZZZZZZZZZ"
+
+
+def udt_alignment(data_type: str, data_types: dict[str, DataTypeDef], model: MemoryModel,
+                  _stack: frozenset[str] = frozenset()) -> int:
+    """A member's boundary in the hostlast layout (memory_model.yaml udt): an atomic its
+    natural one, BOOL 1, a UDT its largest member's, a STRING, custom string, AOI or
+    predefined structure 4."""
+    natural = model.udt.natural_alignment
+    if data_type in natural:
+        return natural[data_type]
+    if data_type == "BOOL":
+        return 1
+    udt = data_types.get(data_type)
+    if udt is None or udt.is_string_family or udt.is_aoi or data_type in _stack:
+        return 4
+    a = 1
+    for m in udt.members:
+        if not m.is_bit_alias:
+            a = max(a, 4 if (m.data_type == "BOOL" and m.dimension) else
+                    udt_alignment(m.data_type, data_types, model, _stack | {data_type}))
+    return a
 
 
 def custom_string_maxlen(udt: DataTypeDef) -> int:
@@ -200,15 +226,24 @@ def compute_udt_size(
 
     total = 0
     confidence = "KNOWN"
+    hosts = 0
+    hostlast = model.udt.layout == "hostlast" and not udt.is_aoi
     for member in udt.members:
         if member.is_bit_alias:
+            continue
+        if hostlast and member.data_type == "SINT" and member.name.startswith(HIDDEN_HOST_PREFIX):
+            hosts += 1  # BOOL hosts sit after every other member (OQ-UDTLAYOUT)
             continue
         dims = (member.dimension,) if member.dimension > 0 else ()
         size, member_confidence = compute_array_size(
             member.data_type, dims, data_types, model, stack
         )
+        if hostlast:
+            a = 4 if (member.data_type == "BOOL" and dims) else udt_alignment(member.data_type, data_types, model, stack)
+            total = -(-total // a) * a
         total += size
         confidence = weakest(confidence, member_confidence)
+    total += hosts
 
     confidence = weakest(confidence, model.udt.alignment_confidence)
     return total, confidence

@@ -157,6 +157,17 @@ aliases**. Not an edge case.
 
 ## UDTs
 
+### Instance layout — KNOWN (OQ-UDTLAYOUT, wired 2026-10-24)
+
+A UDT instance is laid out **hostlast**: every non-BOOL member at its natural boundary in
+declaration order (SINT 1, INT 2, DINT / REAL 4, LINT / LREAL 8; a STRING, custom string,
+predefined structure, AOI or BOOL-array member 4; a nested UDT its own largest member's), then
+the hidden SINTs that back the BOOL members, with no tail padding inside a nested UDT. An
+element of a UDT array rounds up to its type's alignment, 4 at least. Predicted blind all
+twelve STRING-holding UDT files of batches B and C within 16; kept every packed capture exact.
+It replaced tight packing (OQ-ALIGN), which was right only for UDTs whose members fall on
+their boundaries anyway. An AOI instance is untouched (`udt.layout`).
+
 ### Definition cost — KNOWN
 
 A **one-time** cost per distinct UDT type declared in the file — not per

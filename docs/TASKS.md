@@ -179,7 +179,7 @@ Not done, and why: a warm run at 14× needs ~24 s, and what is left is spread th
 parsing (~0.08 s a 4.5 MB file, ~200 parses a run), lint (~0.35 s a plant file) and the pricing
 pass (~0.25 s) -- each further cut worth 10-15%.
 
-### 0zd. Safety batch B, the last of 2 — BUILT 2026-10-22 (36 files), awaiting conversion and capture; the four Studio variants are the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
+### 0zd. Safety batch B — CAPTURED and WIRED 2026-10-24 (RESOLVED_QUESTIONS, "Closed 2026-10-24"); the four Studio variants of RS-17 are still the owner's (OQ-SAFETYLOGICIO, OQ-SAFETYPARTITION, OQ-STRSHAPE, OQ-MODREPEAT)
 
 **Built 2026-10-22** (owner's go-ahead the same day): `gen_safety_round7.py` (26 files: Part 2
 as revised below plus no-call controls for each AOI family, a fourth mixed-rung file and Part
@@ -333,7 +333,7 @@ partitions: OPEN_QUESTIONS Section 7.
    script records as safety is the safety memory used; if it is not, send the control's name
    (Window Spy) and nothing in the batch is captured until it is fixed.
 
-### 0zh. The 2026-10-23 capture: tooling, re-score, deep dive, batch D — batch D SPECIFIED, NOT BUILT (ask before generating)
+### 0zh. The 2026-10-23 capture: tooling, re-score, deep dive — batch D WITHDRAWN 2026-10-24: batches B and C confirmed the aligned UDT layout blind, and it is wired
 
 **Done the same day.** The capture tooling refuses to commit anything confidential
 (`scripts/_autopush.ps1`, `Test-SafeToCommit`; a real program's capture row goes to
@@ -376,7 +376,7 @@ before the layout is wired (every UDT-bearing family regenerated and re-priced; 
 census of 2026-10-23 is scoped evidence, not that check); (3) which reading the six programs
 that re-read ~20 KB lower should keep (Section 1).
 
-### 0zg. Batch C — BUILT 2026-10-23 (27 files), awaiting conversion and capture (OQ-UDTMEMBERNAME, OQ-MODREPEAT, OQ-STRSHAPE)
+### 0zg. Batch C — CAPTURED and WIRED 2026-10-24 (RESOLVED_QUESTIONS, "Closed 2026-10-24") (OQ-UDTMEMBERNAME, OQ-MODREPEAT, OQ-STRSHAPE)
 
 **Owner's request 2026-10-23:** another batch, and every open question closed that can be.
 What closed and why is in RESOLVED_QUESTIONS, "Closed 2026-10-23"; every question left is

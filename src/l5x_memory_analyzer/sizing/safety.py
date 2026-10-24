@@ -25,7 +25,7 @@ from dataclasses import replace
 
 from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
 from l5x_memory_analyzer.parser.datatypes import parse_data_types
-from l5x_memory_analyzer.parser.logic import parse_rll_routines
+from l5x_memory_analyzer.parser.logic import _extract_call_args, parse_rll_routines
 from l5x_memory_analyzer.parser.protected import add_protected_aoi_standins, protected_aoi_elements
 from l5x_memory_analyzer.parser.tags import CONTROLLER_SCOPE, parse_tags
 from l5x_memory_analyzer.sizing.confidence import weakest
@@ -59,6 +59,11 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
     add_protected_aoi_standins(root)
     data_types = {**parse_data_types(root), **parse_aoi_definitions(root)}
     tags = parse_tags(root)
+    raw_sp = model.safety_partition_raw
+    # (program, tag) -> Usage, for the safety programs' parameters (batch B).
+    usage = {(p.get("Name"), t.get("Name")): t.get("Usage")
+             for p in root.findall("Controller/Programs/Program") if p.get("Class") == "Safety"
+             for t in p.findall("Tags/Tag") if t.get("Usage")}
     rows: list[tuple[str, str, str, int, str]] = [
         ("safety/base", "project_baseline", "", cgl["safety_base_bytes"] if on_cgl else sp.base_bytes,
          cgl["safety_confidence"] if on_cgl else sp.base_confidence)]
@@ -89,6 +94,10 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
         if extra:
             size += extra
             basis = weakest(basis, sp.produced_consumed_confidence)
+        if tag.scope != CONTROLLER_SCOPE and usage.get((tag.scope[len("program:"):], tag.name)) == "Output":
+            structured = tag.data_type in data_types
+            size += raw_sp.get("output_parameter_structured_bytes" if structured else "output_parameter_atomic_bytes", 0)
+            basis = weakest(basis, raw_sp.get("batch_b_confidence", "FITTED"))
         if tag.scope == CONTROLLER_SCOPE:
             rows.append((tag.path, "controller_tag", tag.data_type, size, basis))
         else:
@@ -117,7 +126,10 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
     # cost plus a cost per tag operand.
     tag_types = {t.name: t.data_type for t in tags if t.data_type}
     operand_types = FileOperandTypes(root)
-    controller_names = {t.name for t in tags if t.scope == CONTROLLER_SCOPE}
+    # A module's I/O point read by slot path (XIC(SRACK_1:1:I.Pt00Data)) is priced like the
+    # same point through a tag (safe_op_slot_100 reads safe_op_ctl_100's figure exactly).
+    controller_names = ({t.name for t in tags if t.scope == CONTROLLER_SCOPE}
+                        | {m.get("Name") for m in root.iter("Module") if m.get("Name") and m.get("Name") != "Local"})
     program_names: dict[str, set[str]] = {}
     for t in tags:
         if t.scope != CONTROLLER_SCOPE:
@@ -152,6 +164,22 @@ def build_safety_report(root: ET.Element, model: MemoryModel) -> tuple[list[Size
                 basis = weakest(basis, sp.aoi_confidence)
                 calls_an_aoi = True
         rows.append((routine.path, "routine_logic", "RLL", size, basis))
+    safe_aois = {a.get("Name") for a in root.iter("AddOnInstructionDefinition") if a.get("Class") == "Safety"}
+    if safe_aois and raw_sp.get("aoi_call_operand_milli"):
+        call = re.compile(r"\b(" + "|".join(re.escape(n) for n in sorted(safe_aois)) + r")\(")
+        extra_ops = 0
+        for p in root.findall("Controller/Programs/Program"):
+            if p.get("Class") != "Safety":
+                continue
+            for t in p.iter("Text"):
+                text = "".join(t.itertext())
+                for mm in call.finditer(text):
+                    args = _extract_call_args(text, mm.end()) or []
+                    extra_ops += max(0, len(args) - 3)  # the instance, then two operands
+        if extra_ops:
+            rows.append(("safety/aoi_call_operands", "routine_logic", "RLL",
+                         round(raw_sp["aoi_call_operand_milli"] * extra_ops / 1000),
+                         raw_sp.get("batch_b_confidence", "FITTED")))
     if calls_an_aoi:
         rows.append(("safety/aoi_call_routine", "routine_logic", "RLL",
                      model.structured_text.st_aoi_call_routine_bytes, sp.aoi_confidence))

@@ -50,8 +50,10 @@ the same set read 0.58% / 2.37%, but only because that over-charge was cancellin
 **Re-scored 2026-10-23 on nineteen standard programs: mean 1.262%, worst −2.83%**, 7/19 inside
 1%, sum-weighted −1.29% (fresh readings by the capture tool; realprog_44..47 new). The scalar
 AOI instance law took 0.16 points of that. The deep dive found the common shortfall in UDT
-layout — the engine sums a UDT's members unaligned, and an aligned layout that keeps every
-packed capture exact takes the set to 1.130% / −2.66% (OQ-UDTLAYOUT, batch D specified).
+layout — the engine summed a UDT's members unaligned. **Wired 2026-10-24** after batches B and
+C confirmed the aligned layout blind (12 of 12 STRING-holding UDT files): **mean 1.158%, worst
+−2.66%, 8/19 inside 1%, 18/19 inside 2%.** The same capture wired the safety AOI / Output
+parameter / slot-path terms (1756 / 5069 safety figure 0.72% / −1.69%) and the 1769 terms.
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the
