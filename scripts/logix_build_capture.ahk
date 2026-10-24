@@ -62,7 +62,7 @@ global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
 ; These families have no Build: they are compiled by Logic > Verify > Controller (Alt, L, V,
 ; C), whose popup title starts "Verifying Controller". Matched on the catalog right after
 ; the "[" in the window title, before the build starts. Checked BEFORE BUILD_SKIP_CATALOGS.
-global VERIFY_CATALOG_RX := "\[(1769-L|5069-L7|1756-L7)"
+global VERIFY_CATALOG_RX := "\[(1769-L|1756-L7)"
 
 VerifyInsteadOfBuild(title) {
     return RegExMatch(title, VERIFY_CATALOG_RX) ? true : false
