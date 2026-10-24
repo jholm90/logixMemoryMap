@@ -53,11 +53,20 @@ LOGIX_WIN := "ahk_exe LogixDesigner.exe"             ; confirmed via Window Spy
 
 global OCDValue := ""
 global SafetyValue := ""
+global IoValue := ""
 global ErrorValue := ""
 global WarningValue := ""
 global MessageValue := ""
 global WindowTitle := ""
 global BUILD_SKIP_CATALOGS := "*1769-*;*1756-L7*"
+; These families have no Build: they are compiled by Logic > Verify > Controller (Alt, L, V,
+; C), whose popup title starts "Verifying Controller". Matched on the catalog right after
+; the "[" in the window title, before the build starts. Checked BEFORE BUILD_SKIP_CATALOGS.
+global VERIFY_CATALOG_RX := "\[(1769-L|5069-L7|1756-L7)"
+
+VerifyInsteadOfBuild(title) {
+    return RegExMatch(title, VERIFY_CATALOG_RX) ? true : false
+}
 global ErrorLog := ""
 ; RICHEDIT50W2 is the build/verify error-log pane. Its full text can run to many
 ; KB, and Studio lists WARNINGS BEFORE ERRORS. Keeping the first N characters
@@ -317,6 +326,7 @@ global SAFETY_CTRL := "Edit6"
 ; Edit13 / total Edit11 (read by hand on cgl_l30v32_base, OQ-CGL1769). On a 1769, Edit6 is
 ; the program TOTAL, not safety used.
 global SAFETY_CTRL_1769 := "Edit13"
+global IO_CTRL_1769 := "Edit3"
 
 ; True when the catalog in the main window title's trailing brackets ends in
 ; S, S2 or S3: "[1756-L81ES 35.11]", "[5069-L320ERMS2 35.11]". A standard
@@ -354,6 +364,7 @@ Status(msg) {
     Loop {
         global OCDValue := ""
         global SafetyValue := ""
+        global IoValue := ""
         global ErrorValue := ""
         global WarningValue := ""
         global MessageValue := ""
@@ -477,7 +488,8 @@ Status(msg) {
         ; separated wildcards, matched case-insensitively against the FULL
         ; window title. Nothing below needs to change.
         preBuildTitle := WinGetTitle("A")
-        buildRan := BuildPopupExpected(preBuildTitle)
+        verifyRun := VerifyInsteadOfBuild(preBuildTitle)
+        buildRan := verifyRun || BuildPopupExpected(preBuildTitle)
 
         if !buildRan {
             Status("Build SKIPPED by BUILD_SKIP_CATALOGS (no popup possible for this controller): " preBuildTitle)
@@ -500,11 +512,21 @@ Status(msg) {
             Status("l")
             Send "l"
             Sleep 50
-            Status("b")
-            Send "b"
-            Sleep 10
-
-            buildPopupTitle := "Building"
+            if verifyRun {
+                ; 1769 / L7: Logic > Verify > Controller
+                Status("v")
+                Send "v"
+                Sleep 50
+                Status("c")
+                Send "c"
+                Sleep 10
+                buildPopupTitle := "Verifying Controller"
+            } else {
+                Status("b")
+                Send "b"
+                Sleep 10
+                buildPopupTitle := "Building"
+            }
             maxAppearSeconds := 120   ; a big file can take minutes just to START
             maxWaitSeconds := 600     ; ceiling so a hung build doesn't loop forever
 
@@ -694,6 +716,12 @@ Status(msg) {
             Status("Read safety value (" SafetyCtrlFor(WindowTitle) "): {{" SafetyValue "}}")
             Sleep 100
         }
+        ; A 1769's I/O memory pool (Edit3 after Estimate) is apart from the program figure.
+        if InStr(WindowTitle, "[1769-") && IsNumber(OCDValue) && OCDValue != "0" {
+            IoValue := ReadSafetyUsed(IO_CTRL_1769)
+            Status("Read I/O memory value (" IO_CTRL_1769 "): {{" IoValue "}}")
+            Sleep 100
+        }
 
         Send "!{F4}"
         Sleep 25
@@ -714,8 +742,8 @@ Status(msg) {
         ; --- Hand results back to PowerShell ---
         handoffFile := FileOpen(HANDOFF_PATH, "w")
         ErrorLog := CountNote ReadErrorLog()
-        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log,safety_value`n")
-        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "," SafetyValue "`n")
+        handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log,safety_value,io_value`n")
+        handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "," SafetyValue "," IoValue "`n")
         handoffFile.Close()
 
         Status("Looping -- waiting for next file...")

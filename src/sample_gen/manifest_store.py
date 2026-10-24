@@ -50,7 +50,7 @@ SPEC_COLUMNS = ["sample_id", "description", "category", "l5x_path", "predicted_b
 CAPTURE_COLUMNS = [
     "sample_id", "actual_bytes", "controller_model", "firmware_rev", "date_tested",
     "notes", "error_count", "warning_count", "message_value", "window_title", "error_log",
-    "safety_bytes",
+    "safety_bytes", "io_bytes",
 ]
 # What a joined row looks like, so a reader that wants every key gets them all
 # even for a sample that has never been captured.
@@ -159,7 +159,7 @@ def load_manifest(resolve_local: bool = True) -> list[dict]:
         # A reading that is not a number is a failed read, not a capture: treated as
         # uncaptured, so no caller parses a status line as bytes (the capture tool now
         # refuses to store one, CAPACITY NOT NUMERIC).
-        for k in ("actual_bytes", "safety_bytes"):
+        for k in ("actual_bytes", "safety_bytes", "io_bytes"):
             if k in row and row[k] and not row[k].strip().isdigit():
                 row[k] = ""
         joined.append(row)

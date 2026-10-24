@@ -201,7 +201,7 @@ function Get-RelPath($fullPath) {
 # moment any sizing constant changes, every reader recomputes it live, and it
 # was a derived value sitting in the one file two writers fought over.
 $CaptureColumns = "sample_id,actual_bytes,controller_model,firmware_rev,date_tested," +
-    "notes,error_count,warning_count,message_value,window_title,error_log,safety_bytes"
+    "notes,error_count,warning_count,message_value,window_title,error_log,safety_bytes,io_bytes"
 
 if (-not (Test-Path $CapturesPath)) {
     $CaptureColumns | Out-File -FilePath $CapturesPath -Encoding utf8
@@ -231,9 +231,12 @@ if (Test-Path $aliasesPath) {
 # safety_bytes arrived after captures.csv already held thousands of rows.
 # Export-Csv takes its header from the FIRST object it writes, so a column that
 # only the new rows carried would be dropped silently; every row gets it here.
-foreach ($c in $captures) {
-    if ($c.PSObject.Properties.Name -notcontains 'safety_bytes') {
-        $c | Add-Member -NotePropertyName safety_bytes -NotePropertyValue ""
+# io_bytes (a 1769's I/O memory pool, Edit3) the same way, 2026-10-24.
+foreach ($c in @($captures) + @($realCaptures)) {
+    foreach ($col in @('safety_bytes', 'io_bytes')) {
+        if ($c.PSObject.Properties.Name -notcontains $col) {
+            $c | Add-Member -NotePropertyName $col -NotePropertyValue ""
+        }
     }
 }
 $alreadyLogged = @{}
@@ -382,6 +385,7 @@ foreach ($row in $remaining) {
     $errorLog = if ($result.PSObject.Properties.Name -contains 'error_log') { $result.error_log } else { "" }
     # Absent from a handoff written by an older AHK script; blank then.
     $safetyValue = if ($result.PSObject.Properties.Name -contains 'safety_value') { $result.safety_value } else { "" }
+    $ioValue = if ($result.PSObject.Properties.Name -contains 'io_value') { $result.io_value } else { "" }
     Remove-Item $HandoffPath -Force  # consumed -- next file must produce a fresh one
 
     # Independent cross-check ("window title is valid
@@ -533,12 +537,13 @@ foreach ($row in $remaining) {
             $existing | Add-Member -NotePropertyName error_log -NotePropertyValue $errorLog
         }
         $existing.safety_bytes = $safetyValue
+        $existing.io_bytes = $ioValue
     } else {
         $newRow = [pscustomobject]@{
             sample_id = $meta.Id; actual_bytes = $blocksUsed
             controller_model = $declaredProc; firmware_rev = $declaredFw; date_tested = $date; notes = $notes
             error_count = $errorCount; warning_count = $warningCount; message_value = $messageValue
-            window_title = $windowTitle; error_log = $errorLog; safety_bytes = $safetyValue
+            window_title = $windowTitle; error_log = $errorLog; safety_bytes = $safetyValue; io_bytes = $ioValue
         }
         if ($isReal) { $realCaptures += $newRow } else { $captures += $newRow }
     }
@@ -553,6 +558,7 @@ foreach ($row in $remaining) {
                 actual_bytes = $blocksUsed; controller_model = $declaredProc; firmware_rev = $declaredFw
                 date_tested = $date; notes = $flags; error_count = $errorCount; warning_count = $warningCount
                 message_value = ""; window_title = ""; error_log = ""; safety_bytes = $safetyValue
+                io_bytes = $ioValue
             }
             $labelRow = $captures | Where-Object { $_.sample_id -eq $label } | Select-Object -First 1
             if (-not $labelRow) {

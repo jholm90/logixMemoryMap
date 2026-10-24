@@ -218,12 +218,14 @@ What remains splits three ways:
 
 ## Platform notes
 
-**1769-series requires clicking Estimate first.** 1756 and 5069 processors show a
-real capacity figure immediately; 1769-series does not — the Estimate button has to
-be clicked before the tab shows anything meaningful. **The AHK loop does not do
-this**, so it would silently read a stale or blank value. Existing 1769 points were
-manually reported for this reason. 1769 is dead architecture, so this is not being
-fixed; any future 1769 file needs manual reporting or an extra AHK step.
+**1769-series: Estimate, three pools, and Verify instead of Build** (2026-10-24). A 1769
+shows no capacity until Estimate is pressed; the capture script does it. Its Capacity tab then
+holds program memory used Edit8 / total Edit6, I/O memory used Edit3 / total Edit1 and safety
+memory used Edit13 / total Edit11: the script records program as `actual_bytes`, I/O as
+`io_bytes` and safety as `safety_bytes` (on an L8x / 5069 safety is Edit6). A 1769 (and an L7x)
+has no Build: the script runs Logic > Verify > Controller (Alt, L, V, C) and waits on the
+"Verifying Controller" popup, choosing it from the catalog after the "[" in the window title,
+so the error and warning counts are recorded for those files too.
 
 **Keep controller model and firmware consistent across a comparison set.** Memory
 reporting granularity may differ between families, and a file on a different
