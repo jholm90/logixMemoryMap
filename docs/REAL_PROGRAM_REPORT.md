@@ -7,7 +7,7 @@ standard-processor export, `RS-NN` for a safety-controller export); the names st
 gitignored `samples/local/`. Error is engine minus reading, as a share of the reading:
 negative means the engine predicts too little.
 
-**Run 2026-10-24, engine `7dadce1` + uncommitted engine changes.**
+**Run 2026-10-24, engine `307faa9`.**
 
 ## Summary
 
@@ -78,4 +78,4 @@ programs and readings on file that day.
 | 2026-10-23 | `f19bdea` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 8.68% / −11.55% | 11.77% / +42.32% |
 | 2026-10-23 | `ba22e27` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 1.86% / +3.16% | 11.77% / +42.32% |
 | 2026-10-24 | `833dad2` | 19 | 1.262% | −2.832% | 7 | 15 | 1.56% / −2.80% | 2.62% / −4.86% | 2.85% / −8.32% |
-| 2026-10-24 | `7dadce1` + uncommitted engine changes | 19 | 1.158% | −2.657% | 8 | 18 | 1.56% / −2.75% | 2.24% / −4.33% | 1.28% / −3.10% |
+| 2026-10-24 | `307faa9` | 19 | 1.158% | −2.657% | 8 | 18 | 1.56% / −2.75% | 2.24% / −4.33% | 1.28% / −3.10% |
