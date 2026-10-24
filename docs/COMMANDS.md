@@ -237,6 +237,12 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `gen_st_extended.py` — batch E, ST (OQ-STEXTENDED)
+
+```
+PYTHONPATH=src python -m sample_gen.gen_st_extended [--only REGEX]
+```
+
 ### `gen_cgl_1769.py` — the 1769 Compact GuardLogix batch (OQ-CGL1769)
 
 Fifteen steps on each of 1769-L30ERMS / L33ERMS at v32 (the floor: the conversion tooling

@@ -175,6 +175,24 @@ def strip_comments(text: str) -> str:
     return "\n".join(_LINE_COMMENT.sub("", line) for line in text.splitlines())
 
 
+_CALL_NAME = re.compile(r"\b([A-Za-z_]\w*)(?=\s*\()")
+
+
+def upper_case_mnemonics(code: str, declared_aoi_names: frozenset[str] = frozenset()) -> str:
+    """An instruction called in any case spelled as the engine's mnemonic. Logix reads
+    instruction names case-insensitively (a real ST-heavy program writes cop(, Cop(, jsr(,
+    sbr(, Concat(, Ret(, Size(), and the mnemonic scanner, shared with ladder, matches upper
+    case only: every such call was priced at nothing. A declared AOI keeps its own spelling."""
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    known = load_memory_model().logic_instructions.weights
+
+    def fix(m: re.Match) -> str:
+        name = m.group(1)
+        upper = name.upper()
+        return upper if (name != upper and upper in known and name not in declared_aoi_names) else name
+    return _CALL_NAME.sub(fix, code)
+
+
 def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     """Every ST routine in the file -- inside Programs AND inside AOIs.
 
@@ -216,7 +234,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
             raw = "\n".join(
                 (line.text or "") for line in (st.iter("Line") if st is not None else [])
             )
-            code = strip_comments(raw)
+            code = upper_case_mnemonics(strip_comments(raw), declared_aoi_names)
             aoi_calls, aoi_call_params, _ = aoi_call_sites([code], declared_aoi_names)
             assignments = list(_ASSIGNMENT.finditer(code))
             literal = [a for a in assignments if _BARE_LITERAL_RHS.match(a.group("rhs"))]

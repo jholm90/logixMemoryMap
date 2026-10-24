@@ -53,7 +53,9 @@ AOI instance law took 0.16 points of that. The deep dive found the common shortf
 layout — the engine summed a UDT's members unaligned. **Wired 2026-10-24** after batches B and
 C confirmed the aligned layout blind (12 of 12 STRING-holding UDT files): **mean 1.158%, worst
 −2.66%, 8/19 inside 1%, 18/19 inside 2%.** The same capture wired the safety AOI / Output
-parameter / slot-path terms (1756 / 5069 safety figure 0.72% / −1.69%) and the 1769 terms.
+parameter / slot-path terms (1756 / 5069 safety figure 0.72% / −1.69%) and the 1769 terms. **ST
+instruction names in any letter case priced (2026-10-24): mean 1.139%, worst −2.32%**; the
+ST-heavy realprog_44 is the one outside 2%, and batch E (32 ST files, OQ-STEXTENDED) is built for it.
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the

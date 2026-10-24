@@ -13,9 +13,9 @@ evidence that counts.
 
 ### Current — after the capture of 2026-10-24 (batches B, C and the 1769 batch)
 
-**Nineteen standard programs: 1.158% mean, −2.66% worst, 8 of 19 inside 1%, 18 of 19 inside
-2%**, sum-weighted −1.10% (most under). The one outside 2% is realprog_44, the ST-heavy program
-(−2.66%); realprog_16 / _27 / _46 are next at −1.9% to −2.0%. Stopping rule NOT MET on both
+**Nineteen standard programs: 1.139% mean, −2.32% worst, 8 of 19 inside 1%, 18 of 19 inside
+2%**, sum-weighted −1.08% (most under; ST instruction names in any case priced the same day).
+The one outside 2% is realprog_44, the ST-heavy program (−2.32%, batch E built for it); realprog_16 / _27 / _46 are next at −1.9% to −2.0%. Stopping rule NOT MET on both
 halves. Safety partition: eleven 1756 / 5069 programs 0.72% / −1.69%; six 1769 programs
 standard 2.24% / −4.33%, safety −0.4% to −3.1%. What changed on 2026-10-24: the aligned UDT
 layout, the safety AOI / Output-parameter / slot-path terms, zero-connection modules, and the

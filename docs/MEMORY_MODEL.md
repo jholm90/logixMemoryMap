@@ -2003,3 +2003,12 @@ rather than trusted.
    ladder verification.
 6. **Cross-validate before keeping a fit.** Several surcharge fits looked good in
    sample and were rejected at this step.
+
+## Structured Text: instruction names in any case (2026-10-24)
+
+Logix reads instruction names case-insensitively, and real ST writes `cop(`, `Cop(`, `jsr(`,
+`sbr(`, `Concat(`, `Ret(`. An ST call whose name in upper case is a weighted mnemonic is priced
+as that mnemonic; a declared AOI keeps its own spelling (`structured_text.upper_case_mnemonics`).
+A REAL one-operator multiply costs what a REAL one-operator add does (56, `stshape_real_mul400`
+against `stshape_real400`). TONR / TOFR / RTOR and an ST caller's JSR parameters are unpriced
+until batch E reads them (OPEN_QUESTIONS OQ-STEXTENDED).

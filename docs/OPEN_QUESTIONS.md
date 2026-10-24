@@ -1,6 +1,6 @@
 # Open Questions
 
-**One: OQ-REALUNDER.** Closed 2026-10-24 on the capture of batches B and C and the 1769
+**Two: OQ-REALUNDER and OQ-STEXTENDED (opened 2026-10-24, batch E built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
 batch (RESOLVED_QUESTIONS, "Closed 2026-10-24"): OQ-UDTLAYOUT (wired: the aligned layout
 predicted all twelve STRING-holding UDT files blind), OQ-STRSHAPE (every shape exact),
 OQ-MODREPEAT (zero-connection catalogs wired; the packed 5069 card under the floor),
@@ -28,6 +28,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state | answered by |
 |---|---|---|
+| **OQ-STEXTENDED** | The ST constructs realprog_44 (the most ST-heavy program, the one outside 2%) writes and nothing has measured: function-block timers driven over several lines, JSR parameters into ST subroutines, AOI calls from ST, CASE, deep member paths behind tag indexes, string instructions, GSV / CPS, lower-case spelling. Section 2. | batch E (`ste_*`, 32 files, built) |
 | **OQ-REALUNDER** | **1.158% mean, −2.66% worst, 8/19 inside 1%, 18/19 inside 2%** on the nineteen (2026-10-24, after the UDT layout); stopping rule NOT MET. Section 1. | the residual census below; `docs/REAL_PROGRAM_REPORT.md` |
 
 ---
@@ -312,3 +313,77 @@ A standard array tag's +4 on the realism plant: closed 2026-10-23, BOUNDED (RESO
 OQ-ARRAYTAG4).
 
 ---
+
+## 2. OQ-STEXTENDED — the ST that realprog_44 writes, opened 2026-10-24
+
+realprog_44 is 123 ST routines, 3,051 statements and 19,977 lines, the one standard program
+outside 2%. Census against the other eighteen (read only, 2026-10-24): it is the only program
+with function-block timers in ST (TONR on FBD_TIMER, each driven over five lines: PRE,
+TimerEnable, Reset, the call, the ACC or DN read), JSR with parameters from ST into ST
+subroutines that take them with SBR and return with RET (112 calls), AOI calls from ST (41),
+18 CASE blocks, 1,361 tag-driven indexes and 709 three-deep member paths, CONCAT / DTOS /
+DELETE / FIND / SIZE, GSV / SSV and CPS in ST, and instruction names and keywords in lower or
+mixed case (`cop`, `Cop`, `jsr`, `sbr`, `Concat`, `Ret`, `Size`, `if ... then ... end_if`).
+
+**Fixed in code the same day:** the instruction scanner shared with ladder matched upper-case
+mnemonics only, so every lower- or mixed-case instruction call in ST was priced at nothing;
+an instruction in any case is now its mnemonic (`structured_text.upper_case_mnemonics`; a
+declared AOI keeps its spelling). realprog_44 −2.66% → −2.32%; no other real program writes
+them. And a REAL one-operator multiply, measured long ago (`stshape_real_mul400` reads exactly
+`stshape_real400`), is no longer flagged unpriced.
+
+**What the engine still does not price, by construction:** TONR / TOFR / RTOR carry no weight
+(a timer call costs nothing); a JSR's parameters from an ST caller are not counted (only ladder
+callers are); the three-deep path and CASE shapes are extrapolated from shallower ones.
+
+**Batch E** (`gen_st_extended.py`, 32 files, `samples/generated/stext/`): one JSR-called ST
+routine on the realism floor, 1756-L81E v35; every file carries the same tags, UDTs (a nested
+one), two AOIs and two ST subroutines, so each differences against `ste_n00`. Predicted before
+any reading (engine of 2026-10-24; the reading is the engine's less the plant's 1,794 where
+the engine is right):
+
+| file | what | engine | step over `ste_n00` |
+|---|---|---:|---:|
+| `ste_n00` | control: one assignment | 941,678 | +0 |
+| `ste_tonr_full50` | 50 FBD_TIMER timers each driven over five lines: PRE, TimerEnable, Reset, TONR, the ACC read | 948,838 | +7,160 |
+| `ste_tonr_call50` | 50 TONR calls alone | 941,638 | -40 |
+| `ste_tonr_set50` | the same four member lines on each timer without the TONR call | 948,838 | +7,160 |
+| `ste_tonr_dnif50` | 50 TONR calls each followed by an IF on its DN bit with an ELSE | 950,038 | +8,360 |
+| `ste_tofr_full50` | the five-line timer with TOFR | 948,838 | +7,160 |
+| `ste_rtor_full50` | the five-line timer with RTOR | 948,838 | +7,160 |
+| `ste_jsr0_50` | 50 JSR without parameters to an ST subroutine | 945,038 | +3,360 |
+| `ste_jsr3_50` | 50 JSR passing three parameters and taking one back, into the ST subroutine that takes them with SBR and returns with RET | 945,038 | +3,360 |
+| `ste_jsr3deep_50` | the same with the parameters written as member paths behind tag indexes | 955,038 | +13,360 |
+| `ste_jsr3lower_50` | ste_jsr3_50 written in lower case | 945,038 | +3,360 |
+| `ste_aoi_p2_50` | 50 calls of an AOI with two Required DINT inputs | 949,502 | +7,824 |
+| `ste_aoi_p6_50` | 50 calls of an AOI with six Required DINT inputs | 952,702 | +11,024 |
+| `ste_aoi_p6deep_50` | the same with member-path arguments | 962,702 | +21,024 |
+| `ste_case20x5` | 20 CASE blocks of five selectors, one statement each | 951,338 | +9,660 |
+| `ste_case20x10` | 20 CASE blocks of ten selectors | 961,038 | +19,360 |
+| `ste_casemember20x5` | 20 CASE blocks of five selectors on a member-path selector | 951,338 | +9,660 |
+| `ste_dot3_400` | 400 assignments through a nested UDT's members (three deep) | 957,638 | +15,960 |
+| `ste_vidxdot3_400` | the same with the destination behind an index written as a member path | 1,007,238 | +65,560 |
+| `ste_innerarr400` | 400 assignments on a UDT member's array element indexed by a tag | 1,021,638 | +79,960 |
+| `ste_amp400` | 400 BOOL destinations from an &  | 954,438 | +12,760 |
+| `ste_concat100` | 100 CONCAT | 952,038 | +10,360 |
+| `ste_dtos100` | 100 DTOS | 948,838 | +7,160 |
+| `ste_delete100` | 100 DELETE | 951,638 | +9,960 |
+| `ste_find100` | 100 FIND | 951,638 | +9,960 |
+| `ste_size50` | 50 SIZE on a UDT array | 948,038 | +6,360 |
+| `ste_cop200` | 200 COP of a UDT element | 964,038 | +22,360 |
+| `ste_coplower200` | ste_cop200 written in lower case | 964,038 | +22,360 |
+| `ste_gsv50` | 50 GSV of the wall clock into a DINT array | 945,838 | +4,160 |
+| `ste_cps50` | 50 CPS of a UDT element | 947,238 | +5,560 |
+| `ste_ifupper200` | 200 IF blocks, keywords in upper case | 959,238 | +17,560 |
+| `ste_iflower200` | the same with keywords in lower case | 959,238 | +17,560 |
+
+**What decides it:** `ste_tonr_call50` against `ste_n00` prices a timer call, `_set50` its
+member lines, `_full50` both together (additivity), `_dnif50` the DN read in a condition;
+TOFR / RTOR whether every FB timer costs the same. `ste_jsr3_50` against `ste_jsr0_50` prices
+three parameters and a return from an ST caller; `_deep` the member-path arguments; `_lower`
+confirms the case fix on the device. `ste_aoi_p2` / `_p6` the per-parameter AOI rate from ST at
+a second count; `ste_case20x5` / `x10` the per-selector rate; the path files the three-deep and
+inner-array forms; the string, GSV and CPS files each instruction's ST weight against its
+ladder weight; `ste_iflower200` against `ste_ifupper200` that keyword case costs nothing.
+
+**CAPTURE ERRORS: 0 row(s)** (not yet captured).

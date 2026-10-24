@@ -254,15 +254,15 @@ a dated log of every run, are in [`docs/REAL_PROGRAM_REPORT.md`](docs/REAL_PROGR
 
 | | |
 |---|---|
-| **Mean absolute error** | **1.16%** (most programs slightly under) |
-| **Worst case** | **2.66%** |
+| **Mean absolute error** | **1.14%** (most programs slightly under) |
+| **Worst case** | **2.32%** |
 | **Inside 1% / inside 2%** | 8 of 19 / 18 of 19 |
 | **Safety controllers, safety memory** (1756 / 5069, eleven programs) | mean **0.72%**, worst 1.69% |
 | **Compact GuardLogix 1769, six programs** | standard worst 4.3%, safety worst 3.1% |
 
 One further real program is left out of those figures: it carries 39 source-protected
 routines the tool cannot see inside, so it under-reads by design (−2.5%). Source-protected
-content is always priced at a flagged minimum. **Read the worst case as "up to about 3%
+content is always priced at a flagged minimum. **Read the worst case as "up to about 2.5%
 low".** The one blind test (a 7.89 MB program predicted at +2.15% before its figure was used)
 is no longer on file, so every figure above is on programs the model was tuned while seeing.
 

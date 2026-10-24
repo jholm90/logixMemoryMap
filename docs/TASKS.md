@@ -44,6 +44,16 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zk. Batch E, ST — BUILT 2026-10-24 (32 files), awaiting conversion and capture (OQ-STEXTENDED)
+
+**Owner's request 2026-10-24:** analyse realprog_44's ST and generate two dozen ST tests at least
+on constructs the other programs do not write. Built: `gen_st_extended.py`, 32 files in
+`samples/generated/stext/`, lint-clean and above the realism floor; what each file measures
+and its prediction: OPEN_QUESTIONS Section 2. Fixed in code before it: instruction names in
+any case in ST (realprog_44 −2.66% → −2.32%). Expected movement once wired: the timer, ST JSR
+parameter and deep-path terms are realprog_44's (about 92 KB short, 2.3%); no other real
+program writes them.
+
 ### 0zj. NEXT, ranked 2026-10-24 — the stopping rule from 1.158% / −2.66%
 
 The rule needs every program inside 2% and the mean under 1%. Most programs still read

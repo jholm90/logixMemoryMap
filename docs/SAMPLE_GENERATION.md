@@ -376,6 +376,16 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
+## Built 2026-10-24: batch E, ST — 32 files awaiting conversion and capture (TASKS 0zk)
+
+`gen_st_extended.py` (`samples/generated/stext/`, OQ-STEXTENDED): one JSR-called ST routine on
+the realism floor, 1756-L81E v35, each file one construct the most ST-heavy real program writes
+and no other does: FB timers over five lines (TONR, TOFR, RTOR, the call and the member lines
+apart), JSR with parameters into SBR / RET subroutines (plain, deep paths, lower case), AOI
+calls from ST at two and six parameters, CASE at five and ten selectors, three-deep and
+inner-array paths, `&`, CONCAT / DTOS / DELETE / FIND / SIZE, COP in both cases, GSV, CPS, and
+IF in both keyword cases. Same tags, UDTs, AOIs and subroutines in every file; against `ste_n00`.
+
 ## Built 2026-10-23: the 1769 Compact GuardLogix batch — 36 files awaiting conversion and capture (TASKS 0zi)
 
 `gen_cgl_1769.py` (34, `samples/generated/cgl/`) and `gen_safety_io --local --only cgl32` (2,

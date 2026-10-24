@@ -107,10 +107,12 @@ def test_real_destination_conversion_is_per_source_keyed_on_source_type():
 
 
 def test_a_one_operator_real_destination_non_additive_shape_is_flagged():
-    """Only the additive class is measured on the REAL row at one operator."""
+    """Additive and multiplicative are measured on the REAL row at one operator
+    (stshape_real_mul400 reads stshape_real400); exponent and bitwise are not."""
     assert ST.unmeasured_one_operator_class(["+"], dest_is_real=True) == ""
     assert ST.unmeasured_one_operator_class(["*"], dest_is_real=False) == ""
-    assert ST.unmeasured_one_operator_class(["*"], dest_is_real=True)
+    assert ST.unmeasured_one_operator_class(["*"], dest_is_real=True) == ""
+    assert ST.unmeasured_one_operator_class(["**"], dest_is_real=True)
 
 
 def test_st_aoi_call_one_time_is_per_routine_not_per_call():

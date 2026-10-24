@@ -4430,9 +4430,11 @@ structured_text:
   # sources. Keyed on destination here because the base already is.
   assignment_one_operator_class_bytes:
     dint: { additive: 40, multiplicative: 56, bitwise: 124, exponent: 204 }
-    # Only additive is measured on the REAL row (stx_ops01_real, and group D's
-    # four conversion files). The others fall back to it and are flagged.
-    real: { additive: 56 }
+    # Additive measured on the REAL row (stx_ops01_real, and group D's four conversion
+    # files); multiplicative too: stshape_real_mul400 (`R := R * 1.5;`) reads exactly what
+    # stshape_real400 (`R := R + 1.5;`) does, 400 statements, error_count 0 (2026-10-24).
+    # Bitwise and exponent fall back to additive and are flagged.
+    real: { additive: 56, multiplicative: 56 }
   # KNOWN for every entry above and in the premium table below. Each is one
   # 1,000-statement file with a residual that is an exact multiple of 1,000,
   # error_count 0, measured against a control of the same shape. The REAL row's

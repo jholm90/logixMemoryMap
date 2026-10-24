@@ -311,3 +311,11 @@ def test_custom_string_array_base_does_not_vary_with_type_name_length():
         assert size(type_name, (10,), data_types=_named(type_name)) == (
             4 + 104 * 10, "KNOWN"
         ), f"array base moved for a {len(type_name)}-character type name"
+
+
+def test_st_instruction_names_are_priced_in_any_case():
+    # A real ST-heavy program writes cop( / jsr( / Concat(; Logix reads them case-insensitively.
+    from l5x_memory_analyzer.sizing.structured_text import upper_case_mnemonics
+    assert upper_case_mnemonics("cop(A, B, 1); Concat(S1,S2,S3); jsr(R,0);") == \
+        "COP(A, B, 1); CONCAT(S1,S2,S3); JSR(R,0);"
+    assert upper_case_mnemonics("fbErrorPercent(X, Y);", frozenset({"fbErrorPercent"})) == "fbErrorPercent(X, Y);"
