@@ -44,6 +44,31 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zj. NEXT, ranked 2026-10-24 — the stopping rule from 1.158% / −2.66%
+
+The rule needs every program inside 2% and the mean under 1%. Most programs still read
+under (sum-weighted −1.10%), so the work is a missing cost, not a scale.
+
+1. **realprog_44, the ST-heavy program, −2.66%: the only one outside 2%.** The 2026-10-23 deep
+   dive put its excess in ST that indexes a member array through a tag
+   (`Arr[Tag.Idx].Member` in ST assignments and expressions), a shape no file has measured.
+   Deliverable: a spec of an ST family on the realism plant, the shape at three counts, each
+   operand form separately (OPEN_QUESTIONS, a new entry, with the points it should move
+   stated first). Generated only on the owner's go.
+2. **The common shortfall on realprog_16 / _27 / _46 (−1.9% to −2.0%).** Re-run the
+   per-feature census of 2026-10-23 on the engine of 2026-10-24 (the UDT layout took part of
+   what it found): regress each program's residual on its feature counts, keep only terms that
+   survive leave-one-out, and open a question for each with its expected movement before any
+   file is specified.
+3. **1769: recapture `cgl_l30v32_logic400`, `cgl_l33v32_logic400`, `cgl_l33v32_plant2x`**
+   (bad reads, capture script fixed), then decide the plant rate (+0.84%) on RS-14 (−4.33%).
+4. **Housekeeping:** delete the written-up non-safety generated files (`udtpool_*`, `zcm_*`,
+   `strm_*`, `strn_*`, `strx_*_r2`) after `check_proven_blocks.py --record` and their hashes;
+   the four pre-rewrite branches on GitHub wait on the owner's yes to delete.
+5. **The owner's:** the four Studio-made variants of RS-17 (batch B), and any new real
+   export, predicted and written down before its reading (the blind test is gone).
+
+
 Re-ranked after the capture batch that followed the blind set. That batch closed five
 questions (JSRCALLERBASE, RUNGSHAPE, ALARMCONDREAL, BUILDFAIL-OPEN, MODULENAMELEN) and,
 by correcting the JSR caller base, exposed a larger real residual that a wrong

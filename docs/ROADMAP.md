@@ -11,7 +11,18 @@ in `OPEN_QUESTIONS.md`.
 Measured on the seventeen real production exports, which are the only accuracy
 evidence that counts.
 
-### Current — after the 92-file capture of 2026-10-03
+### Current — after the capture of 2026-10-24 (batches B, C and the 1769 batch)
+
+**Nineteen standard programs: 1.158% mean, −2.66% worst, 8 of 19 inside 1%, 18 of 19 inside
+2%**, sum-weighted −1.10% (most under). The one outside 2% is realprog_44, the ST-heavy program
+(−2.66%); realprog_16 / _27 / _46 are next at −1.9% to −2.0%. Stopping rule NOT MET on both
+halves. Safety partition: eleven 1756 / 5069 programs 0.72% / −1.69%; six 1769 programs
+standard 2.24% / −4.33%, safety −0.4% to −3.1%. What changed on 2026-10-24: the aligned UDT
+layout, the safety AOI / Output-parameter / slot-path terms, zero-connection modules, and the
+1769's own firmware ladder and safety terms (RESOLVED_QUESTIONS, "Closed 2026-10-24"). Live
+figures: `REAL_PROGRAM_REPORT.md`. Next: TASKS 0zj.
+
+### Earlier — after the 92-file capture of 2026-10-03
 
 **0.97% mean, 2.57% worst, 10 of 17 inside 1%, 15 of 17 inside 2%** (2026-10-04). Path since the
 series law: literals typed by spelling (1.74%), motion-structure members typed (1.41%), the

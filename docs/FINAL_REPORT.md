@@ -18,7 +18,9 @@ controller's memory budget, and draws the result as a drillable treemap, so a us
 can find the array, UDT or routine that is about to cause "memory full" before a
 download fails.
 
-**How accurate it is — current.** After the capture batch that followed the blind set,
+**How accurate it is — current (2026-10-24).** Nineteen standard-processor real programs: **mean 1.16%, worst −2.66%, 18 of 19 inside 2%**; the safety partition of eleven 1756 / 5069 safety controllers 0.72% / −1.69%; six 1769 Compact GuardLogix programs inside 4.4% standard and 3.1% safety. The live figures and their history are in `REAL_PROGRAM_REPORT.md`; what follows below is the record as it stood on 2026-10-20.
+
+**How accurate it was — 2026-10-20.** After the capture batch that followed the blind set,
 the seventeen standard-processor real programs present read **mean 2.86%, worst 5.42%,
 all under-predicting** (safety processors are excluded from accuracy). Resolving the
 operand-type surcharge and the tag-driven index cost through every operand spelling

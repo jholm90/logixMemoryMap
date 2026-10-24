@@ -247,44 +247,24 @@ band, so the estimated parts of a project are visible at a glance.
 
 ## How accurate is it?
 
-Measured against **seventeen real production programs** (1756-L8x and CompactLogix 5380,
+Measured against **nineteen real production programs** (1756-L8x and CompactLogix 5380,
 standard processors), each compared with the memory figure Studio 5000 reports for the
-real compiled project:
+real compiled project. Every number is the current engine's; the per-program figures, and
+a dated log of every run, are in [`docs/REAL_PROGRAM_REPORT.md`](docs/REAL_PROGRAM_REPORT.md).
 
 | | |
 |---|---|
-| **Mean absolute error** | **2.18%** (every program slightly under — see below) |
-| **Worst case** | **4.31%** |
-| **Inside 1% / inside 2%** | 0 of 17 / 7 of 17 |
-| **Blind test** | a 7.89 MB program predicted at **+2.15%** before its real figure was used for anything |
+| **Mean absolute error** | **1.16%** (most programs slightly under) |
+| **Worst case** | **2.66%** |
+| **Inside 1% / inside 2%** | 8 of 19 / 18 of 19 |
+| **Safety controllers, safety memory** (1756 / 5069, eleven programs) | mean **0.72%**, worst 1.69% |
+| **Compact GuardLogix 1769, six programs** | standard worst 4.3%, safety worst 3.1% |
 
 One further real program is left out of those figures: it carries 39 source-protected
-routines the tool cannot see inside, so it under-reads by design (3.87%). Source-protected
-content is always priced at a flagged minimum.
-
-**Why the figure went up.** A measured law — each extra output in a rung costs 12 bytes
-less — was switched on because it is exact on every test that isolates it. The tool
-read closer before only because that error was cancelling a real under-charge of about
-2% that is still being tracked down. Every program now reads slightly under, which is
-the safe direction for "will it fit". **Read the worst case as "up to about 5% low".** The blind
-test is the number that matters most: it is the only one no tuning could have touched.
-
-Why the tool can be this close:
-
-- **Tag, UDT and AOI data space is calculated exactly.** Atomic sizes, alignment, BOOL
-  packing into hidden SINTs, string lengths and nested arrays are known rules, verified
-  against real controller readings.
-- **Compiled logic is fitted, instruction by instruction.** Each instruction's weight,
-  including its operand types, its indirect addressing, JSR parameters and CPT expression
-  structure, is measured on purpose-built test projects compiled in Studio 5000 and read
-  back from the Capacity tab. **Over 3,000 captured test projects** sit behind the model.
-- **It is checked against real programs, not just its own test files.** The generated
-  corpus is the measuring instrument. The real programs are the scoreboard.
-
-The full method, every constant, and every open question are published in
-[`docs/`](docs/).
-
----
+routines the tool cannot see inside, so it under-reads by design (−2.5%). Source-protected
+content is always priced at a flagged minimum. **Read the worst case as "up to about 3%
+low".** The one blind test (a 7.89 MB program predicted at +2.15% before its figure was used)
+is no longer on file, so every figure above is on programs the model was tuned while seeing.
 
 ## Get started in one minute
 
