@@ -312,6 +312,11 @@ CsvQuote(text) {
 ; cannot disturb the standard value; a missing or unreadable field records ""
 ; and the loop carries on.
 global SAFETY_CTRL := "Edit6"
+; A 1769 Compact GuardLogix's Capacity tab (after Estimate) lays out differently: program
+; memory used Edit8 / total Edit6, I/O memory used Edit3 / total Edit1, safety memory used
+; Edit13 / total Edit11 (read by hand on cgl_l30v32_base, OQ-CGL1769). On a 1769, Edit6 is
+; the program TOTAL, not safety used.
+global SAFETY_CTRL_1769 := "Edit13"
 
 ; True when the catalog in the main window title's trailing brackets ends in
 ; S, S2 or S3: "[1756-L81ES 35.11]", "[5069-L320ERMS2 35.11]". A standard
@@ -320,10 +325,14 @@ IsSafetyCatalogTitle(title) {
     return RegExMatch(title, "\[\S*S[23]?\s+[\d.]+\]") ? true : false
 }
 
-ReadSafetyUsed() {
+SafetyCtrlFor(title) {
+    return InStr(title, "[1769-") ? SAFETY_CTRL_1769 : SAFETY_CTRL
+}
+
+ReadSafetyUsed(ctrl := SAFETY_CTRL) {
     v := ""
     try {
-        v := StripCommas(Trim(ControlGetText(SAFETY_CTRL, "A")))
+        v := StripCommas(Trim(ControlGetText(ctrl, "A")))
     } catch {
         return ""
     }
@@ -681,8 +690,8 @@ Status(msg) {
         ; standard read above succeeded. WindowTitle is the main window's,
         ; captured before this dialog opened, so it carries the catalog.
         if IsSafetyCatalogTitle(WindowTitle) && IsNumber(OCDValue) && OCDValue != "0" {
-            SafetyValue := ReadSafetyUsed()
-            Status("Read safety value (" SAFETY_CTRL "): {{" SafetyValue "}}")
+            SafetyValue := ReadSafetyUsed(SafetyCtrlFor(WindowTitle))
+            Status("Read safety value (" SafetyCtrlFor(WindowTitle) "): {{" SafetyValue "}}")
             Sleep 100
         }
 

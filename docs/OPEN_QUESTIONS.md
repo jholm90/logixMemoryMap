@@ -456,6 +456,29 @@ Twins on the 1756-L81ES v35 standard plant, against safe_n00: `safe_cgl_rung60` 
 `l33v32`: `safe_iol_cgl32_h008s_1` / `_2` (748,694 / 4,987 and
 773,802 / 8,564).
 
+**First readings, by hand, 2026-10-24** (not yet in `captures.csv`; the capture run records
+them). A 1769 Capacity tab after Estimate shows three pools: program memory used Edit8 / total
+Edit6, I/O memory used Edit3 / total Edit1, safety memory used Edit13 / total Edit11. **The
+capture script read Edit6 as safety on every platform, which on a 1769 is the program TOTAL
+(1,048,576)**; it now reads Edit13 on a 1769 title (`SAFETY_CTRL_1769`).
+
+| file | program | I/O | safety | engine standard / safety |
+|---|---:|---:|---:|---:|
+| `cgl_l30v32_base` | 405,032 | 9,200 | 1,056 | 424,370 / 1,410 |
+| `cgl_l30v32_mods` | 418,496 | 12,088 | 1,056 | 439,811 / 1,410 |
+
+- **Module I/O lands partly in the I/O pool.** The module step reads +13,464 program and
+  +2,888 I/O (+16,352 together) against the engine's +15,441: the engine's module price is
+  close to the two pools together, so a 1769 reading of program memory alone sees about 18%
+  of a module's cost less than the engine charges.
+- **The base reads 19,338 below the engine's standard figure (−4.6%)**, 10,138 below with
+  the I/O pool added. Less the plant's own −1,794, the provisional +64,736 baseline is about
+  8 to 17 KB too high at v32 — the direction the L16ER firmware ladder said (v32 below v35).
+  Not wired on one file: the v35 bases and the content steps separate baseline from rate.
+- **The 1769 safety base reads 1,056 against 1,410**: 354 below every L81ES / 5069 base.
+  Every 1769 safety program pays that base once; it is 2% of RS-11's safety reading, so the
+  +28% is mostly elsewhere (the `sio_*` and `safe*` steps).
+
 **What decides it.** The base files give the 1769 baseline on each catalog at v32 and v35;
 `plant2x` gives the content rate (the L30ERMS `plant2x` and the L33ERMS `base` carry the same
 content, so the catalogs difference directly); `mods` gives whether module I/O is in the figure;
