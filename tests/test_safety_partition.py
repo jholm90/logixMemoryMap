@@ -39,9 +39,10 @@ def test_the_control_passes_lint_on_the_safety_platform():
 
 def test_captures_carry_a_safety_column():
     from sample_gen.manifest_store import CAPTURE_COLUMNS, JOINED_COLUMNS, load_manifest
-    assert CAPTURE_COLUMNS[-1] == "safety_bytes" and "safety_bytes" in JOINED_COLUMNS
-    # A captures.csv written before the column existed still joins: the key is empty.
-    assert all("safety_bytes" in row for row in load_manifest()[:5])
+    assert CAPTURE_COLUMNS[-2:] == ["safety_bytes", "io_bytes"]
+    assert "safety_bytes" in JOINED_COLUMNS and "io_bytes" in JOINED_COLUMNS
+    # A captures.csv written before a column existed still joins: the key is empty.
+    assert all("safety_bytes" in row and "io_bytes" in row for row in load_manifest()[:5])
 
 
 def _safety_eval():
