@@ -237,6 +237,12 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `gen_st_instructions.py` — batch F, every ST instruction (OQ-STINSTR)
+
+```
+PYTHONPATH=src python -m sample_gen.gen_st_instructions [--only REGEX]
+```
+
 ### `gen_st_extended.py` — batch E, ST (OQ-STEXTENDED)
 
 ```

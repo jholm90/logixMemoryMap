@@ -376,6 +376,14 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
+## Built 2026-10-25: batch F, every ST instruction — 93 files awaiting conversion and capture (TASKS 0zl)
+
+`gen_st_instructions.py` (`samples/generated/stinstr/`, OQ-STINSTR): one file per instruction
+ST can call that batch E does not carry, 50 calls each on their own backing tags in one
+JSR-called ST routine on the realism floor, 1756-L81E v35: 47 function blocks, 17 operand
+instructions, 18 ST functions, 10 motion instructions (numeric enumerations, the ladder files'
+operand lists); against `stinstr_n00` and the engine's exact price of the backing tags.
+
 ## Built 2026-10-24: batch E, ST — 32 files awaiting conversion and capture (TASKS 0zk)
 
 `gen_st_extended.py` (`samples/generated/stext/`, OQ-STEXTENDED): one JSR-called ST routine on

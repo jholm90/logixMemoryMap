@@ -44,6 +44,16 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zl. Batch F, every ST instruction — BUILT 2026-10-25 (93 files, checked against RM018 2026-10-29), awaiting conversion and capture (OQ-STINSTR)
+
+**Owner's request 2026-10-25:** a test for every instruction ST can call. Built:
+`gen_st_instructions.py`, 93 files in `samples/generated/stinstr/`, lint-clean, above the realism
+floor, `check_proven_blocks.py` clean on the motion files. Checked against the general
+instruction reference (RM018) on 2026-10-29: AVE / STD removed (ladder-only), ATAN2 / TOD / FRD /
+IsINF / IsNAN added. What each measures, what is left out and why, and every prediction:
+OPEN_QUESTIONS Section 3. Still asked of the owner: 1756-RM006 (process and drives) and
+MOTION-RM002 (motion) to check the function-block list and the motion operand forms.
+
 ### 0zk. Batch E, ST — BUILT 2026-10-24 (32 files), awaiting conversion and capture (OQ-STEXTENDED)
 
 **Owner's request 2026-10-24:** analyse realprog_44's ST and generate two dozen ST tests at least

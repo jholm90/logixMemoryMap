@@ -1,6 +1,6 @@
 # Open Questions
 
-**Two: OQ-REALUNDER and OQ-STEXTENDED (opened 2026-10-24, batch E built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
+**Three: OQ-REALUNDER, OQ-STEXTENDED (batch E built) and OQ-STINSTR (opened 2026-10-25, batch F built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
 batch (RESOLVED_QUESTIONS, "Closed 2026-10-24"): OQ-UDTLAYOUT (wired: the aligned layout
 predicted all twelve STRING-holding UDT files blind), OQ-STRSHAPE (every shape exact),
 OQ-MODREPEAT (zero-connection catalogs wired; the packed 5069 card under the floor),
@@ -28,6 +28,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state | answered by |
 |---|---|---|
+| **OQ-STINSTR** | Every instruction ST can call, one file each: 47 function blocks, 17 operand instructions, 18 ST functions, 10 motion instructions; the general-instruction list checked against the general instruction reference (1756-RM018). The engine has no weight for many (a call priced at nothing). Section 3. | batch F (`stinstr_*`, 93 files, built) |
 | **OQ-STEXTENDED** | The ST constructs realprog_44 (the most ST-heavy program, the one outside 2%) writes and nothing has measured: function-block timers driven over several lines, JSR parameters into ST subroutines, AOI calls from ST, CASE, deep member paths behind tag indexes, string instructions, GSV / CPS, lower-case spelling. Section 2. | batch E (`ste_*`, 32 files, built) |
 | **OQ-REALUNDER** | **1.158% mean, −2.66% worst, 8/19 inside 1%, 18/19 inside 2%** on the nineteen (2026-10-24, after the UDT layout); stopping rule NOT MET. Section 1. | the residual census below; `docs/REAL_PROGRAM_REPORT.md` |
 
@@ -385,5 +386,145 @@ confirms the case fix on the device. `ste_aoi_p2` / `_p6` the per-parameter AOI 
 a second count; `ste_case20x5` / `x10` the per-selector rate; the path files the three-deep and
 inner-array forms; the string, GSV and CPS files each instruction's ST weight against its
 ladder weight; `ste_iflower200` against `ste_ifupper200` that keyword case costs nothing.
+
+**CAPTURE ERRORS: 0 row(s)** (not yet captured).
+
+## 3. OQ-STINSTR — every instruction ST can call, opened 2026-10-25
+
+**Owner's request 2026-10-25:** a test for every instruction ST can call, those ladder cannot
+call included. The instruction list is the engine's weight table, the real programs' ST and
+the function blocks of the FBD manual (1756-PM009), and since 2026-10-29 the general
+instruction reference (1756-RM018, chat-only): every instruction whose ST entry there gives a
+call form, and every operator and function its expression table marks usable in ST, is in
+batch E or F or listed below with its reason. The process and drives reference (1756-RM006)
+and the motion reference (MOTION-RM002) are not on file, so the function-block and motion
+lists are still checked against them when they arrive.
+
+**Checked against RM018 (2026-10-29), what changed:** AVE and STD are ladder-only, so their
+two files were removed; ATAN2, TOD, FRD, IsINF and IsNAN are ST functions and were added
+(TOD / FRD are the spellings below v36 of TO_BCD / BCD_TO; ATAN2, IsINF and IsNAN apply to the
+5380 / 5580 families and their firmware floor is not stated, so a conversion failure on one
+of those three files at v35 is the answer to that, not a defect to chase). TRUNC stays: the
+real programs at v32 to v35 write TRUNC in ST (the v36 rename is a ladder rename). The
+ladder-only instructions (TON / TOF / RTO, CTU / CTD, RES, FAL / FSC / FLL, BTD, MVM, CLR, the
+compare and arithmetic instructions, NEG, MCR, AFI, NOP, UNK, LV) are written in ST as
+operators or not at all and have no file here; the ST operators are batch-C and closeout
+territory (`gen_st_expression_grid.py`, `gen_st_closeout.py`). Batch E already carries
+TONR / TOFR / RTOR, JSR / SBR / RET, AOI calls, CONCAT / DTOS / DELETE / FIND / SIZE, COP, CPS
+and GSV.
+
+**Left out, each with its reason:** ALMD / ALMA (parked, CLAUDE.md "Out of scope until
+real-file error is under 1%"); ASO (an alarm-set operation: alarm instructions are parked and
+no real program has an alarm set); REF (its operand is a REF_TO_AXIS reference type that no
+file here has built and no real program uses, so its tag XML would be a guess); SFP / SFR (SFC is never worked); ABL / ACB / ACL / AHL / ARD /
+ARL / AWA / AWT (a 1756-L81E has no serial port, so a file built on the standard platform
+cannot verify); the equipment-phase and equipment-sequence instructions (they need phase
+programs and sequences, a structure no file builds); every motion instruction whose operand
+list no captured file has proved (MAG, MCD, MCS, MCLM, MCCM, MCCD, MCT, MCTP, MCSV, MCPM,
+MAPC, MATC, MDAC, MAOC, MDOC, MGS and the rest: the motion reference is needed first).
+
+**Batch F** (`gen_st_instructions.py`, 93 files, `samples/generated/stinstr/`): one
+JSR-called ST routine on the realism floor, 1756-L81E v35; each file the plant, the
+instruction's own backing tags (every structure priced exactly by the engine) and 50 calls (20
+for CC / IMC / MMC). The reading less the engine's figure is what the calls cost in ST. In ST
+the motion operands that ladder writes as keywords are numbers (`Units per sec` 0, `S-Curve` 1,
+`% of Maximum` 1): the one assumption in the batch, and the first thing a build error on a
+`stinstr_mo_*` file would name. Predicted before any reading (engine of 2026-10-25):
+
+| file | calls | engine | over `stinstr_n00` |
+|---|---|---:|---:|
+| `stinstr_n00` | control: the plant, the common tags and one assignment | 853,718 | +0 |
+| `stinstr_fb_ctud` | 50 CTUD calls, each on its own FBD_COUNTER | 859,278 | +5,560 |
+| `stinstr_fb_osri` | 50 OSRI calls, each on its own FBD_ONESHOT | 858,878 | +5,160 |
+| `stinstr_fb_osfi` | 50 OSFI calls, each on its own FBD_ONESHOT | 858,878 | +5,160 |
+| `stinstr_fb_setd` | 50 SETD calls, each on its own DOMINANT_SET | 858,878 | +5,160 |
+| `stinstr_fb_resd` | 50 RESD calls, each on its own DOMINANT_RESET | 858,878 | +5,160 |
+| `stinstr_fb_dff` | 50 DFF calls, each on its own FLIP_FLOP_D | 858,478 | +4,760 |
+| `stinstr_fb_jkff` | 50 JKFF calls, each on its own FLIP_FLOP_JK | 858,878 | +5,160 |
+| `stinstr_fb_btdt` | 50 BTDT calls, each on its own FBD_BIT_FIELD_DISTRIBUTE | 859,678 | +5,960 |
+| `stinstr_fb_mvmt` | 50 MVMT calls, each on its own FBD_MASKED_MOVE | 859,278 | +5,560 |
+| `stinstr_fb_scl` | 50 SCL calls, each on its own SCALE | 860,478 | +6,760 |
+| `stinstr_fb_pide` | 50 PIDE calls, each on its own PID_ENHANCED | 878,078 | +24,360 |
+| `stinstr_fb_alm` | 50 ALM calls, each on its own ALARM | 862,478 | +8,760 |
+| `stinstr_fb_intg` | 50 INTG calls, each on its own INTEGRATOR | 862,478 | +8,760 |
+| `stinstr_fb_pi` | 50 PI calls, each on its own PROP_INT | 864,478 | +10,760 |
+| `stinstr_fb_pmul` | 50 PMUL calls, each on its own PULSE_MULTIPLIER | 860,478 | +6,760 |
+| `stinstr_fb_scrv` | 50 SCRV calls, each on its own S_CURVE | 864,078 | +10,360 |
+| `stinstr_fb_soc` | 50 SOC calls, each on its own SEC_ORDER_CONTROLLER | 866,478 | +12,760 |
+| `stinstr_fb_updn` | 50 UPDN calls, each on its own UP_DOWN_ACCUM | 859,678 | +5,960 |
+| `stinstr_fb_hpf` | 50 HPF calls, each on its own FILTER_HIGH_PASS | 865,678 | +11,960 |
+| `stinstr_fb_lpf` | 50 LPF calls, each on its own FILTER_LOW_PASS | 865,678 | +11,960 |
+| `stinstr_fb_ntch` | 50 NTCH calls, each on its own FILTER_NOTCH | 867,278 | +13,560 |
+| `stinstr_fb_ldlg` | 50 LDLG calls, each on its own LEAD_LAG | 864,878 | +11,160 |
+| `stinstr_fb_ldl2` | 50 LDL2 calls, each on its own LEAD_LAG_SEC_ORDER | 866,878 | +13,160 |
+| `stinstr_fb_derv` | 50 DERV calls, each on its own DERIVATIVE | 862,478 | +8,760 |
+| `stinstr_fb_tot` | 50 TOT calls, each on its own TOTALIZER | 863,678 | +9,960 |
+| `stinstr_fb_d2sd` | 50 D2SD calls, each on its own DISCRETE_2STATE | 860,078 | +6,360 |
+| `stinstr_fb_d3sd` | 50 D3SD calls, each on its own DISCRETE_3STATE | 860,478 | +6,760 |
+| `stinstr_fb_esel` | 50 ESEL calls, each on its own SELECT_ENHANCED | 861,278 | +7,560 |
+| `stinstr_fb_hll` | 50 HLL calls, each on its own HL_LIMIT | 859,678 | +5,960 |
+| `stinstr_fb_mux` | 50 MUX calls, each on its own MULTIPLEXER | 860,878 | +7,160 |
+| `stinstr_fb_rlim` | 50 RLIM calls, each on its own RATE_LIMITER | 862,878 | +9,160 |
+| `stinstr_fb_sel` | 50 SEL calls, each on its own SELECT | 858,878 | +5,160 |
+| `stinstr_fb_sneg` | 50 SNEG calls, each on its own SELECTABLE_NEGATE | 859,278 | +5,560 |
+| `stinstr_fb_ssum` | 50 SSUM calls, each on its own SELECTED_SUMMER | 862,478 | +8,760 |
+| `stinstr_fb_maxc` | 50 MAXC calls, each on its own MAXIMUM_CAPTURE | 859,678 | +5,960 |
+| `stinstr_fb_minc` | 50 MINC calls, each on its own MINIMUM_CAPTURE | 859,678 | +5,960 |
+| `stinstr_fb_posp` | 50 POSP calls, each on its own POSITION_PROP | 864,478 | +10,760 |
+| `stinstr_fb_srtp` | 50 SRTP calls, each on its own SPLIT_RANGE | 863,678 | +9,960 |
+| `stinstr_fb_imc` | 20 IMC calls, each on its own IMC | 941,678 | +87,960 |
+| `stinstr_fb_cc` | 20 CC calls, each on its own CC | 1,029,198 | +175,480 |
+| `stinstr_fb_mmc` | 20 MMC calls, each on its own MMC | 1,183,118 | +329,400 |
+| `stinstr_fb_hmibc` | 50 HMIBC calls, each on its own HMIBC | 859,678 | +5,960 |
+| `stinstr_fb_dedt` | 50 DEDT calls, each on its own DEADTIME with its Storage REAL[10] arguments | 863,810 | +10,092 |
+| `stinstr_fb_fgen` | 50 FGEN calls, each on its own FUNCTION_GENERATOR with its X1, Y1, X2, Y2 REAL[10] arguments | 861,406 | +7,688 |
+| `stinstr_fb_mave` | 50 MAVE calls, each on its own MOVING_AVERAGE with its Storage, Weight REAL[10] arguments | 861,142 | +7,424 |
+| `stinstr_fb_mstd` | 50 MSTD calls, each on its own MOVING_STD_DEV with its Storage REAL[10] arguments | 861,410 | +7,692 |
+| `stinstr_fb_rmps` | 50 RMPS calls, each on its own RAMP_SOAK with its Ramp, Soak, Time REAL[10] arguments | 864,074 | +10,356 |
+| `stinstr_op_pid` | 50 PID calls | 874,678 | +20,960 |
+| `stinstr_op_msg` | 50 MSG calls | 894,678 | +40,960 |
+| `stinstr_op_ssv` | 50 SSV calls | 857,878 | +4,160 |
+| `stinstr_op_iot` | 50 IOT calls | 853,678 | -40 |
+| `stinstr_op_event` | 50 EVENT calls | 857,186 | +3,468 |
+| `stinstr_op_uid` | 50 UID calls each bracketed by UIE | 859,678 | +5,960 |
+| `stinstr_op_tnd` | 50 TND calls | 857,278 | +3,560 |
+| `stinstr_op_eot` | 50 EOT calls | 853,678 | -40 |
+| `stinstr_op_swpb` | 50 SWPB calls | 857,478 | +3,760 |
+| `stinstr_op_insert` | 50 INSERT calls | 859,478 | +5,760 |
+| `stinstr_op_mid` | 50 MID calls | 858,678 | +4,960 |
+| `stinstr_op_stod` | 50 STOD calls | 857,678 | +3,960 |
+| `stinstr_op_rtos` | 50 RTOS calls | 857,278 | +3,560 |
+| `stinstr_op_stor` | 50 STOR calls | 857,678 | +3,960 |
+| `stinstr_op_upper` | 50 UPPER calls | 857,878 | +4,160 |
+| `stinstr_op_lower` | 50 LOWER calls | 853,678 | -40 |
+| `stinstr_op_srt` | 50 SRT calls | 864,278 | +10,560 |
+| `stinstr_fn_abs` | 50 REAL assignments `SiQ[i] := ABS(SiR[i]);` | 858,878 | +5,160 |
+| `stinstr_fn_sqrt` | 50 REAL assignments `SiQ[i] := SQRT(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_ln` | 50 REAL assignments `SiQ[i] := LN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_log` | 50 REAL assignments `SiQ[i] := LOG(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_sin` | 50 REAL assignments `SiQ[i] := SIN(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_cos` | 50 REAL assignments `SiQ[i] := COS(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_tan` | 50 REAL assignments `SiQ[i] := TAN(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_asin` | 50 REAL assignments `SiQ[i] := ASIN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_acos` | 50 REAL assignments `SiQ[i] := ACOS(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_atan` | 50 REAL assignments `SiQ[i] := ATAN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_deg` | 50 REAL assignments `SiQ[i] := DEG(SiR[i]);` | 859,878 | +6,160 |
+| `stinstr_fn_rad` | 50 REAL assignments `SiQ[i] := RAD(SiR[i]);` | 862,478 | +8,760 |
+| `stinstr_fn_trunc` | 50 REAL assignments `SiQ[i] := TRUNC(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_atan2` | 50 assignments `REAL := ATAN2(REAL, REAL)` | 856,678 | +2,960 |
+| `stinstr_fn_tod` | 50 assignments `DINT := TOD(DINT)` | 858,078 | +4,360 |
+| `stinstr_fn_frd` | 50 assignments `DINT := FRD(DINT)` | 858,078 | +4,360 |
+| `stinstr_fn_isinf` | 50 assignments `BOOL := IsINF(REAL)` | 855,078 | +1,360 |
+| `stinstr_fn_isnan` | 50 assignments `BOOL := IsNAN(REAL)` | 855,078 | +1,360 |
+| `stinstr_mo_mam` | 50 MAM calls on one axis, each on its own MOTION_INSTRUCTION | 894,622 | +40,904 |
+| `stinstr_mo_maj` | 50 MAJ calls on one axis, each on its own MOTION_INSTRUCTION | 892,622 | +38,904 |
+| `stinstr_mo_mah` | 50 MAH calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_mas` | 50 MAS calls on one axis, each on its own MOTION_INSTRUCTION | 888,422 | +34,704 |
+| `stinstr_mo_mso` | 50 MSO calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_mrp` | 50 MRP calls on one axis, each on its own MOTION_INSTRUCTION | 889,822 | +36,104 |
+| `stinstr_mo_msf` | 50 MSF calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_maw` | 50 MAW calls on one axis, each on its own MOTION_INSTRUCTION | 889,822 | +36,104 |
+| `stinstr_mo_mar` | 50 MAR calls on one axis, each on its own MOTION_INSTRUCTION | 893,222 | +39,504 |
+| `stinstr_mo_mdr` | 50 MDR calls on one axis, each on its own MOTION_INSTRUCTION | 886,822 | +33,104 |
 
 **CAPTURE ERRORS: 0 row(s)** (not yet captured).

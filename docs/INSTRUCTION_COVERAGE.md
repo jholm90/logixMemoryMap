@@ -379,3 +379,14 @@ own cost); a module I/O point read by slot path in a safety routine costs what t
 read through a tag does (8 for a bit instruction). On a 1769 Compact GuardLogix an ordinary
 instruction's tag operand costs 7.5 less, DCS / CROUT 62 less and RIN 44 less
 (OQ-CGL1769). RESOLVED_QUESTIONS, "Closed 2026-10-24".
+
+## Structured Text, every callable instruction (2026-10-25, batch F)
+
+Under test in ST, one file each (OPEN_QUESTIONS OQ-STINSTR): CTUD OSRI OSFI SETD RESD DFF JKFF
+BTDT MVMT SCL PIDE RMPS ALM DEDT FGEN INTG PI PMUL SCRV SOC UPDN HPF LPF NTCH LDLG LDL2 DERV
+TOT D2SD D3SD ESEL HLL MUX RLIM SEL SNEG SSUM MAVE MSTD MAXC MINC POSP SRTP IMC CC MMC HMIBC;
+PID MSG SSV IOT EVENT UID UIE TND EOT SWPB INSERT MID STOD RTOS STOR UPPER LOWER SRT;
+ABS SQRT LN LOG SIN COS TAN ASIN ACOS ATAN DEG RAD TRUNC ATAN2 TOD FRD IsINF IsNAN; MAM MAJ MAH MAS MSO MRP MSF MAW MAR
+MDR. With batch E: TONR TOFR RTOR JSR SBR RET CONCAT DTOS DELETE FIND SIZE COP CPS GSV and AOI
+calls. Many have no weight today, so a call is priced at nothing until the batch is wired.
+AVE and STD are ladder-only (general instruction reference) and are not under test in ST.
