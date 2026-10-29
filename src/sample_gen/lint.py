@@ -192,7 +192,8 @@ class LintFinding:
     # "duplicate_module_slot" | "chassis_size_exceeded" |
     # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
     # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction" |
-    # "non_sequential_module_slots"
+    # "non_sequential_module_slots" | "condition_at_rung_end" | "must_be_first_on_rung" |
+    # "must_be_last_on_rung" | "sbr_not_first_rung"
     detail: str
 
 
@@ -945,6 +946,50 @@ def _lbl_missing_trailing_instruction_findings(rung_texts: list[str]) -> list[Li
                 f"LBL with nothing else on its rung -- real Studio 5000 requires a trailing "
                 f"instruction (e.g. NOP()) after LBL: {text.strip()!r}",
             ))
+    return findings
+
+
+_PLACEMENT_CACHE: dict[tuple[str, frozenset], tuple] = {}
+
+
+def _rung_placement_findings(rung_texts: list[str], aoi_names: set[str]) -> list[LintFinding]:
+    """Where each instruction may stand in its rung (sample_gen.ladder_roles): a condition
+    (XIC, a comparison, ONS, SQI, AFI) never ends a rung or the leg of a branch the rung ends on,
+    LBL / SBR are the first instruction on their rung and MCR the last. Every real rung that verified obeys
+    both (156,337 rungs across the real programs, 2026-10-29). A rung of nothing but
+    conditions, and a bare LBL, are already reported by the two checks above and are not
+    reported twice."""
+    from sample_gen.ladder_roles import rung_findings
+    names = frozenset(aoi_names)
+    findings = []
+    for text in rung_texts:
+        key = (text, names)
+        got = _PLACEMENT_CACHE.get(key)
+        if got is None:
+            if len(_PLACEMENT_CACHE) >= 200_000:
+                _PLACEMENT_CACHE.clear()
+            mnemonics = [name for name, _args in _call_sites(text)]
+            all_conditions = bool(mnemonics) and all(m in _PURE_CONDITION_INSTRUCTIONS for m in mnemonics)
+            got = _PLACEMENT_CACHE[key] = tuple(
+                (k, d) for k, d in rung_findings(text, names)
+                if k != "first_on_rung_needs_trailing" and not (k == "condition_at_rung_end" and all_conditions))
+        findings.extend(LintFinding(k, d) for k, d in got)
+    return findings
+
+
+def _sbr_first_rung_findings(root: ET.Element, aoi_names: set[str]) -> list[LintFinding]:
+    """SBR is the first instruction of its routine: on its first rung (the rung check above
+    keeps it first on that rung). Every real routine with an SBR has it on rung 0."""
+    if "SBR" in aoi_names:
+        return []
+    findings = []
+    for routine in root.iter("Routine"):
+        for i, text_el in enumerate(routine.iter("Text")):
+            if i and text_el.text and re.search(r"(?<![A-Za-z0-9_.])SBR\(", text_el.text):
+                findings.append(LintFinding(
+                    "sbr_not_first_rung",
+                    f"SBR on rung {i} of routine {routine.get('Name')!r}; it must be the first "
+                    f"instruction of the routine: {text_el.text.strip()!r}"))
     return findings
 
 
@@ -1846,6 +1891,8 @@ def lint_l5x(l5x_text: str, root: ET.Element | None = None) -> list[LintFinding]
     findings.extend(_rung_missing_output_findings(rung_texts))
     findings.extend(_mnemonic_firmware_findings(root, rung_texts))
     findings.extend(_lbl_missing_trailing_instruction_findings(rung_texts))
+    findings.extend(_rung_placement_findings(rung_texts, aoi_names))
+    findings.extend(_sbr_first_rung_findings(root, aoi_names))
     for program_el in root.iter("Program"):
         findings.extend(_bit_level_findings(_all_rung_texts(program_el), global_tag_types, udt_members))
         findings.extend(_documented_type_findings(_all_rung_texts(program_el), global_tag_types, udt_members))

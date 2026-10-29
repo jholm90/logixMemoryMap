@@ -31,6 +31,7 @@ import re
 from pathlib import Path
 
 from sample_gen.builders import control_tag_xml, counter_tag_xml, rung_xml, tag_xml
+from sample_gen.ladder_roles import role
 from sample_gen.manifest import append_manifest_row, write_sample
 from sample_gen.realism import with_baseline
 from sample_gen.wrapper import build_l5x
@@ -78,8 +79,8 @@ def _arm(mn: str, n: int) -> tuple[list[str], list[str], str]:
                 + _per("LgCmp", n, control_tag_xml) + _per("LgRc", n, control_tag_xml),
                 "DDT(DINT[10], DINT[10], DINT[10], CONTROL, 10, 0, CONTROL, 10, 0)")
     if mn == "SQI":
-        return ([f"SQI(LgArr[0],LgE[{i}],LgD[{i}],LgCtl{i:03d},10,0)OTE(LgB[{i}]);" for i in r],
-                _per("LgCtl", n, control_tag_xml), "SQI(DINT[10], DINT, DINT, CONTROL, 10, 0) OTE")
+        return ([f"SQI(LgArr[0],LgE[{i}],LgD[{i}],LgCtl{i:03d},10,0);" for i in r],
+                _per("LgCtl", n, control_tag_xml), "SQI(DINT[10], DINT, DINT, CONTROL, 10, 0)")
     if mn == "SQL":
         return ([f"SQL(LgSeq{i:03d}[0],LgD[{i}],LgCtl{i:03d},10,0);" for i in r],
                 _per("LgSeq", n, lambda t: tag_xml(t, "DINT", (10,))) + _per("LgCtl", n, control_tag_xml),
@@ -92,7 +93,7 @@ def _arm(mn: str, n: int) -> tuple[list[str], list[str], str]:
     if mn == "IOT":
         return [f"IOT(RACK_{1 + i % 5}:O);" for i in r], [], "IOT(module output tag)"
     if mn in ("IsINF", "IsNAN"):
-        return [f"{mn}(LgR[{i}])OTE(LgB[{i}]);" for i in r], [], f"{mn}(REAL) OTE"
+        return [f"{mn}(LgR[{i}]);" for i in r], [], f"{mn}(REAL)"
     if mn == "LV":
         return [f"LV({1 + i},{1 + i});" for i in r], [], "LV(vendor code, product code)"
     raise KeyError(mn)
@@ -106,7 +107,7 @@ def plan() -> list[tuple[str, str, dict]]:
     files = [("ldgap_n00", f"{OQ}: control: the plant, the common tags and one MOV rung", {"mn": None, "n": 0})]
     for mn in INSTRUCTIONS:
         for n in COUNTS:
-            what = _arm(mn, 1)[2]
+            what = _arm(mn, 1)[2] + (" OTE" if role(mn) == "condition" else "")
             files.append((f"ldgap_{mn.lower()}_{n}", f"{OQ}: {n} ladder rungs of {what}, each on its own tags",
                           {"mn": mn, "n": n}))
     return files
@@ -119,6 +120,8 @@ def make(sample_id: str, kw: dict) -> str:
     else:
         rungs, own, _ = _arm(kw["mn"], kw["n"])
         tags += own
+        if role(kw["mn"]) == "condition":   # a condition cannot end a rung: an OTE on its own bit
+            rungs = [t[:-1] + f"OTE(LgB[{i}]);" for i, t in enumerate(rungs)]
     body = "\n".join(rung_xml(i, t) for i, t in enumerate(rungs))
     routine = f'<Routine Name="LgTarget" Type="RLL">\n<RLLContent>\n{body}\n</RLLContent>\n</Routine>'
     target = "".join(p.capitalize() for p in sample_id.split("_"))

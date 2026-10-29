@@ -95,6 +95,25 @@ that prompted it.
 
 ## Rules that decide whether a file imports
 
+### Every ladder instruction has a role and a place in its rung
+
+`sample_gen/ladder_roles.py` is the one table generators and lint share (2026-10-29):
+
+- **condition**: XIC / XIO, the comparisons (EQU / EQ, NEQ / NE, GRT / GT, GEQ / GE, LES /
+  LT, LEQ / LE, LIM / LIMIT, MEQ, CMP, DTR, IsINF, IsNAN), ONS, SQI, AFI. Never the last thing
+  on a rung, nor on any leg of a branch the rung ends on (`condition_at_rung_end`).
+- **control**: LBL, JMP, JSR, SBR, RET, MCR, TND, NOP, IOT, UID, UIE, EOT, EVENT, BRK, FOR.
+  LBL and SBR are the first instruction on their rung and need one after them
+  (`must_be_first_on_rung`, `lbl_missing_trailing_instruction`); SBR is also on the first rung
+  of its routine (`sbr_not_first_rung`); MCR is the last on its rung (`must_be_last_on_rung`).
+- **output**: everything else (OTE, MOV, timers, math, file, string, motion, MSG, PID, and any
+  AOI call). Anywhere, including mid-rung with conditions after it.
+
+A generator asks `role(mnemonic)` instead of hard-coding which calls need an OTE or NOP after
+them (`gen_ld_gaps.py` does), or passes rung text through `terminated()`. Lint enforces all of
+it at `write_sample`. Every real rung that verified obeys every rule: 156,337 rungs across the
+real programs, the one exception a palette rung of `?` placeholders that never verified.
+
 ### The Local module's ProductCode is its catalog's own
 
 A controller catalog and its Local module's `ProductCode` must agree, and the safety
