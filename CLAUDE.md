@@ -489,8 +489,11 @@ stays uncounted for that reason. A plan or spec that includes SFC is wrong on it
   **One exception, owner's decision 2026-10-29:** the parsed instruction reference (every
   instruction's languages, call forms and per-operand data types, for ladder, ST and FBD
   work) lives in the gitignored `samples/local/reference/`, built by
-  `scripts/build_instruction_reference.py` from the manuals sent over chat. Like customer files it is never committed and is gone
-  each new session: ask for the manuals again, or for the reference files themselves.
+  `scripts/build_instruction_reference.py` from the manuals sent over chat, with the manuals
+  themselves beside it in `samples/local/reference/manuals/`. **The owner keeps the PDFs for at
+  least 365 days** and resends them; `docs/REFERENCE_MANUALS.md` registers each one by
+  publication, edition and SHA-256. Like customer files, none of it is committed and all of it
+  is gone each new session: ask for the manuals again, or for the reference files themselves.
 
 ## The real exports in `samples/local/` are READ-ONLY. No exceptions.
 
@@ -630,6 +633,7 @@ than trusted.
 | `docs/FUTURE_TESTS.md` | tests that would improve the model |
 | `docs/IO_MODULES.md` | module and I/O reference |
 | `docs/CMP_CPT_REFERENCE.md` | real CMP and CPT syntax |
+| `docs/REFERENCE_MANUALS.md` | the Rockwell manuals on file (kept by the owner), by edition and SHA-256 |
 | `docs/SAFETY_INSTRUCTIONS.md` | every safety-routine instruction's operands, in order, as Studio exports them |
 | `docs/COMMANDS.md` | every script and command |
 | `samples/manifest.csv` | the spec: every tracked sample and its prediction |

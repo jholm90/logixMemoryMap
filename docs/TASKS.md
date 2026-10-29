@@ -44,6 +44,55 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zn. The afternoon of 2026-10-29 — what was done, decided and left open
+
+**Done (commits b4b5dff, 06c3274, dc0be4f and the one carrying this entry; none pushed yet):**
+
+1. **Batch F checked against the general instruction reference (RM018).** AVE / STD removed
+   (ladder-only); ATAN2, TOD, FRD, IsINF, IsNAN added as ST functions; TRUNC kept (the real
+   programs at v32 to v35 write it in ST). 93 files. OPEN_QUESTIONS Section 3.
+2. **A local instruction reference**, kept for FBD work next year: every RM018 instruction's
+   languages, ST call form and per-operand data type per controller family and format, built by
+   `scripts/build_instruction_reference.py` into the gitignored `samples/local/reference/`
+   (owner's decision: local only, never committed; CLAUDE.md carries the exception).
+3. **The audit, every instruction in ladder and ST** (INSTRUCTION_COVERAGE, "Every instruction,
+   ladder and ST"): after batches E, F and G are captured, every RM018 instruction is measured
+   in every language it can be written in; six excluded with reasons (ALMA, ASO, SFP, SFR, REF,
+   UNK).
+4. **Batch G** (`gen_ld_gaps.py`, 31 files, OQ-LDGAPS, OPEN_QUESTIONS Section 4): the fifteen
+   ladder instructions no ladder file measured (ATAN2 LN STD LOWER CTD LFL DDT SQI SQL SQO EOT
+   IOT IsINF IsNAN LV), 50 and 100 rungs and a control, predictions written before any reading.
+5. **The weight question answered** (same section of INSTRUCTION_COVERAGE): an instruction has
+   its own weight, set by what it does (the same three DINTs cost 40 in ADD and 56 in MUL), and
+   its operands add a separate, per-instruction type cost on top (the same ADD costs 40, 56 or
+   196 as its operands go DINT, REAL or INT).
+6. **Ladder roles and placement** (`sample_gen/ladder_roles.py`, enforced by lint on every
+   generated file, SAMPLE_GENERATION "Every ladder instruction has a role and a place in its
+   rung"): condition / control / output; a condition never ends a rung or the branch it ends
+   on; LBL and SBR first on their rung, SBR on the routine's first rung; MCR last on its rung;
+   MCRs in pairs per routine (owner's rule: Studio accepts a lone MCR, and realprog_27 has one).
+   All 156,337 verified real rungs obey every rule.
+7. **Manuals:** RM018, PM006, PM007, PM009 registered by edition and SHA-256 in
+   `docs/REFERENCE_MANUALS.md`; the owner keeps the PDFs for at least 365 days and resends them
+   (owner's decision).
+8. **Branches:** no forks and no open pull requests. The local harness branch (fully merged)
+   is deleted. The four stale remote branches (james-latest, james-batch-results,
+   james-capture-aug24, james-capture-aug24b) share no history with main and two carry customer
+   names; the owner deletes them (the session's permission system refused the delete).
+
+**Open, in order:**
+
+- **Owner:** delete the four remote branches; push `main` once asked; convert and capture
+  batches E (32), F (93) and G (31), and recapture `cgl_l30v32_logic400`, `cgl_l33v32_logic400`,
+  `cgl_l33v32_plant2x`.
+- **Owner:** send 1756-RM006 and MOTION-RM002 to check the function-block and motion lists.
+- **Here, when the captures land:** the CLAUDE.md batch sequence (reconcile, conversion status,
+  capture errors, wire every instruction weight E / F / G measure, OQ review, docs).
+- **Known risks in the batches**, answered by a conversion failure rather than chased: IsINF /
+  IsNAN / LV in ladder (firmware floor, license), TOD / FRD / IsINF / IsNAN in ST (no ST form in
+  the reference), the numeric motion enumerations in `stinstr_mo_*`.
+- **Parked:** ALMD / ALMA / ASO (alarm instructions); REF; SFC never.
+
 ### 0zm. Batch G, every ladder instruction no ladder file measured — BUILT 2026-10-29 (31 files), awaiting conversion and capture (OQ-LDGAPS)
 
 **Owner's request 2026-10-29:** confirm every instruction is tested in ladder and in ST,

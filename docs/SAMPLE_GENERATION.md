@@ -105,7 +105,9 @@ that prompted it.
 - **control**: LBL, JMP, JSR, SBR, RET, MCR, TND, NOP, IOT, UID, UIE, EOT, EVENT, BRK, FOR.
   LBL and SBR are the first instruction on their rung and need one after them
   (`must_be_first_on_rung`, `lbl_missing_trailing_instruction`); SBR is also on the first rung
-  of its routine (`sbr_not_first_rung`); MCR is the last on its rung (`must_be_last_on_rung`).
+  of its routine (`sbr_not_first_rung`); MCR is the last on its rung (`must_be_last_on_rung`)
+  and MCRs come in pairs in a routine, one opening a zone and one closing it (`mcr_unpaired`;
+  a project rule: Studio accepts a lone MCR, and realprog_27 has one in an AOI's logic).
 - **output**: everything else (OTE, MOV, timers, math, file, string, motion, MSG, PID, and any
   AOI call). Anywhere, including mid-rung with conditions after it.
 

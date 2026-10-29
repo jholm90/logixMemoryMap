@@ -67,3 +67,16 @@ def test_lint_accepts_well_placed_rungs():
     from sample_gen.lint import lint_l5x
     kinds = {f.kind for f in lint_l5x(_wrap(["SBR(x)NOP();", "LBL(L)NOP();", "XIC(a)MCR();"]))}
     assert not kinds & {"sbr_not_first_rung", "condition_at_rung_end", "must_be_first_on_rung", "must_be_last_on_rung"}
+
+
+def test_mcr_comes_in_pairs():
+    from sample_gen.ladder_roles import routine_findings
+    assert routine_findings(["XIC(a)MCR();", "OTE(b);", "MCR();"]) == []
+    assert [k for k, _ in routine_findings(["XIC(a)MCR();", "OTE(b);"])] == ["mcr_unpaired"]
+    assert routine_findings(["MCR(x);"], frozenset({"MCR"})) == []
+
+
+def test_lint_refuses_an_unpaired_mcr():
+    from sample_gen.lint import lint_l5x
+    assert "mcr_unpaired" in {f.kind for f in lint_l5x(_wrap(["XIC(a)MCR();", "OTE(b);"]))}
+    assert "mcr_unpaired" not in {f.kind for f in lint_l5x(_wrap(["XIC(a)MCR();", "OTE(b);", "MCR();"]))}

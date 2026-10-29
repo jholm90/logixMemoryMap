@@ -10,7 +10,8 @@ Three roles:
   control     program flow and the logic operands: LBL, JMP, JSR, SBR, RET, MCR, TND, NOP,
               IOT, UID, UIE, EOT, EVENT, BRK, FOR. LBL and SBR must be the first instruction on
               their rung and need something after them, and SBR the first of its routine; MCR
-              must be the last on its rung; the rest may stand anywhere.
+              must be the last on its rung, and MCRs come in pairs in a routine (one opening a
+              zone, one closing it); the rest may stand anywhere.
   output      everything that does something: OTE / OTL / OTU, MOV, timers and counters, math,
               file, string, motion (MAM, MAJ, ...), messages, PID. An output may end a rung, and
               Logix accepts one mid-rung with conditions after it.
@@ -154,3 +155,29 @@ def terminated(text: str) -> str:
     if any(role(m) == "condition" for m in _terminal_calls(parse_rung(body))):
         body += "NOP()"
     return body + ";"
+
+
+def routine_findings(rung_texts: list[str], aoi_names: frozenset[str] | set[str] = frozenset()) -> list[tuple[str, str]]:
+    """(kind, detail) for the rules that span a routine's rungs.
+
+    MCR in pairs is a project rule, not a build rule: an MCR toggles its zone, so a zone is
+    opened by one and closed by the next, and a routine with an odd count leaves a zone open to
+    its end. Studio accepts that (one real program, realprog_27, has a single MCR in an AOI's
+    logic and verified), but every generated routine closes what it opens."""
+    if "MCR" in aoi_names:
+        return []
+    count = sum(1 for t in rung_texts for name, _ in _calls(parse_rung(t)) if name == "MCR")
+    if count % 2:
+        return [("mcr_unpaired", f"{count} MCR in the routine; MCRs come in pairs, one opening a zone and "
+                                 f"one closing it")]
+    return []
+
+
+def _calls(elements: list):
+    for e in elements:
+        if isinstance(e, tuple):
+            yield e
+        else:
+            for leg in e:
+                yield from _calls(leg)
+

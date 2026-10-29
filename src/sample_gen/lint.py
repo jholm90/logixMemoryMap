@@ -193,7 +193,7 @@ class LintFinding:
     # "aoi_call_arg_count_mismatch" | "bit_level_instruction_on_non_bool_operand" |
     # "rung_missing_output_instruction" | "lbl_missing_trailing_instruction" |
     # "non_sequential_module_slots" | "condition_at_rung_end" | "must_be_first_on_rung" |
-    # "must_be_last_on_rung" | "sbr_not_first_rung"
+    # "must_be_last_on_rung" | "sbr_not_first_rung" | "mcr_unpaired"
     detail: str
 
 
@@ -979,11 +979,17 @@ def _rung_placement_findings(rung_texts: list[str], aoi_names: set[str]) -> list
 
 def _sbr_first_rung_findings(root: ET.Element, aoi_names: set[str]) -> list[LintFinding]:
     """SBR is the first instruction of its routine: on its first rung (the rung check above
-    keeps it first on that rung). Every real routine with an SBR has it on rung 0."""
+    keeps it first on that rung). Every real routine with an SBR has it on rung 0. Also the
+    routine-wide rules of sample_gen.ladder_roles.routine_findings (MCRs in pairs)."""
     if "SBR" in aoi_names:
         return []
+    from sample_gen.ladder_roles import routine_findings
     findings = []
     for routine in root.iter("Routine"):
+        if routine.find("RLLContent") is not None:
+            texts = [t.text or "" for t in routine.iter("Text")]
+            findings.extend(LintFinding(k, f"{d}: routine {routine.get('Name')!r}")
+                            for k, d in routine_findings(texts, aoi_names))
         for i, text_el in enumerate(routine.iter("Text")):
             if i and text_el.text and re.search(r"(?<![A-Za-z0-9_.])SBR\(", text_el.text):
                 findings.append(LintFinding(
