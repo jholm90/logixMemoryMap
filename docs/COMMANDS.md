@@ -237,6 +237,25 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `gen_ld_gaps.py` — batch G, ladder instructions no ladder file measured (OQ-LDGAPS)
+
+```
+PYTHONPATH=src python -m sample_gen.gen_ld_gaps [--only REGEX]
+```
+
+### `build_instruction_reference.py` — the local instruction reference
+
+```
+python -m pip install pdfplumber pikepdf
+python scripts/build_instruction_reference.py MANUAL.pdf [MANUAL2.pdf ...]
+```
+
+Reads an instruction manual sent over chat (a tagged PDF) and writes
+`samples/local/reference/instructions.json` and `INSTRUCTION_REFERENCE.md`: every
+instruction's languages, ST call form and operand tables (name, data type per controller
+family, format). Gitignored, never committed; refuses any other destination. Rerun with each
+new manual (RM006, MOTION-RM002); entries merge.
+
 ### `gen_st_instructions.py` — batch F, every ST instruction (OQ-STINSTR)
 
 ```

@@ -128,6 +128,9 @@ _KNOWN_NATIVE_INSTRUCTIONS = {
     "OSR", "OSF", "TRN", "SQR", "SBR", "RET",
     # Weighed at v38 under their v36 names (gen_v36_renames.py).
     "ACS", "ASN", "TOD", "FRD",
+    # Ladder instructions of the general instruction reference with no ladder file before
+    # batch G (gen_ld_gaps.py, OQ-LDGAPS).
+    "LN", "STD", "LOWER", "LFL", "DDT", "SQI", "SQL", "SQO", "EOT", "IOT", "IsINF", "IsNAN", "LV",
     # Motion instructions (gen_motion_instructions.py) --
     # MAH/MSO corpus-confirmed call syntax, the rest real per Rockwell
     # documentation though not independently corpus-confirmed for that

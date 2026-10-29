@@ -482,11 +482,15 @@ stays uncounted for that reason. A plan or spec that includes SFC is wrong on it
   gitignored `samples/local/aliases.csv`), not just its export number — the numbers are not
   memorable. Committed files keep the export number only; the names never enter the repository.
 - **Rockwell help documentation is chat-only.** The instruction-set help files arrive over
-  chat and stay in the session scratchpad — never in the repository, not even under
-  `samples/local/`, and no table, page text or parsed extract of them is committed. A
-  finding drawn from them is written in the project's own words as a fact with its
-  measured consequence (e.g. "the controller handles every immediate value as a DINT"),
-  never as copied content.
+  chat and stay in the session scratchpad — never in the repository, and no table, page
+  text or parsed extract of them is committed. A finding drawn from them is written in the
+  project's own words as a fact with its measured consequence (e.g. "the controller handles
+  every immediate value as a DINT"), never as copied content.
+  **One exception, owner's decision 2026-10-29:** the parsed instruction reference (every
+  instruction's languages, call forms and per-operand data types, for ladder, ST and FBD
+  work) lives in the gitignored `samples/local/reference/`, built by
+  `scripts/build_instruction_reference.py` from the manuals sent over chat. Like customer files it is never committed and is gone
+  each new session: ask for the manuals again, or for the reference files themselves.
 
 ## The real exports in `samples/local/` are READ-ONLY. No exceptions.
 

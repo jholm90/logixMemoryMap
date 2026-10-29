@@ -18,6 +18,181 @@ Real logic is extremely top-heavy: **4 mnemonics cover half of all
 occurrences, 18 cover 90%, and 44 cover 99%.** The long tail is real but
 individually negligible, which is what the noise-floor rule in `CLAUDE.md` is for.
 
+## Every instruction, ladder and ST (2026-10-29)
+
+**Owner's request 2026-10-29:** confirm every instruction is tested in ladder and in ST,
+wherever it can be written. Checked against every instruction of the general instruction
+reference (1756-RM018, 129 instructions; the reference itself is local only,
+`samples/local/reference/`). "Measured (n)" counts error-free captured files that isolate the
+instruction in that language; "—" means the instruction is not written in that language.
+**After batches E, F and G are captured, every instruction is measured in every language it can
+be written in**, except the six excluded with their reasons. Not yet covered by any reference:
+the process / drives and motion instructions (1756-RM006, MOTION-RM002 not on file); batch F
+carries the function blocks and ten motion instructions in ST, and the motion instructions
+are measured in ladder (`motion_*`, `verified_instr`, `motop_*`).
+
+Before this audit, fifteen ladder instructions had no ladder file (batch G, OPEN_QUESTIONS
+Section 4) and every ST instruction except the operators, COP, DTOS, SIZE, the string calls and
+JSR / SBR / RET waited on batches E and F. TO_BCD / BCD_TO / IsINF / IsNAN show no ST form in
+the reference; batch F tests whether ST accepts them anyway (`stinstr_fn_tod / frd / isinf /
+isnan`).
+
+| instruction | ladder | ST |
+|---|---|---|
+| ABS | measured (10) | batch F, awaiting capture |
+| ACOS | measured (1) | batch F, awaiting capture |
+| ADD | measured (83) | measured (2) |
+| AFI | measured (27) | — |
+| ALMA | excluded: parked (alarm instruction) | excluded: parked (alarm instruction) |
+| AND | measured (80) | measured (4) |
+| ASIN | measured (1) | batch F, awaiting capture |
+| ASO | excluded: parked (alarm instruction) | excluded: parked (alarm instruction) |
+| ATAN | measured (7) | batch F, awaiting capture |
+| ATAN2 | batch G, awaiting capture | batch F, awaiting capture |
+| AVE | measured (2) | — |
+| BAND | — | — |
+| BCD_TO | measured (1) | — |
+| BNOT | — | — |
+| BOR | — | — |
+| BRK | measured (3) | — |
+| BSL | measured (7) | — |
+| BSR | measured (17) | — |
+| BTD | measured (8) | — |
+| BTDT | — | batch F, awaiting capture |
+| BXOR | — | — |
+| CLR | measured (17) | — |
+| CMP | measured (42) | — |
+| CONCAT | measured (6) | measured (2), +batch E |
+| COP | measured (32) | measured (4), +batch E |
+| COS | measured (3) | batch F, awaiting capture |
+| CPS | measured (17) | batch E, awaiting capture |
+| CPT | measured (323) | — |
+| CTD | batch G, awaiting capture | — |
+| CTU | measured (22) | — |
+| CTUD | — | batch F, awaiting capture |
+| DDT | batch G, awaiting capture | — |
+| DEG | measured (8) | batch F, awaiting capture |
+| DELETE | measured (5) | measured (1), +batch E |
+| DIV | measured (28) | measured (1) |
+| DTOS | measured (7) | measured (2), +batch E |
+| DTR | measured (3) | — |
+| EOT | batch G, awaiting capture | batch F, awaiting capture |
+| EQ | measured (54) | — |
+| EVENT | measured (5) | batch F, awaiting capture |
+| EXPT | measured (6) | measured (5) |
+| FAL | measured (2) | — |
+| FBC | measured (3) | — |
+| FFL | measured (2) | — |
+| FFU | measured (2) | — |
+| FIND | measured (2) | measured (1), +batch E |
+| FLL | measured (11) | — |
+| FOR | measured (8) | — |
+| FSC | measured (2) | — |
+| GE | measured (119) | — |
+| GSV | measured (7) | batch E, awaiting capture |
+| GT | measured (49) | — |
+| INSERT | measured (2) | measured (2), +batch F |
+| IOT | batch G, awaiting capture | batch F, awaiting capture |
+| IsINF | batch G, awaiting capture | — |
+| IsNAN | batch G, awaiting capture | — |
+| JMP | measured (14) | — |
+| JSR | measured (272), +batch G | measured (49), +batch E/F |
+| LBL | measured (14) | — |
+| LE | measured (26) | — |
+| LFL | batch G, awaiting capture | — |
+| LFU | measured (3) | — |
+| LIMIT | measured (122) | — |
+| LN | batch G, awaiting capture | batch F, awaiting capture |
+| LOG | measured (3) | batch F, awaiting capture |
+| LOWER | batch G, awaiting capture | batch F, awaiting capture |
+| LT | measured (33) | — |
+| LV | batch G, awaiting capture | — |
+| MCR | measured (8) | — |
+| MEQ | measured (6) | — |
+| MID | measured (5) | measured (2), +batch F |
+| MOD | measured (27) | measured (3) |
+| MOVE | measured (262), +batch G | measured (1) |
+| MSG | measured (9) | batch F, awaiting capture |
+| MUL | measured (31) | measured (3) |
+| MVM | measured (6) | — |
+| MVMT | — | batch F, awaiting capture |
+| NE | measured (27) | — |
+| NEG | measured (7) | — |
+| NOP | measured (74) | — |
+| NOT | measured (38) | measured (2) |
+| ONS | measured (17) | — |
+| OR | measured (4) | measured (4) |
+| OSF | measured (3) | — |
+| OSFI | — | batch F, awaiting capture |
+| OSR | measured (3) | — |
+| OSRI | — | batch F, awaiting capture |
+| OTE | measured (366), +batch G | — |
+| OTL | measured (16) | — |
+| OTU | measured (20) | — |
+| PID | measured (4) | batch F, awaiting capture |
+| RAD | measured (8) | batch F, awaiting capture |
+| REF | excluded: reference type never built | excluded: reference type never built |
+| RES | measured (7) | — |
+| RET | measured (69) | measured (1), +batch E |
+| RTO | measured (6) | — |
+| RTOR | — | batch E, awaiting capture |
+| RTOS | measured (3) | measured (1), +batch F |
+| SBR | measured (67) | measured (1), +batch E |
+| SFP | excluded: SFC, never worked | excluded: SFC, never worked |
+| SFR | excluded: SFC, never worked | excluded: SFC, never worked |
+| SIN | measured (3) | batch F, awaiting capture |
+| SIZE | measured (10) | measured (1), +batch E |
+| SQI | batch G, awaiting capture | — |
+| SQL | batch G, awaiting capture | — |
+| SQO | batch G, awaiting capture | — |
+| SQRT | measured (4) | batch F, awaiting capture |
+| SRT | measured (2) | batch F, awaiting capture |
+| SSV | measured (5) | batch F, awaiting capture |
+| STD | batch G, awaiting capture | — |
+| STOD | measured (5) | measured (1), +batch F |
+| STOR | measured (3) | measured (1), +batch F |
+| SUB | measured (34) | measured (1) |
+| SWPB | measured (3) | batch F, awaiting capture |
+| TAN | measured (4) | batch F, awaiting capture |
+| TND | measured (7) | batch F, awaiting capture |
+| TOF | measured (7) | — |
+| TOFR | — | batch E, awaiting capture |
+| TON | measured (33) | — |
+| TONR | — | batch E, awaiting capture |
+| TO_BCD | measured (1) | — |
+| TRUNC | measured (5) | batch F, awaiting capture |
+| UID | measured (20) | batch F, awaiting capture |
+| UIE | measured (20) | batch F, awaiting capture |
+| UNK | excluded: placeholder, not written by a program | — |
+| UPPER | measured (3) | measured (1), +batch F |
+| XIC | measured (249) | — |
+| XIO | measured (25) | — |
+| XOR | measured (4) | measured (4) |
+
+### Does an instruction weigh more than its operands' types? Yes.
+
+An instruction's cost is two separate things, and both are measured:
+
+1. **The instruction's own weight**, which depends on what it does, not on its operands.
+   Calls with identical operand lists weigh differently: one BOOL operand — XIC / XIO 4, OTE /
+   OTL / OTU 16, ONS 36; Source and Dest REAL — MOV 36, NEG 40, ABS 44, SQR / TRN 52, SIN / COS /
+   TAN / LOG 60, DEG 64, RAD 116; three DINTs — ADD / SUB / AND / OR / XOR 40, MUL / DIV / MOD 56,
+   XPY 116; two compared operands — EQU / NEQ / GRT / GEQ / LES / LEQ 20, MEQ (three) 32, LIM
+   (three) 52, CMP 76; strings — DTOS / RTOS 72, STOD / STOR 80, UPPER 84, MID / DELETE / FIND
+   100, CONCAT 104, INSERT 116. TON / TOF / RTO / CTU / RES are all 20 on very different
+   structures.
+2. **What the operands add**, which depends on their type and how they are written, and is
+   itself per instruction: an all-INT ADD pays +156 over all-DINT, an all-INT MUL +156, an
+   all-REAL ADD +16 and an all-REAL MUL 0; a compare pays +112 for INT and +16 (EQU / NEQ 0) for
+   REAL; a call mixing DINT and REAL pays +52 per DINT source and +40 for a DINT destination; a
+   literal takes the type its spelling implies; a tag-driven index costs 84, +40 with a member
+   after it. Constants: `logic_instructions.weights` and `operand_type_surcharge` in
+   `memory_model.yaml`; MEMORY_MODEL, "Mixed operand types in one call".
+
+So the same three DINT tags cost 40 in ADD and 56 in MUL, and the same ADD costs 40, 56 or 196
+as its operands go DINT, REAL or INT. In ST the instruction weights are the same (four ST / RLL
+pairs differed only by the ST routine shell, above); ST adds its own statement costs.
+
 ## The real safety-controller programs (2026-10-20)
 
 Counted over the ten real 1756 / 5069 safety-controller programs the safety figures use

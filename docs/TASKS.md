@@ -44,6 +44,20 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zm. Batch G, every ladder instruction no ladder file measured — BUILT 2026-10-29 (31 files), awaiting conversion and capture (OQ-LDGAPS)
+
+**Owner's request 2026-10-29:** confirm every instruction is tested in ladder and in ST,
+generate what is missing, and say whether instructions weigh differently than their operand
+types. The audit is INSTRUCTION_COVERAGE, "Every instruction, ladder and ST": after batches E,
+F and G every instruction of the general instruction reference is measured in every language
+it can be written in, six excluded with reasons. Built: `gen_ld_gaps.py`, 31 files in
+`samples/generated/ldgap/` (ATAN2 LN STD LOWER CTD LFL DDT SQI SQL SQO EOT IOT IsINF IsNAN LV at
+50 and 100 rungs, and a control), lint-clean, above the realism floor; predictions in
+OPEN_QUESTIONS Section 4. Answer to the weight question, in the same section of
+INSTRUCTION_COVERAGE: yes, each instruction has its own weight on top of what its operands'
+types add. The instruction reference is local (`scripts/build_instruction_reference.py` into
+`samples/local/reference/`, never committed), kept for FBD work.
+
 ### 0zl. Batch F, every ST instruction — BUILT 2026-10-25 (93 files, checked against RM018 2026-10-29), awaiting conversion and capture (OQ-STINSTR)
 
 **Owner's request 2026-10-25:** a test for every instruction ST can call. Built:

@@ -1,6 +1,6 @@
 # Open Questions
 
-**Three: OQ-REALUNDER, OQ-STEXTENDED (batch E built) and OQ-STINSTR (opened 2026-10-25, batch F built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
+**Four: OQ-REALUNDER, OQ-STEXTENDED (batch E built), OQ-STINSTR (opened 2026-10-25, batch F built) and OQ-LDGAPS (opened 2026-10-29, batch G built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
 batch (RESOLVED_QUESTIONS, "Closed 2026-10-24"): OQ-UDTLAYOUT (wired: the aligned layout
 predicted all twelve STRING-holding UDT files blind), OQ-STRSHAPE (every shape exact),
 OQ-MODREPEAT (zero-connection catalogs wired; the packed 5069 card under the floor),
@@ -28,6 +28,7 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state | answered by |
 |---|---|---|
+| **OQ-LDGAPS** | Every ladder instruction of the general instruction reference that no ladder file measures: ATAN2 LN STD LOWER CTD LFL DDT SQI SQL SQO EOT IOT IsINF IsNAN LV. All but CTD have no weight, so a call is priced at its backing tags only. Section 4. | batch G (`ldgap_*`, 31 files, built) |
 | **OQ-STINSTR** | Every instruction ST can call, one file each: 47 function blocks, 17 operand instructions, 18 ST functions, 10 motion instructions; the general-instruction list checked against the general instruction reference (1756-RM018). The engine has no weight for many (a call priced at nothing). Section 3. | batch F (`stinstr_*`, 93 files, built) |
 | **OQ-STEXTENDED** | The ST constructs realprog_44 (the most ST-heavy program, the one outside 2%) writes and nothing has measured: function-block timers driven over several lines, JSR parameters into ST subroutines, AOI calls from ST, CASE, deep member paths behind tag indexes, string instructions, GSV / CPS, lower-case spelling. Section 2. | batch E (`ste_*`, 32 files, built) |
 | **OQ-REALUNDER** | **1.158% mean, −2.66% worst, 8/19 inside 1%, 18/19 inside 2%** on the nineteen (2026-10-24, after the UDT layout); stopping rule NOT MET. Section 1. | the residual census below; `docs/REAL_PROGRAM_REPORT.md` |
@@ -401,10 +402,11 @@ and the motion reference (MOTION-RM002) are not on file, so the function-block a
 lists are still checked against them when they arrive.
 
 **Checked against RM018 (2026-10-29), what changed:** AVE and STD are ladder-only, so their
-two files were removed; ATAN2, TOD, FRD, IsINF and IsNAN are ST functions and were added
-(TOD / FRD are the spellings below v36 of TO_BCD / BCD_TO; ATAN2, IsINF and IsNAN apply to the
-5380 / 5580 families and their firmware floor is not stated, so a conversion failure on one
-of those three files at v35 is the answer to that, not a defect to chase). TRUNC stays: the
+two files were removed; ATAN2, TOD, FRD, IsINF and IsNAN were added as ST functions (TOD / FRD
+are the spellings below v36 of TO_BCD / BCD_TO). The reference states ATAN2 is written in ST
+as an expression; for TOD, FRD, IsINF and IsNAN it gives no ST form at all, so those four files
+test whether ST accepts them. A conversion failure on one of them is the answer, not a defect
+to chase. TRUNC stays: the
 real programs at v32 to v35 write TRUNC in ST (the v36 rename is a ladder rename). The
 ladder-only instructions (TON / TOF / RTO, CTU / CTD, RES, FAL / FSC / FLL, BTD, MVM, CLR, the
 compare and arithmetic instructions, NEG, MCR, AFI, NOP, UNK, LV) are written in ST as
@@ -526,5 +528,51 @@ the motion operands that ladder writes as keywords are numbers (`Units per sec` 
 | `stinstr_mo_maw` | 50 MAW calls on one axis, each on its own MOTION_INSTRUCTION | 889,822 | +36,104 |
 | `stinstr_mo_mar` | 50 MAR calls on one axis, each on its own MOTION_INSTRUCTION | 893,222 | +39,504 |
 | `stinstr_mo_mdr` | 50 MDR calls on one axis, each on its own MOTION_INSTRUCTION | 886,822 | +33,104 |
+
+**CAPTURE ERRORS: 0 row(s)** (not yet captured).
+
+## 4. OQ-LDGAPS — every ladder instruction no ladder file measures, opened 2026-10-29
+
+**Owner's request 2026-10-29:** every instruction tested in ladder and in ST, wherever it can
+be written. The audit (INSTRUCTION_COVERAGE, "Every instruction, ladder and ST") put every
+instruction of the general instruction reference against the captured corpus. In ST every
+callable one is measured or in batch E / F. In ladder these fifteen had no captured ladder
+isolation: ATAN2 and CTD only safety-routine captures (CTD's 20 is borrowed from CTU), the
+other thirteen nothing, and every one but CTD has no weight, so the engine charges a call its
+backing tags and nothing for the instruction.
+
+**Batch G** (`gen_ld_gaps.py`, 31 files, `samples/generated/ldgap/`): the realism-floor plant,
+1756-L81E v35, plus one JSR-called ladder routine of 50 or 100 rungs, each one call on its own
+backing tags; a condition instruction (SQI, IsINF, IsNAN) ends in an OTE on its own bit (16,
+measured). The per-call cost is the 50-to-100 slope less the engine's exact price of the
+backing tags; the control is `ldgap_n00`. Operand order and formats are the reference's ladder
+operand tables. Two firmware risks, both answered by a conversion failure rather than chased:
+IsINF / IsNAN apply to the 5380 / 5580 families with no firmware floor stated, and LV (license
+validation) may refuse to verify without a license; ATAN2 already verified at v35 in the safety
+captures. Predicted before any reading (engine of 2026-10-29):
+
+| instruction | 50 calls | 100 calls | engine per call (slope) |
+|---|---:|---:|---:|
+| control `ldgap_n00` | 863,086 | | |
+| ATAN2 | 863,050 | 863,050 | 0 |
+| LN | 863,050 | 863,050 | 0 |
+| STD | 868,250 | 873,450 | 104 |
+| LOWER | 863,050 | 863,050 | 0 |
+| CTD | 869,250 | 875,450 | 124 |
+| LFL | 874,850 | 886,650 | 236 |
+| DDT | 886,250 | 909,450 | 464 |
+| SQI | 869,050 | 875,050 | 120 |
+| SQL | 874,850 | 886,650 | 236 |
+| SQO | 868,250 | 873,450 | 104 |
+| EOT | 863,050 | 863,050 | 0 |
+| IOT | 863,050 | 863,050 | 0 |
+| IsINF | 863,850 | 864,650 | 16 |
+| IsNAN | 863,850 | 864,650 | 16 |
+| LV | 863,050 | 863,050 | 0 |
+
+**Left out, each with its reason:** ALMA / ASO (alarm instructions, parked); SFP / SFR (SFC is
+never worked); REF (a REF_TO_AXIS reference type no file has built); UNK (the placeholder
+Studio writes for an instruction it cannot read). The function-block-only instructions (BAND,
+BOR, BXOR, BNOT) wait for FBD work.
 
 **CAPTURE ERRORS: 0 row(s)** (not yet captured).
