@@ -32,6 +32,7 @@ from l5x_memory_analyzer.parser.export_scope import context_names, detect_export
 from l5x_memory_analyzer.parser.logic import (
     RoutineLogic,
     count_instructions_in_text,
+    jsr_calls_in_text,
     parse_aoi_internal_logic,
     parse_rll_routines,
 )
@@ -740,16 +741,22 @@ def build_report(root: ET.Element, model: MemoryModel,
         # the shared rung sizer -- the ST/RLL pairs showed each costs the
         # same in either language, so ST reuses the weight table and the
         # tier-aware CPT expression model rather than duplicating them.
-        instr_counts = count_instructions_in_text([st_routine.code_text])
+        # Except where ST measured otherwise (structured_text.st_call_bytes: functions, function
+        # blocks, the calls that cost twice), and a JSR's parameters, which ST pays at the
+        # ladder caller rate.
+        instr_counts, st_call_extra = model.structured_text.st_call_bytes(
+            count_instructions_in_text([st_routine.code_text]), model.logic_instructions.weights)
         st_instr_bytes, st_instr_basis = compute_routine_logic_bytes(
             RoutineLogic(
                 program_name=st_routine.program_name,
                 routine_name=st_routine.routine_name,
                 rung_count=0,
                 instruction_counts=instr_counts,
+                jsr_calls=jsr_calls_in_text([st_routine.code_text]),
             ),
             model.logic_instructions, tag_types, charge_shell=False,
         )
+        st_instr_bytes += st_call_extra
         # AOI-internal ST is attributed to the AOI DEFINITION, not to a
         # phantom program. parse_st_routines names those owners "aoi:<Name>"
         # (once it was established that most real ST lives inside

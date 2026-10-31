@@ -6,13 +6,13 @@ RET, AOI calls, CONCAT / DTOS / DELETE / FIND / SIZE, COP, CPS and GSV; this bat
 
   function blocks   CTUD OSRI OSFI SETD RESD DFF JKFF BTDT MVMT SCL PIDE RMPS ALM DEDT FGEN
                     INTG PI PMUL SCRV SOC UPDN HPF LPF NTCH LDLG LDL2 DERV TOT D2SD D3SD
-                    ESEL HLL MUX RLIM SEL SNEG SSUM MAVE MSTD MAXC MINC POSP SRTP IMC CC
+                    ESEL HLL RLIM SNEG SSUM MAVE MSTD MAXC MINC POSP SRTP IMC CC
                     MMC HMIBC -- each called with its backing tag (and the arrays a few take)
   operand calls     PID MSG SSV IOT EVENT UID UIE TND EOT SWPB INSERT MID STOD RTOS STOR
                     UPPER LOWER SRT
   functions         ABS SQRT LN LOG SIN COS TAN ASIN ACOS ATAN DEG RAD TRUNC, in a REAL assignment;
-                    ATAN2 (two REAL arguments), TOD / FRD (DINT; the v35 ST spelling of
-                    TO_BCD / BCD_TO), IsINF / IsNAN (a BOOL from a REAL)
+                    ATAN2 (two REAL arguments); TOD, FRD, IsINF and IsNAN were built too and
+                    Studio refused all four in ST (2026-10-31), as it refused MUX and SEL
   motion            MAM MAJ MAH MAS MSO MRP MSF MAW MAR MDR on one axis, the operand lists the
                     ladder motion files proved, enumerations written as their numbers (ST)
 
@@ -63,7 +63,7 @@ FB = {
     "UPDN": "UP_DOWN_ACCUM", "HPF": "FILTER_HIGH_PASS", "LPF": "FILTER_LOW_PASS", "NTCH": "FILTER_NOTCH",
     "LDLG": "LEAD_LAG", "LDL2": "LEAD_LAG_SEC_ORDER", "DERV": "DERIVATIVE", "TOT": "TOTALIZER",
     "D2SD": "DISCRETE_2STATE", "D3SD": "DISCRETE_3STATE", "ESEL": "SELECT_ENHANCED", "HLL": "HL_LIMIT",
-    "MUX": "MULTIPLEXER", "RLIM": "RATE_LIMITER", "SEL": "SELECT", "SNEG": "SELECTABLE_NEGATE",
+    "RLIM": "RATE_LIMITER", "SNEG": "SELECTABLE_NEGATE",
     "SSUM": "SELECTED_SUMMER", "MAXC": "MAXIMUM_CAPTURE", "MINC": "MINIMUM_CAPTURE", "POSP": "POSITION_PROP",
     "SRTP": "SPLIT_RANGE", "IMC": "IMC", "CC": "CC", "MMC": "MMC", "HMIBC": "HMIBC",
     # with arrays: the storage / table arguments these take
@@ -78,11 +78,9 @@ FUNCTIONS = ("ABS", "SQRT", "LN", "LOG", "SIN", "COS", "TAN", "ASIN", "ACOS", "A
 # Functions whose operands are not one REAL: mnemonic -> (assignment, description).
 FUNCTIONS_OTHER = {
     "ATAN2": ("SiQ[{i}] := ATAN2(SiR[{i}], SiRArr[{i}]);", "REAL := ATAN2(REAL, REAL)"),
-    "TOD": ("SiE[{i}] := TOD(SiD[{i}]);", "DINT := TOD(DINT)"),
-    "FRD": ("SiE[{i}] := FRD(SiD[{i}]);", "DINT := FRD(DINT)"),
-    "ISINF": ("SiB[{i}] := IsINF(SiR[{i}]);", "BOOL := IsINF(REAL)"),
-    "ISNAN": ("SiB[{i}] := IsNAN(SiR[{i}]);", "BOOL := IsNAN(REAL)"),
 }
+# Captured 2026-10-31 and refused by Studio, so no longer built (lint refuses them, not_in_st):
+# MUX and SEL are function-block-diagram only; TOD, FRD, IsINF and IsNAN are not ST functions.
 
 # Motion, ST spelling: the ladder files' operand lists with enumerations as numbers.
 MOTION = {
@@ -169,9 +167,16 @@ def plan() -> list[tuple[str, str, dict]]:
     return [(sid, f"{OQ}: {what}", kw) for sid, what, kw in files]
 
 
-EVENT_TASK = ('<Task Name="SiEventTask" Type="EVENT" Priority="5" Watchdog="500" DisableUpdateOutputs="false" '
-              'InhibitTask="false">\n<EventInfo EventTrigger="EVENT Instruction Only" EnableTimeout="false"/>\n'
-              '<ScheduledPrograms>\n</ScheduledPrograms>\n</Task>')
+# The EVENT task as every real one is written (lint event_task_shape): a Rate and a scheduled
+# program. Without either, the first build failed to open in Studio twice (2026-10-30).
+EVENT_TASK = ('<Task Name="SiEventTask" Type="EVENT" Rate="10" Priority="5" Watchdog="500" '
+              'DisableUpdateOutputs="false" InhibitTask="false">\n'
+              '<EventInfo EventTrigger="EVENT Instruction Only" EnableTimeout="false"/>\n'
+              '<ScheduledPrograms>\n<ScheduledProgram Name="SiEventProgram"/>\n</ScheduledPrograms>\n</Task>')
+EVENT_PROGRAM = ('<Program Name="SiEventProgram" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" '
+                 'UseAsFolder="false">\n<Tags/>\n<Routines>\n<Routine Name="MainRoutine" Type="RLL">\n<RLLContent>\n'
+                 '<Rung Number="0" Type="N">\n<Text><![CDATA[NOP();]]></Text>\n</Rung>\n</RLLContent>\n'
+                 '</Routine>\n</Routines>\n</Program>')
 
 
 def make(sample_id: str, kw: dict) -> str:
@@ -200,7 +205,7 @@ def make(sample_id: str, kw: dict) -> str:
         tags_xml="\n".join(tags) + ("\n" + extra_tags_xml if extra_tags_xml else ""),
         extra_rungs_xml=rung_xml(0, "JSR(SiTarget,0);"),
         extra_routines_xml=_st_routine("SiTarget", lines),
-        **({"extra_tasks_xml": tasks} if tasks else {})))
+        **({"extra_tasks_xml": tasks, "extra_programs_xml": EVENT_PROGRAM} if tasks else {})))
 
 
 def _make(job: tuple[str, dict]) -> int:

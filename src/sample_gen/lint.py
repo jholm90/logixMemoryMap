@@ -717,6 +717,49 @@ def _structure_tag_data_findings(root: ET.Element) -> list[LintFinding]:
 _NON_LAD_INSTRUCTIONS = {"SCP"}
 
 
+# Not callable from Structured Text, each measured by a Studio rejection (batch F, captured
+# 2026-10-31, OQ-STINSTR): MUX and SEL are function-block-diagram only ("Unknown instruction
+# or function" on every line); TOD, FRD, IsINF and IsNAN are not ST functions ("Invalid
+# expression" on every line), whatever the general instruction reference's operator table
+# allows elsewhere. The v36 spellings TO_BCD / BCD_TO are refused with them.
+_NOT_IN_ST = {"MUX", "SEL", "TOD", "FRD", "TO_BCD", "BCD_TO", "IsINF", "IsNAN"}
+
+
+def _not_in_st_findings(root: ET.Element) -> list[LintFinding]:
+    declared = {el.get("Name") for el in root.iter("AddOnInstructionDefinition") if el.get("Name")}
+    suspect = _NOT_IN_ST - declared
+    findings: list[LintFinding] = []
+    for routine_el in root.iter("Routine"):
+        st = routine_el.find("STContent")
+        if st is None:
+            continue
+        for line in st.iter("Line"):
+            for name in re.findall(r"(?<![A-Za-z0-9_.])([A-Za-z_]\w*)\s*\(", line.text or ""):
+                hit = next((m for m in suspect if m.upper() == name.upper()), None)
+                if hit:
+                    findings.append(LintFinding(
+                        "not_in_st",
+                        f"Routine '{routine_el.get('Name')}' line {line.get('Number')} calls {name}(), "
+                        f"which Structured Text does not accept: {(line.text or '').strip()!r}"))
+    return findings
+
+
+def _event_task_findings(root: ET.Element) -> list[LintFinding]:
+    """An EVENT task as every real one is written: a Rate attribute and at least one
+    scheduled program. stinstr_op_event's task had neither and failed to open in Studio twice
+    ("Open project threw OperationFail", 2026-10-30)."""
+    findings: list[LintFinding] = []
+    for task in root.iter("Task"):
+        if task.get("Type") != "EVENT":
+            continue
+        if task.get("Rate") is None or task.find("ScheduledPrograms/ScheduledProgram") is None:
+            findings.append(LintFinding(
+                "event_task_shape",
+                f"EVENT task '{task.get('Name')}' needs a Rate attribute and at least one "
+                f"ScheduledProgram, as every real EVENT task has"))
+    return findings
+
+
 def _non_lad_instruction_findings(root: ET.Element) -> list[LintFinding]:
     """An FBD/ST-only instruction used in a ladder rung, where the file does
     not declare an AOI of that name to shadow it."""
@@ -1879,6 +1922,8 @@ def lint_l5x(l5x_text: str, root: ET.Element | None = None) -> list[LintFinding]
     findings.extend(_safety_tag_write_findings(root))
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
+    findings.extend(_not_in_st_findings(root))
+    findings.extend(_event_task_findings(root))
     findings.extend(_structure_tag_data_findings(root))
 
     array_tags = _array_tag_names(root)
@@ -2104,3 +2149,25 @@ def realism_or_raise(l5x_text: str, predicted: int | None, context: str = "",
         lines = "\n".join(f"  - [{f.kind}] {f.detail}" for f in findings)
         prefix = f"{context}: " if context else ""
         raise ValueError(f"{prefix}below the realism floor:\n{lines}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    """python -m sample_gen.lint FILE... -- every build-validity finding, exit 1 if any.
+
+    Before this existed, the module ran nothing when invoked that way and exited 0, so a
+    command-line check of on-disk files passed without checking anything."""
+    import sys
+    paths = sys.argv[1:] if argv is None else argv
+    bad = 0
+    for path in paths:
+        with open(path, encoding="utf-8") as fh:
+            findings = lint_l5x(fh.read())
+        for f in findings:
+            print(f"{path}: [{f.kind}] {f.detail}")
+        bad += bool(findings)
+    print(f"{len(paths)} file(s), {bad} with findings")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -28,6 +28,15 @@ def run(items: Iterable[tuple[str, Any]], fn: Callable[[Any], Any], *, label: st
     workers = max(1, min(workers or os.cpu_count() or 1, n or 1))
     out: dict[str, Any] = {}
     start = time.monotonic()
+    # In process, for a caller that has redirected the generator's output (the tests'
+    # regenerate fixture): a spawned worker re-imports the generator and writes to its real
+    # samples/generated/ path, over the files the controller measured.
+    if os.environ.get("SAMPLE_GEN_SERIAL"):
+        for key, arg in items:
+            out[key] = fn(arg)
+        print(f"[{label}] done in process: {n} item(s) in {time.monotonic() - start:.0f}s",
+              file=sys.stderr, flush=True)
+        return out
     print(f"[{label}] {n} item(s) on {workers} worker(s); watchdog {item_timeout:.0f}s an item, "
           f"{total_timeout:.0f}s in all", file=sys.stderr, flush=True)
     # spawn, not fork: forking a process that already runs threads can deadlock a worker,

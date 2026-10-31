@@ -237,6 +237,15 @@ are summed for the byte view, so a parent and its children are not both counted.
 Use it to answer "does this look like guessing?" with a number instead of an
 impression, and to find which groups carry the real uncertainty.
 
+### `sample_gen.lint` — build-validity check of any generated file
+
+```
+PYTHONPATH=src python -m sample_gen.lint FILE...
+```
+
+Prints every finding and exits 1 if any file has one. Every generator already runs it on each
+file it writes (`write_sample`); this is for checking files on disk after a rule changes.
+
 ### `gen_ld_gaps.py` — batch G, ladder instructions no ladder file measured (OQ-LDGAPS)
 
 ```

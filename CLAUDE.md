@@ -56,6 +56,9 @@ C confirmed the aligned layout blind (12 of 12 STRING-holding UDT files): **mean
 parameter / slot-path terms (1756 / 5069 safety figure 0.72% / −1.69%) and the 1769 terms. **ST
 instruction names in any letter case priced (2026-10-24): mean 1.139%, worst −2.32%**; the
 ST-heavy realprog_44 is the one outside 2%, and batch E (32 ST files, OQ-STEXTENDED) is built for it.
+**Batches E, F and G captured and wired (2026-10-31): mean 1.135%, worst 2.27%, 9/19 inside 1%,
+18/19 inside 2%** — thirteen ladder weights, the ST function / function-block / repeated-call
+prices and JSR parameters from ST, all exact on their files; batch H is specified (TASKS 0zo).
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the
@@ -613,6 +616,11 @@ than trusted.
    reconversion. The converter now tolerates quotes and keeps hashes, but any command
    handed over for editing that log must write it back unquoted (`docs/COMMANDS.md`),
    and the recovery is `-AdoptExisting`, never a full reconversion.
+11. **A check that runs nothing reads as a pass.** `python -m sample_gen.lint FILE...` had no
+   entry point and exited 0 without reading a file, so "lint clean" was claimed on files it never
+   saw. And the tests' regenerate fixture redirected a generator's output in its own process
+   while `progress.run` spawned workers that wrote to the real `samples/generated/`, over the
+   captured files. Both fixed (2026-10-31); when a check reports clean, check that it looked.
 
 ## Repo map
 

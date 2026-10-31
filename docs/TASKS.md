@@ -44,6 +44,37 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zo. Batches E, F and G captured and wired (2026-10-31); batch H SPECIFIED, not generated
+
+**Reconciled:** 155 new readings, nothing lost or changed in `samples/captures.csv` (row-level
+check against the previous file), no window-title mismatch. The three 1769 recaptures
+(`cgl_l30v32_logic400`, `cgl_l33v32_logic400`, `cgl_l33v32_plant2x`) did not come in: still the
+owner's. **Conversion:** every committed file `ok` but `stinstr_op_event` (failed to open twice)
+and the old `safe_sil2_5069l320s3_n00` (its own entry). **Capture errors:** OQ-STINSTR 7 rows,
+OQ-LDGAPS 2 (`capture_errors.py` clean).
+
+**Wired, every term exact on its files and pinned by `tests/test_batch_efg_laws.py`:** thirteen
+ladder weights (batch G); ST function prices, function-block calls, the calls that cost twice
+in ST, PID +44, and JSR parameters from ST at the ladder caller rate (batches E and F). Lint now
+refuses what Studio refused (`not_in_st`, `event_task_shape`, LV as a condition), and
+`python -m sample_gen.lint FILE...` works (it ran nothing before). The tests' regenerate
+fixture runs `progress.run` generators in process (`SAMPLE_GEN_SERIAL`): a spawned worker had
+written over the captured files. **Real programs: mean 1.135%, worst 2.27%, 9/19 inside 1%,
+18/19 inside 2%** (was 1.139% / 2.32%, 8/19); stopping rule NOT MET.
+
+**Batch H, to be generated only when the owner says so** (1756-L81E v35, realism floor), eight
+files, each answering an open question:
+
+| file | varies | held fixed | differenced against | answers |
+|---|---|---|---|---|
+| `ldgap_lv_50`, `ldgap_lv_100` | 50 / 100 rungs `LV(v,p)OTE(bit)` | batch G plant and tags | `ldgap_n00`; OTE 16 | LV's weight (OQ-LDGAPS) |
+| `stinstr_event_n00` | the real EVENT task and its program, no calls | batch F plant | `stinstr_n00` | the task and program's own cost |
+| `stinstr_op_event` | 50 `EVENT(SiEventTask);` | the same task and program | `stinstr_event_n00` | EVENT from ST (OQ-STINSTR) |
+| `ste_aoi_p2_10`, `ste_aoi_p2_100` | `ste_aoi_p2_50` at 10 and 100 calls | everything else | `ste_n00` and `ste_aoi_p2_50` | whether the −36 is a call or the routine (58 real ST AOI calls) |
+| `ste_case40x5`, `ste_case20x5else` | 40 blocks of five; 20 blocks of five with an ELSE | selector shape | `ste_case20x5`, `ste_case20x10` | the CASE block cost, over-determined, and a CASE's ELSE (46 real blocks) |
+
+Predictions are written into OPEN_QUESTIONS before any reading, as for every batch.
+
 ### 0zn. The afternoon of 2026-10-29 — what was done, decided and left open
 
 **Done (commits b4b5dff, 06c3274, dc0be4f and the one carrying this entry; none pushed yet):**

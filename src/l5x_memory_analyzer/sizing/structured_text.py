@@ -184,7 +184,9 @@ def upper_case_mnemonics(code: str, declared_aoi_names: frozenset[str] = frozens
     sbr(, Concat(, Ret(, Size(), and the mnemonic scanner, shared with ladder, matches upper
     case only: every such call was priced at nothing. A declared AOI keeps its own spelling."""
     from l5x_memory_analyzer.sizing.constants import load_memory_model
-    known = load_memory_model().logic_instructions.weights
+    model = load_memory_model()
+    known = (set(model.logic_instructions.weights) | set(model.structured_text.function_bytes)
+             | set(model.structured_text.function_block_call_bytes))
 
     def fix(m: re.Match) -> str:
         name = m.group(1)

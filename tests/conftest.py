@@ -137,6 +137,9 @@ def regenerate(tmp_path_factory):
         root.mkdir(parents=True, exist_ok=True)
         done: set[str] = {m.stem for m in root.glob("*.done")}
         with pytest.MonkeyPatch.context() as mp:
+            # Generators that fan out through sample_gen.progress.run must stay in this
+            # process, where the path redirection below applies.
+            mp.setenv("SAMPLE_GEN_SERIAL", "1")
             import sample_gen.manifest as manifest
             mp.setattr(manifest, "append_manifest_row", lambda *a, **k: None)
             # Files rebuilt for a test are parser inputs, never captured, so the

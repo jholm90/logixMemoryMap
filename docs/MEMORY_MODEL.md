@@ -2010,5 +2010,33 @@ Logix reads instruction names case-insensitively, and real ST writes `cop(`, `Co
 `sbr(`, `Concat(`, `Ret(`. An ST call whose name in upper case is a weighted mnemonic is priced
 as that mnemonic; a declared AOI keeps its own spelling (`structured_text.upper_case_mnemonics`).
 A REAL one-operator multiply costs what a REAL one-operator add does (56, `stshape_real_mul400`
-against `stshape_real400`). TONR / TOFR / RTOR and an ST caller's JSR parameters are unpriced
-until batch E reads them (OPEN_QUESTIONS OQ-STEXTENDED).
+against `stshape_real400`).
+
+## Calls in Structured Text — KNOWN (2026-10-31)
+
+Batches E and F (OQ-STEXTENDED, OQ-STINSTR), each call 50 times on its own tags against the
+batch's control, every figure an exact integer a call. **An ST call costs its ladder price
+unless listed here** (INSERT, MID, STOD, STOR, RTOS, UPPER, LOWER, SWPB, SSV, TND, UID, UIE, EOT,
+IOT, CONCAT, COP, CPS, DELETE, DTOS, FIND, GSV and SIZE all exact on that rule). Constants in
+`memory_model.yaml structured_text`; priced by `StructuredTextModel.st_call_bytes`.
+
+| what | cost |
+|---|---|
+| a function in an expression, `Q := FN(R);`, over the 60 of the REAL assignment, **instead of** its ladder weight | SIN COS TAN LOG LN ASIN ACOS ATAN 108; ATAN2 DEG RAD 112; ABS 116; TRUNC 96; SQRT −8 |
+| a function block called as a statement, `FB(Tag);`, beyond its backing structure | 56 bit-level (CTUD OSRI OSFI SETD RESD DFF JKFF D2SD D3SD TONR TOFR RTOR); 64 analog (ALM DERV ESEL HLL HPF INTG LDL2 LDLG LPF MAXC MINC NTCH PI PMUL POSP RLIM SCL SCRV SNEG SOC SRTP SSUM TOT UPDN CC IMC MMC); PIDE 72; HMIBC 52; MVMT 92; BTDT 100; DEDT MSTD 80; MAVE 96; RMPS 112; FGEN 132 |
+| twice its whole ladder weight | MSG, SRT, MAH MSO MSF MAS MDR MAW MRP MAM MAR MAJ |
+| PID | its ladder 156 plus 44 |
+| a JSR's parameters | the ladder caller rate: B(n) plus 20 an output (`jsr_param_cost`) |
+
+Not ST at all (Studio refuses them on every line; lint `not_in_st`): MUX and SEL (function-block
+diagram only), TOD, FRD, IsINF and IsNAN. The motion literal law is not applied in ST (a MAJ
+with one integer literal into a REAL parameter reads 104 over), closed under the floor: no real
+program calls motion from ST.
+
+## Ladder weights from batch G — KNOWN (2026-10-31)
+
+Each at 50 and 100 rungs on its own tags against `ldgap_n00`, a straight line through the
+control (OQ-LDGAPS): ATAN2 64, LN 60, STD 116, LOWER 84, LFL 76, DDT 84, SQI 48, SQL 60, SQO 56,
+EOT 64, IOT 72, IsINF 40, IsNAN 40, and CTD confirmed at 20. SQI, IsINF and IsNAN are conditions
+and need an output after them (not in their weight); so does LV, whose weight is not yet
+measured. ATAN2's safety-partition delta (+64) was its missing standard weight and is removed.

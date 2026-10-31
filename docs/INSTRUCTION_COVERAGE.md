@@ -25,8 +25,9 @@ wherever it can be written. Checked against every instruction of the general ins
 reference (1756-RM018, 129 instructions; the reference itself is local only,
 `samples/local/reference/`). "Measured (n)" counts error-free captured files that isolate the
 instruction in that language; "—" means the instruction is not written in that language.
-**After batches E, F and G are captured, every instruction is measured in every language it can
-be written in**, except the six excluded with their reasons. Not yet covered by any reference:
+**Batches E, F and G captured 2026-10-31: every instruction is now measured in every language
+it can be written in**, except the six excluded with their reasons and two rebuilt for batch H
+(LV in ladder, EVENT in ST, both first builds refused by Studio). Not yet covered by any reference:
 the process / drives and motion instructions (1756-RM006, MOTION-RM002 not on file); batch F
 carries the function blocks and ten motion instructions in ST, and the motion instructions
 are measured in ladder (`motion_*`, `verified_instr`, `motop_*`).
@@ -39,16 +40,16 @@ isnan`).
 
 | instruction | ladder | ST |
 |---|---|---|
-| ABS | measured (10) | batch F, awaiting capture |
-| ACOS | measured (1) | batch F, awaiting capture |
+| ABS | measured (10) | measured (1) |
+| ACOS | measured (1) | measured (1) |
 | ADD | measured (83) | measured (2) |
 | AFI | measured (27) | — |
 | ALMA | excluded: parked (alarm instruction) | excluded: parked (alarm instruction) |
 | AND | measured (80) | measured (4) |
-| ASIN | measured (1) | batch F, awaiting capture |
+| ASIN | measured (1) | measured (1) |
 | ASO | excluded: parked (alarm instruction) | excluded: parked (alarm instruction) |
-| ATAN | measured (7) | batch F, awaiting capture |
-| ATAN2 | batch G, awaiting capture | batch F, awaiting capture |
+| ATAN | measured (7) | measured (1) |
+| ATAN2 | measured (2) | measured (1) |
 | AVE | measured (2) | — |
 | BAND | — | — |
 | BCD_TO | measured (1) | — |
@@ -58,64 +59,64 @@ isnan`).
 | BSL | measured (7) | — |
 | BSR | measured (17) | — |
 | BTD | measured (8) | — |
-| BTDT | — | batch F, awaiting capture |
+| BTDT | — | measured (1) |
 | BXOR | — | — |
 | CLR | measured (17) | — |
 | CMP | measured (42) | — |
-| CONCAT | measured (6) | measured (2), +batch E |
-| COP | measured (32) | measured (4), +batch E |
-| COS | measured (3) | batch F, awaiting capture |
-| CPS | measured (17) | batch E, awaiting capture |
+| CONCAT | measured (6) | measured (3) |
+| COP | measured (32) | measured (5) |
+| COS | measured (3) | measured (1) |
+| CPS | measured (17) | measured (1) |
 | CPT | measured (323) | — |
-| CTD | batch G, awaiting capture | — |
+| CTD | measured (2) | — |
 | CTU | measured (22) | — |
-| CTUD | — | batch F, awaiting capture |
-| DDT | batch G, awaiting capture | — |
-| DEG | measured (8) | batch F, awaiting capture |
-| DELETE | measured (5) | measured (1), +batch E |
+| CTUD | — | measured (1) |
+| DDT | measured (2) | — |
+| DEG | measured (8) | measured (1) |
+| DELETE | measured (5) | measured (2) |
 | DIV | measured (28) | measured (1) |
-| DTOS | measured (7) | measured (2), +batch E |
+| DTOS | measured (7) | measured (3) |
 | DTR | measured (3) | — |
-| EOT | batch G, awaiting capture | batch F, awaiting capture |
+| EOT | measured (2) | measured (1) |
 | EQ | measured (54) | — |
-| EVENT | measured (5) | batch F, awaiting capture |
+| EVENT | measured (5) | batch H (the first build failed to open: its EVENT task shape) |
 | EXPT | measured (6) | measured (5) |
 | FAL | measured (2) | — |
 | FBC | measured (3) | — |
 | FFL | measured (2) | — |
 | FFU | measured (2) | — |
-| FIND | measured (2) | measured (1), +batch E |
+| FIND | measured (2) | measured (2) |
 | FLL | measured (11) | — |
 | FOR | measured (8) | — |
 | FSC | measured (2) | — |
 | GE | measured (119) | — |
-| GSV | measured (7) | batch E, awaiting capture |
+| GSV | measured (7) | measured (1) |
 | GT | measured (49) | — |
-| INSERT | measured (2) | measured (2), +batch F |
-| IOT | batch G, awaiting capture | batch F, awaiting capture |
-| IsINF | batch G, awaiting capture | — |
-| IsNAN | batch G, awaiting capture | — |
+| INSERT | measured (2) | measured (3) |
+| IOT | measured (2) | measured (1) |
+| IsINF | measured (2) | — |
+| IsNAN | measured (2) | — |
 | JMP | measured (14) | — |
-| JSR | measured (272), +batch G | measured (49), +batch E/F |
+| JSR | measured (301) | measured (167), +batch F |
 | LBL | measured (14) | — |
 | LE | measured (26) | — |
-| LFL | batch G, awaiting capture | — |
+| LFL | measured (2) | — |
 | LFU | measured (3) | — |
 | LIMIT | measured (122) | — |
-| LN | batch G, awaiting capture | batch F, awaiting capture |
-| LOG | measured (3) | batch F, awaiting capture |
-| LOWER | batch G, awaiting capture | batch F, awaiting capture |
+| LN | measured (2) | measured (1) |
+| LOG | measured (3) | measured (1) |
+| LOWER | measured (2) | measured (1) |
 | LT | measured (33) | — |
-| LV | batch G, awaiting capture | — |
+| LV | batch H (the first build had no output after LV; Studio refused it) | — |
 | MCR | measured (8) | — |
 | MEQ | measured (6) | — |
-| MID | measured (5) | measured (2), +batch F |
+| MID | measured (5) | measured (3) |
 | MOD | measured (27) | measured (3) |
-| MOVE | measured (262), +batch G | measured (1) |
-| MSG | measured (9) | batch F, awaiting capture |
+| MOVE | measured (263) | measured (1) |
+| MSG | measured (9) | measured (1) |
 | MUL | measured (31) | measured (3) |
 | MVM | measured (6) | — |
-| MVMT | — | batch F, awaiting capture |
+| MVMT | — | measured (1) |
 | NE | measured (27) | — |
 | NEG | measured (7) | — |
 | NOP | measured (74) | — |
@@ -123,48 +124,48 @@ isnan`).
 | ONS | measured (17) | — |
 | OR | measured (4) | measured (4) |
 | OSF | measured (3) | — |
-| OSFI | — | batch F, awaiting capture |
+| OSFI | — | measured (1) |
 | OSR | measured (3) | — |
-| OSRI | — | batch F, awaiting capture |
-| OTE | measured (366), +batch G | — |
+| OSRI | — | measured (1) |
+| OTE | measured (372) | — |
 | OTL | measured (16) | — |
 | OTU | measured (20) | — |
-| PID | measured (4) | batch F, awaiting capture |
-| RAD | measured (8) | batch F, awaiting capture |
+| PID | measured (4) | measured (1) |
+| RAD | measured (8) | measured (1) |
 | REF | excluded: reference type never built | excluded: reference type never built |
 | RES | measured (7) | — |
-| RET | measured (69) | measured (1), +batch E |
+| RET | measured (69) | measured (2) |
 | RTO | measured (6) | — |
-| RTOR | — | batch E, awaiting capture |
-| RTOS | measured (3) | measured (1), +batch F |
-| SBR | measured (67) | measured (1), +batch E |
+| RTOR | — | measured (1) |
+| RTOS | measured (3) | measured (2) |
+| SBR | measured (67) | measured (2) |
 | SFP | excluded: SFC, never worked | excluded: SFC, never worked |
 | SFR | excluded: SFC, never worked | excluded: SFC, never worked |
-| SIN | measured (3) | batch F, awaiting capture |
-| SIZE | measured (10) | measured (1), +batch E |
-| SQI | batch G, awaiting capture | — |
-| SQL | batch G, awaiting capture | — |
-| SQO | batch G, awaiting capture | — |
-| SQRT | measured (4) | batch F, awaiting capture |
-| SRT | measured (2) | batch F, awaiting capture |
-| SSV | measured (5) | batch F, awaiting capture |
-| STD | batch G, awaiting capture | — |
-| STOD | measured (5) | measured (1), +batch F |
-| STOR | measured (3) | measured (1), +batch F |
+| SIN | measured (3) | measured (1) |
+| SIZE | measured (10) | measured (2) |
+| SQI | measured (2) | — |
+| SQL | measured (2) | — |
+| SQO | measured (2) | — |
+| SQRT | measured (4) | measured (1) |
+| SRT | measured (2) | measured (1) |
+| SSV | measured (5) | measured (1) |
+| STD | measured (2) | — |
+| STOD | measured (5) | measured (2) |
+| STOR | measured (3) | measured (2) |
 | SUB | measured (34) | measured (1) |
-| SWPB | measured (3) | batch F, awaiting capture |
-| TAN | measured (4) | batch F, awaiting capture |
-| TND | measured (7) | batch F, awaiting capture |
+| SWPB | measured (3) | measured (1) |
+| TAN | measured (4) | measured (1) |
+| TND | measured (7) | measured (1) |
 | TOF | measured (7) | — |
-| TOFR | — | batch E, awaiting capture |
+| TOFR | — | measured (1) |
 | TON | measured (33) | — |
-| TONR | — | batch E, awaiting capture |
+| TONR | — | measured (4) |
 | TO_BCD | measured (1) | — |
-| TRUNC | measured (5) | batch F, awaiting capture |
-| UID | measured (20) | batch F, awaiting capture |
-| UIE | measured (20) | batch F, awaiting capture |
+| TRUNC | measured (5) | measured (1) |
+| UID | measured (20) | measured (1) |
+| UIE | measured (20) | measured (1) |
 | UNK | excluded: placeholder, not written by a program | — |
-| UPPER | measured (3) | measured (1), +batch F |
+| UPPER | measured (3) | measured (2) |
 | XIC | measured (249) | — |
 | XIO | measured (25) | — |
 | XOR | measured (4) | measured (4) |
@@ -565,3 +566,8 @@ ABS SQRT LN LOG SIN COS TAN ASIN ACOS ATAN DEG RAD TRUNC ATAN2 TOD FRD IsINF IsN
 MDR. With batch E: TONR TOFR RTOR JSR SBR RET CONCAT DTOS DELETE FIND SIZE COP CPS GSV and AOI
 calls. Many have no weight today, so a call is priced at nothing until the batch is wired.
 AVE and STD are ladder-only (general instruction reference) and are not under test in ST.
+
+**Captured 2026-10-31:** every one priced exactly or inside 16 bytes a file once wired, except the
+six Studio refused in ST (MUX, SEL, TOD, FRD, IsINF, IsNAN) and EVENT (rebuilt for batch H). An ST
+call costs its ladder weight except the functions, the function blocks, MSG / SRT / motion (twice)
+and PID (+44): MEMORY_MODEL, "Calls in Structured Text".

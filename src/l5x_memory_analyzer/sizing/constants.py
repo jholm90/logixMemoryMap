@@ -1339,6 +1339,31 @@ class StructuredTextModel:
     bool_assign_literal_bytes: int = 0
     real_float_literal_bytes: int = 0
     shape_confidence: str = "UNKNOWN"
+    # Calls whose ST cost is not their ladder weight (OQ-STINSTR): see memory_model.yaml.
+    function_bytes: dict[str, int] = field(default_factory=dict)
+    function_block_call_bytes: dict[str, int] = field(default_factory=dict)
+    call_repeat_factor: dict[str, int] = field(default_factory=dict)
+    call_extra_bytes: dict[str, int] = field(default_factory=dict)
+    st_call_confidence: str = "UNKNOWN"
+
+    def st_call_bytes(self, counts: dict[str, int], weights: dict[str, int]) -> tuple[dict[str, int], int]:
+        """Split an ST routine's call counts: what still prices at the ladder weight, and the
+        bytes ST charges beyond (or instead of) it. A function's own cost replaces its ladder
+        weight; a function block has no ladder weight; a repeated call pays its weight again;
+        an extra is added on top."""
+        remaining = dict(counts)
+        extra = 0
+        for name, n in counts.items():
+            if name in self.function_bytes:
+                remaining.pop(name)
+                extra += self.function_bytes[name] * n
+            elif name in self.function_block_call_bytes:
+                remaining.pop(name)
+                extra += self.function_block_call_bytes[name] * n
+            else:
+                factor = self.call_repeat_factor.get(name, 1)
+                extra += (factor - 1) * weights.get(name, 0) * n + self.call_extra_bytes.get(name, 0) * n
+        return remaining, extra
 
     _OPERATOR_CLASSES = {
         "+": "additive", "-": "additive",
@@ -1737,6 +1762,11 @@ def _build_memory_model(raw: dict) -> MemoryModel:
             bool_assign_literal_bytes=raw["structured_text"].get("bool_assign_literal_bytes", 0),
             real_float_literal_bytes=raw["structured_text"].get("real_float_literal_bytes", 0),
             shape_confidence=raw["structured_text"].get("shape_confidence", "UNKNOWN"),
+            function_bytes=dict(raw["structured_text"].get("function_bytes", {})),
+            function_block_call_bytes=dict(raw["structured_text"].get("function_block_call_bytes", {})),
+            call_repeat_factor=dict(raw["structured_text"].get("call_repeat_factor", {})),
+            call_extra_bytes=dict(raw["structured_text"].get("call_extra_bytes", {})),
+            st_call_confidence=raw["structured_text"].get("st_call_confidence", "UNKNOWN"),
             confidence=raw["structured_text"]["confidence"],
         ),
         alarm_conditions=AlarmConditionModel(

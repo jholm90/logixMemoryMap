@@ -4,8 +4,8 @@ Three roles:
 
   condition   tests something and conditions the rung: the bit tests (XIC, XIO), the
               comparisons (EQU / EQ, NEQ / NE, GRT / GT, GEQ / GE, LES / LT, LEQ / LE, LIM /
-              LIMIT, MEQ, CMP, DTR, IsINF, IsNAN), the one-shot ONS, the sequencer input SQI
-              and AFI (always false). A condition can never be the last thing on a rung or on
+              LIMIT, MEQ, CMP, DTR, IsINF, IsNAN), the one-shot ONS, the sequencer input SQI,
+              license validation LV and AFI (always false). A condition can never be the last thing on a rung or on
               an output branch leg: Studio rejects a rung that ends in one.
   control     program flow and the logic operands: LBL, JMP, JSR, SBR, RET, MCR, TND, NOP,
               IOT, UID, UIE, EOT, EVENT, BRK, FOR. LBL and SBR must be the first instruction on
@@ -28,7 +28,9 @@ import re
 from l5x_memory_analyzer.parser.logic import V36_MNEMONIC_ALIASES
 
 _COMPARISONS = {"EQU", "NEQ", "GRT", "GEQ", "LES", "LEQ", "LIM", "MEQ", "CMP", "DTR", "IsINF", "IsNAN"}
-_BIT_TESTS = {"XIC", "XIO", "ONS", "SQI", "AFI"}
+# LV (license validation) conditions its rung: Studio refuses one with no output after it
+# ("Missing output instruction", ldgap_lv_50 / _100, 2026-10-31).
+_BIT_TESTS = {"XIC", "XIO", "ONS", "SQI", "AFI", "LV"}
 CONDITIONS = _COMPARISONS | _BIT_TESTS
 CONTROL = {"LBL", "JMP", "JSR", "SBR", "RET", "MCR", "TND", "NOP", "IOT", "UID", "UIE", "EOT", "EVENT",
            "BRK", "FOR"}

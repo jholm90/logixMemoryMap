@@ -1,13 +1,13 @@
 # Open Questions
 
-**Four: OQ-REALUNDER, OQ-STEXTENDED (batch E built), OQ-STINSTR (opened 2026-10-25, batch F built) and OQ-LDGAPS (opened 2026-10-29, batch G built).** Closed 2026-10-24 on the capture of batches B and C and the 1769
-batch (RESOLVED_QUESTIONS, "Closed 2026-10-24"): OQ-UDTLAYOUT (wired: the aligned layout
-predicted all twelve STRING-holding UDT files blind), OQ-STRSHAPE (every shape exact),
-OQ-MODREPEAT (zero-connection catalogs wired; the packed 5069 card under the floor),
-OQ-SAFETYLOGICIO (Output parameters, safety AOI call operands and slot-path reads wired;
-RS-02 / RS-03 / RS-17 read −0.7 / −1.7 / −0.7% safety), OQ-UDTMEMBERNAME (measured, under the
-floor) and OQ-CGL1769 (the 1769 programs inside 5% in both partitions). The nineteen standard
-programs read **mean 1.158%, worst −2.66%, 18/19 inside 2%** (engine of 2026-10-24).
+**Four, each narrowed by the capture of batches E, F and G (2026-10-31): OQ-REALUNDER;
+OQ-STEXTENDED (AOI calls and CASE from ST left); OQ-STINSTR (EVENT left); OQ-LDGAPS (LV left).**
+That capture wired thirteen ladder weights, the ST function, function-block and repeated-call
+tables and JSR parameters from ST, every one exact on its files (OPEN_QUESTIONS Sections 2 to 4,
+MEMORY_MODEL "Calls in Structured Text"). The nineteen standard programs read **mean 1.135%,
+worst 2.27%, 9/19 inside 1%, 18/19 inside 2%** (engine of 2026-10-31). Closed 2026-10-24
+(RESOLVED_QUESTIONS, "Closed 2026-10-24"): OQ-UDTLAYOUT, OQ-STRSHAPE, OQ-MODREPEAT,
+OQ-SAFETYLOGICIO, OQ-UDTMEMBERNAME and OQ-CGL1769.
 
 ## The bar for opening a new one
 
@@ -28,10 +28,10 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 | question | state | answered by |
 |---|---|---|
-| **OQ-LDGAPS** | Every ladder instruction of the general instruction reference that no ladder file measures: ATAN2 LN STD LOWER CTD LFL DDT SQI SQL SQO EOT IOT IsINF IsNAN LV. All but CTD have no weight, so a call is priced at its backing tags only. Section 4. | batch G (`ldgap_*`, 31 files, built) |
-| **OQ-STINSTR** | Every instruction ST can call, one file each: 47 function blocks, 17 operand instructions, 18 ST functions, 10 motion instructions; the general-instruction list checked against the general instruction reference (1756-RM018). The engine has no weight for many (a call priced at nothing). Section 3. | batch F (`stinstr_*`, 93 files, built) |
-| **OQ-STEXTENDED** | The ST constructs realprog_44 (the most ST-heavy program, the one outside 2%) writes and nothing has measured: function-block timers driven over several lines, JSR parameters into ST subroutines, AOI calls from ST, CASE, deep member paths behind tag indexes, string instructions, GSV / CPS, lower-case spelling. Section 2. | batch E (`ste_*`, 32 files, built) |
-| **OQ-REALUNDER** | **1.158% mean, −2.66% worst, 8/19 inside 1%, 18/19 inside 2%** on the nineteen (2026-10-24, after the UDT layout); stopping rule NOT MET. Section 1. | the residual census below; `docs/REAL_PROGRAM_REPORT.md` |
+| **OQ-LDGAPS** | Thirteen of the fifteen wired KNOWN and CTD confirmed (2026-10-31, exact at 50 and 100 rungs). LV left: Studio needs an output after it, so both files captured with errors. Section 4. | `ldgap_lv_50` / `_100` rebuilt with an OTE (batch H, specified) |
+| **OQ-STINSTR** | 80 of 87 ST calls exact or inside 16 bytes and wired (2026-10-31). Six refused by Studio (MUX, SEL: FBD only; TOD, FRD, IsINF, IsNAN: not ST functions), lint refuses them now. EVENT left: its file failed to open (task shape). Section 3. | `stinstr_op_event` rebuilt (batch H, specified) |
+| **OQ-STEXTENDED** | 26 of 32 exact after JSR parameters from ST were wired (2026-10-31). Left: an AOI call from ST reads 36 a call under the engine (58 real calls), a CASE block about 40 over (46 real blocks). The timer member lines (−16 a timer) and member-path JSR parameters (−16 a call) are under the floor and closed. Section 2. | batch H, specified |
+| **OQ-REALUNDER** | **1.135% mean, 2.27% worst, 9/19 inside 1%, 18/19 inside 2%** on the nineteen (2026-10-31); stopping rule NOT MET. Section 1. | the residual census below; `docs/REAL_PROGRAM_REPORT.md` |
 
 ---
 
@@ -388,7 +388,30 @@ a second count; `ste_case20x5` / `x10` the per-selector rate; the path files the
 inner-array forms; the string, GSV and CPS files each instruction's ST weight against its
 ladder weight; `ste_iflower200` against `ste_ifupper200` that keyword case costs nothing.
 
-**CAPTURE ERRORS: 0 row(s)** (not yet captured).
+**Captured 2026-10-31 (32 files, every one clean).** Each file against `ste_n00`, live engine
+after the wiring below:
+
+- **Exact (26):** every string call (CONCAT, DTOS, DELETE, FIND, SIZE), COP and its lower-case
+  twin, CPS, GSV, IF in either case, the three-deep member paths with and without a tag index,
+  the inner array behind a tag index, `&`, the TONR call alone and the TONR call with an IF / ELSE
+  on its DN bit, and the JSRs: **a JSR from ST passes its parameters at the ladder caller rate**
+  (`jsr_param_cost`, B(n) plus 20 an output; `ste_jsr0_50` +4 a call, `ste_jsr3_50` +88), which
+  ST had never been charged. Wired in `report.py`; KNOWN.
+- **TONR / TOFR / RTOR called from ST cost 56** (`ste_tonr_call50`; the five-line files read the
+  same with TOFR and RTOR). Wired in the function-block call table.
+- **Open, specified for batch H:** an AOI call from ST reads **36 a call under the engine**
+  (`ste_aoi_p2_50`, `ste_aoi_p6_50` both −1,800, `ste_aoi_p6deep_50` −1,400). Two and six
+  parameters read the same, so the per-parameter 16 holds and the base or the once-per-routine
+  264 does not; one count per file cannot say which (failure mode 2). 58 real AOI calls in ST.
+  A CASE block reads **+35** with five selectors and +30 with ten (`ste_case20x5`, `ste_case20x10`;
+  a member-path selector the same): solved as two unknowns, 40 a block and 1 under per
+  selector, exactly determined and not yet checked against `st_ctl_case` (one CASE, 100
+  branches and an ELSE, −32 today), so not wired. 46 real CASE blocks.
+- **Closed under the floor:** the four member lines on each timer read 16 under the engine
+  (`ste_tonr_set50`), about seven real timers; member-path JSR parameters read 16 a call under
+  (`ste_jsr3deep_50`), four real calls.
+
+**CAPTURE ERRORS: 0 row(s)**.
 
 ## 3. OQ-STINSTR — every instruction ST can call, opened 2026-10-25
 
@@ -529,7 +552,33 @@ the motion operands that ladder writes as keywords are numbers (`Units per sec` 
 | `stinstr_mo_mar` | 50 MAR calls on one axis, each on its own MOTION_INSTRUCTION | 893,222 | +39,504 |
 | `stinstr_mo_mdr` | 50 MDR calls on one axis, each on its own MOTION_INSTRUCTION | 886,822 | +33,104 |
 
-**CAPTURE ERRORS: 0 row(s)** (not yet captured).
+**Captured 2026-10-31 (92 of 93; 86 clean).** Against `stinstr_n00`, live engine after the
+wiring (MEMORY_MODEL, "Calls in Structured Text"):
+
+- **Exact, at the ladder weight already in the table (14):** INSERT, MID, STOD, STOR, RTOS, UPPER,
+  SWPB, SSV, TND, UID / UIE, and EOT, IOT and LOWER at the ladder weights batch G measured.
+- **Functions** (`Q := FN(R);`): each its own price over the REAL assignment, not its ladder
+  weight: 108 for SIN COS TAN LOG LN ASIN ACOS ATAN, 112 for ATAN2 DEG RAD, 116 ABS, 96 TRUNC,
+  −8 SQRT. Before this SQRT, ASIN, ACOS, ATAN and TRUNC were priced at nothing in ST (their
+  v36 names are not in the ladder table). TRUNC is in twenty real programs' ST.
+- **Function blocks** (45): 56 for the bit-level ones, 64 for the analog ones, 72 PIDE, 52
+  HMIBC, 92 MVMT, 100 BTDT, about 16 more per array argument (DEDT and MSTD 80, MAVE 96, RMPS 112,
+  FGEN 132), every one inside 16 bytes a file; BTDT is in four real programs.
+- **Twice their ladder cost in ST:** MSG, SRT and all ten motion instructions (MAM 448). PID
+  costs 44 more than its ladder 156. MAJ reads 104 a call over the doubled figure: one integer
+  literal into a REAL parameter, and the motion literal law is not applied in ST. Closed under
+  the floor, no real program calls motion from ST.
+- **Refused by Studio, now refused by lint (`not_in_st`):** MUX and SEL ("Unknown instruction or
+  function", FBD only) and TOD, FRD, IsINF, IsNAN ("Invalid expression": not ST functions).
+  The six rows are suspect and unused.
+- **Open:** `stinstr_op_event` failed to open in Studio twice ("Open project threw
+  OperationFail"). Its EVENT task had no Rate and no scheduled program, which every real EVENT
+  task has; lint now refuses that shape (`event_task_shape`) and the generator builds the real
+  one. Rebuild in batch H.
+
+**CAPTURE ERRORS: 7 row(s)** — six captured with errors (`stinstr_fb_mux`, `stinstr_fb_sel`,
+`stinstr_fn_tod`, `stinstr_fn_frd`, `stinstr_fn_isinf`, `stinstr_fn_isnan`), one never converted
+(`stinstr_op_event`).
 
 ## 4. OQ-LDGAPS — every ladder instruction no ladder file measures, opened 2026-10-29
 
@@ -575,4 +624,15 @@ never worked); REF (a REF_TO_AXIS reference type no file has built); UNK (the pl
 Studio writes for an instruction it cannot read). The function-block-only instructions (BAND,
 BOR, BXOR, BNOT) wait for FBD work.
 
-**CAPTURE ERRORS: 0 row(s)** (not yet captured).
+**Captured 2026-10-31 (31 files).** Every instruction but LV reads the same per call at 50 and
+100 rungs, a straight line through the control, and is wired at that figure (KNOWN, pinned by
+`tests/test_batch_efg_laws.py`): **ATAN2 64, LN 60, STD 116, LOWER 84, LFL 76, DDT 84, SQI 48, SQL
+60, SQO 56, EOT 64, IOT 72, IsINF 40, IsNAN 40**, and CTD at the 20 it borrowed from CTU. ATAN2's
++64 safety-partition delta was this weight missing; the delta is gone and the safety figure is
+unchanged. The ladder scanner now reads IsINF and IsNAN (mixed case, like THRSe).
+
+LV captured with "Missing output instruction" on every rung: it conditions its rung, so it needs
+an output after it. `ladder_roles` now counts it a condition and the generator ends its rung
+with an OTE. Rebuild in batch H.
+
+**CAPTURE ERRORS: 2 row(s)** — `ldgap_lv_50`, `ldgap_lv_100`.

@@ -397,7 +397,15 @@ needs an actual regeneration and diff, every time.**
 
 Build with `build_l5x(target_name=..., **realism.with_baseline(**arm_kwargs))`.
 
-## Built 2026-10-29: batch G, every ladder instruction no ladder file measured — 31 files awaiting conversion and capture (TASKS 0zm)
+## Captured 2026-10-31 and deleted: batches E, F and G (TASKS 0zo)
+
+All three captured, reconciled and wired; their `.L5X` files are deleted from
+`samples/generated/` and rebuilt by `tests/test_batch_efg_laws.py` against recorded hashes. Studio
+refused nine files (MUX, SEL, TOD, FRD, IsINF, IsNAN in ST; LV without an output; the EVENT task
+with no Rate or program); lint refuses each shape now and the generators no longer build them.
+Batch H (TASKS 0zo) is specified, not generated.
+
+## Built 2026-10-29: batch G, every ladder instruction no ladder file measured — 31 files (TASKS 0zm)
 
 `gen_ld_gaps.py` (`samples/generated/ldgap/`, OQ-LDGAPS): the realism-floor plant, 1756-L81E
 v35, plus one JSR-called ladder routine of 50 or 100 rungs, each one call on its own backing

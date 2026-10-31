@@ -34,7 +34,7 @@ from dataclasses import dataclass, field
 # lowercase letter; the uppercase pattern alone left every THRSe rung uncounted
 # (OQ-SAFETYPARTITION). It is named explicitly rather than widening the pattern
 # to mixed case, which would count every mixed-case AOI call as an instruction.
-_INSTRUCTION_CALL = re.compile(r"\b(THRSe|[A-Z][A-Z0-9_]*)\(")
+_INSTRUCTION_CALL = re.compile(r"\b(THRSe|IsINF|IsNAN|[A-Z][A-Z0-9_]*)\(")
 
 # v36+ ladder mnemonics (OQ-V36MNEMONIC). From v36 sixteen ladder instructions
 # are spelled differently, and a v36+ project does not accept the old spelling:

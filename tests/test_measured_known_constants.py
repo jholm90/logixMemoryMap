@@ -196,10 +196,18 @@ KNOWN_REGISTER = [
         "subroutines of safe_comp_1 and _3; OQ-SAFETYPARTITION",
     ),
     (
-        "safety_partition.ordinary_delta_bytes.ATAN2", 64,
+        "safety_partition.ordinary_delta_bytes.COP", 4,
         "safety_partition.ordinary_delta_confidence", 6,
-        "safe_lg_atan2/cop/fll at 20 (round 3) and 100 (round 4) rungs, ATAN2 +64, COP +4, "
-        "FLL -4 on the operand law, zero residual at both counts; OQ-SAFETYPARTITION",
+        "safe_lg_atan2/cop/fll at 20 (round 3) and 100 (round 4) rungs, COP +4, FLL -4 on the "
+        "operand law, zero residual at both counts; ATAN2's +64 was its standard weight, measured "
+        "in ladder by batch G and moved there (2026-10-31); OQ-SAFETYPARTITION",
+    ),
+    (
+        "structured_text.function_bytes.SIN", 108,
+        "structured_text.st_call_confidence", 133,
+        "batches E / F / G (2026-10-31): every ST function, function block, doubled call, PID and "
+        "JSR-parameter file against its control, 50 calls each, exact or inside 16 bytes a file "
+        "(tests/test_batch_efg_laws.py, 133 checks); OQ-STINSTR, OQ-STEXTENDED",
     ),
     (
         "safety_io.safety_bytes.AB:CIP_Motion_Device_Safety2", 4717,
