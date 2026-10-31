@@ -2591,13 +2591,24 @@ function sortHead() {
     `<span class="uh-used">Used</span></div>`;
 }
 
+// Colour by the share of elements used, on one ramp: red at none, orange at
+// half, green at all. Hue runs 0 -> 32 over the first half and 32 -> 130 over
+// the second, so 1/10 still reads red and 5/10 orange.
+function usageColor(n) {
+  const r = n.k ? n.u / n.k : 0;
+  const hue = r <= 0.5 ? 64 * r : 32 + 196 * (r - 0.5);
+  return `hsl(${hue.toFixed(0)}, 72%, 60%)`;
+}
+
 function usageRowHtml(n, i, selected) {
-  return `<button type="button" class="usage-row st-${usageStatus(n)}${selected ? " selected" : ""}" data-i="${i}" ` +
+  const pct = n.k ? (100 * n.u / n.k) : 0;
+  return `<button type="button" class="usage-row${selected ? " selected" : ""}" data-i="${i}" ` +
+    `style="--pct-color:${usageColor(n)};--pct:${pct.toFixed(1)}%" ` +
     `title="${escapeHtml(n.n)} — ${escapeHtml(leafTitle(n))}">` +
     `<span class="ur-name">${escapeHtml(n.n)}</span>` +
     `<span class="ur-type">${escapeHtml(n.t || "")}</span>` +
     `<span class="ur-size">${n.s == null ? "" : fmtBytes(n.s)}</span>` +
-    `<span class="ur-used">${n.u}/${n.k}</span>` +
+    `<span class="ur-used"><span class="ur-bar"></span><span class="ur-frac">${n.u}/${n.k}</span></span>` +
     `<span class="ur-more">${(n.c && n.c.length) || n.has_children ? "›" : ""}</span></button>`;
 }
 
