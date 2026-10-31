@@ -29,14 +29,10 @@
 ;     prompt, the exact ahk_exe/class for WinActivate, and a real "project
 ;     finished loading" signal to replace the fixed Sleep after Open.
 ;
-; Ctrl+F1 starts the loop; pressed again while the loop runs, it restarts the script at the
-; top of the loop and redoes the file it was on (see RestartLoop). Esc aborts. F9 is a
-; standalone debug helper for checking what control text looks like on the active window.
+; Ctrl+F1 starts the loop. Esc aborts. F9 is a standalone debug helper for
+; checking what control text looks like on the active window.
 
 #Requires AutoHotkey v2.0
-#SingleInstance Force
-; A second Ctrl+F1 must run while the first is still inside the loop, or it is dropped.
-#MaxThreadsPerHotkey 2
 
 SendMode "Event"
 SetKeyDelay 50, 50
@@ -48,10 +44,6 @@ SetKeyDelay 50, 50
 ; neither side needs a path typed in by hand.
 HANDOFF_PATH := A_ScriptDir "\ahk_runtime\ahk_handoff.csv"        ; must match -HandoffPath
 OPEN_REQUEST_PATH := A_ScriptDir "\ahk_runtime\open_request.txt"  ; must match -OpenRequestPath
-; The request being worked on, kept until its results are handed back, so a restart can redo it.
-INFLIGHT_PATH := A_ScriptDir "\ahk_runtime\open_request.inflight"
-; Written just before a Ctrl+F1 restart: the fresh copy of this script starts the loop itself.
-RESTART_MARKER := A_ScriptDir "\ahk_runtime\restart_loop.flag"
 
 ; ahk_runtime\ won't exist until the PowerShell side creates it (or run
 ; this once by hand) -- FileExist below would just wait forever silently
@@ -367,50 +359,8 @@ Status(msg) {
     StatusText.Text := msg
 }
 
-global LoopRunning := false
-
 ^F1:: {
-    if LoopRunning
-        RestartLoop()
-    else
-        RunLoop()
-}
-
-; Ctrl+F1 while the loop runs: start over at the top of the loop. Reload ends whatever the
-; running loop was doing (a WinWait, a Sleep, a half-driven dialog) and starts this script
-; fresh; the marker tells the fresh copy to start the loop at once, and the loop puts the request
-; it was working on back, so the same file is redone. PowerShell is still waiting for that file's
-; handoff, so nothing is skipped and nothing needs SPACE.
-RestartLoop() {
-    Status("RESTARTING at the top of the loop...")
-    try FileAppend("", RESTART_MARKER)
-    Reload()
-    Sleep 2000   ; Reload returns only if it failed
-    MsgBox "Ctrl+F1 restart failed to reload the script -- start it again by hand."
-}
-
-ResumeAfterRestart() {
-    try FileDelete RESTART_MARKER
-    ; Close a dialog the interrupted cycle left open, so the fresh Ctrl+O lands on Logix.
-    for title in ["Open Project", "Controller Properties"] {
-        if WinExist(title " ahk_exe LogixDesigner.exe")
-            WinClose
-    }
-    RunLoop()
-}
-
-RunLoop() {
-    global LoopRunning := true
     Status("STARTED")
-    ; A request picked up but never handed back (a restart, a crash, a manual relaunch) is put
-    ; back, so the top of the loop redoes that file. #SingleInstance Force means no older copy of
-    ; this script is still working on it, so it cannot be done twice.
-    if FileExist(INFLIGHT_PATH) && !FileExist(OPEN_REQUEST_PATH) {
-        path := FileRead(INFLIGHT_PATH)
-        if path != ""
-            A_Clipboard := path   ; what PowerShell put there, in case anything replaced it
-        FileMove INFLIGHT_PATH, OPEN_REQUEST_PATH, 1
-    }
     Loop {
         global OCDValue := ""
         global SafetyValue := ""
@@ -426,9 +376,7 @@ RunLoop() {
         Status("Waiting for next file from PowerShell...")
         while !FileExist(OPEN_REQUEST_PATH)
             Sleep 500
-        ; Consumed -- PowerShell won't write a new one until this is gone. Kept as the in-flight
-        ; request until the handoff is written, so a Ctrl+F1 restart can redo this file.
-        FileMove OPEN_REQUEST_PATH, INFLIGHT_PATH, 1
+        FileDelete OPEN_REQUEST_PATH   ; consumed -- PowerShell won't write a new one until this is gone
 
         ; Explicitly grab focus onto Logix Designer -- whatever last had
         ; focus (PowerShell's console, most likely) doesn't matter after
@@ -801,7 +749,6 @@ RunLoop() {
         handoffFile.Write("error_count,warning_count,message_value,ocd_value,window_title,error_log,safety_value,io_value`n")
         handoffFile.Write(StripCommas(ErrorValue) "," StripCommas(WarningValue) "," StripCommas(MessageValue) "," OCDValue "," CsvQuote(WindowTitle) "," CsvQuote(ErrorLog) "," SafetyValue "," IoValue "`n")
         handoffFile.Close()
-        try FileDelete INFLIGHT_PATH   ; handed back: nothing left to redo
 
         Status("Looping -- waiting for next file...")
         ; Loop top handles the wait for PowerShell's next request -- no
@@ -813,10 +760,8 @@ RunLoop() {
 
 Esc::ExitApp
 
-; After a Ctrl+F1 restart, resume from a timer thread so the startup section finishes and every
-; hotkey (Ctrl+F1, Esc, F9) stays live while the loop runs.
-if FileExist(RESTART_MARKER)
-    SetTimer(ResumeAfterRestart, -200)
+; Ctrl+F2: stop wherever the loop is and go back to IDLE (press Ctrl+F1 to start again).
+^F2::Reload()
 
 F9:: {
     title := WinGetTitle("A")

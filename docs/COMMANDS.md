@@ -128,13 +128,10 @@ seconds per file against about 65 for a full close and reopen.
 
 | key | action |
 |---|---|
-| `Ctrl+F1` | start the capture loop; pressed again while it runs, restart the script at the top of the loop and redo the file it was on (no SPACE in PowerShell needed) |
+| `Ctrl+F1` | start the capture loop |
 | `Esc` | abort |
+| `Ctrl+F2` | stop wherever the loop is and go back to IDLE; press `Ctrl+F1` to start again |
 | `F9` | debug helper — show the Capacity tab's Edit3 (standard used) and Edit6 (safety used) text |
-
-The file being worked on is kept as `ahk_runtime\open_request.inflight` until its results are
-handed back; any fresh start of the loop (a Ctrl+F1 restart, a crash, a manual relaunch) puts
-it back as the open request, so it is redone rather than lost.
 
 ### 3c. Capture memory readings
 
