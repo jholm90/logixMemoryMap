@@ -102,7 +102,7 @@ function renderAll() {
   setMeter("budget", REPORT.total_bytes, REPORT.budget_bytes, archNote);
 
   CURRENT_NODE = REPORT.hierarchy;
-  resetReport();
+  resetUsage();
   annotateTagPaths(CURRENT_NODE);
   // After annotateTagPaths: the file-level confidence walks the same nodes
   // nodeConfidence does, and must see the same paths it sees.
@@ -764,6 +764,10 @@ function syncTreemapOnlyControls(tab) {
   // while the treemap is the active tab.
   if (!onTreemap && SPLIT_OPEN) closeSplitDock();
   if (onTreemap) syncEmptySpaceControl();
+  // Back, the breadcrumb and the level's size describe the treemap level; on
+  // Errors and Element Usage they describe nothing on screen.
+  const navRow = document.getElementById("nav-row");
+  if (navRow) navRow.hidden = tab === "errors" || tab === "usage";
 }
 
 function setupTabs() {
@@ -776,7 +780,7 @@ function setupTabs() {
       syncTreemapOnlyControls(btn.dataset.tab);
       if (btn.dataset.tab === "treemap") renderTreemap();
       if (btn.dataset.tab === "xref") renderXref();
-      if (btn.dataset.tab === "report") renderReport();
+      if (btn.dataset.tab === "usage") renderUsage();
     });
   });
   syncTreemapOnlyControls("treemap");
@@ -2504,148 +2508,174 @@ function scrollListToTop() {
 
 
 // ---------------------------------------------------------------------------
-// Report tab: every controller tag, program tag, AOI and UDT, with what in it
-// nothing uses. Three scrolling columns: the kind, its items (neutral = all
-// used, orange = at least one element unused, red = nothing used), and the
-// selected item's elements with an All / Used / Unused filter.
-// Fetched on first open (/api/unused) and per item (/api/unused/item).
+// Element Usage: every controller tag, program tag, AOI and UDT, and what in it
+// anything uses, browsed like a column view: the kind, its items, then one
+// column per level of elements (up to six), each with its own vertical scroll,
+// the whole row scrolling sideways. Rows: neutral = every element used,
+// orange = some unused, red = none used. "u/k" = used elements of all.
+// Items come from /api/unused on first open, an item's elements from
+// /api/unused/item when it is selected.
 // ---------------------------------------------------------------------------
-const REPORT_STATE = { data: null, kind: 0, item: null, itemData: null, filter: "all",
-                       itemQuery: "", elemQuery: "", loading: null };
-let REPORT_WIRED = false;
+const USAGE = { data: null, loading: null, kind: null, item: null, tree: null, path: [],
+                sort: { key: "name", dir: 1 }, filter: "all", query: "", wired: false };
+const USAGE_MAX_LEVELS = 6;
 
-function resetReport() {
-  Object.assign(REPORT_STATE, { data: null, kind: 0, item: null, itemData: null,
-                                itemQuery: "", elemQuery: "", loading: null });
-  const a = document.getElementById("report-items-search");
-  const b = document.getElementById("report-elements-search");
-  if (a) a.value = "";
-  if (b) b.value = "";
+function resetUsage() {
+  Object.assign(USAGE, { data: null, loading: null, kind: null, item: null, tree: null, path: [], query: "" });
+  const q = document.getElementById("usage-search");
+  if (q) q.value = "";
+  const b = document.getElementById("usage-browser");
+  if (b) b.innerHTML = "";
 }
 
-function wireReport() {
-  if (REPORT_WIRED) return;
-  REPORT_WIRED = true;
-  document.getElementById("report-items-search").addEventListener("input", ev => {
-    REPORT_STATE.itemQuery = ev.target.value.trim().toLowerCase();
-    renderReportItems();
+function wireUsage() {
+  if (USAGE.wired) return;
+  USAGE.wired = true;
+  document.getElementById("usage-search").addEventListener("input", ev => {
+    USAGE.query = ev.target.value.trim().toLowerCase();
+    drawUsage();
   });
-  document.getElementById("report-elements-search").addEventListener("input", ev => {
-    REPORT_STATE.elemQuery = ev.target.value.trim().toLowerCase();
-    renderReportElements();
-  });
-  document.querySelectorAll(".report-filter button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".report-filter button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      REPORT_STATE.filter = btn.dataset.filter;
-      renderReportElements();
-    });
-  });
-}
-
-async function renderReport() {
-  wireReport();
-  if (!REPORT_STATE.data) {
-    if (!REPORT_STATE.loading) {
-      document.getElementById("report-kinds").innerHTML = `<div class="report-empty">Working out what is used&hellip;</div>`;
-      REPORT_STATE.loading = fetch("/api/unused").then(r => r.json());
-    }
-    const data = await REPORT_STATE.loading;
-    if (data.error) {
-      document.getElementById("report-kinds").innerHTML = `<div class="report-empty">${escapeHtml(data.error)}</div>`;
-      return;
-    }
-    REPORT_STATE.data = data;
-  }
-  renderReportKinds();
-  renderReportItems();
-  renderReportElements();
-}
-
-function renderReportKinds() {
-  const el = document.getElementById("report-kinds");
-  el.innerHTML = REPORT_STATE.data.kinds.map((k, i) => {
-    const c = k.counts;
-    return `<button type="button" class="report-row report-kind${i === REPORT_STATE.kind ? " selected" : ""}" data-i="${i}">` +
-      `<span class="report-name">${escapeHtml(k.label)}</span>` +
-      `<span class="report-counts">` +
-      (c.unused ? `<span class="report-chip st-unused" title="unused">${c.unused}</span>` : "") +
-      (c.partial ? `<span class="report-chip st-partial" title="some elements unused">${c.partial}</span>` : "") +
-      `<span class="report-total">${k.items.length}</span></span></button>`;
-  }).join("");
-  el.querySelectorAll(".report-kind").forEach(btn => btn.addEventListener("click", () => {
-    REPORT_STATE.kind = +btn.dataset.i;
-    REPORT_STATE.item = null;
-    REPORT_STATE.itemData = null;
-    renderReportKinds();
-    renderReportItems();
-    renderReportElements();
+  document.querySelectorAll(".usage-filter button").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll(".usage-filter button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    USAGE.filter = btn.dataset.filter;
+    drawUsage();
   }));
 }
 
-function renderReportItems() {
-  const kind = REPORT_STATE.data && REPORT_STATE.data.kinds[REPORT_STATE.kind];
-  const el = document.getElementById("report-items");
-  if (!kind) { el.innerHTML = ""; return; }
-  document.getElementById("report-items-title").textContent = kind.label;
-  const q = REPORT_STATE.itemQuery;
-  const rows = kind.items.map((it, i) => [it, i]).filter(([it]) => !q || it.name.toLowerCase().includes(q));
-  if (!rows.length) {
-    el.innerHTML = `<div class="report-empty">${kind.items.length ? "No match." : "None in this file."}</div>`;
-    return;
+async function renderUsage() {
+  wireUsage();
+  const browser = document.getElementById("usage-browser");
+  if (!USAGE.data) {
+    if (!USAGE.loading) {
+      browser.innerHTML = `<div class="usage-empty">Working out what is used&hellip;</div>`;
+      USAGE.loading = fetch("/api/unused").then(r => r.json());
+    }
+    const data = await USAGE.loading;
+    if (data.error) { browser.innerHTML = `<div class="usage-empty">${escapeHtml(data.error)}</div>`; return; }
+    USAGE.data = data;
+    if (USAGE.kind === null) USAGE.kind = 0;
   }
-  el.innerHTML = rows.map(([it, i]) =>
-    `<button type="button" class="report-row report-item st-${it.status}${i === REPORT_STATE.item ? " selected" : ""}" data-i="${i}" ` +
-    `title="${escapeHtml(it.name)}">` +
-    `<span class="report-name">${escapeHtml(it.name)}</span>` +
-    `<span class="report-type">${escapeHtml(it.type)}</span>` +
-    (it.status === "partial" ? `<span class="report-frac" title="${it.unused_elements} of ${it.elements} elements unused">${it.unused_elements} unused</span>` : "") +
-    `</button>`).join("");
-  el.querySelectorAll(".report-item").forEach(btn => btn.addEventListener("click", () => selectReportItem(+btn.dataset.i)));
+  drawUsage();
 }
 
-async function selectReportItem(i) {
-  const kind = REPORT_STATE.data.kinds[REPORT_STATE.kind];
-  REPORT_STATE.item = i;
-  REPORT_STATE.itemData = null;
-  document.querySelectorAll("#report-items .report-item").forEach(b => b.classList.toggle("selected", +b.dataset.i === i));
-  document.getElementById("report-elements").innerHTML = `<div class="report-empty">Loading&hellip;</div>`;
-  const res = await fetch(`/api/unused/item?kind=${encodeURIComponent(kind.key)}&index=${i}`);
-  const data = await res.json();
-  if (REPORT_STATE.item !== i) return;   // another item was clicked meanwhile
-  REPORT_STATE.itemData = data.error ? null : data;
-  renderReportElements();
+function usageStatus(n) { return n.k && n.u === n.k ? "used" : (n.u ? "partial" : "unused"); }
+
+function usageRows(nodes) {
+  const f = USAGE.filter, { key, dir } = USAGE.sort;
+  const rows = nodes.map((n, i) => [n, i]).filter(([n]) =>
+    f === "all" || (f === "used" ? n.u > 0 : n.u < n.k));
+  const val = n => key === "size" ? (n.s || 0) : String(key === "type" ? n.t : n.n).toLowerCase();
+  return rows.sort((a, b) => {
+    const x = val(a[0]), y = val(b[0]);
+    return (x < y ? -1 : x > y ? 1 : a[1] - b[1]) * dir;
+  });
 }
 
-function usesText(e) {
-  if (!e.used) return "no references";
+function leafTitle(n) {
+  if (n.c) return `${n.u} of ${n.k} elements used`;
+  if (!n.u) return "no references in this project";
   const parts = [];
-  if (e.uses) parts.push(`${e.uses} use${e.uses === 1 ? "" : "s"}`);
-  if (e.internal) parts.push(`${e.internal} in AOI logic`);
-  if (e.whole && !parts.length) parts.push("used as a whole");
+  if (n.x) parts.push(`${n.x} use${n.x === 1 ? "" : "s"}`);
+  if (n.i) parts.push(`${n.i} in AOI logic`);
+  if (n.w && !parts.length) parts.push("used as part of a whole structure");
   return parts.join(", ");
 }
 
-function renderReportElements() {
-  const el = document.getElementById("report-elements");
-  const title = document.getElementById("report-elements-title");
-  const item = REPORT_STATE.itemData;
-  if (!item) {
-    title.textContent = "Elements";
-    if (REPORT_STATE.item === null) el.innerHTML = `<div class="report-empty">Select an item.</div>`;
-    return;
+function sortHead() {
+  const arrow = k => USAGE.sort.key === k ? (USAGE.sort.dir > 0 ? " ▲" : " ▼") : "";
+  return `<div class="usage-head">` +
+    `<button type="button" data-sort="name" class="uh-name">Name${arrow("name")}</button>` +
+    `<button type="button" data-sort="type" class="uh-type">Type${arrow("type")}</button>` +
+    `<button type="button" data-sort="size" class="uh-size">Size${arrow("size")}</button>` +
+    `<span class="uh-used">Used</span></div>`;
+}
+
+function usageRowHtml(n, i, selected) {
+  return `<button type="button" class="usage-row st-${usageStatus(n)}${selected ? " selected" : ""}" data-i="${i}" ` +
+    `title="${escapeHtml(n.n)} — ${escapeHtml(leafTitle(n))}">` +
+    `<span class="ur-name">${escapeHtml(n.n)}</span>` +
+    `<span class="ur-type">${escapeHtml(n.t || "")}</span>` +
+    `<span class="ur-size">${n.s == null ? "" : fmtBytes(n.s)}</span>` +
+    `<span class="ur-used">${n.u}/${n.k}</span>` +
+    `<span class="ur-more">${(n.c && n.c.length) || n.has_children ? "›" : ""}</span></button>`;
+}
+
+function usageColumn(title, nodes, selected, onPick, extraClass = "") {
+  const rows = usageRows(nodes);
+  const col = document.createElement("div");
+  col.className = "usage-col " + extraClass;
+  col.innerHTML = `<div class="usage-col-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>` + sortHead() +
+    `<div class="usage-scroll">` +
+    (rows.length ? rows.map(([n, i]) => usageRowHtml(n, i, n === selected)).join("")
+                 : `<div class="usage-empty">${nodes.length ? "Nothing to show." : "None."}</div>`) + `</div>`;
+  col.querySelectorAll(".usage-head button").forEach(b => b.addEventListener("click", () => {
+    USAGE.sort = { key: b.dataset.sort, dir: USAGE.sort.key === b.dataset.sort ? -USAGE.sort.dir : (b.dataset.sort === "size" ? -1 : 1) };
+    drawUsage();
+  }));
+  col.querySelectorAll(".usage-row").forEach(b => b.addEventListener("click", () => onPick(nodes[+b.dataset.i])));
+  return col;
+}
+
+function drawUsage(scrollToEnd = false) {
+  const browser = document.getElementById("usage-browser");
+  if (!USAGE.data) return;
+  const keepTop = [...browser.querySelectorAll(".usage-scroll")].map(el => el.scrollTop);
+  const keepLeft = browser.scrollLeft;
+  browser.innerHTML = "";
+
+  // Column 1: the kinds.
+  const kinds = document.createElement("div");
+  kinds.className = "usage-col usage-kinds";
+  kinds.innerHTML = `<div class="usage-col-title">Type</div><div class="usage-scroll">` +
+    USAGE.data.kinds.map((k, i) => {
+      const c = k.counts;
+      return `<button type="button" class="usage-kind${i === USAGE.kind ? " selected" : ""}" data-i="${i}">` +
+        `<span class="ur-name">${escapeHtml(k.label)}</span>` +
+        (c.unused ? `<span class="usage-chip st-unused" title="nothing used">${c.unused}</span>` : "") +
+        (c.partial ? `<span class="usage-chip st-partial" title="some elements unused">${c.partial}</span>` : "") +
+        `<span class="uk-total">${k.items.length}</span></button>`;
+    }).join("") + `</div>`;
+  kinds.querySelectorAll(".usage-kind").forEach(b => b.addEventListener("click", () => {
+    USAGE.kind = +b.dataset.i; USAGE.item = null; USAGE.tree = null; USAGE.path = [];
+    drawUsage();
+  }));
+  browser.appendChild(kinds);
+
+  // Column 2: the kind's items.
+  const kind = USAGE.data.kinds[USAGE.kind];
+  if (kind) {
+    const q = USAGE.query;
+    const items = q ? kind.items.filter(it => it.n.toLowerCase().includes(q)) : kind.items;
+    const selectedItem = USAGE.item === null ? null : kind.items[USAGE.item];
+    browser.appendChild(usageColumn(kind.label, items, selectedItem, pickUsageItem, "usage-items"));
   }
-  title.textContent = item.name;
-  const q = REPORT_STATE.elemQuery, f = REPORT_STATE.filter;
-  const rows = item.elements.filter(e =>
-    (f === "all" || (f === "used") === e.used) && (!q || e.name.toLowerCase().includes(q)));
-  const head = `<div class="report-summary">${item.elements.length - item.unused_elements} of ${item.elements.length} used` +
-    (item.truncated ? ` &middot; first ${item.elements.length} elements shown` : "") + `</div>`;
-  el.innerHTML = head + (rows.length ? rows.map(e =>
-    `<div class="report-row report-elem st-${e.used ? "used" : "unused"}" title="${escapeHtml(e.name)}">` +
-    `<span class="report-name">${escapeHtml(e.name)}</span>` +
-    `<span class="report-type">${escapeHtml(e.type)}</span>` +
-    `<span class="report-uses">${usesText(e)}</span></div>`).join("")
-    : `<div class="report-empty">Nothing to show.</div>`);
+
+  // Then one column per selected level, up to six below the item.
+  let parent = USAGE.tree;
+  for (let level = 0; parent && parent.c && parent.c.length && level < USAGE_MAX_LEVELS; level++) {
+    const chosen = USAGE.path[level] || null;
+    const lvl = level;
+    browser.appendChild(usageColumn(parent.n, parent.c, chosen, node => {
+      USAGE.path = USAGE.path.slice(0, lvl).concat([node]);
+      drawUsage(true);
+    }));
+    parent = chosen;
+  }
+
+  browser.querySelectorAll(".usage-scroll").forEach((el, i) => { if (keepTop[i]) el.scrollTop = keepTop[i]; });
+  browser.scrollLeft = scrollToEnd ? browser.scrollWidth : keepLeft;
+}
+
+async function pickUsageItem(summary) {
+  const kind = USAGE.data.kinds[USAGE.kind];
+  const index = kind.items.indexOf(summary);
+  USAGE.item = index; USAGE.tree = null; USAGE.path = [];
+  drawUsage();
+  if (!summary.has_children) return;
+  const res = await fetch(`/api/unused/item?kind=${encodeURIComponent(kind.key)}&index=${index}`);
+  const data = await res.json();
+  if (USAGE.item !== index || USAGE.data.kinds[USAGE.kind] !== kind) return;   // moved on meanwhile
+  USAGE.tree = data.error ? null : data;
+  drawUsage(true);
 }

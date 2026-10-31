@@ -36,9 +36,27 @@ def _l5x() -> str:
                      extra_rungs_xml=rungs)
 
 
+def _report() -> dict:
+    from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
+    from l5x_memory_analyzer.parser.datatypes import parse_data_types
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    root = ET.fromstring(_l5x())
+    types = {**parse_data_types(root), **parse_aoi_definitions(root)}
+    return unused_report(UsageIndex(root), types, load_memory_model())
+
+
 @pytest.fixture(scope="module")
 def report() -> dict:
-    return {k["key"]: {i["name"]: i for i in k["items"]} for k in unused_report(UsageIndex(ET.fromstring(_l5x())))["kinds"]}
+    return {k["key"]: {i["n"]: i for i in k["items"]} for k in _report()["kinds"]}
+
+
+def _leaves(node, prefix=""):
+    if not node.get("c"):
+        return {prefix: bool(node["u"])}
+    out = {}
+    for c in node["c"]:
+        out.update(_leaves(c, prefix + (c["n"] if c["n"].startswith("[") else "." + c["n"])))
+    return out
 
 
 def test_statuses_of_controller_tags(report):
@@ -46,22 +64,28 @@ def test_statuses_of_controller_tags(report):
     assert tags["Dst"]["status"] == "used"
     assert tags["Nobody"]["status"] == "unused"
     assert tags["Rec"]["status"] == "partial"
-    assert {e["name"]: e["used"] for e in tags["Rec"]["elements"]} == {"Rec.Id": True, "Rec.Spare": False}
+    assert _leaves(tags["Rec"]) == {".Id": True, ".Spare": False}
+    assert (tags["Rec"]["u"], tags["Rec"]["k"]) == (1, 2)
     assert tags["Whole"]["status"] == "used"      # every member used through the whole structure
-    assert all(e["whole"] for e in tags["Whole"]["elements"])
+    assert all(c["w"] for c in tags["Whole"]["c"])
+
+
+def test_sizes_are_the_engines(report):
+    tags = report["controller_tags"]
+    assert tags["Dst"]["s"] > 0 and all(c["s"] > 0 for c in tags["Rec"]["c"])
 
 
 def test_small_atomic_array_lists_each_element(report):
     arr = report["controller_tags"]["Arr"]
-    assert [e["name"] for e in arr["elements"] if e["used"]] == ["Arr[0]", "Arr[2]"]
-    assert arr["status"] == "partial" and arr["unused_elements"] == 2
+    assert [k for k, v in _leaves(arr).items() if v] == ["[0]", "[2]"]
+    assert arr["status"] == "partial" and (arr["u"], arr["k"]) == (2, 4)
 
 
 def test_udt_elements(report):
     udts = report["udt_elements"]
     assert udts["Idle_t"]["status"] == "unused"   # no tag of the type
     assert udts["Rec_t"]["status"] in ("used", "partial")
-    assert {e["name"] for e in udts["Rec_t"]["elements"]} == {"Id", "Spare"}
+    assert {c["n"] for c in udts["Rec_t"]["c"]} == {"Id", "Spare"}
 
 
 def test_endpoints(tmp_path):
@@ -69,11 +93,12 @@ def test_endpoints(tmp_path):
     path = tmp_path / "unused.L5X"
     path.write_text(_l5x(), encoding="utf-8")
     client = create_app(str(path)).test_client()
-    summary = client.get("/api/unused").get_json()
-    kinds = {k["key"]: k for k in summary["kinds"]}
+    kinds = {k["key"]: k for k in client.get("/api/unused").get_json()["kinds"]}
     assert set(kinds) == {"controller_tags", "program_tags", "aoi_tags", "udt_elements"}
-    names = [i["name"] for i in kinds["controller_tags"]["items"]]
-    detail = client.get(f"/api/unused/item?kind=controller_tags&index={names.index('Rec')}").get_json()
-    assert detail["name"] == "Rec" and len(detail["elements"]) == 2
-    assert "elements" in kinds["controller_tags"]["items"][0] and isinstance(kinds["controller_tags"]["items"][0]["elements"], int)
+    items = kinds["controller_tags"]["items"]
+    assert all("c" not in i for i in items)       # summaries only
+    rec = [i["n"] for i in items].index("Rec")
+    assert items[rec]["has_children"] and (items[rec]["u"], items[rec]["k"]) == (1, 2)
+    detail = client.get(f"/api/unused/item?kind=controller_tags&index={rec}").get_json()
+    assert detail["n"] == "Rec" and len(detail["c"]) == 2
     assert client.get("/api/unused/item?kind=nope&index=0").status_code == 404

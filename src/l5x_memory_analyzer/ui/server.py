@@ -55,7 +55,7 @@ from l5x_memory_analyzer.sizing.tree import (
 )
 from l5x_memory_analyzer.sizing.udt import RecursiveUdtError, UnknownDataTypeError
 from l5x_memory_analyzer.ui.hierarchy import build_hierarchy, type_utilization
-from l5x_memory_analyzer.unused import unused_report
+from l5x_memory_analyzer.unused import item_summary, unused_report
 from l5x_memory_analyzer.usage import UsageIndex, segments_of
 
 STATIC_DIR = Path(__file__).with_name("static")
@@ -825,24 +825,28 @@ def create_app(l5x_path: str | Path | None = None) -> Flask:
 
     def _unused(state: DocState) -> dict:
         if state.unused is None and state.usage is not None:
-            state.unused = unused_report(state.usage)
+            tag_bytes: dict = {}
+            stack = [state.report_json["hierarchy"]]
+            while stack:
+                n = stack.pop()
+                if n.get("path") and n.get("bytes") is not None:
+                    tag_bytes[n["path"]] = n["bytes"]
+                stack += n.get("children") or []
+            state.unused = unused_report(state.usage, state.data_types, state.model, tag_bytes)
         return state.unused or {"kinds": []}
 
     @app.get("/api/unused")
     def api_unused():
-        """Every controller tag, program tag, AOI and UDT, each with its unused status.
-
-        Items only; an item's elements come from /api/unused/item, so a controller with
-        tens of thousands of member paths sends them one item at a time.
-        """
+        """Element Usage: every controller tag, program tag, AOI and UDT with its size and
+        how many of its elements are used. Items only; an item's element tree comes from
+        /api/unused/item, so a controller with a quarter of a million elements sends them
+        one item at a time."""
         state: DocState | None = app.config["state"]
         if state is None:
             return jsonify({"error": "no file loaded"}), 400
         return jsonify({"kinds": [
             {"key": k["key"], "label": k["label"], "counts": k["counts"],
-             "items": [{"name": i["name"], "type": i["type"], "status": i["status"],
-                        "elements": len(i["elements"]), "unused_elements": i["unused_elements"],
-                        "truncated": i["truncated"]} for i in k["items"]]}
+             "items": [item_summary(i) for i in k["items"]]}
             for k in _unused(state)["kinds"]]})
 
     @app.get("/api/unused/item")
