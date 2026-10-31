@@ -102,6 +102,7 @@ function renderAll() {
   setMeter("budget", REPORT.total_bytes, REPORT.budget_bytes, archNote);
 
   CURRENT_NODE = REPORT.hierarchy;
+  resetReport();
   annotateTagPaths(CURRENT_NODE);
   // After annotateTagPaths: the file-level confidence walks the same nodes
   // nodeConfidence does, and must see the same paths it sees.
@@ -775,6 +776,7 @@ function setupTabs() {
       syncTreemapOnlyControls(btn.dataset.tab);
       if (btn.dataset.tab === "treemap") renderTreemap();
       if (btn.dataset.tab === "xref") renderXref();
+      if (btn.dataset.tab === "report") renderReport();
     });
   });
   syncTreemapOnlyControls("treemap");
@@ -2498,4 +2500,152 @@ function scrollListToTop() {
     }
   }
   if (window.scrollY) window.scrollTo(0, 0);
+}
+
+
+// ---------------------------------------------------------------------------
+// Report tab: every controller tag, program tag, AOI and UDT, with what in it
+// nothing uses. Three scrolling columns: the kind, its items (neutral = all
+// used, orange = at least one element unused, red = nothing used), and the
+// selected item's elements with an All / Used / Unused filter.
+// Fetched on first open (/api/unused) and per item (/api/unused/item).
+// ---------------------------------------------------------------------------
+const REPORT_STATE = { data: null, kind: 0, item: null, itemData: null, filter: "all",
+                       itemQuery: "", elemQuery: "", loading: null };
+let REPORT_WIRED = false;
+
+function resetReport() {
+  Object.assign(REPORT_STATE, { data: null, kind: 0, item: null, itemData: null,
+                                itemQuery: "", elemQuery: "", loading: null });
+  const a = document.getElementById("report-items-search");
+  const b = document.getElementById("report-elements-search");
+  if (a) a.value = "";
+  if (b) b.value = "";
+}
+
+function wireReport() {
+  if (REPORT_WIRED) return;
+  REPORT_WIRED = true;
+  document.getElementById("report-items-search").addEventListener("input", ev => {
+    REPORT_STATE.itemQuery = ev.target.value.trim().toLowerCase();
+    renderReportItems();
+  });
+  document.getElementById("report-elements-search").addEventListener("input", ev => {
+    REPORT_STATE.elemQuery = ev.target.value.trim().toLowerCase();
+    renderReportElements();
+  });
+  document.querySelectorAll(".report-filter button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".report-filter button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      REPORT_STATE.filter = btn.dataset.filter;
+      renderReportElements();
+    });
+  });
+}
+
+async function renderReport() {
+  wireReport();
+  if (!REPORT_STATE.data) {
+    if (!REPORT_STATE.loading) {
+      document.getElementById("report-kinds").innerHTML = `<div class="report-empty">Working out what is used&hellip;</div>`;
+      REPORT_STATE.loading = fetch("/api/unused").then(r => r.json());
+    }
+    const data = await REPORT_STATE.loading;
+    if (data.error) {
+      document.getElementById("report-kinds").innerHTML = `<div class="report-empty">${escapeHtml(data.error)}</div>`;
+      return;
+    }
+    REPORT_STATE.data = data;
+  }
+  renderReportKinds();
+  renderReportItems();
+  renderReportElements();
+}
+
+function renderReportKinds() {
+  const el = document.getElementById("report-kinds");
+  el.innerHTML = REPORT_STATE.data.kinds.map((k, i) => {
+    const c = k.counts;
+    return `<button type="button" class="report-row report-kind${i === REPORT_STATE.kind ? " selected" : ""}" data-i="${i}">` +
+      `<span class="report-name">${escapeHtml(k.label)}</span>` +
+      `<span class="report-counts">` +
+      (c.unused ? `<span class="report-chip st-unused" title="unused">${c.unused}</span>` : "") +
+      (c.partial ? `<span class="report-chip st-partial" title="some elements unused">${c.partial}</span>` : "") +
+      `<span class="report-total">${k.items.length}</span></span></button>`;
+  }).join("");
+  el.querySelectorAll(".report-kind").forEach(btn => btn.addEventListener("click", () => {
+    REPORT_STATE.kind = +btn.dataset.i;
+    REPORT_STATE.item = null;
+    REPORT_STATE.itemData = null;
+    renderReportKinds();
+    renderReportItems();
+    renderReportElements();
+  }));
+}
+
+function renderReportItems() {
+  const kind = REPORT_STATE.data && REPORT_STATE.data.kinds[REPORT_STATE.kind];
+  const el = document.getElementById("report-items");
+  if (!kind) { el.innerHTML = ""; return; }
+  document.getElementById("report-items-title").textContent = kind.label;
+  const q = REPORT_STATE.itemQuery;
+  const rows = kind.items.map((it, i) => [it, i]).filter(([it]) => !q || it.name.toLowerCase().includes(q));
+  if (!rows.length) {
+    el.innerHTML = `<div class="report-empty">${kind.items.length ? "No match." : "None in this file."}</div>`;
+    return;
+  }
+  el.innerHTML = rows.map(([it, i]) =>
+    `<button type="button" class="report-row report-item st-${it.status}${i === REPORT_STATE.item ? " selected" : ""}" data-i="${i}" ` +
+    `title="${escapeHtml(it.name)}">` +
+    `<span class="report-name">${escapeHtml(it.name)}</span>` +
+    `<span class="report-type">${escapeHtml(it.type)}</span>` +
+    (it.status === "partial" ? `<span class="report-frac" title="${it.unused_elements} of ${it.elements} elements unused">${it.unused_elements} unused</span>` : "") +
+    `</button>`).join("");
+  el.querySelectorAll(".report-item").forEach(btn => btn.addEventListener("click", () => selectReportItem(+btn.dataset.i)));
+}
+
+async function selectReportItem(i) {
+  const kind = REPORT_STATE.data.kinds[REPORT_STATE.kind];
+  REPORT_STATE.item = i;
+  REPORT_STATE.itemData = null;
+  document.querySelectorAll("#report-items .report-item").forEach(b => b.classList.toggle("selected", +b.dataset.i === i));
+  document.getElementById("report-elements").innerHTML = `<div class="report-empty">Loading&hellip;</div>`;
+  const res = await fetch(`/api/unused/item?kind=${encodeURIComponent(kind.key)}&index=${i}`);
+  const data = await res.json();
+  if (REPORT_STATE.item !== i) return;   // another item was clicked meanwhile
+  REPORT_STATE.itemData = data.error ? null : data;
+  renderReportElements();
+}
+
+function usesText(e) {
+  if (!e.used) return "no references";
+  const parts = [];
+  if (e.uses) parts.push(`${e.uses} use${e.uses === 1 ? "" : "s"}`);
+  if (e.internal) parts.push(`${e.internal} in AOI logic`);
+  if (e.whole && !parts.length) parts.push("used as a whole");
+  return parts.join(", ");
+}
+
+function renderReportElements() {
+  const el = document.getElementById("report-elements");
+  const title = document.getElementById("report-elements-title");
+  const item = REPORT_STATE.itemData;
+  if (!item) {
+    title.textContent = "Elements";
+    if (REPORT_STATE.item === null) el.innerHTML = `<div class="report-empty">Select an item.</div>`;
+    return;
+  }
+  title.textContent = item.name;
+  const q = REPORT_STATE.elemQuery, f = REPORT_STATE.filter;
+  const rows = item.elements.filter(e =>
+    (f === "all" || (f === "used") === e.used) && (!q || e.name.toLowerCase().includes(q)));
+  const head = `<div class="report-summary">${item.elements.length - item.unused_elements} of ${item.elements.length} used` +
+    (item.truncated ? ` &middot; first ${item.elements.length} elements shown` : "") + `</div>`;
+  el.innerHTML = head + (rows.length ? rows.map(e =>
+    `<div class="report-row report-elem st-${e.used ? "used" : "unused"}" title="${escapeHtml(e.name)}">` +
+    `<span class="report-name">${escapeHtml(e.name)}</span>` +
+    `<span class="report-type">${escapeHtml(e.type)}</span>` +
+    `<span class="report-uses">${usesText(e)}</span></div>`).join("")
+    : `<div class="report-empty">Nothing to show.</div>`);
 }

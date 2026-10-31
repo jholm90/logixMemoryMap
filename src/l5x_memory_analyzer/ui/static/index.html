@@ -41,6 +41,7 @@
     <button class="tab-btn" data-tab="list">List</button>
     <button class="tab-btn" data-tab="types">Type Summary</button>
     <button class="tab-btn" data-tab="errors" id="errors-tab-btn">0 Errors</button>
+    <button class="tab-btn" data-tab="report" id="report-tab-btn" title="Tags, AOIs and UDT members nothing in this project uses">Report</button>
     <button class="tab-btn" data-tab="xref" id="xref-tab-btn" title="Where this type is used">Cross-Reference</button>
     <span class="tabs-spacer"></span>
     <label class="tab-toggle depth-stepper" title="How many levels to nest inside each tile">
@@ -133,6 +134,42 @@
 
     <section id="panel-errors" class="panel">
       <div id="errors-detail"></div>
+    </section>
+
+    <section id="panel-report" class="panel">
+      <div class="report-grid">
+        <div class="report-col" id="report-kinds-col">
+          <div class="report-col-head">Type</div>
+          <div class="report-scroll" id="report-kinds"></div>
+        </div>
+        <div class="report-col" id="report-items-col">
+          <div class="report-col-head">
+            <span id="report-items-title">Items</span>
+            <input type="search" id="report-items-search" class="report-search" placeholder="Filter by name" autocomplete="off">
+          </div>
+          <div class="report-legend">
+            <span class="report-chip st-used">all used</span>
+            <span class="report-chip st-partial">some unused</span>
+            <span class="report-chip st-unused">unused</span>
+          </div>
+          <div class="report-scroll" id="report-items"></div>
+        </div>
+        <div class="report-col" id="report-elements-col">
+          <div class="report-col-head">
+            <span id="report-elements-title">Elements</span>
+            <input type="search" id="report-elements-search" class="report-search" placeholder="Filter by name" autocomplete="off">
+          </div>
+          <div class="report-filter" role="radiogroup" aria-label="Show elements">
+            <button type="button" data-filter="all" class="active">All</button>
+            <button type="button" data-filter="used">Used</button>
+            <button type="button" data-filter="unused">Unused</button>
+          </div>
+          <div class="report-scroll" id="report-elements"></div>
+        </div>
+      </div>
+      <p class="report-note">Unused means no reference anywhere in this project: logic, aliases, alarms,
+        axes or module references. An HMI, SCADA system or another controller can still read a tag listed
+        here, so check before deleting anything.</p>
     </section>
 
     <section id="panel-xref" class="panel">

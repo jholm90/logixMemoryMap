@@ -178,6 +178,17 @@ it in the treemap:
 
 ![Cross-reference for Cylinder2Pos: every instance, each a link](docs/images/xref_aoi.png)
 
+### Report: what nothing uses
+
+The **Report** tab, beside Errors, lists every controller tag, program tag, AOI and user data
+type with what in it nothing in the project references. Three scrolling columns: the kind on
+the left; its items in the middle (neutral when everything in it is used, orange when at least
+one element is not, red when nothing is), with a name filter; and on the right the selected
+item's elements (members, array elements, AOI parameters and local tags), filtered to All, Used
+or Unused, each with its use count. "Unused" means no reference in this L5X: logic, aliases,
+alarms, axes or module references. An HMI, SCADA system or another controller can still read
+it, so it is a list to check, not a list to delete.
+
 ### 8. Ladder logic, priced rung by rung
 
 Open a program, then a routine, and every rung becomes a tile labelled with its
