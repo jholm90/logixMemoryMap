@@ -232,6 +232,9 @@ STEPS = {
 }
 
 
+RECAPTURE = (("l30v32", "logic400"), ("l33v32", "logic400"), ("l33v32", "plant2x"))
+
+
 def make(sample_id: str, kw: dict) -> str:
     if kw.get("twin"):
         if kw["twin"] == "rung60":
@@ -276,6 +279,14 @@ def plan() -> list[tuple[str, str, dict]]:
             against = "" if step == "base" else f", against cgl_{arm}_base"
             files.append((f"cgl_{arm}_{step}", f"{processor} v{major}, the realism plant at {stations} stations with the "
                           f"safety shell: {what}{against}", {"arm": arm, "step": step}))
+    # Recaptured under new names (2026-10-31): the first readings of these three took the I/O
+    # used figure (9,200) for program memory, before the capture script read a 1769's Edit8.
+    # Same content; the new sample_id gives the capture tool a file it has not read.
+    for arm, step in RECAPTURE:
+        processor, major = ARM[arm][0], ARM[arm][1]
+        what = STEPS[step][0]
+        files.append((f"cgl_{arm}_{step}_r2", f"{processor} v{major}, the realism plant with the safety shell: "
+                      f"{what}, against cgl_{arm}_base; recapture of cgl_{arm}_{step}", {"arm": arm, "step": step}))
     files.append(("safe_cgl_rung60", "1756-L81ES v35 twin of cgl_*_saferung60: the same 60 safety rungs on the "
                   "standard plant, against safe_n00", {"twin": "rung60"}))
     files.append(("safe_cgl_rtn8", "1756-L81ES v35 twin of cgl_*_safertn8: the same 8 safety routines, against "

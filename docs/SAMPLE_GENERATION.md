@@ -403,7 +403,9 @@ All three captured, reconciled and wired; their `.L5X` files are deleted from
 `samples/generated/` and rebuilt by `tests/test_batch_efg_laws.py` against recorded hashes. Studio
 refused nine files (MUX, SEL, TOD, FRD, IsINF, IsNAN in ST; LV without an output; the EVENT task
 with no Rate or program); lint refuses each shape now and the generators no longer build them.
-Batch H (TASKS 0zo) is specified, not generated.
+Batch H (TASKS 0zo) is generated: `ldgap_lv_50` / `_100`, `stinstr_event_n00`, `stinstr_op_event`,
+`ste_aoi_p2_10` / `_100`, `ste_case40x5`, `ste_case20x5else`, beside the three 1769 recaptures
+`cgl_*_r2` (11 files, lint-clean, above the realism floor).
 
 ## Built 2026-10-29: batch G, every ladder instruction no ladder file measured — 31 files (TASKS 0zm)
 

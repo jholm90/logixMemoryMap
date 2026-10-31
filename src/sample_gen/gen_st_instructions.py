@@ -152,11 +152,14 @@ OPERAND = ("PID", "MSG", "SSV", "IOT", "EVENT", "UID", "TND", "EOT", "SWPB", "IN
 
 
 def plan() -> list[tuple[str, str, dict]]:
-    files = [("stinstr_n00", "control: the plant, the common tags and one assignment", {"kind": "n00"})]
+    files = [("stinstr_n00", "control: the plant, the common tags and one assignment", {"kind": "n00"}),
+             ("stinstr_event_n00", "control for stinstr_op_event: stinstr_n00 with the EVENT task and its "
+              "program, no EVENT call", {"kind": "event_n00"})]
     files += [(f"stinstr_fb_{mn.lower()}", f"{(20 if mn in BIG else N)} {mn} calls, each on its own {FB[mn]}"
                + (f" with its {', '.join(FB_ARRAYS[mn])} REAL[10] arguments" if mn in FB_ARRAYS else ""),
                {"kind": "fb", "mn": mn}) for mn in FB]
-    files += [(f"stinstr_op_{mn.lower()}", f"{N} {mn} calls" + (" each bracketed by UIE" if mn == "UID" else ""),
+    files += [(f"stinstr_op_{mn.lower()}", f"{N} {mn} calls" + (" each bracketed by UIE" if mn == "UID" else "")
+               + (", against stinstr_event_n00" if mn == "EVENT" else ""),
                {"kind": "op", "mn": mn}) for mn in OPERAND]
     files += [(f"stinstr_fn_{fn.lower()}", f"{N} REAL assignments `SiQ[i] := {fn}(SiR[i]);`", {"kind": "fn", "mn": fn})
               for fn in FUNCTIONS]
@@ -184,7 +187,9 @@ def make(sample_id: str, kw: dict) -> str:
     from sample_gen.gen_motion_instructions import _MOTION_EXTRA_TAGS_XML
     kind, mn = kw["kind"], kw.get("mn")
     tags, lines, extra_tags_xml, tasks = _common_tags(), ["SiD[0] := SiD[0] + 1;"], "", ""
-    if kind == "fb":
+    if kind == "event_n00":
+        tasks = EVENT_TASK
+    elif kind == "fb":
         t, lines = _fb(mn)
         tags += t
     elif kind == "op":

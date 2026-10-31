@@ -20,7 +20,7 @@ safety produced and a safety consumed tag to a peer safety controller; RS-04 is 
   safe_sil3_n00, _step      1756-L81ES SIL3 with its 1756-L8SP partner, empty safety task; the
                             same with round 4's content step (50 safety DINTs, 10 RIN rungs)
   safe_sil3_ib8s_2 / _4     2 / 4 1734-IB8S/B in a rack at SIL3 (against safe_io_ib8s_2 / _4)
-  safe_sil2_5069l320s3_n00  5069-L320ERMS3 v35 at SIL2: the catalog's own control
+  (safe_sil2_5069l320s3_n00, the catalog at SIL2, dropped: an S3 catalog is SIL3 only)
   safe_sil3_5069_n00, _step 5069-L320ERMS3 v35 at SIL3; with the content step
   safe_sil3_5069_ib8s_2     2 5069-IB8S/A on its bus at SIL3
   safe_pc6_def              the plant with a safety message UDT (CONNECTION_STATUS + DINT)
@@ -79,8 +79,10 @@ def plan() -> list[tuple[str, str, dict]]:
          {"sil3": "1756", "content": False, "racks": [["ib8s"] * 2]}),
         ("safe_sil3_ib8s_4", "SIL3 L81ES with 4 1734-IB8S/B in a further rack; against safe_io_ib8s_4",
          {"sil3": "1756", "content": False, "racks": [["ib8s"] * 4]}),
-        ("safe_sil2_5069l320s3_n00", "5069-L320ERMS3 v35 at SIL2, empty safety task, plant: the catalog's control",
-         {"base": "5069-L320ERMS3", "level": "SIL2", "major": "35", "content": False}),
+        # safe_sil2_5069l320s3_n00 (the 5069-L320ERMS3 at SIL2) is no longer built: it never
+        # converted in eight passes (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES), and every real
+        # 5069-L320ERMS3 runs at SIL3/PLe; an S3 catalog is a SIL3 part (lint
+        # s3_catalog_needs_sil3). Its SIL3 twins converted and read exact.
         ("safe_sil3_5069_n00", "5069-L320ERMS3 v35 at SIL3, empty safety task, plant",
          {"base": "5069-L320ERMS3", "level": "SIL3", "major": "35", "content": False}),
         ("safe_sil3_5069_step", "5069-L320ERMS3 v35 at SIL3 with round 4's content step",

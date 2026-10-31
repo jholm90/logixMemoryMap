@@ -138,12 +138,13 @@ def test_a_catalog_with_two_safety_shapes_is_keyed_by_its_device_key_on_the_stan
     assert sum(r[3] for r in standard_rows(rev11, m)) == 800 + 2 * 1184
 
 
-def test_round_6_is_27_files_each_a_compiled_shape():
+def test_round_6_is_26_files_each_a_compiled_shape():
+    """27 when built; safe_sil2_5069l320s3_n00 dropped 2026-10-31 (an S3 catalog is SIL3 only)."""
     import xml.etree.ElementTree as ET
     from sample_gen import gen_safety_round6 as R6
     from l5x_memory_analyzer.sizing.safety_io import device_key, safety_devices
     plan = {sid: kw for sid, _, kw in R6.plan()}
-    assert len(plan) == 27 and not set(plan) & {sid for sid, _, _ in IO.plan()}
+    assert len(plan) == 26 and not set(plan) & {sid for sid, _, _ in IO.plan()}
     keys = {}
     for sid, kw in plan.items():
         if not sid.startswith("safe_io6_"):

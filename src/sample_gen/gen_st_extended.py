@@ -85,12 +85,15 @@ def _timer(kind: str, i: int) -> list[str]:
             f"{kind}({t});", f"SteD[{i}] := {t}.ACC;"]
 
 
-def _case(blocks: int, selectors: int, selector: str) -> list[str]:
+def _case(blocks: int, selectors: int, selector: str, with_else: bool = False) -> list[str]:
     lines = []
     for b in range(blocks):
         lines.append(f"CASE {selector.format(b=b)} OF")
         for k in range(selectors):
             lines.append(f"    {k}: SteD[{b * selectors + k}] := SteE[{b * selectors + k}] + 1;")
+        if with_else:
+            lines.append("ELSE")
+            lines.append(f"    SteE[{N - 1 - b}] := SteE[{N - 1 - b}] + 1;")
         lines.append("END_CASE;")
     return lines
 
@@ -126,6 +129,16 @@ def plan() -> list[tuple[str, list[str], str]]:
         ("case20x5", _case(20, 5, "SteD[{b}]"), "20 CASE blocks of five selectors, one statement each"),
         ("case20x10", _case(20, 10, "SteD[{b}]"), "20 CASE blocks of ten selectors"),
         ("casemember20x5", _case(20, 5, "SteUa[{b}].A"), "20 CASE blocks of five selectors on a member-path selector"),
+        # Batch H (2026-10-31): the AOI call from ST at two more counts, on the same 50 declared
+        # instances (100 calls use each twice), so whether the -36 is a call or the routine comes
+        # out; and the CASE block over-determined, with a CASE's ELSE on its own.
+        ("aoi_p2_10", [f"{AOI2}(SteW{i:03d}, SteD[{i}], SteE[{i}]);" for i in rng(10)],
+         "10 calls of the two-input AOI, against ste_aoi_p2_50"),
+        ("aoi_p2_100", [f"{AOI2}(SteW{i % 50:03d}, SteD[{i}], SteE[{i}]);" for i in rng(100)],
+         "100 calls of the two-input AOI, each of its 50 instances called twice, against ste_aoi_p2_50"),
+        ("case40x5", _case(40, 5, "SteD[{b}]"), "40 CASE blocks of five selectors, against ste_case20x5"),
+        ("case20x5else", _case(20, 5, "SteD[{b}]", with_else=True),
+         "20 CASE blocks of five selectors each with an ELSE and its statement, against ste_case20x5"),
         ("dot3_400", [f"SteUa[{i}].S.A := SteUa[{i}].S.B + 1;" for i in rng(N)],
          "400 assignments through a nested UDT's members (three deep)"),
         ("vidxdot3_400", [f"SteUa[SteP.A].S.A := SteUa[{i}].S.B + 1;" for i in rng(N)],

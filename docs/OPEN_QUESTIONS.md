@@ -407,6 +407,11 @@ after the wiring below:
   a member-path selector the same): solved as two unknowns, 40 a block and 1 under per
   selector, exactly determined and not yet checked against `st_ctl_case` (one CASE, 100
   branches and an ELSE, −32 today), so not wired. 46 real CASE blocks.
+- **Batch H, built 2026-10-31, predicted before any reading:** `ste_aoi_p2_10` 943,422 and
+  `ste_aoi_p2_100` 957,102 (the engine's 152 a call between them; a slope of 116 says the −36 is
+  per call, a slope of 152 says it is per routine); `ste_case40x5` 961,038 against `ste_case20x5`
+  (twenty more blocks of five: the block cost, over-determined with the two 20-block files);
+  `ste_case20x5else` 952,138 (a CASE's ELSE and its statement, twenty of them).
 - **Closed under the floor:** the four member lines on each timer read 16 under the engine
   (`ste_tonr_set50`), about seven real timers; member-path JSR parameters read 16 a call under
   (`ste_jsr3deep_50`), four real calls.
@@ -574,7 +579,9 @@ wiring (MEMORY_MODEL, "Calls in Structured Text"):
 - **Open:** `stinstr_op_event` failed to open in Studio twice ("Open project threw
   OperationFail"). Its EVENT task had no Rate and no scheduled program, which every real EVENT
   task has; lint now refuses that shape (`event_task_shape`) and the generator builds the real
-  one. Rebuild in batch H.
+  one. **Rebuilt in batch H (2026-10-31)** with its own control, `stinstr_event_n00` (the task and
+  program, no call), predicted 855,190; `stinstr_op_event` 857,950, the ladder 56 a call less the
+  control's one assignment.
 
 **CAPTURE ERRORS: 7 row(s)** — six captured with errors (`stinstr_fb_mux`, `stinstr_fb_sel`,
 `stinstr_fn_tod`, `stinstr_fn_frd`, `stinstr_fn_isinf`, `stinstr_fn_isnan`), one never converted
@@ -633,6 +640,7 @@ unchanged. The ladder scanner now reads IsINF and IsNAN (mixed case, like THRSe)
 
 LV captured with "Missing output instruction" on every rung: it conditions its rung, so it needs
 an output after it. `ladder_roles` now counts it a condition and the generator ends its rung
-with an OTE. Rebuild in batch H.
+with an OTE. **Rebuilt in batch H (2026-10-31):** `ldgap_lv_50` 863,850 and `ldgap_lv_100` 864,650
+predicted, the OTE's 16 a rung and nothing for LV; the slope less 16 is LV's weight.
 
 **CAPTURE ERRORS: 2 row(s)** — `ldgap_lv_50`, `ldgap_lv_100`.

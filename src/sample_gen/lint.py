@@ -438,6 +438,20 @@ def _is_safety_controller(root: ET.Element) -> bool:
     return info is not None and info.get("SafetyLevel") is not None
 
 
+def _s3_catalog_findings(root: ET.Element) -> list[LintFinding]:
+    """A safety catalog ending S3 (5069-L3xxERMS3) runs at SIL3/PLe. The one generated file that set a 5069-L320ERMS3 to SIL2 never converted in eight
+    passes (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES), and every real 5069-L320ERMS3 is SIL3/PLe."""
+    controller = root.find("Controller")
+    info = root.find(".//SafetyInfo")
+    if controller is None or info is None:
+        return []
+    catalog, level = controller.get("ProcessorType") or "", info.get("SafetyLevel") or ""
+    if catalog.endswith("S3") and level and not level.startswith("SIL3"):
+        return [LintFinding("s3_catalog_needs_sil3",
+                            f"{catalog} is a SIL3 catalog but SafetyLevel is {level!r}")]
+    return []
+
+
 def _safety_instruction_findings(root: ET.Element) -> list[LintFinding]:
     """A safety-routine instruction outside a safety program, or on a controller
     that is not a safety controller, does not build."""
@@ -1923,6 +1937,7 @@ def lint_l5x(l5x_text: str, root: ET.Element | None = None) -> list[LintFinding]
     findings.extend(_aoi_array_param_usage_findings(root))
     findings.extend(_non_lad_instruction_findings(root))
     findings.extend(_not_in_st_findings(root))
+    findings.extend(_s3_catalog_findings(root))
     findings.extend(_event_task_findings(root))
     findings.extend(_structure_tag_data_findings(root))
 

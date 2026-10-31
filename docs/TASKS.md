@@ -62,8 +62,8 @@ fixture runs `progress.run` generators in process (`SAMPLE_GEN_SERIAL`): a spawn
 written over the captured files. **Real programs: mean 1.135%, worst 2.27%, 9/19 inside 1%,
 18/19 inside 2%** (was 1.139% / 2.32%, 8/19); stopping rule NOT MET.
 
-**Batch H, to be generated only when the owner says so** (1756-L81E v35, realism floor), eight
-files, each answering an open question:
+**Batch H, generated 2026-10-31 on the owner's word** (1756-L81E v35, realism floor; predictions
+in OPEN_QUESTIONS Sections 2 to 4), eight files, each answering an open question:
 
 | file | varies | held fixed | differenced against | answers |
 |---|---|---|---|---|
@@ -74,6 +74,13 @@ files, each answering an open question:
 | `ste_case40x5`, `ste_case20x5else` | 40 blocks of five; 20 blocks of five with an ELSE | selector shape | `ste_case20x5`, `ste_case20x10` | the CASE block cost, over-determined, and a CASE's ELSE (46 real blocks) |
 
 Predictions are written into OPEN_QUESTIONS before any reading, as for every batch.
+
+**With it, on the owner's word:** the three 1769 files whose first reading took the I/O figure,
+rebuilt under new names so the capture tool reads them (`cgl_l30v32_logic400_r2` 428,094,
+`cgl_l33v32_logic400_r2` 724,542, `cgl_l33v32_plant2x_r2` 1,296,298 predicted; same content as
+the originals, whose 9,200 rows stay as recorded and are not used). The never-converting
+`safe_sil2_5069l320s3_n00` is closed (OPEN_BUILD_ERRORS). The capture AHK keeps its earlier
+form plus Ctrl+F2 (back to IDLE from anywhere); the Ctrl+F1 restart change was reverted.
 
 ### 0zn. The afternoon of 2026-10-29 — what was done, decided and left open
 
