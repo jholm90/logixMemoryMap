@@ -2778,5 +2778,29 @@
  "stinstr_op_upper": {
   "path": "samples/generated/stinstr/stinstr_op_upper.L5X",
   "sha256_dates_blanked": "4a93649c2159dd22c20f250d74b33c82117a24e0d1b7b4325fb7831832ae1ee2"
+ },
+ "ste_aoi_p2_10": {
+  "path": "samples/generated/stext/ste_aoi_p2_10.L5X",
+  "sha256_dates_blanked": "a9d4e395b4438d7cd0182959eb9ba1b985c85e65b9c92a1c766416335560299c"
+ },
+ "ste_aoi_p2_100": {
+  "path": "samples/generated/stext/ste_aoi_p2_100.L5X",
+  "sha256_dates_blanked": "8cf8c5febe63fbf920bea4e0503db386d71b3052f3e1fa12b2bb8fc2a2c02c75"
+ },
+ "ste_case40x5": {
+  "path": "samples/generated/stext/ste_case40x5.L5X",
+  "sha256_dates_blanked": "484ae6ac152f3177ea81b57d0d81324eaed431ecb751523f8155f3cd382c6974"
+ },
+ "ste_case20x5else": {
+  "path": "samples/generated/stext/ste_case20x5else.L5X",
+  "sha256_dates_blanked": "0572a84d89f6ad18f4287e30f5cbed13ffd8aeac1c4237b6f485169628befc73"
+ },
+ "stinstr_event_n00": {
+  "path": "samples/generated/stinstr/stinstr_event_n00.L5X",
+  "sha256_dates_blanked": "5f0e5b9eba6c9c68fab4fbd759d857032f9b9dd1f37811ec446636059192bbc9"
+ },
+ "stinstr_op_event": {
+  "path": "samples/generated/stinstr/stinstr_op_event.L5X",
+  "sha256_dates_blanked": "6d18699c2c521b90b6011140c10eec3bb29b2857e2d3cd250ff59403b712e155"
  }
 }

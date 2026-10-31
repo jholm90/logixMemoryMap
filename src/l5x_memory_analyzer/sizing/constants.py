@@ -1316,6 +1316,9 @@ class StructuredTextModel:
     # and 2,094 of the real corpus's 6,586 ST lines are these.
     st_aoi_call_bytes: int = 0
     st_aoi_call_per_param_bytes: int = 0
+    st_aoi_call_output_extra_bytes: int = 0
+    case_statement_bytes: int = 0
+    case_else_bytes: int = 0
     st_aoi_call_confidence: str = "FITTED"
     # ST's OWN operator classification, measured -- it is not the CPT
     # tier table. See memory_model.yaml structured_text for the 21-file
@@ -1446,12 +1449,13 @@ class StructuredTextModel:
             return ""
         return f"1 operator|{kind}|{cls}"
 
-    def st_aoi_call_cost(self, calls: int, params: int) -> int:
+    def st_aoi_call_cost(self, calls: int, params: int, outputs: int = 0) -> int:
         """Per-call cost, plus the one-time a routine with any AOI call pays."""
         if not calls:
             return 0
         return (self.st_aoi_call_bytes * calls
                 + self.st_aoi_call_per_param_bytes * params
+                + self.st_aoi_call_output_extra_bytes * outputs
                 + self.st_aoi_call_routine_bytes)
 
 
@@ -1738,6 +1742,9 @@ def _build_memory_model(raw: dict) -> MemoryModel:
             st_aoi_call_bytes=raw["structured_text"]["st_aoi_call_bytes"],
             st_aoi_call_per_param_bytes=raw["structured_text"][
                 "st_aoi_call_per_param_bytes"],
+            st_aoi_call_output_extra_bytes=raw["structured_text"].get("st_aoi_call_output_extra_bytes", 0),
+            case_statement_bytes=raw["structured_text"].get("case_statement_bytes", 0),
+            case_else_bytes=raw["structured_text"].get("case_else_bytes", 0),
             st_aoi_call_confidence=raw["structured_text"]["st_aoi_call_confidence"],
             st_aoi_call_routine_bytes=raw["structured_text"].get(
                 "st_aoi_call_routine_bytes", 0),

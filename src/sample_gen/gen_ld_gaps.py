@@ -99,8 +99,10 @@ def _arm(mn: str, n: int) -> tuple[list[str], list[str], str]:
     raise KeyError(mn)
 
 
+# LV is no longer built: Studio refused every rung with "Missing output instruction" twice, the
+# second time with an OTE after it (2026-10-31), cause unknown, and no real program uses LV.
 INSTRUCTIONS = ("ATAN2", "LN", "STD", "LOWER", "CTD", "LFL", "DDT", "SQI", "SQL", "SQO", "EOT", "IOT",
-                "IsINF", "IsNAN", "LV")
+                "IsINF", "IsNAN")
 
 
 def plan() -> list[tuple[str, str, dict]]:

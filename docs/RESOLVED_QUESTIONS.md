@@ -33,6 +33,359 @@ entry, because an error with nowhere to be recorded is an error that gets forgot
 
 ---
 
+# Closed 2026-10-31
+
+OQ-STEXTENDED, OQ-STINSTR and OQ-LDGAPS, on the capture of batches E, F, G (2026-10-31) and H
+(the same day). Their sections follow as they stood, each with how it closed.
+
+## OQ-STEXTENDED — the ST that realprog_44 writes, opened 2026-10-24
+
+realprog_44 is 123 ST routines, 3,051 statements and 19,977 lines, the one standard program
+outside 2%. Census against the other eighteen (read only, 2026-10-24): it is the only program
+with function-block timers in ST (TONR on FBD_TIMER, each driven over five lines: PRE,
+TimerEnable, Reset, the call, the ACC or DN read), JSR with parameters from ST into ST
+subroutines that take them with SBR and return with RET (112 calls), AOI calls from ST (41),
+18 CASE blocks, 1,361 tag-driven indexes and 709 three-deep member paths, CONCAT / DTOS /
+DELETE / FIND / SIZE, GSV / SSV and CPS in ST, and instruction names and keywords in lower or
+mixed case (`cop`, `Cop`, `jsr`, `sbr`, `Concat`, `Ret`, `Size`, `if ... then ... end_if`).
+
+**Fixed in code the same day:** the instruction scanner shared with ladder matched upper-case
+mnemonics only, so every lower- or mixed-case instruction call in ST was priced at nothing;
+an instruction in any case is now its mnemonic (`structured_text.upper_case_mnemonics`; a
+declared AOI keeps its spelling). realprog_44 −2.66% → −2.32%; no other real program writes
+them. And a REAL one-operator multiply, measured long ago (`stshape_real_mul400` reads exactly
+`stshape_real400`), is no longer flagged unpriced.
+
+**What the engine still does not price, by construction:** TONR / TOFR / RTOR carry no weight
+(a timer call costs nothing); a JSR's parameters from an ST caller are not counted (only ladder
+callers are); the three-deep path and CASE shapes are extrapolated from shallower ones.
+
+**Batch E** (`gen_st_extended.py`, 32 files, `samples/generated/stext/`): one JSR-called ST
+routine on the realism floor, 1756-L81E v35; every file carries the same tags, UDTs (a nested
+one), two AOIs and two ST subroutines, so each differences against `ste_n00`. Predicted before
+any reading (engine of 2026-10-24; the reading is the engine's less the plant's 1,794 where
+the engine is right):
+
+| file | what | engine | step over `ste_n00` |
+|---|---|---:|---:|
+| `ste_n00` | control: one assignment | 941,678 | +0 |
+| `ste_tonr_full50` | 50 FBD_TIMER timers each driven over five lines: PRE, TimerEnable, Reset, TONR, the ACC read | 948,838 | +7,160 |
+| `ste_tonr_call50` | 50 TONR calls alone | 941,638 | -40 |
+| `ste_tonr_set50` | the same four member lines on each timer without the TONR call | 948,838 | +7,160 |
+| `ste_tonr_dnif50` | 50 TONR calls each followed by an IF on its DN bit with an ELSE | 950,038 | +8,360 |
+| `ste_tofr_full50` | the five-line timer with TOFR | 948,838 | +7,160 |
+| `ste_rtor_full50` | the five-line timer with RTOR | 948,838 | +7,160 |
+| `ste_jsr0_50` | 50 JSR without parameters to an ST subroutine | 945,038 | +3,360 |
+| `ste_jsr3_50` | 50 JSR passing three parameters and taking one back, into the ST subroutine that takes them with SBR and returns with RET | 945,038 | +3,360 |
+| `ste_jsr3deep_50` | the same with the parameters written as member paths behind tag indexes | 955,038 | +13,360 |
+| `ste_jsr3lower_50` | ste_jsr3_50 written in lower case | 945,038 | +3,360 |
+| `ste_aoi_p2_50` | 50 calls of an AOI with two Required DINT inputs | 949,502 | +7,824 |
+| `ste_aoi_p6_50` | 50 calls of an AOI with six Required DINT inputs | 952,702 | +11,024 |
+| `ste_aoi_p6deep_50` | the same with member-path arguments | 962,702 | +21,024 |
+| `ste_case20x5` | 20 CASE blocks of five selectors, one statement each | 951,338 | +9,660 |
+| `ste_case20x10` | 20 CASE blocks of ten selectors | 961,038 | +19,360 |
+| `ste_casemember20x5` | 20 CASE blocks of five selectors on a member-path selector | 951,338 | +9,660 |
+| `ste_dot3_400` | 400 assignments through a nested UDT's members (three deep) | 957,638 | +15,960 |
+| `ste_vidxdot3_400` | the same with the destination behind an index written as a member path | 1,007,238 | +65,560 |
+| `ste_innerarr400` | 400 assignments on a UDT member's array element indexed by a tag | 1,021,638 | +79,960 |
+| `ste_amp400` | 400 BOOL destinations from an &  | 954,438 | +12,760 |
+| `ste_concat100` | 100 CONCAT | 952,038 | +10,360 |
+| `ste_dtos100` | 100 DTOS | 948,838 | +7,160 |
+| `ste_delete100` | 100 DELETE | 951,638 | +9,960 |
+| `ste_find100` | 100 FIND | 951,638 | +9,960 |
+| `ste_size50` | 50 SIZE on a UDT array | 948,038 | +6,360 |
+| `ste_cop200` | 200 COP of a UDT element | 964,038 | +22,360 |
+| `ste_coplower200` | ste_cop200 written in lower case | 964,038 | +22,360 |
+| `ste_gsv50` | 50 GSV of the wall clock into a DINT array | 945,838 | +4,160 |
+| `ste_cps50` | 50 CPS of a UDT element | 947,238 | +5,560 |
+| `ste_ifupper200` | 200 IF blocks, keywords in upper case | 959,238 | +17,560 |
+| `ste_iflower200` | the same with keywords in lower case | 959,238 | +17,560 |
+
+**What decides it:** `ste_tonr_call50` against `ste_n00` prices a timer call, `_set50` its
+member lines, `_full50` both together (additivity), `_dnif50` the DN read in a condition;
+TOFR / RTOR whether every FB timer costs the same. `ste_jsr3_50` against `ste_jsr0_50` prices
+three parameters and a return from an ST caller; `_deep` the member-path arguments; `_lower`
+confirms the case fix on the device. `ste_aoi_p2` / `_p6` the per-parameter AOI rate from ST at
+a second count; `ste_case20x5` / `x10` the per-selector rate; the path files the three-deep and
+inner-array forms; the string, GSV and CPS files each instruction's ST weight against its
+ladder weight; `ste_iflower200` against `ste_ifupper200` that keyword case costs nothing.
+
+**Captured 2026-10-31 (32 files, every one clean).** Each file against `ste_n00`, live engine
+after the wiring below:
+
+- **Exact (26):** every string call (CONCAT, DTOS, DELETE, FIND, SIZE), COP and its lower-case
+  twin, CPS, GSV, IF in either case, the three-deep member paths with and without a tag index,
+  the inner array behind a tag index, `&`, the TONR call alone and the TONR call with an IF / ELSE
+  on its DN bit, and the JSRs: **a JSR from ST passes its parameters at the ladder caller rate**
+  (`jsr_param_cost`, B(n) plus 20 an output; `ste_jsr0_50` +4 a call, `ste_jsr3_50` +88), which
+  ST had never been charged. Wired in `report.py`; KNOWN.
+- **TONR / TOFR / RTOR called from ST cost 56** (`ste_tonr_call50`; the five-line files read the
+  same with TOFR and RTOR). Wired in the function-block call table.
+- **Open, specified for batch H:** an AOI call from ST reads **36 a call under the engine**
+  (`ste_aoi_p2_50`, `ste_aoi_p6_50` both −1,800, `ste_aoi_p6deep_50` −1,400). Two and six
+  parameters read the same, so the per-parameter 16 holds and the base or the once-per-routine
+  264 does not; one count per file cannot say which (failure mode 2). 58 real AOI calls in ST.
+  A CASE block reads **+35** with five selectors and +30 with ten (`ste_case20x5`, `ste_case20x10`;
+  a member-path selector the same): solved as two unknowns, 40 a block and 1 under per
+  selector, exactly determined and not yet checked against `st_ctl_case` (one CASE, 100
+  branches and an ELSE, −32 today), so not wired. 46 real CASE blocks.
+- **Batch H, built 2026-10-31, predicted before any reading:** `ste_aoi_p2_10` 943,422 and
+  `ste_aoi_p2_100` 957,102 (the engine's 152 a call between them; a slope of 116 says the −36 is
+  per call, a slope of 152 says it is per routine); `ste_case40x5` 961,038 against `ste_case20x5`
+  (twenty more blocks of five: the block cost, over-determined with the two 20-block files);
+  `ste_case20x5else` 952,138 (a CASE's ELSE and its statement, twenty of them).
+- **Closed under the floor:** the four member lines on each timer read 16 under the engine
+  (`ste_tonr_set50`), about seven real timers; member-path JSR parameters read 16 a call under
+  (`ste_jsr3deep_50`), four real calls.
+
+**CAPTURE ERRORS: 0 row(s)**.
+
+**Batch H, captured 2026-10-31, closes it.** The AOI call from ST reads 36 a call under the old
+120 + 16p at 10, 50 and 100 calls: a per-call term. Every older `stx_call_aoi_p*` call passed one
+Output, these pass none, and both sets are exact as **84 + 16 a parameter + 36 more for each
+Output passed** (wired: `st_aoi_call_bytes` 84, `st_aoi_call_output_extra_bytes` 36; every older
+file reads as before; member-path arguments +8 a call, inside the floor). **CASE** is
+over-determined by 20 × 5, 20 × 10 and 40 × 5: **40 a CASE statement and 56 a selector branch, and 28
+a CASE's ELSE** (wired; `ste_case*` all exact, `st_ctl_case` from −32 to 0). Pinned by
+`tests/test_batch_efg_laws.py`.
+
+## OQ-STINSTR — every instruction ST can call, opened 2026-10-25
+
+**Owner's request 2026-10-25:** a test for every instruction ST can call, those ladder cannot
+call included. The instruction list is the engine's weight table, the real programs' ST and
+the function blocks of the FBD manual (1756-PM009), and since 2026-10-29 the general
+instruction reference (1756-RM018, chat-only): every instruction whose ST entry there gives a
+call form, and every operator and function its expression table marks usable in ST, is in
+batch E or F or listed below with its reason. The process and drives reference (1756-RM006)
+and the motion reference (MOTION-RM002) are not on file, so the function-block and motion
+lists are still checked against them when they arrive.
+
+**Checked against RM018 (2026-10-29), what changed:** AVE and STD are ladder-only, so their
+two files were removed; ATAN2, TOD, FRD, IsINF and IsNAN were added as ST functions (TOD / FRD
+are the spellings below v36 of TO_BCD / BCD_TO). The reference states ATAN2 is written in ST
+as an expression; for TOD, FRD, IsINF and IsNAN it gives no ST form at all, so those four files
+test whether ST accepts them. A conversion failure on one of them is the answer, not a defect
+to chase. TRUNC stays: the
+real programs at v32 to v35 write TRUNC in ST (the v36 rename is a ladder rename). The
+ladder-only instructions (TON / TOF / RTO, CTU / CTD, RES, FAL / FSC / FLL, BTD, MVM, CLR, the
+compare and arithmetic instructions, NEG, MCR, AFI, NOP, UNK, LV) are written in ST as
+operators or not at all and have no file here; the ST operators are batch-C and closeout
+territory (`gen_st_expression_grid.py`, `gen_st_closeout.py`). Batch E already carries
+TONR / TOFR / RTOR, JSR / SBR / RET, AOI calls, CONCAT / DTOS / DELETE / FIND / SIZE, COP, CPS
+and GSV.
+
+**Left out, each with its reason:** ALMD / ALMA (parked, CLAUDE.md "Out of scope until
+real-file error is under 1%"); ASO (an alarm-set operation: alarm instructions are parked and
+no real program has an alarm set); REF (its operand is a REF_TO_AXIS reference type that no
+file here has built and no real program uses, so its tag XML would be a guess); SFP / SFR (SFC is never worked); ABL / ACB / ACL / AHL / ARD /
+ARL / AWA / AWT (a 1756-L81E has no serial port, so a file built on the standard platform
+cannot verify); the equipment-phase and equipment-sequence instructions (they need phase
+programs and sequences, a structure no file builds); every motion instruction whose operand
+list no captured file has proved (MAG, MCD, MCS, MCLM, MCCM, MCCD, MCT, MCTP, MCSV, MCPM,
+MAPC, MATC, MDAC, MAOC, MDOC, MGS and the rest: the motion reference is needed first).
+
+**Batch F** (`gen_st_instructions.py`, 93 files, `samples/generated/stinstr/`): one
+JSR-called ST routine on the realism floor, 1756-L81E v35; each file the plant, the
+instruction's own backing tags (every structure priced exactly by the engine) and 50 calls (20
+for CC / IMC / MMC). The reading less the engine's figure is what the calls cost in ST. In ST
+the motion operands that ladder writes as keywords are numbers (`Units per sec` 0, `S-Curve` 1,
+`% of Maximum` 1): the one assumption in the batch, and the first thing a build error on a
+`stinstr_mo_*` file would name. Predicted before any reading (engine of 2026-10-25):
+
+| file | calls | engine | over `stinstr_n00` |
+|---|---|---:|---:|
+| `stinstr_n00` | control: the plant, the common tags and one assignment | 853,718 | +0 |
+| `stinstr_fb_ctud` | 50 CTUD calls, each on its own FBD_COUNTER | 859,278 | +5,560 |
+| `stinstr_fb_osri` | 50 OSRI calls, each on its own FBD_ONESHOT | 858,878 | +5,160 |
+| `stinstr_fb_osfi` | 50 OSFI calls, each on its own FBD_ONESHOT | 858,878 | +5,160 |
+| `stinstr_fb_setd` | 50 SETD calls, each on its own DOMINANT_SET | 858,878 | +5,160 |
+| `stinstr_fb_resd` | 50 RESD calls, each on its own DOMINANT_RESET | 858,878 | +5,160 |
+| `stinstr_fb_dff` | 50 DFF calls, each on its own FLIP_FLOP_D | 858,478 | +4,760 |
+| `stinstr_fb_jkff` | 50 JKFF calls, each on its own FLIP_FLOP_JK | 858,878 | +5,160 |
+| `stinstr_fb_btdt` | 50 BTDT calls, each on its own FBD_BIT_FIELD_DISTRIBUTE | 859,678 | +5,960 |
+| `stinstr_fb_mvmt` | 50 MVMT calls, each on its own FBD_MASKED_MOVE | 859,278 | +5,560 |
+| `stinstr_fb_scl` | 50 SCL calls, each on its own SCALE | 860,478 | +6,760 |
+| `stinstr_fb_pide` | 50 PIDE calls, each on its own PID_ENHANCED | 878,078 | +24,360 |
+| `stinstr_fb_alm` | 50 ALM calls, each on its own ALARM | 862,478 | +8,760 |
+| `stinstr_fb_intg` | 50 INTG calls, each on its own INTEGRATOR | 862,478 | +8,760 |
+| `stinstr_fb_pi` | 50 PI calls, each on its own PROP_INT | 864,478 | +10,760 |
+| `stinstr_fb_pmul` | 50 PMUL calls, each on its own PULSE_MULTIPLIER | 860,478 | +6,760 |
+| `stinstr_fb_scrv` | 50 SCRV calls, each on its own S_CURVE | 864,078 | +10,360 |
+| `stinstr_fb_soc` | 50 SOC calls, each on its own SEC_ORDER_CONTROLLER | 866,478 | +12,760 |
+| `stinstr_fb_updn` | 50 UPDN calls, each on its own UP_DOWN_ACCUM | 859,678 | +5,960 |
+| `stinstr_fb_hpf` | 50 HPF calls, each on its own FILTER_HIGH_PASS | 865,678 | +11,960 |
+| `stinstr_fb_lpf` | 50 LPF calls, each on its own FILTER_LOW_PASS | 865,678 | +11,960 |
+| `stinstr_fb_ntch` | 50 NTCH calls, each on its own FILTER_NOTCH | 867,278 | +13,560 |
+| `stinstr_fb_ldlg` | 50 LDLG calls, each on its own LEAD_LAG | 864,878 | +11,160 |
+| `stinstr_fb_ldl2` | 50 LDL2 calls, each on its own LEAD_LAG_SEC_ORDER | 866,878 | +13,160 |
+| `stinstr_fb_derv` | 50 DERV calls, each on its own DERIVATIVE | 862,478 | +8,760 |
+| `stinstr_fb_tot` | 50 TOT calls, each on its own TOTALIZER | 863,678 | +9,960 |
+| `stinstr_fb_d2sd` | 50 D2SD calls, each on its own DISCRETE_2STATE | 860,078 | +6,360 |
+| `stinstr_fb_d3sd` | 50 D3SD calls, each on its own DISCRETE_3STATE | 860,478 | +6,760 |
+| `stinstr_fb_esel` | 50 ESEL calls, each on its own SELECT_ENHANCED | 861,278 | +7,560 |
+| `stinstr_fb_hll` | 50 HLL calls, each on its own HL_LIMIT | 859,678 | +5,960 |
+| `stinstr_fb_mux` | 50 MUX calls, each on its own MULTIPLEXER | 860,878 | +7,160 |
+| `stinstr_fb_rlim` | 50 RLIM calls, each on its own RATE_LIMITER | 862,878 | +9,160 |
+| `stinstr_fb_sel` | 50 SEL calls, each on its own SELECT | 858,878 | +5,160 |
+| `stinstr_fb_sneg` | 50 SNEG calls, each on its own SELECTABLE_NEGATE | 859,278 | +5,560 |
+| `stinstr_fb_ssum` | 50 SSUM calls, each on its own SELECTED_SUMMER | 862,478 | +8,760 |
+| `stinstr_fb_maxc` | 50 MAXC calls, each on its own MAXIMUM_CAPTURE | 859,678 | +5,960 |
+| `stinstr_fb_minc` | 50 MINC calls, each on its own MINIMUM_CAPTURE | 859,678 | +5,960 |
+| `stinstr_fb_posp` | 50 POSP calls, each on its own POSITION_PROP | 864,478 | +10,760 |
+| `stinstr_fb_srtp` | 50 SRTP calls, each on its own SPLIT_RANGE | 863,678 | +9,960 |
+| `stinstr_fb_imc` | 20 IMC calls, each on its own IMC | 941,678 | +87,960 |
+| `stinstr_fb_cc` | 20 CC calls, each on its own CC | 1,029,198 | +175,480 |
+| `stinstr_fb_mmc` | 20 MMC calls, each on its own MMC | 1,183,118 | +329,400 |
+| `stinstr_fb_hmibc` | 50 HMIBC calls, each on its own HMIBC | 859,678 | +5,960 |
+| `stinstr_fb_dedt` | 50 DEDT calls, each on its own DEADTIME with its Storage REAL[10] arguments | 863,810 | +10,092 |
+| `stinstr_fb_fgen` | 50 FGEN calls, each on its own FUNCTION_GENERATOR with its X1, Y1, X2, Y2 REAL[10] arguments | 861,406 | +7,688 |
+| `stinstr_fb_mave` | 50 MAVE calls, each on its own MOVING_AVERAGE with its Storage, Weight REAL[10] arguments | 861,142 | +7,424 |
+| `stinstr_fb_mstd` | 50 MSTD calls, each on its own MOVING_STD_DEV with its Storage REAL[10] arguments | 861,410 | +7,692 |
+| `stinstr_fb_rmps` | 50 RMPS calls, each on its own RAMP_SOAK with its Ramp, Soak, Time REAL[10] arguments | 864,074 | +10,356 |
+| `stinstr_op_pid` | 50 PID calls | 874,678 | +20,960 |
+| `stinstr_op_msg` | 50 MSG calls | 894,678 | +40,960 |
+| `stinstr_op_ssv` | 50 SSV calls | 857,878 | +4,160 |
+| `stinstr_op_iot` | 50 IOT calls | 853,678 | -40 |
+| `stinstr_op_event` | 50 EVENT calls | 857,186 | +3,468 |
+| `stinstr_op_uid` | 50 UID calls each bracketed by UIE | 859,678 | +5,960 |
+| `stinstr_op_tnd` | 50 TND calls | 857,278 | +3,560 |
+| `stinstr_op_eot` | 50 EOT calls | 853,678 | -40 |
+| `stinstr_op_swpb` | 50 SWPB calls | 857,478 | +3,760 |
+| `stinstr_op_insert` | 50 INSERT calls | 859,478 | +5,760 |
+| `stinstr_op_mid` | 50 MID calls | 858,678 | +4,960 |
+| `stinstr_op_stod` | 50 STOD calls | 857,678 | +3,960 |
+| `stinstr_op_rtos` | 50 RTOS calls | 857,278 | +3,560 |
+| `stinstr_op_stor` | 50 STOR calls | 857,678 | +3,960 |
+| `stinstr_op_upper` | 50 UPPER calls | 857,878 | +4,160 |
+| `stinstr_op_lower` | 50 LOWER calls | 853,678 | -40 |
+| `stinstr_op_srt` | 50 SRT calls | 864,278 | +10,560 |
+| `stinstr_fn_abs` | 50 REAL assignments `SiQ[i] := ABS(SiR[i]);` | 858,878 | +5,160 |
+| `stinstr_fn_sqrt` | 50 REAL assignments `SiQ[i] := SQRT(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_ln` | 50 REAL assignments `SiQ[i] := LN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_log` | 50 REAL assignments `SiQ[i] := LOG(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_sin` | 50 REAL assignments `SiQ[i] := SIN(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_cos` | 50 REAL assignments `SiQ[i] := COS(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_tan` | 50 REAL assignments `SiQ[i] := TAN(SiR[i]);` | 859,678 | +5,960 |
+| `stinstr_fn_asin` | 50 REAL assignments `SiQ[i] := ASIN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_acos` | 50 REAL assignments `SiQ[i] := ACOS(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_atan` | 50 REAL assignments `SiQ[i] := ATAN(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_deg` | 50 REAL assignments `SiQ[i] := DEG(SiR[i]);` | 859,878 | +6,160 |
+| `stinstr_fn_rad` | 50 REAL assignments `SiQ[i] := RAD(SiR[i]);` | 862,478 | +8,760 |
+| `stinstr_fn_trunc` | 50 REAL assignments `SiQ[i] := TRUNC(SiR[i]);` | 856,678 | +2,960 |
+| `stinstr_fn_atan2` | 50 assignments `REAL := ATAN2(REAL, REAL)` | 856,678 | +2,960 |
+| `stinstr_fn_tod` | 50 assignments `DINT := TOD(DINT)` | 858,078 | +4,360 |
+| `stinstr_fn_frd` | 50 assignments `DINT := FRD(DINT)` | 858,078 | +4,360 |
+| `stinstr_fn_isinf` | 50 assignments `BOOL := IsINF(REAL)` | 855,078 | +1,360 |
+| `stinstr_fn_isnan` | 50 assignments `BOOL := IsNAN(REAL)` | 855,078 | +1,360 |
+| `stinstr_mo_mam` | 50 MAM calls on one axis, each on its own MOTION_INSTRUCTION | 894,622 | +40,904 |
+| `stinstr_mo_maj` | 50 MAJ calls on one axis, each on its own MOTION_INSTRUCTION | 892,622 | +38,904 |
+| `stinstr_mo_mah` | 50 MAH calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_mas` | 50 MAS calls on one axis, each on its own MOTION_INSTRUCTION | 888,422 | +34,704 |
+| `stinstr_mo_mso` | 50 MSO calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_mrp` | 50 MRP calls on one axis, each on its own MOTION_INSTRUCTION | 889,822 | +36,104 |
+| `stinstr_mo_msf` | 50 MSF calls on one axis, each on its own MOTION_INSTRUCTION | 886,422 | +32,704 |
+| `stinstr_mo_maw` | 50 MAW calls on one axis, each on its own MOTION_INSTRUCTION | 889,822 | +36,104 |
+| `stinstr_mo_mar` | 50 MAR calls on one axis, each on its own MOTION_INSTRUCTION | 893,222 | +39,504 |
+| `stinstr_mo_mdr` | 50 MDR calls on one axis, each on its own MOTION_INSTRUCTION | 886,822 | +33,104 |
+
+**Captured 2026-10-31 (92 of 93; 86 clean).** Against `stinstr_n00`, live engine after the
+wiring (MEMORY_MODEL, "Calls in Structured Text"):
+
+- **Exact, at the ladder weight already in the table (14):** INSERT, MID, STOD, STOR, RTOS, UPPER,
+  SWPB, SSV, TND, UID / UIE, and EOT, IOT and LOWER at the ladder weights batch G measured.
+- **Functions** (`Q := FN(R);`): each its own price over the REAL assignment, not its ladder
+  weight: 108 for SIN COS TAN LOG LN ASIN ACOS ATAN, 112 for ATAN2 DEG RAD, 116 ABS, 96 TRUNC,
+  −8 SQRT. Before this SQRT, ASIN, ACOS, ATAN and TRUNC were priced at nothing in ST (their
+  v36 names are not in the ladder table). TRUNC is in twenty real programs' ST.
+- **Function blocks** (45): 56 for the bit-level ones, 64 for the analog ones, 72 PIDE, 52
+  HMIBC, 92 MVMT, 100 BTDT, about 16 more per array argument (DEDT and MSTD 80, MAVE 96, RMPS 112,
+  FGEN 132), every one inside 16 bytes a file; BTDT is in four real programs.
+- **Twice their ladder cost in ST:** MSG, SRT and all ten motion instructions (MAM 448). PID
+  costs 44 more than its ladder 156. MAJ reads 104 a call over the doubled figure: one integer
+  literal into a REAL parameter, and the motion literal law is not applied in ST. Closed under
+  the floor, no real program calls motion from ST.
+- **Refused by Studio, now refused by lint (`not_in_st`):** MUX and SEL ("Unknown instruction or
+  function", FBD only) and TOD, FRD, IsINF, IsNAN ("Invalid expression": not ST functions).
+  The six rows are suspect and unused.
+- **Open:** `stinstr_op_event` failed to open in Studio twice ("Open project threw
+  OperationFail"). Its EVENT task had no Rate and no scheduled program, which every real EVENT
+  task has; lint now refuses that shape (`event_task_shape`) and the generator builds the real
+  one. **Rebuilt in batch H (2026-10-31)** with its own control, `stinstr_event_n00` (the task and
+  program, no call), predicted 855,190; `stinstr_op_event` 857,950, the ladder 56 a call less the
+  control's one assignment.
+
+**CAPTURE ERRORS: 6 row(s)** — `stinstr_fb_mux`, `stinstr_fb_sel`, `stinstr_fn_tod`, `stinstr_fn_frd`,
+`stinstr_fn_isinf`, `stinstr_fn_isnan`, each refused by Studio and not used.
+
+**Batch H, captured 2026-10-31, closes it.** `stinstr_op_event` converted and reads exactly its
+control `stinstr_event_n00` plus the ladder 56 an EVENT call: EVENT costs its ladder weight in ST.
+The function-block and motion lists are still to be checked against RM006 / MOTION-RM002 when they
+arrive (TASKS), a reference check rather than a measurement.
+
+## OQ-LDGAPS — every ladder instruction no ladder file measures, opened 2026-10-29
+
+**Owner's request 2026-10-29:** every instruction tested in ladder and in ST, wherever it can
+be written. The audit (INSTRUCTION_COVERAGE, "Every instruction, ladder and ST") put every
+instruction of the general instruction reference against the captured corpus. In ST every
+callable one is measured or in batch E / F. In ladder these fifteen had no captured ladder
+isolation: ATAN2 and CTD only safety-routine captures (CTD's 20 is borrowed from CTU), the
+other thirteen nothing, and every one but CTD has no weight, so the engine charges a call its
+backing tags and nothing for the instruction.
+
+**Batch G** (`gen_ld_gaps.py`, 31 files, `samples/generated/ldgap/`): the realism-floor plant,
+1756-L81E v35, plus one JSR-called ladder routine of 50 or 100 rungs, each one call on its own
+backing tags; a condition instruction (SQI, IsINF, IsNAN) ends in an OTE on its own bit (16,
+measured). The per-call cost is the 50-to-100 slope less the engine's exact price of the
+backing tags; the control is `ldgap_n00`. Operand order and formats are the reference's ladder
+operand tables. Two firmware risks, both answered by a conversion failure rather than chased:
+IsINF / IsNAN apply to the 5380 / 5580 families with no firmware floor stated, and LV (license
+validation) may refuse to verify without a license; ATAN2 already verified at v35 in the safety
+captures. Predicted before any reading (engine of 2026-10-29):
+
+| instruction | 50 calls | 100 calls | engine per call (slope) |
+|---|---:|---:|---:|
+| control `ldgap_n00` | 863,086 | | |
+| ATAN2 | 863,050 | 863,050 | 0 |
+| LN | 863,050 | 863,050 | 0 |
+| STD | 868,250 | 873,450 | 104 |
+| LOWER | 863,050 | 863,050 | 0 |
+| CTD | 869,250 | 875,450 | 124 |
+| LFL | 874,850 | 886,650 | 236 |
+| DDT | 886,250 | 909,450 | 464 |
+| SQI | 869,050 | 875,050 | 120 |
+| SQL | 874,850 | 886,650 | 236 |
+| SQO | 868,250 | 873,450 | 104 |
+| EOT | 863,050 | 863,050 | 0 |
+| IOT | 863,050 | 863,050 | 0 |
+| IsINF | 863,850 | 864,650 | 16 |
+| IsNAN | 863,850 | 864,650 | 16 |
+| LV | 863,050 | 863,050 | 0 |
+
+**Left out, each with its reason:** ALMA / ASO (alarm instructions, parked); SFP / SFR (SFC is
+never worked); REF (a REF_TO_AXIS reference type no file has built); UNK (the placeholder
+Studio writes for an instruction it cannot read). The function-block-only instructions (BAND,
+BOR, BXOR, BNOT) wait for FBD work.
+
+**Captured 2026-10-31 (31 files).** Every instruction but LV reads the same per call at 50 and
+100 rungs, a straight line through the control, and is wired at that figure (KNOWN, pinned by
+`tests/test_batch_efg_laws.py`): **ATAN2 64, LN 60, STD 116, LOWER 84, LFL 76, DDT 84, SQI 48, SQL
+60, SQO 56, EOT 64, IOT 72, IsINF 40, IsNAN 40**, and CTD at the 20 it borrowed from CTU. ATAN2's
++64 safety-partition delta was this weight missing; the delta is gone and the safety figure is
+unchanged. The ladder scanner now reads IsINF and IsNAN (mixed case, like THRSe).
+
+LV captured with "Missing output instruction" on every rung: it conditions its rung, so it needs
+an output after it. `ladder_roles` now counts it a condition and the generator ends its rung
+with an OTE. **Rebuilt in batch H (2026-10-31):** `ldgap_lv_50` 863,850 and `ldgap_lv_100` 864,650
+predicted, the OTE's 16 a rung and nothing for LV; the slope less 16 is LV's weight.
+
+**CAPTURE ERRORS: 2 row(s)** — `ldgap_lv_50`, `ldgap_lv_100`.
+
+**Closed 2026-10-31.** LV was rebuilt with an OTE after it and Studio refused every rung again
+with "Missing output instruction"; the cause is unknown (the reference shows LV setting the rung
+condition, as built), the Studio message is all there is, and **no real program uses LV**, so it is
+closed under the floor and no longer built. Everything else in the question is wired.
+
+
 # Closed 2026-10-24
 
 The capture of batch B (26 safety files), batch C (27) and the 1769 batch (36), zero build
@@ -348,7 +701,7 @@ The capture errors stay recorded below.
 | **Wired, 2026-10-18** | Rounds 1 to 3 (271 files): `sizing/report.py` leaves safety-program tags, aliases and logic out of the standard total, charges a controller-scope safety tag its name entry, each extra safety program 64 + its name, a safety AOI its definition less 800, and standard logic 8 / 4 per safety bit / word operand; `sizing/safety.py` prices the safety partition (base, tags, aliases, shells, every safety and ordinary instruction, safety AOIs and their calls, encoded (safety-locked) ones at a minimum), shown by the CLI and the UI as its own bar. **Safety: all 271 files exact to the byte. Standard: 249 exact against the realism plant's −1,794; the other 22 within 32 bytes of it** (Still open, 2). Both Studio seeds exact on both partitions. |
 | **Measured, round 4, 2026-10-19** (31 of 32 files captured, zero errors; `safe_aoi_call_60` converted but has no capture row) | **Safety exact on all 28 safety files, before any change.** Tag mapping at 0 / 1 / 10 / 50 / 200 pairs: 0 in both partitions. Safety AOI instances at 5 and 60 and calls at 5; definitions with 3/3 and 6/6 BOOL parameters and 9 locals move only the standard share; 10 internal rungs +180 safety. Routine names of 16 / 24 / 40 characters +8 / +16 / +32. ATAN2, COP, FLL at 100 rungs on their corrections. The safety base and one content step on 5069-L330ERMS2, 5069-L320ERMS2 (v35) and 1756-L81ES v32 / v34: the same 1,410 and +6,544 safety everywhere, +3,200 standard everywhere. **Standard:** the 5069 bases read 280 / 296 below the engine (the safety shell charged twice, below); MOV from a scalar safety DINT 8 a rung, not 4; the UDT twins on 1756-L81E read the same −16 / −32 as on the L81ES, and the array twin the same +4 per array tag, so neither is a safety term. Three warnings, all `safe_rtn_name*`'s designed uncalled routine. |
 | **Wired, 2026-10-19** | 1. `safety_capable_baseline_delta` (296) only when the file has no safety task: it is the safety task/program shell Studio creates for a safety controller whose file carries none (the firmware-matrix 5069 S2/S3 files had none), and a file with its own safety task is already charged that shell; 5069-L320ERMS2 now reads exactly the plant constant, L330ERMS2 +16. 2. Standard logic naming a scalar atomic safety tag alone pays 8 (`standard_scalar_operand_bytes`), exact on `safe_sref2_mov_50` and consistent with `safe_comp_2`'s twelve. 3. KNOWN now: routine names (five buckets), the ATAN2 / COP / FLL corrections (20 and 100 rungs), the safety AOI split and call terms (six definitions, instances at 5/20/60, calls at 5/20). No other file moved; the real safety programs' standard predictions drop 296 on every 5069 and nothing else changes. |
-| **Measured, safety I/O, 2026-10-19** (41 captured, every one converted `ok`) | **Safety: each CIP Safety device a fixed cost by its safety connections' data type, nothing once, exact at 1 / 2 / 4:** 1756-IB16S (`AB:5000_SDI16`) 6,049; 1756-OBV8S (`AB:5000_SDO8`) 4,497 (the pair reads their sum); BNI00HN 3,901; PowerFlex 527 and 2198-H008-ERS2 (both `AB:CIP_Drive_Safety1`) 3,577; 2198-D012/D020/D032/D057-ERS3 integrated safety (`AB:CIP_Motion_Device_Safety2`) 4,717 each with or without axes; 2198-S086-ERS3 (`AB:CIP_Motion_Device_Safety1`) 4,123. **Standard:** each device a first-of-catalog cost and a per-device cost beyond the module sizing (MEMORY_MODEL, "Safety I/O"). Wired; every file now reads the plant constant on both partitions, except two standard-engine terms that are not safety's: a 2198-D012-ERS3 with axes reads like the other D0xx drives (+2,222 against the engine), and a non-safety S086 with its axis +1,958. `safe_aoi_call_60` (+12,728 safety for 60 calls) exact. Real safety programs: safety from −18…−66% to −1.5…−44%, every remaining gap naming unpriced 1734 cards. **CAPTURE ERRORS: 3 row(s)** (5 until the recapture of 2026-10-24) — `safe_iol_kx_d012_std_1` / `_2` (the proven non-safety D012 block reports a bus-sharing error, "Primary Bus Sharing Group 3 contains a module configured as Shared DC ... with no module configured as Shared AC/DC"; its reading equals the other D0xx controls' to the byte, so not used for any law); and three files that never converted (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` (their 5069-OB16/B module-sweep block carries no ExtendedProperties ConfigID, which every compiled export of the catalog carries; `gen_safety_round6.std_card` now adds it, lint refuses the catalog without it, `module_without_configid`; rebuilt in batch B), and `safe_sil2_5069l320s3_n00` (5069-L320ERMS3 at SIL2; the same catalog at SIL3 converted and captured, `safe_sil3_5069_n00`; **cause unknown** — the converter log carries only the abort, and the Studio error-log line is needed). |
+| **Measured, safety I/O, 2026-10-19** (41 captured, every one converted `ok`) | **Safety: each CIP Safety device a fixed cost by its safety connections' data type, nothing once, exact at 1 / 2 / 4:** 1756-IB16S (`AB:5000_SDI16`) 6,049; 1756-OBV8S (`AB:5000_SDO8`) 4,497 (the pair reads their sum); BNI00HN 3,901; PowerFlex 527 and 2198-H008-ERS2 (both `AB:CIP_Drive_Safety1`) 3,577; 2198-D012/D020/D032/D057-ERS3 integrated safety (`AB:CIP_Motion_Device_Safety2`) 4,717 each with or without axes; 2198-S086-ERS3 (`AB:CIP_Motion_Device_Safety1`) 4,123. **Standard:** each device a first-of-catalog cost and a per-device cost beyond the module sizing (MEMORY_MODEL, "Safety I/O"). Wired; every file now reads the plant constant on both partitions, except two standard-engine terms that are not safety's: a 2198-D012-ERS3 with axes reads like the other D0xx drives (+2,222 against the engine), and a non-safety S086 with its axis +1,958. `safe_aoi_call_60` (+12,728 safety for 60 calls) exact. Real safety programs: safety from −18…−66% to −1.5…−44%, every remaining gap naming unpriced 1734 cards. **CAPTURE ERRORS: 2 row(s)** (5 until the recapture of 2026-10-24; 3 until `safe_sil2_5069l320s3_n00` was closed, 2026-10-31) — `safe_iol_kx_d012_std_1` / `_2` (the proven non-safety D012 block reports a bus-sharing error, "Primary Bus Sharing Group 3 contains a module configured as Shared DC ... with no module configured as Shared AC/DC"; its reading equals the other D0xx controls' to the byte, so not used for any law); and three files that never converted (XMLSrv_E_IMPORT_ABORTED_NO_CHANGES): `safe_io6_5069_ob16_1` and `safe_io6_5069_mix_2_2` (their 5069-OB16/B module-sweep block carries no ExtendedProperties ConfigID, which every compiled export of the catalog carries; `gen_safety_round6.std_card` now adds it, lint refuses the catalog without it, `module_without_configid`; rebuilt in batch B), and `safe_sil2_5069l320s3_n00` (5069-L320ERMS3 at SIL2; **closed 2026-10-31**: an S3 catalog is SIL3 only, every real one is SIL3/PLe, the file is removed and lint refuses the shape, OPEN_BUILD_ERRORS). |
 | **Round 5, 2026-10-19** | Safety I/O built (TASKS 0za, 17 files): 1734-IB8S/B and OB8S/B at 1 / 2 / 4 / 8 in a further rack, the IB8S without its test-output connection, a mixed rack, a second rack, and 5069-IB8S/A and OBV8S/A at 1 / 2 / 4 on a 5069-L330ERMS2. The Kinetix safety drive, 1756 safety I/O and PowerFlex 527 wait on a Studio-made export each or permission for derived templates. |
 | **Round 6, 2026-10-20** (TASKS 0zb, batch A of 2) | **27 files in the repository** (`gen_safety_round6.py`): 1734-OB8S/A (`AB:1734_OB8S+AB:1734_OB8S_Safety3`, RS-06 / RS-09), 1734-IB8S/B with one connection (`AB:1734_IB8S_Safety6`, beside `safe_io_ib8s1c_4`), 442G-MABLB (`AB:442G_MABB_E0JP4679`, RS-07), each at 1 and 2 on the L81ES plant; **SIL3**, never measured before (RS-01 / RS-03 / RS-07 / RS-17): the 1756-L81ES with its 1756-L8SP partner empty and with round 4's content step, 2 and 4 1734-IB8S/B at SIL3, the 5069-L320ERMS3 at SIL2 (its own control) and at SIL3 empty / stepped / with 2 5069-IB8S/A; **safety produced and consumed tags** to a peer 5069-L306ERS2 (RS-03 / RS-17): the message UDT alone, 1 and 2 produced, the peer alone, 1 and 2 consumed, one of each — measured in the safety partition though standard produced / consumed tags stay force-closed below the floor; the **v31 5069-L310ERS2** base and its content step (RS-04's platform); four standard packed 5069 cards on the 5069-L330ERMS2 base (OQ-MODREPEAT). **13 local files** (templates from compiled real exports, CLAUDE.md exception of 2026-10-19, handed over to go into `samples/generated/safety/`): the generic Ethernet safety device for a robot (`AB:ETHERNET_MODULE_SINT_12Bytes+AB:ETHERNET_MODULE_SINT_8Bytes`, RS-04 / RS-07) and the FANUC R30iB Plus (`FR:Safety_RobotPlus_8Bytes`, RS-01) at 1 and 2; the revision-11 2198-D032-ERS3 with network STO (`AB:CIP_Drive_Safety2`, RS-01) at 1 and 2, `safe_iol_kinsafe_n` with the drive swapped; RS-04's packed 5069 cards (`AB:5000_SDI8_Packed`, `AB:5000_DO8_Packed+AB:5000_SDO8_Packed`, module revision 1) at 1 and 2 on the v31 L310ERS2; the round-5 Kinetix drive and the 1756-IB16S + OBV8S pair at SIL3. With round 5's 17 (still to capture) every safety device type in the ten counted programs has a file; what stays unmeasurable is the encoded AxisSTO safety AOI of RS-02 / RS-03 (source-protected). Partner fix: a 1756-L8SP block needs the ExtendedProperties ConfigID 100 a compiled export carries; lint now refuses one without. |
 | **Safety figure, engine of 2026-10-20** | Prediction against reading: RS-05 −1.5%, RS-10 −15.3%, RS-06 / RS-09 −20.9%, RS-03 −25.1%, RS-17 −24.1%, RS-08 −39.5%, RS-07 −42.0%, RS-04 / RS-04u −43.0%, RS-01 −44.0% (not counted), RS-02 −8.4%. Every gap names unpriced devices, and each has a batch-A or round-5 file: 1734-IB8S/B (`Safety2`, RS-01 / 02 / 03 / 07 / 10 / 17) and 1734-OB8S/B (`Safety1`) `safe_io_*`; one-connection IB8S (`Safety6`, RS-06 / 09) `safe_io6_ib8s1c_*`; OB8S/A (`Safety3`) `safe_io6_ob8sa_*`; 5069-IB8S/A and OBV8S/A (RS-08) `safe_io_5069_*`; the packed 5069 cards (RS-04) `safe_iol_5069p_*`; the robot interfaces (RS-04 / RS-07, RS-01) `safe_iol_gensafe_*`, `safe_iol_fanucs_*`; the 442G (RS-07) `safe_io6_442g_*`; the revision-11 STO drives (RS-01) `safe_iol_kx11_*`; SIL3 (RS-01 / 03 / 07 / 17) `safe_sil3_*`; the produced / consumed pair (RS-03 / 17) `safe_pc6_*`; v31 (RS-04) `safe_base_5069l310_v31*`. The encoded AxisSTO safety AOI of RS-02 / RS-03 stays a minimum. |

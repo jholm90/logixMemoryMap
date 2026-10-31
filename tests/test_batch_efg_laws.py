@@ -4,7 +4,8 @@ Each file is rebuilt from its generator, must hash as the file the controller me
 stamps aside (tests/captured_file_hashes.json), and the engine's difference against the
 batch's control must equal the controller's.
 
-OQ-LDGAPS: thirteen ladder weights, each at 50 and 100 rungs, to the byte. OQ-STINSTR: ST
+OQ-LDGAPS: thirteen ladder weights, each at 50 and 100 rungs, to the byte. Batch H: the AOI call
+from ST at 10 / 50 / 100 calls and the CASE law, to the byte; EVENT from ST against its control. OQ-STINSTR: ST
 functions, function-block calls, instruction calls and motion calls, against stinstr_n00, to
 16 bytes a file (the array-argument blocks and the motion files carry a fixed 4 to 16 bytes of
 tag pricing, the same at every call count). OQ-STEXTENDED: the shapes the engine prices exactly,
@@ -38,7 +39,9 @@ ST_FN = ["abs", "sqrt", "ln", "log", "sin", "cos", "tan", "asin", "acos", "atan"
 ST_OP = ["pid", "msg", "ssv", "iot", "uid", "tnd", "eot", "swpb", "insert", "mid", "stod", "rtos", "stor",
          "upper", "lower", "srt"]
 ST_MO = ["mam", "mah", "mas", "mso", "mrp", "msf", "maw", "mar", "mdr"]
-STE_EXACT = ["jsr0_50", "jsr3_50", "jsr3lower_50", "tonr_call50", "tonr_dnif50", "concat100", "dtos100",
+STE_EXACT = ["aoi_p2_10", "aoi_p2_50", "aoi_p2_100", "aoi_p6_50", "case20x5", "case20x10", "case40x5",
+             "case20x5else", "casemember20x5",
+             "jsr0_50", "jsr3_50", "jsr3lower_50", "tonr_call50", "tonr_dnif50", "concat100", "dtos100",
              "delete100", "find100", "size50", "cop200", "coplower200", "gsv50", "cps50", "ifupper200",
              "iflower200", "dot3_400", "vidxdot3_400", "innerarr400", "amp400"]
 
@@ -94,3 +97,9 @@ def test_new_ladder_weights_are_known_and_pinned():
                 "SQO": 56, "EOT": 64, "IOT": 72, "IsINF": 40, "IsNAN": 40, "CTD": 20}
     for mn, w in expected.items():
         assert li.weights[mn] == w, mn
+
+
+def test_event_from_st_costs_its_ladder_weight(built):
+    """Batch H: 50 EVENT calls against the same file without them (the task and its program)."""
+    assert _residual(built, "stinstr_op_event", "stinstr_event_n00") == 0
+

@@ -46,7 +46,7 @@ import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 
-from l5x_memory_analyzer.parser.logic import CptCall, _indirect_index_sites, aoi_call_sites, routine_language
+from l5x_memory_analyzer.parser.logic import CptCall, _indirect_index_sites, aoi_call_output_args, aoi_call_sites, aoi_output_positions, routine_language
 
 # A line is comment-only/blank if, once a trailing "// ..." or a whole
 # "(* ... *)" is stripped, nothing executable remains.
@@ -145,6 +145,8 @@ class StructuredTextRoutine:
     if_blocks: int = 0
     elsif_branches: int = 0
     case_selectors: int = 0
+    case_blocks: int = 0
+    case_else_branches: int = 0
     for_blocks: int = 0
     while_blocks: int = 0
     instruction_counts: dict[str, int] = field(default_factory=dict)
@@ -157,6 +159,8 @@ class StructuredTextRoutine:
     # mixed-case invisibility that hid RLL call sites until segment 3.
     aoi_call_count: int = 0
     aoi_call_param_count: int = 0
+    # Of those parameters, the ones bound to an Output (each costs more than an input).
+    aoi_call_output_count: int = 0
     # Each assignment's right-hand side, in the order of cpt_calls (a BOOL destination's is
     # priced as a condition, not as arithmetic).
     assignment_rhs: list = field(default_factory=list)
@@ -206,6 +210,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     """
     routines: list[StructuredTextRoutine] = []
     owners: list[tuple[str, ET.Element]] = []
+    output_positions = aoi_output_positions(root)
     # The file's own declared AOI names, matched literally rather than by a
     # casing pattern -- 288 of the 331 AOI definitions in the real corpus are
     # mixed-case, so an all-caps instruction pattern sees none of their calls.
@@ -238,6 +243,7 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
             )
             code = upper_case_mnemonics(strip_comments(raw), declared_aoi_names)
             aoi_calls, aoi_call_params, _ = aoi_call_sites([code], declared_aoi_names)
+            aoi_call_outputs = aoi_call_output_args([code], declared_aoi_names, output_positions)
             assignments = list(_ASSIGNMENT.finditer(code))
             literal = [a for a in assignments if _BARE_LITERAL_RHS.match(a.group("rhs"))]
             routines.append(StructuredTextRoutine(
@@ -255,11 +261,14 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
                 if_blocks=len(_IF.findall(code)),
                 elsif_branches=len(_ELSIF.findall(code)),
                 case_selectors=case_selector_count(code),
+                case_blocks=len(_CASE.findall(code)),
+                case_else_branches=_if_else_count(code, "CASE"),
                 for_blocks=len(_FOR.findall(code)),
                 while_blocks=len(_WHILE.findall(code)),
                 code_text=code,
                 aoi_call_count=aoi_calls,
                 aoi_call_param_count=aoi_call_params,
+                aoi_call_output_count=aoi_call_outputs,
                 assignment_rhs=[a.group("rhs") for a in assignments],
                 conditions=[m.group(1) for m in _CONDITION.finditer(code)],
                 else_branches=_if_else_count(code),
@@ -267,8 +276,8 @@ def parse_st_routines(root: ET.Element) -> list[StructuredTextRoutine]:
     return routines
 
 
-def _if_else_count(code: str) -> int:
-    """ELSE branches that belong to an IF: a CASE's ELSE is priced with its branches."""
+def _if_else_count(code: str, owner: str = "IF") -> int:
+    """ELSE branches that belong to an IF (owner="CASE": to a CASE)."""
     stack: list[str] = []
     count = 0
     for m in _BLOCK_TOKEN.finditer(code):
@@ -278,7 +287,7 @@ def _if_else_count(code: str) -> int:
         elif token in ("END_IF", "END_CASE"):
             if stack:
                 stack.pop()
-        elif stack and stack[-1] == "IF":
+        elif stack and stack[-1] == owner:
             count += 1
     return count
 
@@ -347,7 +356,8 @@ def size_st_assignments(routine: StructuredTextRoutine, model, tag_types=None):
             if op.upper() in _ST_MEASURED_BITWISE:
                 continue
             unpriced_ops.add(op)
-    total += st.st_aoi_call_cost(routine.aoi_call_count, routine.aoi_call_param_count)
+    total += st.st_aoi_call_cost(routine.aoi_call_count, routine.aoi_call_param_count,
+                                 routine.aoi_call_output_count)
     return total, unmeasured, sorted(unpriced_ops)
 
 
@@ -407,6 +417,8 @@ def size_st_control_flow(routine: StructuredTextRoutine, model) -> int:
         routine.if_blocks * st.if_block
         + routine.elsif_branches * st.elsif_branch
         + routine.case_selectors * st.case_block
+        + routine.case_blocks * st.case_statement_bytes
+        + routine.case_else_branches * st.case_else_bytes
         + routine.for_blocks * st.for_block
         + routine.while_blocks * st.while_block
     )

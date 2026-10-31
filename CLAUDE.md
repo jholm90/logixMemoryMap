@@ -58,7 +58,9 @@ instruction names in any letter case priced (2026-10-24): mean 1.139%, worst −
 ST-heavy realprog_44 is the one outside 2%, and batch E (32 ST files, OQ-STEXTENDED) is built for it.
 **Batches E, F and G captured and wired (2026-10-31): mean 1.135%, worst 2.27%, 9/19 inside 1%,
 18/19 inside 2%** — thirteen ladder weights, the ST function / function-block / repeated-call
-prices and JSR parameters from ST, all exact on their files; batch H is specified (TASKS 0zo).
+prices and JSR parameters from ST, all exact on their files. **Batch H (2026-10-31): mean 1.134%,
+worst 2.28%** — the ST AOI call's Output parameters and the CASE law wired; OQ-STEXTENDED,
+OQ-STINSTR and OQ-LDGAPS closed; OQ-REALUNDER is the one open question (TASKS 0zp).
 
 Export 33 is excluded from these figures: 39 source-protected routines make it a known
 under-read, not a measurement of the model — see "How accuracy is measured". Before the

@@ -7,13 +7,13 @@ standard-processor export, `RS-NN` for a safety-controller export); the names st
 gitignored `samples/local/`. Error is engine minus reading, as a share of the reading:
 negative means the engine predicts too little.
 
-**Run 2026-10-31, engine `7b662f8` + uncommitted engine changes.**
+**Run 2026-10-31, engine `829455b` + uncommitted engine changes.**
 
 ## Summary
 
-- **Standard processors, counted: 19 programs, mean 1.135%, worst −2.272%**, 9/19 inside 1%, 18/19 inside 2%, sum-weighted −1.080%. Stopping rule (mean under 1% and worst under 2%): **NOT MET**.
-- Not counted: realprog_33 (39 source-protected blocks), −2.51%.
-- **Safety controllers, standard partition** (1756 / 5069, counted): 1.55% / −2.71% on 10 programs.
+- **Standard processors, counted: 19 programs, mean 1.134%, worst −2.283%**, 9/19 inside 1%, 18/19 inside 2%, sum-weighted −1.079%. Stopping rule (mean under 1% and worst under 2%): **NOT MET**.
+- Not counted: realprog_33 (39 source-protected blocks), −2.50%.
+- **Safety controllers, standard partition** (1756 / 5069, counted): 1.54% / −2.71% on 10 programs.
 - **1769 Compact GuardLogix, standard partition**: 2.24% / −4.33% on 6 programs.
 - **Safety partition** (every safety controller with a safety reading): 1.28% / −3.10% on 16 programs.
   Of those, 1756 / 5069: 0.72% / −1.69% on 11; 1769: 2.50% / −3.10% on 5.
@@ -33,14 +33,14 @@ negative means the engine predicts too little.
 | realprog_18 | 1756-L81E | v35.11 | 912,446 | 903,928 | +0.94% | file matched by reading | yes |
 | realprog_27 | 1756-L81E | v35.11 | 2,191,039 | 2,235,317 | −1.98% | file inferred from platform | yes |
 | realprog_28 | 1756-L81E | v35.11 | 2,489,692 | 2,481,400 | +0.33% | file inferred from platform | yes |
-| realprog_32 | 1756-L83E | v35.13 | 8,077,509 | 8,159,036 | −1.00% | file matched by reading | yes |
-| realprog_33 | 1756-L83E | v33.11 | 7,514,103 | 7,707,453 | −2.51% | file matched by reading | no: 39 source-protected blocks |
-| realprog_34 | 1756-L83E | v32.14 | 6,447,741 | 6,480,713 | −0.51% | file matched by reading | yes |
+| realprog_32 | 1756-L83E | v35.13 | 8,077,816 | 8,159,036 | −1.00% | file matched by reading | yes |
+| realprog_33 | 1756-L83E | v33.11 | 7,514,835 | 7,707,453 | −2.50% | file matched by reading | no: 39 source-protected blocks |
+| realprog_34 | 1756-L83E | v32.14 | 6,447,740 | 6,480,713 | −0.51% | file matched by reading | yes |
 | realprog_35 | 1756-L83E | v35.11 | 5,951,778 | 6,010,365 | −0.97% | file matched by reading | yes |
 | realprog_36 | 1756-L83E | v35.13 | 3,686,957 | 3,744,752 | −1.54% | file matched by reading | yes |
-| realprog_44 | 1756-L82E | v35.11 | 3,888,982 | 3,979,389 | −2.27% | read from this file | yes |
-| realprog_45 | 1756-L83E | v35.13 | 1,614,636 | 1,633,723 | −1.17% | read from this file | yes |
-| realprog_46 | 1756-L83E | v35.13 | 4,113,551 | 4,194,137 | −1.92% | read from this file | yes |
+| realprog_44 | 1756-L82E | v35.11 | 3,888,537 | 3,979,389 | −2.28% | read from this file | yes |
+| realprog_45 | 1756-L83E | v35.13 | 1,614,943 | 1,633,723 | −1.15% | read from this file | yes |
+| realprog_46 | 1756-L83E | v35.13 | 4,113,660 | 4,194,137 | −1.92% | read from this file | yes |
 | realprog_47 | 1756-L83E | v32.11 | 9,161,529 | 9,270,707 | −1.18% | read from this file | yes |
 
 ## Safety controllers
@@ -52,14 +52,14 @@ Two readings each on the Capacity tab: the standard partition and the safety par
 | RS-01 | 1756-L81ES | v32.11 | 1,847,645 | 2,007,604 | −7.97% | 83,133 | 83,129 | +0.0% | standard reading is realprog_38's; 7 SFC and 2 FBD routines: SFC is out of scope; standard figure not counted |
 | RS-02 | 1756-L81ES | v35.11 | 1,482,430 | 1,510,245 | −1.84% | 124,024 | 124,952 | −0.7% | standard reading is realprog_48's |
 | RS-03 | 1756-L81ES | v35.14 | 2,815,029 | 2,819,627 | −0.16% | 193,934 | 197,262 | −1.7% | signed and locked |
-| RS-04 | 5069-L310ERS2 | v31.12 | 498,082 | 511,973 | −2.71% | 26,690 | 26,858 | −0.6% | standard reading is realprog_41's |
-| RS-04u | 5069-L310ERS2 | v31.12 | 507,494 | 510,176 | −0.53% | 26,690 | 26,858 | −0.6% | RS-04 with its source protection removed; not counted twice; standard figure not counted; safety figure not counted |
-| RS-05 | 5069-L320ERMS2 | v34.11 | 1,245,896 | 1,279,555 | −2.63% | 22,679 | 22,987 | −1.3% | standard reading is realprog_40's |
+| RS-04 | 5069-L310ERS2 | v31.12 | 498,113 | 511,973 | −2.71% | 26,690 | 26,858 | −0.6% | standard reading is realprog_41's |
+| RS-04u | 5069-L310ERS2 | v31.12 | 507,525 | 510,176 | −0.52% | 26,690 | 26,858 | −0.6% | RS-04 with its source protection removed; not counted twice; standard figure not counted; safety figure not counted |
+| RS-05 | 5069-L320ERMS2 | v34.11 | 1,246,099 | 1,279,555 | −2.61% | 22,679 | 22,987 | −1.3% | standard reading is realprog_40's |
 | RS-06 | 5069-L320ERMS2 | v32.11 | 666,885 | 655,664 | +1.71% | 34,356 | 34,288 | +0.2% |  |
 | RS-07 | 5069-L320ERMS3 | v35.11 | 1,071,777 | 1,074,245 | −0.23% | 34,935 | 34,995 | −0.2% | standard reading is realprog_13's |
-| RS-08 | 5069-L330ERMS2 | v34.14 | 1,535,555 | 1,572,161 | −2.33% | 31,386 | 31,910 | −1.6% | standard reading is realprog_37's |
+| RS-08 | 5069-L330ERMS2 | v34.14 | 1,535,721 | 1,572,161 | −2.32% | 31,386 | 31,910 | −1.6% | standard reading is realprog_37's |
 | RS-09 | 5069-L330ERMS2 | v32.13 | 669,985 | 658,680 | +1.72% | 34,356 | 34,288 | +0.2% |  |
-| RS-10 | 5069-L340ERS2 | v35.11 | 2,877,709 | 2,935,942 | −1.98% | 49,750 | 50,058 | −0.6% | standard reading is realprog_39's |
+| RS-10 | 5069-L340ERS2 | v35.11 | 2,877,826 | 2,935,942 | −1.98% | 49,750 | 50,058 | −0.6% | standard reading is realprog_39's |
 | RS-17 | 1756-L81ES | v35.14 | 2,813,541 | 2,817,995 | −0.16% | 195,906 | 197,262 | −0.7% | standard reading is realprog_49's; RS-03 before its signature and lock |
 | RS-11 | 1769-L30ERMS | v30.11 | 608,392 | 622,636 | −2.29% | 17,109 | 17,656 | −3.1% |  |
 | RS-12 | 1769-L30ERMS | v30.12 | 504,985 | 518,040 | −2.52% | 17,109 | 17,656 | −3.1% |  |
@@ -81,3 +81,4 @@ programs and readings on file that day.
 | 2026-10-24 | `307faa9` | 19 | 1.158% | −2.657% | 8 | 18 | 1.56% / −2.75% | 2.24% / −4.33% | 1.28% / −3.10% |
 | 2026-10-24 | `5f18e1c` | 19 | 1.139% | −2.317% | 8 | 18 | 1.56% / −2.73% | 2.24% / −4.33% | 1.28% / −3.10% |
 | 2026-10-31 | `7b662f8` + uncommitted engine changes | 19 | 1.135% | −2.272% | 9 | 18 | 1.55% / −2.71% | 2.24% / −4.33% | 1.28% / −3.10% |
+| 2026-10-31 | `829455b` + uncommitted engine changes | 19 | 1.134% | −2.283% | 9 | 18 | 1.54% / −2.71% | 2.24% / −4.33% | 1.28% / −3.10% |

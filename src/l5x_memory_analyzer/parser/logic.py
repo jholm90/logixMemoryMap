@@ -985,6 +985,30 @@ def aoi_input_positions(root: ET.Element) -> dict[str, tuple[bool, ...]]:
     return positions
 
 
+def aoi_output_positions(root: ET.Element) -> dict[str, tuple[bool, ...]]:
+    """AOI name -> for each call-site argument slot, whether it binds an Output parameter.
+    Same slot order as aoi_input_positions."""
+    return {
+        name: tuple(p.get("Usage") == "Output" for p in definition.iter("Parameter")
+                    if p.get("Required") == "true" and p.get("Name") not in ("EnableIn", "EnableOut"))
+        for definition in root.iter("AddOnInstructionDefinition") if (name := definition.get("Name"))
+    }
+
+
+def aoi_call_output_args(rung_texts: list[str], aoi_names: frozenset[str],
+                         output_positions: dict[str, tuple[bool, ...]]) -> int:
+    """How many of the arguments passed at AOI call sites bind an Output parameter."""
+    if not aoi_names:
+        return 0
+    n = 0
+    matcher = _aoi_name_matcher(frozenset(aoi_names))
+    for text in rung_texts:
+        for name, paren in _aoi_calls_in(text, _named_calls_one(text), aoi_names, matcher):
+            args = _split_call_args(text, paren)[1:]
+            n += sum(1 for is_out, _ in zip(output_positions.get(name, ()), args) if is_out)
+    return n
+
+
 def aoi_real_input_slots(root: ET.Element) -> dict[str, tuple[bool, ...]]:
     """AOI name -> for each call-site argument slot, whether it binds a REAL Input
     parameter. Same slot order as aoi_input_positions."""

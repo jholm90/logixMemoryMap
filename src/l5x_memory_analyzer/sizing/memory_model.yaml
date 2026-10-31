@@ -4276,7 +4276,13 @@ structured_text:
   # a loop-heavy ST routine is not priced like a branch-heavy one.
   if_block: 48               # per IF ... END_IF
   elsif_branch: 40           # per additional ELSIF in a chain
-  case_block: 57             # per CASE branch (incl. its ELSE)
+  # CASE, re-solved on batch H (2026-10-31): ste_case20x5 / 20x10 / 40x5 over-determine it (three
+  # files, two terms, consistent) as 40 a CASE statement and 56 a selector branch; ste_case20x5else
+  # adds 28 a CASE ELSE beyond its statement. st_ctl_case (one CASE, 100 branches and an ELSE, -32
+  # under the old flat 57) reads 0 on it.
+  case_block: 56             # per CASE selector branch
+  case_statement_bytes: 40   # per CASE ... END_CASE
+  case_else_bytes: 28        # per ELSE inside a CASE
   for_block: 248             # per FOR ... END_FOR
   # 76, corrected (was 72). st_ctl_while is 10 blocks of
   # {StIdx:= 0; WHILE StIdx < 10 DO; D:= D + StIdx; StIdx:= StIdx + 1;
@@ -4531,8 +4537,15 @@ structured_text:
   # constants fitted to four collinear points will absorb a miscount silently.
   #
   # The first argument is the instance tag and is not a parameter.
-  st_aoi_call_bytes: 120
+  #
+  # Batch H (2026-10-31) split the base: ste_aoi_p2_10 / _50 / _100 (two Required inputs, no
+  # output) read 36 a call under 120 + 16p at all three counts, a per-call term, and every
+  # stx_call_aoi_p* call passed one OUTPUT. Both sets are exact as 84 + 16 a parameter + 36 more
+  # for each Output passed (stx p01: 84 + 32 + 36 = 152; ste p2: 84 + 32 = 116). InOut unmeasured,
+  # priced as an input.
+  st_aoi_call_bytes: 84
   st_aoi_call_per_param_bytes: 16
+  st_aoi_call_output_extra_bytes: 36
   # The leftover one-time, SEPARATED and wired. stc_callone_n{10,100,
   # 1000} hold the call count at exactly ONE while the routine grows 100x, and
   # all three read +268 -- identical. So the residual the four stx_call_aoi_p*

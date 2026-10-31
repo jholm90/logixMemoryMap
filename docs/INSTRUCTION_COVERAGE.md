@@ -27,7 +27,8 @@ reference (1756-RM018, 129 instructions; the reference itself is local only,
 instruction in that language; "—" means the instruction is not written in that language.
 **Batches E, F and G captured 2026-10-31: every instruction is now measured in every language
 it can be written in**, except the six excluded with their reasons and two rebuilt for batch H
-(LV in ladder, EVENT in ST, both first builds refused by Studio). Not yet covered by any reference:
+(LV in ladder, EVENT in ST). Batch H (2026-10-31) measured EVENT in ST; LV was refused again and
+is closed unmeasured, no real program using it. Not yet covered by any reference:
 the process / drives and motion instructions (1756-RM006, MOTION-RM002 not on file); batch F
 carries the function blocks and ten motion instructions in ST, and the motion instructions
 are measured in ladder (`motion_*`, `verified_instr`, `motop_*`).
@@ -79,7 +80,7 @@ isnan`).
 | DTR | measured (3) | — |
 | EOT | measured (2) | measured (1) |
 | EQ | measured (54) | — |
-| EVENT | measured (5) | batch H (the first build failed to open: its EVENT task shape) |
+| EVENT | measured (5) | measured (1) |
 | EXPT | measured (6) | measured (5) |
 | FAL | measured (2) | — |
 | FBC | measured (3) | — |
@@ -107,7 +108,7 @@ isnan`).
 | LOG | measured (3) | measured (1) |
 | LOWER | measured (2) | measured (1) |
 | LT | measured (33) | — |
-| LV | batch H (the first build had no output after LV; Studio refused it) | — |
+| LV | closed unmeasured: Studio refused both builds, no real program uses it | — |
 | MCR | measured (8) | — |
 | MEQ | measured (6) | — |
 | MID | measured (5) | measured (3) |

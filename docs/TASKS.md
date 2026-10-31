@@ -44,6 +44,24 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zp. Batch H captured and wired (2026-10-31); OQ-STEXTENDED, OQ-STINSTR, OQ-LDGAPS closed
+
+**Readings:** all eight batch H files, the three 1769 recaptures (two read by hand by the owner
+after the capture tool again stored the I/O figure and reported a window-title mismatch; the third,
+`cgl_l33v32_plant2x_r2`, read by the tool). The three original 1769 rows holding 9,200 are cleared.
+**Wired, exact on every file and pinned:** the ST AOI call (84 + 16 a parameter + 36 an Output
+passed), CASE (40 a statement, 56 a selector, 28 an ELSE), EVENT in ST at its ladder 56. **Closed
+unmeasured:** LV (refused twice, no real use). **1769:** both logic400 files read +20 against
+their bases (exact); the doubled plant reads 5.2 bytes a station over the engine on both catalogs
+(+2,496 at 480 stations, +4,992 at 960), not wired: inside the 1769 programs' 5% target.
+**Capture errors:** OQ-STINSTR 6 (the six Studio refused), OQ-LDGAPS 2 (LV), OQ-SAFETYPARTITION 2.
+**Real programs: mean 1.134%, worst 2.28%, 9/19 inside 1%** (stopping rule NOT MET). No further
+batch is specified: the one open question is OQ-REALUNDER, worked from TASKS 0zj.
+
+**For the capture AHK:** on the 1769, two of three readings again stored the I/O figure, so the
+1769 read path still needs a look before the next 1769 batch (not changed: the owner keeps the
+script as it is).
+
 ### 0zo. Batches E, F and G captured and wired (2026-10-31); batch H SPECIFIED, not generated
 
 **Reconciled:** 155 new readings, nothing lost or changed in `samples/captures.csv` (row-level

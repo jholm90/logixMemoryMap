@@ -2027,6 +2027,9 @@ IOT, CONCAT, COP, CPS, DELETE, DTOS, FIND, GSV and SIZE all exact on that rule).
 | twice its whole ladder weight | MSG, SRT, MAH MSO MSF MAS MDR MAW MRP MAM MAR MAJ |
 | PID | its ladder 156 plus 44 |
 | a JSR's parameters | the ladder caller rate: B(n) plus 20 an output (`jsr_param_cost`) |
+| an AOI call statement | 84 + 16 a parameter + 36 more for each Output passed, and 264 once in a routine with any (batch H: the old 120 + 16p held only for calls passing one Output) |
+| CASE | 40 a CASE statement, 56 a selector branch, 28 a CASE's ELSE (batch H, three files over-determining it) |
+| EVENT | its ladder 56 (batch H) |
 
 Not ST at all (Studio refuses them on every line; lint `not_in_st`): MUX and SEL (function-block
 diagram only), TOD, FRD, IsINF and IsNAN. The motion literal law is not applied in ST (a MAJ
@@ -2038,5 +2041,5 @@ program calls motion from ST.
 Each at 50 and 100 rungs on its own tags against `ldgap_n00`, a straight line through the
 control (OQ-LDGAPS): ATAN2 64, LN 60, STD 116, LOWER 84, LFL 76, DDT 84, SQI 48, SQL 60, SQO 56,
 EOT 64, IOT 72, IsINF 40, IsNAN 40, and CTD confirmed at 20. SQI, IsINF and IsNAN are conditions
-and need an output after them (not in their weight); so does LV, whose weight is not yet
-measured. ATAN2's safety-partition delta (+64) was its missing standard weight and is removed.
+and need an output after them (not in their weight). LV has no weight: Studio refused it twice,
+with and without an output after it, and no real program uses it. ATAN2's safety-partition delta (+64) was its missing standard weight and is removed.
