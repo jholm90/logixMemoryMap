@@ -90,11 +90,25 @@ exports and 16 readings, sent over chat, kept in `samples/local/` only (customer
 (File, Open, the L5X, so Studio builds a new project from it), never from the ACD the deletes were
 made in. A step read in place carries memory the deletes did not give back: on one program the
 emptied step read in place was several times its fresh import, so every in-place reading, and
-every layer difference taken between two of them, mixes the content with that leftover. Trends
-cost nothing (the same fresh reading with and without them; they are not downloaded). The first
+every layer difference taken between two of them, mixes the content with that leftover. The first
 ladder's in-place readings are not used; its exports are re-read fresh by hand in Studio. Not
 through the capture tool: its folders live in the repository and it auto-pushes, and these files
 are customer-derived.
+
+**The real readings themselves (2026-10-31).** realprog_16's committed reading came from an existing
+ACD, not the L5X: opened fresh, the same content reads 3,886,476 (was 4,044,994), so it moves from
+−1.98% to +2.02% (engine over). realprog_09 and realprog_47 are on adopted ACDs too and are re-read
+fresh next. On the one program read fresh at every ladder step, programs, UDTs, AOIs and the empty
+project price within about 1% each; the content error is controller tags over-priced and modules
+under-priced, partly cancelling. That ladder is the next lead: split controller tags (plain tags
+against alarm conditions) and modules by Studio-made deletion, each step opened fresh.
+
+**A flat uplift does not pass (tested 2026-10-31, the owner's "online edit reservation" idea).** On
+the nineteen as they now read, +0.5% on every prediction gives mean 0.95%, worst 2.53%
+(realprog_16); +1.0% gives 0.84% / 3.04%. Mean passes, worst fails both times, because a fresh
+reading can sit above the engine as well as below. What a customer's ACD reads beyond its content
+is real (realprog_16: 158,518) but varies by program and is not in the L5X; if it is shown at all it
+is a separate, labelled line, never folded into the content estimate.
 
 **What each outcome means.** If the shortfall is spread evenly over everything, the residual
 falls in proportion: the "even" columns below. If it sits in one category, it falls almost to

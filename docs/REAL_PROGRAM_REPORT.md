@@ -7,11 +7,11 @@ standard-processor export, `RS-NN` for a safety-controller export); the names st
 gitignored `samples/local/`. Error is engine minus reading, as a share of the reading:
 negative means the engine predicts too little.
 
-**Run 2026-10-31, engine `829455b` + uncommitted engine changes.**
+**Run 2026-10-31, engine `ed59352`.**
 
 ## Summary
 
-- **Standard processors, counted: 19 programs, mean 1.134%, worst −2.283%**, 9/19 inside 1%, 18/19 inside 2%, sum-weighted −1.079%. Stopping rule (mean under 1% and worst under 2%): **NOT MET**.
+- **Standard processors, counted: 19 programs, mean 1.136%, worst −2.283%**, 9/19 inside 1%, 17/19 inside 2%, sum-weighted −0.880%. Stopping rule (mean under 1% and worst under 2%): **NOT MET**.
 - Not counted: realprog_33 (39 source-protected blocks), −2.50%.
 - **Safety controllers, standard partition** (1756 / 5069, counted): 1.54% / −2.71% on 10 programs.
 - **1769 Compact GuardLogix, standard partition**: 2.24% / −4.33% on 6 programs.
@@ -28,7 +28,7 @@ negative means the engine predicts too little.
 | realprog_09 | 1756-L83E | v32.16 | 7,041,334 | 7,136,625 | −1.34% | file matched by reading | yes |
 | realprog_10 | 1756-L81E | v35.14 | 1,692,603 | 1,679,036 | +0.81% | file inferred from platform | yes |
 | realprog_14 | 1756-L81E | v35.11 | 2,373,154 | 2,361,448 | +0.50% | file inferred from platform | yes |
-| realprog_16 | 1756-L82E | v32.14 | 3,964,923 | 4,044,994 | −1.98% | file matched by reading | yes |
+| realprog_16 | 1756-L82E | v32.14 | 3,964,923 | 3,886,476 | +2.02% | file matched by reading | yes |
 | realprog_17 | 1756-L81E | v35.11 | 2,262,523 | 2,281,316 | −0.82% | file matched by reading | yes |
 | realprog_18 | 1756-L81E | v35.11 | 912,446 | 903,928 | +0.94% | file matched by reading | yes |
 | realprog_27 | 1756-L81E | v35.11 | 2,191,039 | 2,235,317 | −1.98% | file inferred from platform | yes |
@@ -82,3 +82,4 @@ programs and readings on file that day.
 | 2026-10-24 | `5f18e1c` | 19 | 1.139% | −2.317% | 8 | 18 | 1.56% / −2.73% | 2.24% / −4.33% | 1.28% / −3.10% |
 | 2026-10-31 | `7b662f8` + uncommitted engine changes | 19 | 1.135% | −2.272% | 9 | 18 | 1.55% / −2.71% | 2.24% / −4.33% | 1.28% / −3.10% |
 | 2026-10-31 | `829455b` + uncommitted engine changes | 19 | 1.134% | −2.283% | 9 | 18 | 1.54% / −2.71% | 2.24% / −4.33% | 1.28% / −3.10% |
+| 2026-10-31 | `ed59352` | 19 | 1.136% | −2.283% | 9 | 17 | 1.54% / −2.71% | 2.24% / −4.33% | 1.28% / −3.10% |

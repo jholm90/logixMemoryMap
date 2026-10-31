@@ -116,6 +116,18 @@ real program with 10 or more protected blocks (`--include-protected` to report i
 today that is export 33 alone (39; no other program has more than 5). Report the
 excluded file's figure alongside, never silently.
 
+**A real reading comes from the L5X opened fresh**, by Studio (File, Open) or by a fresh conversion.
+An existing ACD, whether the customer's own or one the converter adopted (`adopted-existing` in
+`convert_log_real.csv`), carries memory its edit history left behind, which no L5X shows:
+realprog_16 read 4,044,994 from one and 3,886,476 opened fresh, same content, same engine price
+(2026-10-31). realprog_09 and realprog_47 are still on adopted ACDs and need fresh readings. The
+same holds for a Studio-made deletion: read each step from its exported L5X opened fresh, never the
+ACD the deletes were made in.
+
+**Trends never use controller memory** (they are not downloaded; realprog_16 reads the same with
+and without them, owner 2026-10-31). Never offer them as the cause of a residual, never ask for
+them to be deleted, never raise them in a reply.
+
 **The max always travels with the mean.** The honest claim is *mean 1.60%, worst
 case 3.63%, read the worst case as up to 4%.* The worst file is 2.3× the mean.
 
