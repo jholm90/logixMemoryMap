@@ -92,8 +92,9 @@ made in. A step read in place carries memory the deletes did not give back: on o
 emptied step read in place was several times its fresh import, so every in-place reading, and
 every layer difference taken between two of them, mixes the content with that leftover. Trends
 cost nothing (the same fresh reading with and without them; they are not downloaded). The first
-ladder's in-place readings are not used; its exports are re-read fresh, or sent through the
-capture tool (`batch_l5x_to_acd.ps1`), which imports every file fresh.
+ladder's in-place readings are not used; its exports are re-read fresh by hand in Studio. Not
+through the capture tool: its folders live in the repository and it auto-pushes, and these files
+are customer-derived.
 
 **What each outcome means.** If the shortfall is spread evenly over everything, the residual
 falls in proportion: the "even" columns below. If it sits in one category, it falls almost to
