@@ -33,6 +33,14 @@ That is why thirty-four closed at once; a thirty-fifth, literal operands, closed
 
 ## 1. OQ-REALUNDER — the residual itself
 
+**Census of 2026-10-31 (mean 1.134%, worst 2.28%, 15 of 19 under).** A uniform 1.0% would read
+0.73% / 1.94% (diagnostic, not a fix): the gap is one size-proportional under-charge of about 1%.
+The engine's coverage gaps are a few hundred bytes a program. Held-out single terms (controller-tag
+bytes 0.73%, size 0.76%, routine logic 0.80%, comments 0.80%, rungs 0.85%) and pairs (0.70–0.74%,
+coefficients flipping sign) cannot separate logic from tags from comments in nineteen programs:
+the real set says how much, not where. The plan to locate it is a Studio-made deletion ladder on
+four real programs (TASKS 0zq).
+
 **Now 0.97% mean, 2.57% worst, 10/17 inside 1%** (2026-10-04) after the 92-file batch: InOut operands in AOI logic (+8 per instruction), AOI REAL arguments, AOI scan-mode routines (+268 each), a nested AOI call (+264 per calling definition), the motion literal law on MAJ/MAPC/MCCP/MAG. Worst: export 27 2.57%, export 16 2.23%, export 06 1.70%. Sum-weighted still +0.95%: the set still under-predicts. History below.
 
 **Now 0.77% mean, 3.87% worst on eighteen programs** (export 43 added, with its reading, as a fitting input). The drop from 1.79% came from OQ-INDIRECTUDT (a member, BOOL or STRING element behind a tag-driven index costs 40 / 20 / 108 more than the calibrated 84) and OQ-MIXEDTYPE (DINT↔REAL and DINT↔INT conversions inside one call), both measured on the realism floor and wired with no generated exact row moving. Before that: 1.66% after operand spelling ("Spelling, not cost" below), and 2.86% in the history that follows.

@@ -83,7 +83,13 @@ The stopping rule is mean under 1% **and** max under 2%. It is checked in code �
 `scripts/quick_eval.py` prints `STOPPING RULE ... MET / NOT MET` every run — and it
 is NOT MET.
 
-**It has also not been shown to be reachable.** Let all eight category scales float
+**Revised 2026-10-31: it is reachable in principle.** On today's engine a uniform 1.0% (a
+diagnostic only, never a fix) reads mean 0.73% / worst 1.94%: the gap is one size-proportional
+under-charge of about 1%, and the nineteen programs cannot say where it lives, so the plan is to
+locate it by Studio-made deletion (TASKS 0zq). The older finding below was measured on an engine
+with a different residual:
+
+**It had also not been shown to be reachable.** Let all eight category scales float
 and fit them directly on the held-out real programs — cheating, an upper bound no
 honest procedure can beat — and the result is mean 1.01% / max 2.59%, which still
 fails. Under leave-one-out that fit is worth 0.007 percentage points, with half the

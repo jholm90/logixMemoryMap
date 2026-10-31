@@ -44,6 +44,78 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zq. THE PLAN to the stopping rule (written 2026-10-31) — locate the missing 1% by Studio-made deletion
+
+**Where it stands.** Nineteen standard programs: mean 1.134%, worst 2.28% (realprog_44), 15 of
+19 under-predicted by 0.5% to 2.3%, four over by 0.3% to 0.9%. The rule needs mean < 1% and
+worst < 2%.
+
+**What the census of 2026-10-31 says** (current engine, every counted program):
+
+1. **It is reachable.** As a diagnostic only, never as a fix: every prediction 1.0% higher reads
+   mean 0.73%, worst 1.94%, both inside the rule. The gap is now one roughly size-proportional
+   under-charge of about 1%, not scattered errors. (This revises the 2026-10 statement that no
+   correction reaches the rule: that was measured on an engine with a different residual.)
+2. **Nothing big is unpriced.** The engine's own coverage gaps total a few hundred bytes a
+   program (four module-typed tags and a partly summed EN2T on realprog_44; zero-connection
+   bridges at a flat rate elsewhere). The shortfall is in content the engine prices, priced low.
+3. **The data cannot say where.** Held out one program at a time, the best single term is 1.7%
+   of controller-tag bytes (mean 0.73%, worst 1.63%), but 0.75–0.85% comes equally from total
+   size, routine logic, comments, routines, tags and rungs; the best pairs all land at 0.70–0.74%
+   with coefficients that flip sign. Logic, tags and comments all grow with program size, and
+   nineteen programs cannot separate them. More analysis of the same nineteen files will not
+   locate it.
+4. **The realism plant is priced 0.2% over** (every batch control reads −1,054 to −1,766), so the
+   missing content is something real programs carry and the generated shapes do not.
+
+**The move: a Studio-made deletion ladder on four real programs** (the technique CLAUDE.md names:
+"a variant that Studio itself produced by exporting after a delete made in Logix Designer").
+Each step turns one program into a second measured point and splits its residual by category.
+
+For each of **realprog_44, realprog_16, realprog_46** (the three worst under) and **realprog_18**
+(the most over, as the control for direction), in Logix Designer, on a Save As copy and never the
+original:
+
+| step | delete in Logix Designer | leaves |
+|---|---|---|
+| v1 | every program (Controller Organizer, Tasks: each program, Delete) | controller tags, UDTs, AOIs, modules, tasks |
+| v2 | from v1, every controller tag (Controller Tags, select all, Delete; module tags stay) | definitions and modules |
+| v3 | from v2, every AOI definition and user data type (all unused by then) | modules |
+| v4 | from v3, every I/O module | the empty controller |
+
+Each step: export the L5X and read Capacity (program memory used; I/O and safety as well). 16
+exports and 16 readings, sent over chat, kept in `samples/local/` only (customer-derived).
+
+**What each outcome means.** If the shortfall is spread evenly over everything, the residual
+falls in proportion: the "even" columns below. If it sits in one category, it falls almost to
+zero at the step that removes that category and stays flat before it.
+
+| program | reading | residual | engine: programs / controller tags (incl. alarms) / UDT defs / modules | even: v1 | even: v2 | even: v3 |
+|---|---:|---:|---|---:|---:|---:|
+| realprog_44 | 3,979,389 | +90,852 | 956,018 / 2,555,880 / 136,104 / 227,239 | +69,025 | +10,673 | +7,566 |
+| realprog_16 | 4,044,994 | +80,071 | 826,968 / 2,732,004 / 116,976 / 264,439 | +63,701 | +9,621 | +7,305 |
+| realprog_46 | 4,194,137 | +80,477 | 1,084,017 / 2,760,536 / 164,568 / 91,243 | +59,677 | +6,708 | +3,550 |
+| realprog_18 | 903,928 | −8,518 | 301,268 / 435,240 / 87,584 / 75,058 | −5,679 | −1,578 | −752 |
+
+- **Falls at v1** (programs): the missing cost is in logic or program tags. Next, within the worst
+  program, Studio-made deletions of one program at a time, then of one routine shape (the
+  literal-operand technique: edit a rung, compile, read Capacity twice).
+- **Falls at v2** (controller tags): the missing cost is in real tag shapes. Next, Studio-made
+  deletions by tag kind (all UDT arrays, all predefined-type tags, all AOI instances, all tags
+  with descriptions), one reading each.
+- **Falls at v3 or v4**: definitions or modules, the same way.
+- **Falls evenly**: a per-object cost common to everything (the tag / routine / rung table
+  itself). Next, generated files varying object counts at real sizes.
+
+**Then:** a generated isolation batch for the located shape (specified, generated only on the
+owner's word), captured, wired as a measured law, re-scored on all nineteen. The diagnostic in
+point 1 says closing about 1% of the located category passes the rule. Then a **blind test**: the
+next new real export is predicted and the number written here before its reading is taken.
+
+**What is not done:** no correction fitted on the real programs, no scale factor, no constant
+nudged to fit. The deletion readings are measurements; the fix is a mechanism measured on files
+built for it.
+
 ### 0zp. Batch H captured and wired (2026-10-31); OQ-STEXTENDED, OQ-STINSTR, OQ-LDGAPS closed
 
 **Readings:** all eight batch H files, the three 1769 recaptures (two read by hand by the owner
