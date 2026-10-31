@@ -86,6 +86,15 @@ original:
 Each step: export the L5X and read Capacity (program memory used; I/O and safety as well). 16
 exports and 16 readings, sent over chat, kept in `samples/local/` only (customer-derived).
 
+**Reading rule (first ladder, 2026-10-31): read each step from its exported L5X opened fresh**
+(File, Open, the L5X, so Studio builds a new project from it), never from the ACD the deletes were
+made in. A step read in place carries memory the deletes did not give back: on one program the
+emptied step read in place was several times its fresh import, so every in-place reading, and
+every layer difference taken between two of them, mixes the content with that leftover. Trends
+cost nothing (the same fresh reading with and without them; they are not downloaded). The first
+ladder's in-place readings are not used; its exports are re-read fresh, or sent through the
+capture tool (`batch_l5x_to_acd.ps1`), which imports every file fresh.
+
 **What each outcome means.** If the shortfall is spread evenly over everything, the residual
 falls in proportion: the "even" columns below. If it sits in one category, it falls almost to
 zero at the step that removes that category and stays flat before it.
