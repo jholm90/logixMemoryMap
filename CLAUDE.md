@@ -518,6 +518,19 @@ stays uncounted for that reason. A plan or spec that includes SFC is wrong on it
   publication, edition and SHA-256. Like customer files, none of it is committed and all of it
   is gone each new session: ask for the manuals again, or for the reference files themselves.
 
+## The owner runs files; Claude makes them (owner's decision, 2026-10-31)
+
+**The owner does not make, edit, cut down or re-export files. Claude builds every file a
+measurement needs; the owner's part is to run them through the tooling and report the reading.**
+
+Recorded because the owner was frustrated, and rightly: after two months of building files, Claude
+asked the owner to spend hours deleting content from real programs in Logix Designer, step by step,
+then to re-open and re-read each step, when Claude has the exports, the generators and the
+utilities to build those files itself. The owner said it plainly: *"You make files; I run files. I
+do not make files."* Never ask the owner again to edit a program, delete from one, make a Studio
+variant, or re-export one. A question that needs a cut-down real program is met by a file Claude
+builds (the layer files below), or by a generated file.
+
 ## The real exports in `samples/local/` are READ-ONLY. No exceptions.
 
 **Never modify a real program export and expect the result to build.** It will not.
@@ -556,6 +569,16 @@ exporting after a delete made in Logix Designer.
 > That second path works and is the technique to repeat. The literal-operand finding
 > — the most valuable measurement in recent work — came from editing one rung in
 > Logix Designer, letting Studio compile it, and reading Capacity twice.
+
+**Layer files: the owner's override, 2026-10-31.** *"Just edit the L5X file and let the
+utilities run."* The export itself stays untouched; `scripts/real_layers.py` writes **copies** of
+it with whole top-level sections removed, by text slicing with no XML round trip (so every CDATA
+section stays byte for byte), in dependency order so nothing is orphaned: programs, then all
+controller tags, then all modules but the controller, then every AOI, then every data type.
+The files are customer content: written to `samples/local/layers/`, sent over chat, run by the
+owner from the gitignored `samples/generated/Customer/`, never committed. The technique is proven
+only when the realprog_16 layers read what Studio's own deletions read fresh (2026-10-31:
+3,135,852 / 517,660 / 209,008 / 28,816); until then a layer reading is not used.
 
 ## Nothing lives only in chat
 

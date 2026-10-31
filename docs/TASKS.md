@@ -68,7 +68,18 @@ worst < 2%.
 4. **The realism plant is priced 0.2% over** (every batch control reads −1,054 to −1,766), so the
    missing content is something real programs carry and the generated shapes do not.
 
-**The move: a Studio-made deletion ladder on four real programs** (the technique CLAUDE.md names:
+**Superseded 2026-10-31 (owner's decision, CLAUDE.md "The owner runs files"): the owner does not
+make these cuts. `scripts/real_layers.py` builds them** from each export by whole-section text
+slicing: L1 no programs, L2 no controller tags, L3 no modules but the controller, L4 no unused data
+types, L5 empty. On realprog_16, realprog_44 and realprog_18 every layer through L3 prices
+byte-identical to the Studio-made deletion of the same content, so the files are what Studio would
+have made; the realprog_16 readings validate the technique against the fresh Studio readings
+before any other layer reading is used. Twenty layer files plus fresh copies of realprog_09 and
+realprog_47 were sent for capture; the engine figure for each was written down first (local
+report). Run through the gitignored customer folder, never committed. The original plan follows
+for its reasoning.
+
+**The move (original): a Studio-made deletion ladder on four real programs** (the technique CLAUDE.md names:
 "a variant that Studio itself produced by exporting after a delete made in Logix Designer").
 Each step turns one program into a second measured point and splits its residual by category.
 
