@@ -21,6 +21,11 @@ python -m l5x_memory_analyzer.cli dump  path/to/file.L5X   # raw parsed XML
 `ui` options: `--host` (default `127.0.0.1`), `--port` (default `8765`),
 `--no-browser`.
 
+The UI's tabs: Treemap, List, Type Summary, **Element Usage** (every tag, AOI and UDT with
+how many of its elements anything uses, browsed column by column; served by `/api/unused`
+and `/api/unused/item`, worked out the first time the tab opens), Errors and
+Cross-Reference. The tour in `README.md` shows each.
+
 After `pip install -e .` the same subcommands work as `l5x-memory-analyzer`
 from anywhere:
 
@@ -301,6 +306,18 @@ the public copy if a customer file name, controller name or name fragment would 
 
 ```
 python scripts/real_program_report.py
+```
+
+### `real_layers.py` — layer files of a real program
+
+Copies of one real export with whole sections removed, by text slicing (no XML round trip):
+`_L1_noprogs`, `_L2_notags`, `_L3_nomodules`, `_L4_nounused`, `_L5_empty`, each from the one
+before. Reads from `samples/local/` and writes to `samples/local/layers/` only (customer
+content); the files are sent over chat and run from the gitignored
+`samples/generated/Customer/`. See CLAUDE.md, "Layer files".
+
+```
+python scripts/real_layers.py samples/local/realprog_16.L5X
 ```
 
 ### `quick_eval.py` — the accuracy check
