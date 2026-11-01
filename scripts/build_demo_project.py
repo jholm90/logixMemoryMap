@@ -14,8 +14,9 @@ unused on purpose, the way real projects accumulate it, for the usage flag to
 find: an old recipe backup array, a recipe edit buffer, a spare trend buffer, a
 legacy counts array, spare sensor inputs, an unwired horn and beacon, a light
 curtain bypass bit, a debug step, a test bit, two legacy recipe fields, two
-spare station members, a retired routine nothing calls, and the bus supply's
-converter axis.
+spare station members, half of a conveyor maintenance record (the logic counts
+starts and run hours; the service fields were never wired up), a retired
+routine nothing calls, and the bus supply's converter axis.
 
 It must open with ZERO unpriced items, so every block in it is one the engine
 prices and one with a zero-error capture behind it:
@@ -91,6 +92,13 @@ RECIPE_T = [MemberSpec("RecipeId", "DINT"), MemberSpec("PartNumber", "DINT"),
             MemberSpec("ConveyorSpeed", "DINT"), MemberSpec("VisionProgram", "DINT"),
             MemberSpec("PathSetpoints", "REAL", dimension=32),
             MemberSpec("LegacyOffsets", "REAL", dimension=16), MemberSpec("LegacyEnable", "BOOL")]
+
+# Half used: the line counts starts and run hours and flags service due; the
+# rest of the record was planned and never wired up.
+MAINT_T = [MemberSpec("StartCount", "DINT"), MemberSpec("RunHours", "REAL"),
+           MemberSpec("ServiceInterval", "REAL"), MemberSpec("ServiceDue", "BOOL"),
+           MemberSpec("LastServiceDay", "DINT"), MemberSpec("BeltChanges", "DINT"),
+           MemberSpec("MotorTempMax", "REAL"), MemberSpec("LubeDue", "BOOL")]
 
 SHIFT_T = [MemberSpec("GoodParts", "DINT"), MemberSpec("RejectParts", "DINT"),
            MemberSpec("DowntimeMin", "REAL"), MemberSpec("HourlyGood", "DINT", dimension=24),
@@ -251,7 +259,8 @@ def build() -> str:
     tags += [tag_xml("Conveyor_ActualFreq", "INT"), tag_xml("PartTracking", "DINT", dimensions=(8,)),
              tag_xml("ActiveRecipe", "Recipe_t", udt_members=RECIPE_T),
              tag_xml("RecipeLibrary", "Recipe_t", dimensions=(200,), udt_members=RECIPE_T),
-             tag_xml("ShiftData", "Shift_t", dimensions=(3,), udt_members=SHIFT_T)]
+             tag_xml("ShiftData", "Shift_t", dimensions=(3,), udt_members=SHIFT_T),
+             tag_xml("Conveyor_Maint", "Maint_t", udt_members=MAINT_T), tag_xml("Conveyor_StartOS", "BOOL")]
     # Left unused on purpose: what the usage flag is for.
     tags += [tag_xml("Old_Recipe_Backup", "Recipe_t", dimensions=(100,), udt_members=RECIPE_T),
              tag_xml("Recipe_EditBuffer", "Recipe_t", udt_members=RECIPE_T),
@@ -276,12 +285,15 @@ def build() -> str:
         "XIC(Line_Reset)CLR(ST010.StepNo);",
         "EQU(ActiveRecipe.RecipeId,RecipeSelect)OTE(Line_RecipeActive);",
         "XIC(ST080.CycleComplete)MOV(ActiveRecipe.PartNumber,ST080_LastPartNumber);",
+        "XIC(Line_AutoMode)ONS(Conveyor_StartOS)ADD(Conveyor_Maint.StartCount,1,Conveyor_Maint.StartCount);",
+        "XIC(Line_AutoMode)ADD(Conveyor_Maint.RunHours,0.0000028,Conveyor_Maint.RunHours);",
+        "GRT(Conveyor_Maint.RunHours,Conveyor_Maint.ServiceInterval)OTE(Conveyor_Maint.ServiceDue);",
     ]))
     return build_l5x(
         target_name="DemoLine",
         tags_xml="\n".join(tags),
         extra_datatypes_xml="\n".join([udt_xml("Station_t", STATION_T), udt_xml("Recipe_t", RECIPE_T),
-                                       udt_xml("Shift_t", SHIFT_T)]),
+                                       udt_xml("Shift_t", SHIFT_T), udt_xml("Maint_t", MAINT_T)]),
         extra_aoi_xml=aoi_def,
         extra_modules_xml="\n".join(modules),
         extra_program_tags_xml=program_tag_xml("Line_LoadRecipeOS", "BOOL"),

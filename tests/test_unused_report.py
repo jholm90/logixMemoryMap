@@ -75,10 +75,16 @@ def test_sizes_are_the_engines(report):
     assert tags["Dst"]["s"] > 0 and all(c["s"] > 0 for c in tags["Rec"]["c"])
 
 
-def test_small_atomic_array_lists_each_element(report):
+def test_an_array_is_one_element(report):
+    """Never split by index: indirect addressing makes the element unknowable."""
     arr = report["controller_tags"]["Arr"]
-    assert [k for k, v in _leaves(arr).items() if v] == ["[0]", "[2]"]
-    assert arr["status"] == "partial" and (arr["u"], arr["k"]) == (2, 4)
+    assert "c" not in arr and arr["status"] == "used" and arr["x"] == 2
+
+
+def test_every_row_carries_its_reference_count(report):
+    tags = report["controller_tags"]
+    assert tags["Nobody"]["x"] == 0 and tags["Dst"]["x"] == 1
+    assert {c["n"]: c["x"] for c in tags["Rec"]["c"]} == {"Id": 1, "Spare": 0}
 
 
 def test_udt_elements(report):

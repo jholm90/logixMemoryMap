@@ -15,7 +15,12 @@ Four kinds, each a list of items; each item is a tree of its elements, browsed c
 Sizes are the engine's (`sizing.tree.expand_children`): a tag's own figure from the report, an
 element's the bytes it occupies, an AOI or UDT item one instance. Usage is counted on the leaves:
 an item or element reads "u of k used", and is "used" when every leaf is, "partial" when some
-are, "unused" when none is.
+are, "unused" when none is. Every row also carries its reference count: how many times logic,
+an alias, an alarm or an axis names it (an AOI's calls, a UDT's instances).
+
+An array is one element, never broken into its indices: indirect addressing (`Arr[Idx]`) makes
+which element is read unknowable from an L5X. An array of a structure lists the structure's
+members, each standing for that member of every element, with its bytes summed over them.
 
 A tag's element is used when logic reaches it: by name, through an index (`Arr[Idx]` uses every
 element), as part of a whole structure passed as one (COP, an AOI InOut), or, for an AOI
@@ -31,7 +36,6 @@ from l5x_memory_analyzer.usage import (CONTROLLER_SCOPE, HIDDEN_MEMBER_PREFIX, S
                                        UsageIndex, _Node)
 
 MAX_LEVELS = 6               # element levels below an item
-ARRAY_LIST_LIMIT = 256       # a larger array is one "[*]" element: any index
 NODE_BUDGET = 20000          # elements per item before the rest are left unexpanded
 
 KINDS = (("controller_tags", "Controller Tags"), ("program_tags", "Program Tags"),
@@ -82,29 +86,21 @@ class UnusedReport:
 
     # ---- the engine's children ------------------------------------------
 
-    def _kids(self, dtype: str, dims: tuple[int, ...]) -> list[tuple[str, str, str, tuple, float]]:
-        """(label, segment, data type, dims, bytes) one level down, or [] for a leaf."""
-        key = (dtype, dims)
-        if key not in self._kid_cache:
+    def _kids(self, dtype: str) -> list[tuple[str, str, str, tuple, float]]:
+        """(label, segment, data type, dims, bytes) of a structure's members, or [] for an
+        atomic type. Overhead rows and hidden or system members are left out."""
+        if dtype not in self._kid_cache:
             out = []
-            n = 1
-            for d in dims:
-                n *= d
-            if dims and n > ARRAY_LIST_LIMIT:
-                out = [(f"[*] any of {n:,}", WILD, dtype, (), self._size(dtype, dims))]
-            else:
-                try:
-                    children = expand_children(dtype, dims, self.types, self.model)
-                except Exception:
-                    children = []
-                for c in children:
-                    if not c.segment:                       # an overhead row, not an element
-                        continue
-                    if c.segment.startswith(".") and not _visible(c.segment[1:]):
-                        continue
-                    out.append((c.name, c.segment, c.data_type, tuple(c.dimensions), c.bytes))
-            self._kid_cache[key] = out
-        return self._kid_cache[key]
+            try:
+                children = expand_children(dtype, (), self.types, self.model)
+            except Exception:
+                children = []
+            for c in children:
+                if not c.segment.startswith(".") or not _visible(c.segment[1:]):
+                    continue
+                out.append((c.name, c.segment, c.data_type, tuple(c.dimensions), c.bytes))
+            self._kid_cache[dtype] = out
+        return self._kid_cache[dtype]
 
     def _size(self, dtype: str, dims: tuple[int, ...]) -> float:
         try:
@@ -133,9 +129,17 @@ class UnusedReport:
 
     def _tag_node(self, label, dtype, dims, size, frontier, whole, implicit, level, budget) -> dict:
         """One element of a tag, with the usage-trie nodes that reach it (`frontier`),
-        whether a whole-structure use sits above it, and its AOI-logic uses."""
-        node = {"n": label, "t": _type_text(dtype, dims), "s": size}
-        kids = self._kids(dtype, dims) if level < MAX_LEVELS else []
+        whether a whole-structure use sits above it, and its AOI-logic uses. An array is
+        stepped through as "any index" and never split."""
+        refs = sum(n.n for n in frontier)
+        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": refs}
+        count = 1
+        for d in dims:
+            count *= d
+        if dims:
+            whole = whole or any(n.end for n in frontier)
+            frontier = self._step(frontier, WILD)
+        kids = self._kids(dtype) if level < MAX_LEVELS else []
         children = []
         whole_here = whole or any(n.end for n in frontier)
         called = any(n.n for n in frontier)
@@ -143,18 +147,17 @@ class UnusedReport:
             if not budget.take():
                 break
             internal = 0
-            if seg.startswith(".") and dtype in self.u._aoi_names and called:
+            if dtype in self.u._aoi_names and called:
                 internal = self.u._aoi_internal.get((dtype, seg[1:]), 0)
-            children.append(self._tag_node(k_label, k_type, k_dims, k_bytes, self._step(frontier, seg),
+            children.append(self._tag_node(k_label, k_type, k_dims, k_bytes * count, self._step(frontier, seg),
                                            whole_here, internal or implicit, level + 1, budget))
         if children:
             node["c"] = children
             node["u"] = sum(c["u"] for c in children)
             node["k"] = sum(c["k"] for c in children)
             return node
-        uses = sum(n.n for n in frontier)
-        used = bool(uses or whole or implicit)
-        node.update(u=int(used), k=1, x=uses, w=bool(whole and not uses), i=implicit)
+        used = bool(refs or whole or implicit)
+        node.update(u=int(used), k=1, w=bool(whole and not refs), i=implicit)
         return node
 
     def _tag(self, scope: str, name: str, label: str, dtype: str, dims_text) -> dict:
@@ -191,11 +194,12 @@ class UnusedReport:
         return max(named, 0), whole, internal
 
     def _def_node(self, label, owner, member, dtype, dims, size, level, alive, budget) -> dict:
-        node = {"n": label, "t": _type_text(dtype, dims), "s": size}
+        uses, whole, internal = self._member_used(owner, member) if alive else (0, False, 0)
+        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": uses + internal}
         children = []
         if level < MAX_LEVELS and (dtype in self.types or dtype in self.u._members):
-            for k_label, seg, k_type, k_dims, k_bytes in self._kids(dtype, ()):
-                if not seg.startswith(".") or not budget.take():
+            for k_label, seg, k_type, k_dims, k_bytes in self._kids(dtype):
+                if not budget.take():
                     continue
                 children.append(self._def_node(k_label, dtype, seg[1:], k_type, k_dims, k_bytes,
                                                level + 1, alive, budget))
@@ -204,17 +208,16 @@ class UnusedReport:
             node["u"] = sum(c["u"] for c in children)
             node["k"] = sum(c["k"] for c in children)
             return node
-        uses, whole, internal = self._member_used(owner, member) if alive else (0, False, 0)
         used = bool(uses or whole or internal)
-        node.update(u=int(used), k=1, x=uses, w=whole, i=internal)
+        node.update(u=int(used), k=1, w=whole and not (uses or internal), i=internal)
         return node
 
-    def _definition(self, name: str, kind_text: str, alive: bool) -> dict:
+    def _definition(self, name: str, kind_text: str, alive: bool, refs: int) -> dict:
         budget = _Budget()
-        node = {"n": name, "t": kind_text, "s": self._size(name, ())}
+        node = {"n": name, "t": kind_text, "s": self._size(name, ()), "x": refs}
         children = [self._def_node(k_label, name, seg[1:], k_type, k_dims, k_bytes, 1, alive, budget)
-                    for k_label, seg, k_type, k_dims, k_bytes in self._kids(name, ())
-                    if seg.startswith(".") and budget.take()]
+                    for k_label, seg, k_type, k_dims, k_bytes in self._kids(name)
+                    if budget.take()]
         node["c"] = children
         node["u"] = sum(c["u"] for c in children)
         node["k"] = sum(c["k"] for c in children)
@@ -222,7 +225,8 @@ class UnusedReport:
         return node
 
     def aoi_tags(self) -> list[dict]:
-        return [self._definition(aoi, "AOI", self.u.aoi_calls(aoi) > 0 or self.u.type_instances(aoi) > 0)
+        return [self._definition(aoi, "AOI", self.u.aoi_calls(aoi) > 0 or self.u.type_instances(aoi) > 0,
+                                 self.u.aoi_calls(aoi))
                 for aoi in sorted(self.u._aoi_names, key=str.lower)]
 
     def udt_elements(self) -> list[dict]:
@@ -230,8 +234,9 @@ class UnusedReport:
         for name, dt in self.types.items():
             if getattr(dt, "is_aoi", False):
                 continue
-            node = self._definition(name, "String" if dt.is_string_family else "UDT", self.u.type_instances(name) > 0)
-            node["instances"] = self.u.type_instances(name)
+            instances = self.u.type_instances(name)
+            node = self._definition(name, "String" if dt.is_string_family else "UDT", instances > 0, instances)
+            node["instances"] = instances
             out.append(node)
         return sorted(out, key=lambda i: i["n"].lower())
 

@@ -802,14 +802,14 @@ rect.tile-empty-space {
 /* One row of columns scrolling sideways together; each column scrolls on its own. */
 .usage-browser { flex: 1; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden;
   background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; scroll-behavior: smooth; }
-.usage-col { flex: 0 0 470px; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
+.usage-col { flex: 0 0 520px; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
 .usage-col.usage-kinds { flex-basis: 300px; background: var(--bg); }
 .usage-col-title { padding: 9px 12px 6px; font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.usage-head, .usage-row { display: grid; grid-template-columns: minmax(0, 1fr) 112px 62px 96px 10px; gap: 8px; align-items: center; }
+.usage-head, .usage-row { display: grid; grid-template-columns: minmax(0, 1fr) 108px 60px 48px 92px 10px; gap: 8px; align-items: center; }
 .usage-head { padding: 3px 12px 5px 15px; border-bottom: 1px solid var(--border); font-size: 11.5px; color: var(--text-dim); }
 .usage-head button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
 .usage-head button:hover { color: var(--text); }
-.usage-head .uh-size, .usage-head .uh-used { text-align: right; }
+.usage-head .uh-size, .usage-head .uh-refs, .usage-head .uh-used { text-align: right; }
 .usage-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 .usage-row, .usage-kind { width: 100%; font: inherit; text-align: left; color: var(--text); background: transparent; border: 0;
   border-left: 3px solid transparent; border-bottom: 1px solid var(--usage-rule); cursor: pointer; }
@@ -838,6 +838,8 @@ rect.tile-empty-space {
 .ur-frac { position: relative; display: block; padding: 0 6px; line-height: 18px; text-align: right; font-size: 11.5px;
   font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--pct-color); }
 .ur-more { color: var(--text-dim); font-size: 14px; line-height: 1; }
+.ur-refs { text-align: right; font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--text); }
+.ur-refs.zero { color: var(--text-dim); opacity: 0.6; }
 .usage-empty { padding: 14px 12px; color: var(--text-dim); font-size: 13px; }
 .usage-note { margin: 0; font-size: 12px; color: var(--text-dim); }
 /* Clear of the fixed errors banner when it is showing. */

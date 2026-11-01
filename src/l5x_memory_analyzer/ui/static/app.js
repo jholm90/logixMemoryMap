@@ -2565,7 +2565,8 @@ function usageRows(nodes) {
   const f = USAGE.filter, { key, dir } = USAGE.sort;
   const rows = nodes.map((n, i) => [n, i]).filter(([n]) =>
     f === "all" || (f === "used" ? n.u > 0 : n.u < n.k));
-  const val = n => key === "size" ? (n.s || 0) : String(key === "type" ? n.t : n.n).toLowerCase();
+  const val = n => key === "size" ? (n.s || 0) : key === "refs" ? (n.x || 0)
+    : String(key === "type" ? n.t : n.n).toLowerCase();
   return rows.sort((a, b) => {
     const x = val(a[0]), y = val(b[0]);
     return (x < y ? -1 : x > y ? 1 : a[1] - b[1]) * dir;
@@ -2573,7 +2574,7 @@ function usageRows(nodes) {
 }
 
 function leafTitle(n) {
-  if (n.c) return `${n.u} of ${n.k} elements used`;
+  if (n.c) return `${n.u} of ${n.k} elements used, ${n.x || 0} reference${n.x === 1 ? "" : "s"}`;
   if (!n.u) return "no references in this project";
   const parts = [];
   if (n.x) parts.push(`${n.x} use${n.x === 1 ? "" : "s"}`);
@@ -2588,6 +2589,7 @@ function sortHead() {
     `<button type="button" data-sort="name" class="uh-name">Name${arrow("name")}</button>` +
     `<button type="button" data-sort="type" class="uh-type">Type${arrow("type")}</button>` +
     `<button type="button" data-sort="size" class="uh-size">Size${arrow("size")}</button>` +
+    `<button type="button" data-sort="refs" class="uh-refs" title="How many times the project's logic, aliases, alarms and axes name it (an AOI: its calls; a UDT: its instances)">Refs${arrow("refs")}</button>` +
     `<span class="uh-used">Used</span></div>`;
 }
 
@@ -2608,6 +2610,7 @@ function usageRowHtml(n, i, selected) {
     `<span class="ur-name">${escapeHtml(n.n)}</span>` +
     `<span class="ur-type">${escapeHtml(n.t || "")}</span>` +
     `<span class="ur-size">${n.s == null ? "" : fmtBytes(n.s)}</span>` +
+    `<span class="ur-refs${n.x ? "" : " zero"}">${(n.x || 0).toLocaleString()}</span>` +
     `<span class="ur-used"><span class="ur-bar"></span><span class="ur-frac">${n.u}/${n.k}</span></span>` +
     `<span class="ur-more">${(n.c && n.c.length) || n.has_children ? "›" : ""}</span></button>`;
 }
@@ -2621,7 +2624,7 @@ function usageColumn(title, nodes, selected, onPick, extraClass = "") {
     (rows.length ? rows.map(([n, i]) => usageRowHtml(n, i, n === selected)).join("")
                  : `<div class="usage-empty">${nodes.length ? "Nothing to show." : "None."}</div>`) + `</div>`;
   col.querySelectorAll(".usage-head button").forEach(b => b.addEventListener("click", () => {
-    USAGE.sort = { key: b.dataset.sort, dir: USAGE.sort.key === b.dataset.sort ? -USAGE.sort.dir : (b.dataset.sort === "size" ? -1 : 1) };
+    USAGE.sort = { key: b.dataset.sort, dir: USAGE.sort.key === b.dataset.sort ? -USAGE.sort.dir : (["size", "refs"].includes(b.dataset.sort) ? -1 : 1) };
     drawUsage();
   }));
   col.querySelectorAll(".usage-row").forEach(b => b.addEventListener("click", () => onPick(nodes[+b.dataset.i])));

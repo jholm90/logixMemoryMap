@@ -96,33 +96,38 @@ same counts down to every member and element, for the whole project at once.
 
 The **Element Usage** tab answers "what in here does anything use?" for the whole project at
 once. It lists every **controller tag**, **program tag**, **AOI** and **user data type** with
-its size and how many of its elements are used: `12/15` means twelve of fifteen.
+its size, its **Refs** (how many times the logic, aliases, alarms and axes name it) and how
+many of its elements are used: `12/15` means twelve of fifteen.
 
 It browses like a column view. The left column is the kind, with how many items it holds, how
 many are partly used and how many are not used at all. Pick a kind and its items fill the
-next column; pick an item and its members or array elements open in the column after that;
-keep going and each choice opens another column, up to six levels below the item. Every
-column scrolls on its own, and the whole row of columns scrolls sideways.
-
-![Element Usage: the ST040 station tag opened, 12 of its 15 members used; RejectParts, SpareFlag and SpareWord used nowhere](docs/images/element_usage.png)
+next column; pick an item and its members open in the column after that; keep going and each
+choice opens another column, up to six levels below the item. Every column scrolls on its
+own, and the whole row of columns scrolls sideways.
 
 Every row is coloured by the share of its elements used, on one scale: **red** when nothing
 is used, **orange** at about half, **green** when everything is. The bar in the **Used**
-column fills to the same share, so a 90%-used structure and a 10%-used one look different at
-a glance. Click **Name**, **Type** or **Size** at the top of any column to sort every column
-by it, and switch **All / Used / Unused** to filter. Set to **Unused** and sorted by size,
-the biggest dead weight is the first row, and you can open it to see that nothing inside it
-is used either:
+column fills to the same share. Set to **Unused** and sorted by size, the biggest dead weight
+comes first, and partly used structures sit beside it: here a conveyor maintenance record
+whose starts and run hours are counted but whose four service fields were never wired up:
 
-![Element Usage set to Unused and sorted by size: Old_Recipe_Backup, 22.3 KB with 0 of 5,700 elements used, opened to element 99 and its members](docs/images/element_usage_unused.png)
+![Element Usage, Unused, by size: the old recipe backup, a spare axis and a trend buffer in red, the stations at 12 of 15 in yellow-green, Conveyor_Maint at 4 of 8 in orange, opened to its four unreferenced members](docs/images/element_usage.png)
+
+Click **Name**, **Type**, **Size** or **Refs** at the top of any column to sort every column
+by it, and switch **All / Used / Unused** to filter. Sorted by Refs, a station's busiest
+members come first and the ones nothing names sink to the bottom:
+
+![Element Usage: the ST040 station tag opened and sorted by Refs, StepNo named 9 times, SpareWord, RejectParts and SpareFlag never](docs/images/element_usage_refs.png)
 
 "Used" means the same thing as the **Uses** count above: referenced by logic, an alias, an
 alarm, an axis or a module somewhere in this L5X. An element is also used when its whole
 structure is passed as one (a COP, an AOI InOut) or, inside an AOI instance, when the AOI's
-own logic reads it. An array larger than 256 elements is shown as one `[*]` row, standing
-for any element. An HMI, SCADA system or another controller can still read something this
-tab calls unused, so it is a list to check, not a list to delete. The tab follows the
-page's light or dark theme.
+own logic reads it. An **array is one element**: it is never split into its indices, because
+indirect addressing (`Recipe[Idx]`) makes which element is read unknowable from an L5X. An
+array of a structure lists that structure's members, each standing for the member in every
+element. An HMI, SCADA system or another controller can still read something this tab calls
+unused, so it is a list to check, not a list to delete. The tab follows the page's light or
+dark theme.
 
 ### 4. User-defined types, member by member
 
@@ -385,7 +390,7 @@ sensors; a two-position cylinder AOI; a recipe library and shift production data
 5700 bus with six servo axes; a PowerFlex 525 infeed conveyor and a vision gateway. About
 nine tenths of what it declares is used by its logic, and the rest is the kind of thing real
 projects accumulate — an old recipe backup, a spare trend buffer, spare sensor inputs, legacy
-recipe fields, a retired routine. Every module and axis in it is built from blocks that
+recipe fields, a half-wired maintenance record, a retired routine. Every module and axis in it is built from blocks that
 compiled with zero errors in Studio 5000, and it opens with **zero unpriced items** — the
 build script refuses to write it otherwise. Rebuild it and explore it yourself:
 
