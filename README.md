@@ -184,8 +184,8 @@ The **Element Usage** tab lists every controller tag, program tag, AOI and user 
 its size and how many of its elements anything in the project uses ("5/69"). It browses like a
 column view: pick a kind, then an item, then any element with members, and each choice opens
 another column to the right, up to six levels below the item; every column scrolls on its own
-and the row of columns scrolls sideways together. The tab is always dark, and every row is coloured
-by the share of its elements used on one ramp: red at none, orange at half, green at all, with
+and the row of columns scrolls sideways together. The tab follows the page's light or dark theme, and every row is
+coloured by the share of its elements used on one ramp: red at none, orange at half, green at all, with
 a bar in the Used column filled to that share. Every column sorts by name, type or
 size, and a filter shows all, used or unused elements. "Unused" means no reference in this L5X:
 logic, aliases, alarms, axes or module references. An HMI, SCADA system or another controller

@@ -608,6 +608,8 @@ spend the turn on it.
 
 ## Style
 
+- **UI screenshots shown to the owner are taken in dark mode** (Playwright `colorScheme: 'dark'`).
+  The UI itself keeps both themes and follows the system setting; dark is only how it is shown.
 - **Terse answers and commits.** Do not restate the plan before doing it; spend the
   effort on the estimator and on keeping the docs honestly current.
 - **Never hardcode a byte size or weight** in parser or calculator code where it
