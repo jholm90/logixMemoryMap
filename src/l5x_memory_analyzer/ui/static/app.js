@@ -2638,14 +2638,17 @@ function drawUsage(scrollToEnd = false) {
   // Column 1: the kinds.
   const kinds = document.createElement("div");
   kinds.className = "usage-col usage-kinds";
-  kinds.innerHTML = `<div class="usage-col-title">Type</div><div class="usage-scroll">` +
+  // Plain counts under their own headers, total first; colour carries the meaning.
+  const num = (v, cls) => `<span class="uk-num ${cls}${v ? "" : " zero"}">${v.toLocaleString()}</span>`;
+  kinds.innerHTML = `<div class="usage-col-title">Type</div>` +
+    `<div class="usage-kind-head"><span>Kind</span><span>Total</span><span>Partial</span><span>Unused</span></div>` +
+    `<div class="usage-scroll">` +
     USAGE.data.kinds.map((k, i) => {
       const c = k.counts;
-      return `<button type="button" class="usage-kind${i === USAGE.kind ? " selected" : ""}" data-i="${i}">` +
+      return `<button type="button" class="usage-kind${i === USAGE.kind ? " selected" : ""}" data-i="${i}" ` +
+        `title="${k.items.length} items: ${c.used} all used, ${c.partial} partly used, ${c.unused} unused">` +
         `<span class="ur-name">${escapeHtml(k.label)}</span>` +
-        (c.unused ? `<span class="usage-chip st-unused" title="nothing used">${c.unused}</span>` : "") +
-        (c.partial ? `<span class="usage-chip st-partial" title="some elements unused">${c.partial}</span>` : "") +
-        `<span class="uk-total">${k.items.length}</span></button>`;
+        num(k.items.length, "uk-total") + num(c.partial, "uk-partial") + num(c.unused, "uk-unused") + `</button>`;
     }).join("") + `</div>`;
   kinds.querySelectorAll(".usage-kind").forEach(b => b.addEventListener("click", () => {
     USAGE.kind = +b.dataset.i; USAGE.item = null; USAGE.tree = null; USAGE.path = [];
