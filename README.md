@@ -89,9 +89,42 @@ The count is honest about its edges: a tag read over the network by an HMI or SC
 is invisible in an L5X, and the tooltip says so rather than calling the memory deletable. A
 member used only because its whole structure is copied is reported as "via parent", an
 indexed array (`Recipe[Idx]`) counts as a use of every element, and an AOI's parameters
-count as used when the AOI's own logic reads them.
+count as used when the AOI's own logic reads them. The **Element Usage** tab (next) takes the
+same counts down to every member and element, for the whole project at once.
 
-### 3. User-defined types, member by member
+### 3. Element Usage: every element, level by level
+
+The **Element Usage** tab answers "what in here does anything use?" for the whole project at
+once. It lists every **controller tag**, **program tag**, **AOI** and **user data type** with
+its size and how many of its elements are used: `12/15` means twelve of fifteen.
+
+It browses like a column view. The left column is the kind, with how many items it holds, how
+many are partly used and how many are not used at all. Pick a kind and its items fill the
+next column; pick an item and its members or array elements open in the column after that;
+keep going and each choice opens another column, up to six levels below the item. Every
+column scrolls on its own, and the whole row of columns scrolls sideways.
+
+![Element Usage: the ST040 station tag opened, 12 of its 15 members used; RejectParts, SpareFlag and SpareWord used nowhere](docs/images/element_usage.png)
+
+Every row is coloured by the share of its elements used, on one scale: **red** when nothing
+is used, **orange** at about half, **green** when everything is. The bar in the **Used**
+column fills to the same share, so a 90%-used structure and a 10%-used one look different at
+a glance. Click **Name**, **Type** or **Size** at the top of any column to sort every column
+by it, and switch **All / Used / Unused** to filter. Set to **Unused** and sorted by size,
+the biggest dead weight is the first row, and you can open it to see that nothing inside it
+is used either:
+
+![Element Usage set to Unused and sorted by size: Old_Recipe_Backup, 22.3 KB with 0 of 5,700 elements used, opened to element 99 and its members](docs/images/element_usage_unused.png)
+
+"Used" means the same thing as the **Uses** count above: referenced by logic, an alias, an
+alarm, an axis or a module somewhere in this L5X. An element is also used when its whole
+structure is passed as one (a COP, an AOI InOut) or, inside an AOI instance, when the AOI's
+own logic reads it. An array larger than 256 elements is shown as one `[*]` row, standing
+for any element. An HMI, SCADA system or another controller can still read something this
+tab calls unused, so it is a list to check, not a list to delete. The tab follows the
+page's light or dark theme.
+
+### 4. User-defined types, member by member
 
 Open **User-Defined Data Types** to see every UDT as a tile, split into what the definition
 costs to exist — its base, its member-name pool, its BOOL packing — and each member. The
@@ -116,7 +149,7 @@ across four tags, and nothing reads them:
 The **UDT Size** switch shows either what the type costs to exist (definition) or what one
 instance of it occupies (instance).
 
-### 4. Hover anything, at any depth
+### 5. Hover anything, at any depth
 
 Every tile answers three questions: **what is it, how big is it, and what share is it** —
 of the level you are looking at *and* of the whole controller. The two bars tell different
@@ -131,7 +164,7 @@ stories the deeper you go:
 | ![A UDT member: PathSetpoints, REAL[32], 128 B, its share of its record](docs/images/tip_member.png) | ![Free space: its share of controller capacity](docs/images/tip_free.png) |
 | **One member of one record** — and its share of the record. | **The room you have left,** as a share of the controller's capacity. |
 
-### 5. Drill in. Then keep drilling.
+### 6. Drill in. Then keep drilling.
 
 Click any tile to open it. The breadcrumb always shows where you are, and **Back** takes you
 where you came from.
@@ -145,7 +178,7 @@ lays them out.
 
 ![One UDT array element, member by member, including the hidden BOOL-packing SINT](docs/images/drill_record.png)
 
-### 6. Motion and I/O, priced module by module
+### 7. Motion and I/O, priced module by module
 
 Open **I/O Modules** and every device on the network has its own tile: a Kinetix 5700 bus
 supply, three dual-axis drives, a PowerFlex 525 infeed conveyor and a vision gateway — each
@@ -160,7 +193,7 @@ The servo axes and the bus converter axis live under **Axis Definitions**, where
 
 ![Axis Definitions opened: six servo axes and the converter axis](docs/images/drill_axes.png)
 
-### 7. An AOI's definition vs. its instances
+### 8. An AOI's definition vs. its instances
 
 An Add-On Instruction costs memory in **two places**, and the tool shows both.
 
@@ -178,20 +211,7 @@ it in the treemap:
 
 ![Cross-reference for Cylinder2Pos: every instance, each a link](docs/images/xref_aoi.png)
 
-### Element Usage: what nothing uses
-
-The **Element Usage** tab lists every controller tag, program tag, AOI and user data type with
-its size and how many of its elements anything in the project uses ("5/69"). It browses like a
-column view: pick a kind, then an item, then any element with members, and each choice opens
-another column to the right, up to six levels below the item; every column scrolls on its own
-and the row of columns scrolls sideways together. The tab follows the page's light or dark theme, and every row is
-coloured by the share of its elements used on one ramp: red at none, orange at half, green at all, with
-a bar in the Used column filled to that share. Every column sorts by name, type or
-size, and a filter shows all, used or unused elements. "Unused" means no reference in this L5X:
-logic, aliases, alarms, axes or module references. An HMI, SCADA system or another controller
-can still read it, so it is a list to check, not a list to delete.
-
-### 8. Ladder logic, priced rung by rung
+### 9. Ladder logic, priced rung by rung
 
 Open a program, then a routine, and every rung becomes a tile labelled with its
 instructions and its estimated compiled size.
@@ -209,7 +229,7 @@ Zoom in and you can read it. The fat rungs are the ones worth rewriting:
 > Tag, UDT and AOI data space is *calculated*, and carries no such mark. (An unused tile's
 > amber stripes replace the outline: that it is unused is the more important thing to know.)
 
-### 9. Side by side, and by kind
+### 10. Side by side, and by kind
 
 **⊞ Details** docks the List beside the treemap and follows every drill-down, and
 **Type Summary** rolls the level up by kind:
@@ -218,14 +238,14 @@ Zoom in and you can read it. The fat rungs are the ones worth rewriting:
 
 ![Type summary: share of the controller by kind](docs/images/type_summary.png)
 
-### 10. See the whole tree at once
+### 11. See the whole tree at once
 
 Turn **Depth** up and the treemap nests as many levels as you ask for. Programs open into
 routines, arrays into their elements and AOI instances into their members, all in one view.
 
 ![Depth 4: programs into routines, arrays into elements, all at once](docs/images/depth4.png)
 
-### 11. How much room is left?
+### 12. How much room is left?
 
 Tick **Show Empty Space** and the controller's free memory becomes a neutral grey tile beside
 everything the project uses. It is the fastest way to explain headroom to someone who does
@@ -233,7 +253,7 @@ not read hex.
 
 ![Free space as a grey tile beside everything that is used](docs/images/empty_space.png)
 
-### 12. A tool that tells you what it doesn't know
+### 13. A tool that tells you what it doesn't know
 
 Most estimators give you one confident number. This one tells you **how much of that number
 to trust**.
