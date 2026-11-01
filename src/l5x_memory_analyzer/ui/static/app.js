@@ -2605,12 +2605,11 @@ function usageHue(n) {
 function usageRowHtml(n, i, selected) {
   const pct = n.k ? (100 * n.u / n.k) : 0;
   return `<button type="button" class="usage-row${selected ? " selected" : ""}" data-i="${i}" ` +
-    `style="--pct-h:${usageHue(n).toFixed(0)};--pct:${pct.toFixed(1)}%" ` +
-    `title="${escapeHtml(n.n)} — ${escapeHtml(leafTitle(n))}">` +
-    `<span class="ur-name">${escapeHtml(n.n)}</span>` +
+    `style="--pct-h:${usageHue(n).toFixed(0)};--pct:${pct.toFixed(1)}%">` +
+    `<span class="ur-name" title="${escapeHtml(n.n)} — ${escapeHtml(leafTitle(n))}">${escapeHtml(n.n)}</span>` +
     `<span class="ur-type">${escapeHtml(n.t || "")}</span>` +
     `<span class="ur-size">${n.s == null ? "" : fmtBytes(n.s)}</span>` +
-    `<span class="ur-refs${n.x ? "" : " zero"}">${(n.x || 0).toLocaleString()}</span>` +
+    `<span class="ur-refs${n.x ? "" : " zero"}" data-i="${i}">${(n.x || 0).toLocaleString()}</span>` +
     `<span class="ur-used"><span class="ur-bar"></span><span class="ur-frac">${n.u}/${n.k}</span></span>` +
     `<span class="ur-more">${(n.c && n.c.length) || n.has_children ? "›" : ""}</span></button>`;
 }
@@ -2628,6 +2627,10 @@ function usageColumn(title, nodes, selected, onPick, extraClass = "") {
     drawUsage();
   }));
   col.querySelectorAll(".usage-row").forEach(b => b.addEventListener("click", () => onPick(nodes[+b.dataset.i])));
+  col.querySelectorAll(".ur-refs").forEach(el => {
+    el.addEventListener("mouseenter", () => showRefsCard(el, nodes[+el.dataset.i]));
+    el.addEventListener("mouseleave", hideRefsCard);
+  });
   return col;
 }
 
@@ -2695,4 +2698,53 @@ async function pickUsageItem(summary) {
   if (USAGE.item !== index || USAGE.data.kinds[USAGE.kind] !== kind) return;   // moved on meanwhile
   USAGE.tree = data.error ? null : data;
   drawUsage(true);
+}
+
+
+// Hovering a Refs count: where the first ten references are, as program (or AOI) /
+// routine / rung, ST line or FBD sheet; alarms and axes by name; a UDT's first ten
+// instances. Locations come with each row from /api/unused.
+function refsCard() {
+  let card = document.getElementById("usage-refs-card");
+  if (!card) {
+    card = document.createElement("div");
+    card.id = "usage-refs-card";
+    card.className = "hidden";
+    document.body.appendChild(card);
+  }
+  return card;
+}
+
+function showRefsCard(anchor, n) {
+  const card = refsCard();
+  const places = n.r || [];
+  const total = n.x || 0;
+  const instances = n.rk === "instances";
+  const shown = places.reduce((sum, p) => sum + (p[3] || 1), 0);
+  if (!total && !places.length) {
+    card.innerHTML = `<div class="refs-title">${escapeHtml(n.n)}</div><div class="refs-none">No references in this project.</div>`;
+  } else {
+    const head = instances ? ["Scope", "Tag", "", ""] : ["Program", "Routine", "Where", "Uses"];
+    const noun = instances ? "instance" : "reference";
+    card.innerHTML =
+      `<div class="refs-title">${escapeHtml(n.n)} <span>${total.toLocaleString()} ${noun}${total === 1 ? "" : "s"}` +
+      (!instances && total > shown ? `, first ${places.length} places` : "") + `</span></div>` +
+      `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>` +
+      places.map(p => `<tr><td>${escapeHtml(p[0] || "")}</td><td>${escapeHtml(p[1] || "")}</td>` +
+        `<td>${escapeHtml(p[2] || "")}</td><td class="refs-n">${instances ? "" : (p[3] > 1 ? `×${p[3]}` : "")}</td></tr>`).join("") +
+      `</tbody></table>` +
+      (total > shown ? `<div class="refs-more">+ ${(total - shown).toLocaleString()} more ${noun}${total - shown === 1 ? "" : "s"}</div>` : "");
+  }
+  card.classList.remove("hidden");
+  const a = anchor.getBoundingClientRect(), c = card.getBoundingClientRect();
+  let left = a.right + 8, top = a.top - 8;
+  if (left + c.width > window.innerWidth - 8) left = a.left - c.width - 8;
+  if (top + c.height > window.innerHeight - 8) top = window.innerHeight - c.height - 8;
+  card.style.left = `${Math.max(8, left)}px`;
+  card.style.top = `${Math.max(8, top)}px`;
+}
+
+function hideRefsCard() {
+  const card = document.getElementById("usage-refs-card");
+  if (card) card.classList.add("hidden");
 }

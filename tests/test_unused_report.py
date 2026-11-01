@@ -75,6 +75,15 @@ def test_sizes_are_the_engines(report):
     assert tags["Dst"]["s"] > 0 and all(c["s"] > 0 for c in tags["Rec"]["c"])
 
 
+def test_every_reference_names_its_place(report):
+    """Up to ten places: program, routine, rung."""
+    tags = report["controller_tags"]
+    assert tags["Dst"]["r"] == [["MainProgram", "MainRoutine", "Rung 0", 1]]
+    assert tags["Rec"]["c"][0]["r"] == [["MainProgram", "MainRoutine", "Rung 0", 1]]
+    assert tags["Arr"]["r"] == [["MainProgram", "MainRoutine", "Rung 2", 2]]   # twice on one rung: one place, 2 uses
+    assert tags["Nobody"]["r"] == []
+
+
 def test_an_array_is_one_element(report):
     """Never split by index: indirect addressing makes the element unknowable."""
     arr = report["controller_tags"]["Arr"]

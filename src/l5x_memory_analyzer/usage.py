@@ -94,11 +94,19 @@ def _segments(tail: str) -> tuple[list[str], list[str]]:
     return segs, inner
 
 
+# How many places a use remembers: enough to find it, not a full cross-reference.
+LOCATION_LIMIT = 10
+
+
 @dataclass
 class _Node:
     n: int = 0          # uses that pass through this node (or end here)
     end: int = 0        # uses that stop exactly here: the whole thing, as one
     kids: dict = field(default_factory=dict)
+    # Where the first LOCATION_LIMIT places using it are: [program or AOI, routine, place,
+    # uses there], place being "Rung 12", "Line 40", "Sheet 2"; or [scope, "Alarm" / "Axis" /
+    # ..., name, uses].
+    locs: list = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -140,6 +148,11 @@ class UsageIndex:
         self._main_routines: set[str] = set()
         self._modules: dict[str, int] = {}
         self._routines: dict[str, set[str]] = {}
+        # Where each use was found (see _Node.locs), for the same keys as the counts above.
+        self._where: tuple[str, str, str] | None = None
+        self._type_member_locs: dict[tuple[str, str], list] = {}
+        self._aoi_internal_locs: dict[tuple[str, str], list] = {}
+        self._aoi_call_locs: dict[str, list] = {}
         self._declare()
         self._scan()
 
@@ -188,6 +201,39 @@ class UsageIndex:
 
     # ---- recording ------------------------------------------------------
 
+    def _loc(self, places: list) -> None:
+        """Remember where the use being recorded is: up to LOCATION_LIMIT places, each
+        [program, routine, place, uses there]."""
+        w = self._where
+        if w is None:
+            return
+        if places and places[-1][:3] == list(w):
+            places[-1][3] += 1
+        elif len(places) < LOCATION_LIMIT:
+            places.append([*w, 1])
+
+    @staticmethod
+    def _scope_label(scope: str) -> str:
+        return "Controller" if scope == CONTROLLER_SCOPE else scope.partition(":")[2]
+
+    def _walk_logic(self, owner: str, routine: ET.Element):
+        """(place, text) for every piece of logic in a routine, in document order: rung
+        text, ST lines, and FBD / SFC operands, each with where it sits."""
+        r = routine.get("Name")
+        where = (owner, r, "")
+        for el in routine.iter():
+            tag = el.tag
+            if tag == "Rung":
+                where = (owner, r, f"Rung {el.get('Number')}")
+            elif tag == "Sheet":
+                where = (owner, r, f"Sheet {el.get('Number')}")
+            elif tag == "Text":
+                yield where, el.text or ""
+            elif tag == "Line":
+                yield (owner, r, f"Line {el.get('Number')}"), _ST_STRING.sub(" ", _ST_COMMENT.sub(" ", el.text or ""))
+            if tag != "Line" and el.get("Operand"):
+                yield where, el.get("Operand")
+
     def _resolve(self, scope: str, base: str) -> str | None:
         if scope != CONTROLLER_SCOPE and base in self._types.get(scope, {}):
             return scope
@@ -202,9 +248,11 @@ class UsageIndex:
         key = f"{owner}/{base}"
         node = self._tries.setdefault(key, _Node())
         node.n += 1
+        self._loc(node.locs)
         for s in segs:
             node = node.kids.setdefault(s, _Node())
             node.n += 1
+            self._loc(node.locs)
         node.end += 1
         # Type members, for the definition view.
         dtype, dims = self._types[owner][base]
@@ -217,6 +265,7 @@ class UsageIndex:
                 cur = None
                 break
             self._type_member[(cur, member)] = self._type_member.get((cur, member), 0) + 1
+            self._loc(self._type_member_locs.setdefault((cur, member), []))
             cur = self._members[cur].get(member, (None,))[0]
         if cur in self._members:
             self._type_whole[cur] = self._type_whole.get(cur, 0) + 1
@@ -257,22 +306,23 @@ class UsageIndex:
                     node.end += 1
 
     def _scan_logic(self, scope: str, container: ET.Element, routine_scope: str | None = None) -> None:
+        owner = self._scope_label(scope)
         for routine in container.iter("Routine"):
-            texts: list[str] = [t.text or "" for t in routine.iter("Text")]
-            texts += [_ST_STRING.sub(" ", _ST_COMMENT.sub(" ", ln.text or "")) for ln in routine.iter("Line")]
-            texts += [el.get("Operand") for el in routine.iter() if el.get("Operand")]
-            for text in texts:
+            for where, text in self._walk_logic(owner, routine):
+                self._where = where
                 self._record_text(scope, text)
                 self._record_file_instructions(scope, text)
                 for m in _CALL.finditer(text):
                     name = m.group(1)
                     if name in self._aoi_names:
                         self._aoi_calls[name] = self._aoi_calls.get(name, 0) + 1
+                        self._loc(self._aoi_call_locs.setdefault(name, []))
                     elif name == "JSR" and routine_scope:
                         args = _args(text, m.end())
                         if args:
                             target = f"{routine_scope}/{args[0].strip()}"
                             self._routine_calls[target] = self._routine_calls.get(target, 0) + 1
+        self._where = None
 
     def _scan(self) -> None:
         if self._controller is None:
@@ -283,23 +333,29 @@ class UsageIndex:
         for aoi in self._root.iter("AddOnInstructionDefinition"):
             name = aoi.get("Name")
             for routine in aoi.iter("Routine"):
-                texts = [t.text or "" for t in routine.iter("Text")]
-                texts += [_ST_STRING.sub(" ", _ST_COMMENT.sub(" ", ln.text or "")) for ln in routine.iter("Line")]
-                for text in texts:
+                for where, text in self._walk_logic(name, routine):
+                    if where[2] == "" and not text:
+                        continue
+                    self._where = where
                     for m in _PATH.finditer(_HEX_LITERAL.sub(" ", text)):
                         if m.group(1) in self._members[name]:
                             k = (name, m.group(1))
                             self._aoi_internal[k] = self._aoi_internal.get(k, 0) + 1
                             self._type_member[k] = self._type_member.get(k, 0) + 1
+                            self._loc(self._aoi_internal_locs.setdefault(k, []))
+                            self._loc(self._type_member_locs.setdefault(k, []))
+        self._where = None
         # Non-logic references: alias targets, alarms, motion.
         for scope, container in [(CONTROLLER_SCOPE, self._controller)] + [
                 (f"program:{p.get('Name')}", p) for p in self._controller.iter("Program")]:
             tags = container.find("Tags")
             if tags is None:
                 continue
+            label = self._scope_label(scope)
             for t in tags.findall("Tag"):
                 name = t.get("Name")
                 for cond in t.iter("AlarmCondition"):
+                    self._where = (label, "Alarm", cond.get("Name") or name)
                     if cond.get("Input") is not None:
                         segs, _ = _segments(cond.get("Input"))
                         self._record(scope, name, segs)
@@ -307,6 +363,7 @@ class UsageIndex:
                         if k.startswith("AssocTag") and v:
                             self._record_text(scope, v)
                 for ap in t.iter("AxisParameters"):
+                    self._where = (label, "Axis", name)
                     if ap.get("MotionGroup"):
                         self._record(scope, ap.get("MotionGroup"), [])
                     mod = (ap.get("MotionModule") or "").split(":")[0]
@@ -318,7 +375,9 @@ class UsageIndex:
                     if mm:
                         self._modules[mm.group(1)] = self._modules.get(mm.group(1), 0) + 1
                 if t.get("TagType") in ("Produced", "Consumed"):
+                    self._where = (label, f"{t.get('TagType')} tag", name)
                     self._record(scope, name, [])
+        self._where = None
 
     # ---- queries --------------------------------------------------------
 

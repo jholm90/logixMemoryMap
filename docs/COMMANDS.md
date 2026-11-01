@@ -22,7 +22,8 @@ python -m l5x_memory_analyzer.cli dump  path/to/file.L5X   # raw parsed XML
 `--no-browser`.
 
 The UI's tabs: Treemap, List, Type Summary, **Element Usage** (every tag, AOI and UDT with
-its references and how many of its elements anything uses, browsed column by column, arrays
+its references (hover: the first ten places, program / routine / rung) and how many of its
+elements anything uses, browsed column by column, arrays
 never split by index; served by `/api/unused`
 and `/api/unused/item`, worked out the first time the tab opens), Errors and
 Cross-Reference. The tour in `README.md` shows each.

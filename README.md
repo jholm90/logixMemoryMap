@@ -115,9 +115,12 @@ whose starts and run hours are counted but whose four service fields were never 
 
 Click **Name**, **Type**, **Size** or **Refs** at the top of any column to sort every column
 by it, and switch **All / Used / Unused** to filter. Sorted by Refs, a station's busiest
-members come first and the ones nothing names sink to the bottom:
+members come first and the ones nothing names sink to the bottom. **Hover a Refs count** to
+see where those references are: up to ten places, each as program (or AOI), routine and rung
+(or ST line, or FBD sheet), with how many times that place uses it; alarms and axes are
+named as such, and a UDT lists its first ten instances:
 
-![Element Usage: the ST040 station tag opened and sorted by Refs, StepNo named 9 times, SpareWord, RejectParts and SpareFlag never](docs/images/element_usage_refs.png)
+![Element Usage: the ST040 station tag opened and sorted by Refs, hovering StepNo's 9 references: seven rungs of ST040_Dispense / Sequence, two of them using it twice](docs/images/element_usage_refs.png)
 
 "Used" means the same thing as the **Uses** count above: referenced by logic, an alias, an
 alarm, an axis or a module somewhere in this L5X. An element is also used when its whole

@@ -32,8 +32,8 @@ from __future__ import annotations
 
 from l5x_memory_analyzer.sizing.tree import expand_children
 from l5x_memory_analyzer.sizing.udt import compute_array_size
-from l5x_memory_analyzer.usage import (CONTROLLER_SCOPE, HIDDEN_MEMBER_PREFIX, SYSTEM_MEMBERS, WILD,
-                                       UsageIndex, _Node)
+from l5x_memory_analyzer.usage import (CONTROLLER_SCOPE, HIDDEN_MEMBER_PREFIX, LOCATION_LIMIT, SYSTEM_MEMBERS,
+                                       WILD, UsageIndex, _Node)
 
 MAX_LEVELS = 6               # element levels below an item
 NODE_BUDGET = 20000          # elements per item before the rest are left unexpanded
@@ -55,6 +55,20 @@ def _dims(text) -> tuple[int, ...]:
         return tuple(int(d) for d in str(text or "0").split() if int(d) > 0)
     except ValueError:
         return ()
+
+
+def _places(*lists) -> list:
+    """The first LOCATION_LIMIT distinct places across several location lists, each
+    [program, routine, place, uses there], uses summed where two lists share a place."""
+    out: dict[tuple, int] = {}
+    for lst in lists:
+        for p in lst:
+            key = tuple(p[:3])
+            if key in out:
+                out[key] += p[3]
+            elif len(out) < LOCATION_LIMIT:
+                out[key] = p[3]
+    return [[*k, c] for k, c in out.items()]
 
 
 def _status(used: int, total: int) -> str:
@@ -132,7 +146,8 @@ class UnusedReport:
         whether a whole-structure use sits above it, and its AOI-logic uses. An array is
         stepped through as "any index" and never split."""
         refs = sum(n.n for n in frontier)
-        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": refs}
+        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": refs,
+                "r": _places(*(n.locs for n in frontier))}
         count = 1
         for d in dims:
             count *= d
@@ -195,7 +210,8 @@ class UnusedReport:
 
     def _def_node(self, label, owner, member, dtype, dims, size, level, alive, budget) -> dict:
         uses, whole, internal = self._member_used(owner, member) if alive else (0, False, 0)
-        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": uses + internal}
+        node = {"n": label, "t": _type_text(dtype, dims), "s": size, "x": uses + internal,
+                "r": _places(self.u._type_member_locs.get((owner, member), [])) if alive else []}
         children = []
         if level < MAX_LEVELS and (dtype in self.types or dtype in self.u._members):
             for k_label, seg, k_type, k_dims, k_bytes in self._kids(dtype):
@@ -212,9 +228,9 @@ class UnusedReport:
         node.update(u=int(used), k=1, w=whole and not (uses or internal), i=internal)
         return node
 
-    def _definition(self, name: str, kind_text: str, alive: bool, refs: int) -> dict:
+    def _definition(self, name: str, kind_text: str, alive: bool, refs: int, places: list) -> dict:
         budget = _Budget()
-        node = {"n": name, "t": kind_text, "s": self._size(name, ()), "x": refs}
+        node = {"n": name, "t": kind_text, "s": self._size(name, ()), "x": refs, "r": places}
         children = [self._def_node(k_label, name, seg[1:], k_type, k_dims, k_bytes, 1, alive, budget)
                     for k_label, seg, k_type, k_dims, k_bytes in self._kids(name)
                     if budget.take()]
@@ -226,8 +242,19 @@ class UnusedReport:
 
     def aoi_tags(self) -> list[dict]:
         return [self._definition(aoi, "AOI", self.u.aoi_calls(aoi) > 0 or self.u.type_instances(aoi) > 0,
-                                 self.u.aoi_calls(aoi))
+                                 self.u.aoi_calls(aoi), _places(self.u._aoi_call_locs.get(aoi, [])))
                 for aoi in sorted(self.u._aoi_names, key=str.lower)]
+
+    def _instances_of(self, type_name: str) -> list:
+        """The first LOCATION_LIMIT tags declared with a type, as (scope, tag, "")."""
+        out = []
+        for scope, types in self.u._types.items():
+            for tag, (dtype, _dims_text) in types.items():
+                if dtype == type_name:
+                    out.append([UsageIndex._scope_label(scope), tag, "", 1])
+                    if len(out) == LOCATION_LIMIT:
+                        return out
+        return out
 
     def udt_elements(self) -> list[dict]:
         out = []
@@ -235,7 +262,9 @@ class UnusedReport:
             if getattr(dt, "is_aoi", False):
                 continue
             instances = self.u.type_instances(name)
-            node = self._definition(name, "String" if dt.is_string_family else "UDT", instances > 0, instances)
+            node = self._definition(name, "String" if dt.is_string_family else "UDT", instances > 0, instances,
+                                    self._instances_of(name))
+            node["rk"] = "instances"
             node["instances"] = instances
             out.append(node)
         return sorted(out, key=lambda i: i["n"].lower())
