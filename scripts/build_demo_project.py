@@ -14,7 +14,8 @@ unused on purpose, the way real projects accumulate it, for the usage flag to
 find: an old recipe backup array, a recipe edit buffer, a spare trend buffer, a
 legacy counts array, spare sensor inputs, an unwired horn and beacon, a light
 curtain bypass bit, a debug step, a test bit, two legacy recipe fields, two
-spare station members, half of a conveyor maintenance record (the logic counts
+spare station members and nine more planned for an OEE screen that was never
+built (so each station reads about half used), half of a conveyor maintenance record (the logic counts
 starts and run hours; the service fields were never wired up), a retired
 routine nothing calls, and the bus supply's converter axis.
 
@@ -84,7 +85,11 @@ STATION_T = [MemberSpec(n, "BOOL") for n in (
     "ResetReq", "SpareFlag")] + [
     MemberSpec("StepNo", "DINT"), MemberSpec("PartId", "DINT"), MemberSpec("GoodParts", "DINT"),
     MemberSpec("RejectParts", "DINT"), MemberSpec("CycleTime", "REAL"),
-    MemberSpec("CycleTimeMax", "REAL"), MemberSpec("SpareWord", "DINT")]
+    MemberSpec("CycleTimeMax", "REAL"), MemberSpec("SpareWord", "DINT")] + [
+    # Planned for an OEE screen that was never built: declared on every station, read nowhere.
+    MemberSpec(n, "REAL") for n in ("OEE_Availability", "OEE_Performance", "OEE_Quality", "TargetRate")] + [
+    MemberSpec(n, "DINT") for n in ("PlannedDowntime", "LastFaultCode", "LastFaultTime", "OperatorId",
+                                    "ShiftTarget")]
 
 RECIPE_T = [MemberSpec("RecipeId", "DINT"), MemberSpec("PartNumber", "DINT"),
             MemberSpec("BeadLength", "REAL"), MemberSpec("BeadWidth", "REAL"),

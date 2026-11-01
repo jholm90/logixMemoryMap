@@ -108,10 +108,11 @@ own, and the whole row of columns scrolls sideways.
 Every row is coloured by the share of its elements used, on one scale: **red** when nothing
 is used, **orange** at about half, **green** when everything is. The bar in the **Used**
 column fills to the same share. Set to **Unused** and sorted by size, the biggest dead weight
-comes first, and partly used structures sit beside it: here a conveyor maintenance record
+comes first, and partly used structures sit beside it in orange: eight stations whose OEE
+fields were declared for a screen that was never built, and a conveyor maintenance record
 whose starts and run hours are counted but whose four service fields were never wired up:
 
-![Element Usage, Unused, by size: the old recipe backup, a spare axis and a trend buffer in red, the stations at 12 of 15 in yellow-green, Conveyor_Maint at 4 of 8 in orange, opened to its four unreferenced members](docs/images/element_usage.png)
+![Element Usage, Unused, by size: the old recipe backup, a spare axis and a trend buffer in red, the eight stations at 12 of 24 and Conveyor_Maint at 4 of 8 in orange, Conveyor_Maint opened to its four unreferenced members](docs/images/element_usage.png)
 
 Click **Name**, **Type**, **Size** or **Refs** at the top of any column to sort every column
 by it, and switch **All / Used / Unused** to filter. Sorted by Refs, a station's busiest
@@ -120,7 +121,7 @@ see those references: up to ten, each as **Program** (or AOI), **Routine** and *
 (rung, ST line or FBD sheet), with how many times that location uses it; alarms and axes are
 named as such, and a UDT lists its first ten instances:
 
-![Element Usage: the ST040 station tag opened and sorted by Refs, hovering StepNo's 9 references: seven rungs of ST040_Dispense / Sequence, two of them using it twice](docs/images/element_usage_refs.png)
+![Element Usage: the ST040 station tag opened and sorted by Refs, its planned OEE fields in red below the used members, hovering StepNo's 9 references: seven rungs of ST040_Dispense / Sequence, two of them using it twice](docs/images/element_usage_refs.png)
 
 "Used" means the same thing as the **Uses** count above: referenced by logic, an alias, an
 alarm, an axis or a module somewhere in this L5X. An element is also used when its whole
@@ -393,7 +394,7 @@ sensors; a two-position cylinder AOI; a recipe library and shift production data
 5700 bus with six servo axes; a PowerFlex 525 infeed conveyor and a vision gateway. About
 nine tenths of what it declares is used by its logic, and the rest is the kind of thing real
 projects accumulate — an old recipe backup, a spare trend buffer, spare sensor inputs, legacy
-recipe fields, a half-wired maintenance record, a retired routine. Every module and axis in it is built from blocks that
+recipe fields, OEE fields nothing fills in, a half-wired maintenance record, a retired routine. Every module and axis in it is built from blocks that
 compiled with zero errors in Studio 5000, and it opens with **zero unpriced items** — the
 build script refuses to write it otherwise. Rebuild it and explore it yourself:
 
