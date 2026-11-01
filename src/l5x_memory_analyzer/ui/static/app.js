@@ -2724,7 +2724,7 @@ function showRefsCard(anchor, n) {
   if (!total && !places.length) {
     card.innerHTML = `<div class="refs-title">${escapeHtml(n.n)}</div><div class="refs-none">No references in this project.</div>`;
   } else {
-    const head = instances ? ["Scope", "Tag", "", ""] : ["Program", "Routine", "Where", "Uses"];
+    const head = instances ? ["Scope", "Tag", "", ""] : ["Program", "Routine", "Location", "Uses"];
     const noun = instances ? "instance" : "reference";
     card.innerHTML =
       `<div class="refs-title">${escapeHtml(n.n)} <span>${total.toLocaleString()} ${noun}${total === 1 ? "" : "s"}` +
