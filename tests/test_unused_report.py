@@ -117,3 +117,19 @@ def test_endpoints(tmp_path):
     detail = client.get(f"/api/unused/item?kind=controller_tags&index={rec}").get_json()
     assert detail["n"] == "Rec" and len(detail["c"]) == 2
     assert client.get("/api/unused/item?kind=nope&index=0").status_code == 404
+
+
+def test_st_lines_count_from_one_and_fbd_elements_give_sheet_and_position():
+    st = ('<Routine Name="Disp" Type="ST"><STContent><Line Number="0"><![CDATA[(* note *)]]></Line>'
+          '<Line Number="1"><![CDATA[Dst := Rec.Id;]]></Line></STContent></Routine>')
+    fbd = ('<Routine Name="Wire" Type="FBD"><FBDContent SheetSize="Letter - 8.5 x 11 in" SheetOrientation="Landscape">'
+           '<Sheet Number="1"><IRef ID="0" X="180" Y="120" Operand="Rec.Id" HideDesc="false"/>'
+           '<ORef ID="1" X="420" Y="120" Operand="Dst" HideDesc="false"/><Wire FromID="0" ToID="1"/></Sheet>'
+           '</FBDContent></Routine>')
+    l5x = build_l5x(target_name="Places", tags_xml=tag_xml("Rec", "Rec_t", udt_members=_REC) + tag_xml("Dst", "DINT"),
+                    extra_datatypes_xml=udt_xml("Rec_t", _REC), extra_routines_xml=st + fbd,
+                    extra_rungs_xml=rung_xml(0, "JSR(Disp,0);JSR(Wire,0);"))
+    u = UsageIndex(ET.fromstring(l5x))
+    places = u._tries["controller/Rec"].kids[".Id"].locs
+    assert ["MainProgram", "Disp", "Line 2", 1] in places
+    assert ["MainProgram", "Wire", "Sheet 1, X 180 Y 120", 1] in places

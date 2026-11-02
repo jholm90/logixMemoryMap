@@ -221,18 +221,26 @@ class UsageIndex:
         text, ST lines, and FBD / SFC operands, each with where it sits."""
         r = routine.get("Name")
         where = (owner, r, "")
+        sheet = None
         for el in routine.iter():
             tag = el.tag
             if tag == "Rung":
                 where = (owner, r, f"Rung {el.get('Number')}")
             elif tag == "Sheet":
-                where = (owner, r, f"Sheet {el.get('Number')}")
+                sheet = el.get("Number")
+                where = (owner, r, f"Sheet {sheet}")
             elif tag == "Text":
                 yield where, el.text or ""
             elif tag == "Line":
-                yield (owner, r, f"Line {el.get('Number')}"), _ST_STRING.sub(" ", _ST_COMMENT.sub(" ", el.text or ""))
+                # The L5X numbers ST lines from 0; the editor shows them from 1.
+                yield (owner, r, f"Line {int(el.get('Number') or 0) + 1}"), \
+                    _ST_STRING.sub(" ", _ST_COMMENT.sub(" ", el.text or ""))
             if tag != "Line" and el.get("Operand"):
-                yield where, el.get("Operand")
+                if sheet is not None and el.get("X") is not None:
+                    # An FBD element: its sheet and its position on it, as the export gives it.
+                    yield (owner, r, f"Sheet {sheet}, X {el.get('X')} Y {el.get('Y')}"), el.get("Operand")
+                else:
+                    yield where, el.get("Operand")
 
     def _resolve(self, scope: str, base: str) -> str | None:
         if scope != CONTROLLER_SCOPE and base in self._types.get(scope, {}):

@@ -140,13 +140,28 @@ def _routine(name: str, texts: list[str]) -> str:
     return f'<Routine Name="{name}" Type="RLL">\n<RLLContent>\n{body}\n</RLLContent>\n</Routine>'
 
 
+def _st_routine(name: str, lines: list[str]) -> str:
+    body = "\n".join(f'<Line Number="{i}">\n<![CDATA[{t}]]>\n</Line>' for i, t in enumerate(lines))
+    return f'<Routine Name="{name}" Type="ST">\n<STContent>\n{body}\n</STContent>\n</Routine>'
+
+
+def _fbd_wire_routine(name: str, source: str, dest: str) -> str:
+    """An FBD routine of one sheet: an input reference wired straight to an output reference."""
+    return (f'<Routine Name="{name}" Type="FBD">\n<FBDContent SheetSize="Letter - 8.5 x 11 in" '
+            f'SheetOrientation="Landscape">\n<Sheet Number="1">\n'
+            f'<IRef ID="0" X="180" Y="120" Operand="{source}" HideDesc="false"/>\n'
+            f'<ORef ID="1" X="420" Y="120" Operand="{dest}" HideDesc="false"/>\n'
+            f'<Wire FromID="0" ToID="1"/>\n</Sheet>\n</FBDContent>\n</Routine>')
+
+
 def _program(name: str, tags: list[str], routines: list[str]) -> str:
     return (f'<Program Name="{name}" TestEdits="false" MainRoutineName="MainRoutine" Disabled="false" '
             f'UseAsFolder="false">\n<Tags>\n' + "\n".join(tags) + "\n</Tags>\n<Routines>\n"
             + "\n".join(routines) + "\n</Routines>\n</Program>")
 
 
-def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str]) -> tuple[str, list[str]]:
+def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str],
+             with_fbd: bool = False) -> tuple[str, list[str]]:
     """One station program, and the controller tags it owns."""
     cyl = [f"{s}_{c}" for c in cyls]
     tags = [tag_xml(s, "Station_t", udt_members=STATION_T), tag_xml(f"{s}_PartPresent_PX", "BOOL")]
@@ -236,6 +251,18 @@ def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str]) -> tup
     if motion:
         main.append("JSR(Motion,0);")
         routines.append(_routine("Motion", motion))
+    if s == "ST040":
+        # The HMI step display in Structured Text, and with_fbd also in a function block sheet.
+        # FBD is off by default: the engine lists FBD logic as unpriced, and the demo must
+        # open with nothing unpriced.
+        main.append("JSR(StepDisplay_ST,0);")
+        routines.append(_st_routine("StepDisplay_ST", ["(* step number for the HMI *)",
+                                                       "ST040_HMI_Step := ST040.StepNo;"]))
+        tags.append(tag_xml("ST040_HMI_Step", "DINT"))
+        if with_fbd:
+            main.append("JSR(StepDisplay_FBD,0);")
+            routines.append(_fbd_wire_routine("StepDisplay_FBD", "ST040.StepNo", "ST040_HMI_StepFBD"))
+            tags.append(tag_xml("ST040_HMI_StepFBD", "DINT"))
     if s == "ST080":
         # Left behind by an earlier homing scheme: nothing calls it any more.
         routines.append(_routine("Retired_Homing", [
@@ -248,7 +275,7 @@ def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str]) -> tup
     return _program(prog, prog_tags, [_routine("MainRoutine", main)] + routines), tags
 
 
-def build() -> str:
+def build(with_fbd: bool = False) -> str:
     aoi_def, cyl_storage = _cylinder_aoi()
     supply, converter = bus_supply_with_converter(
         name="Kinetix_BusSupply", address="192.168.1.10", axis_name="Bus_Converter_Axis")
@@ -279,7 +306,7 @@ def build() -> str:
 
     programs, scheduled = [], []
     for k, (s, prog, cyls, axes) in enumerate(STATIONS):
-        program, station_tags = _station(k, s, prog, cyls, axes)
+        program, station_tags = _station(k, s, prog, cyls, axes, with_fbd)
         programs.append(program)
         scheduled.append(f'<ScheduledProgram Name="{prog}"/>')
         tags += station_tags
