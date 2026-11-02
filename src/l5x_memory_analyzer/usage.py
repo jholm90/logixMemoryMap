@@ -97,6 +97,28 @@ def _segments(tail: str) -> tuple[list[str], list[str]]:
 # How many places a use remembers: enough to find it, not a full cross-reference.
 LOCATION_LIMIT = 10
 
+# The FBD editor labels a sheet with a grid, columns lettered from A and rows numbered from 1,
+# and its cross-reference names an element by that cell ("Sheet 1, D2"). The export gives only
+# the element's X / Y. A 200-unit cell from the sheet's top-left corner reproduces the one
+# reading on record: an output reference at X 600, Y 320 on a Letter landscape sheet is D2
+# (2026-11-02). One reading fixes the cell to between 151 and 200 units wide and 161 and 320
+# high; 200 square is the simplest grid inside both, not yet confirmed by a second reading.
+FBD_GRID_CELL = 200
+
+
+def fbd_grid_cell(x, y) -> str:
+    """'D2' for an FBD element at X, Y (see FBD_GRID_CELL)."""
+    try:
+        col, row = int(float(x)) // FBD_GRID_CELL, int(float(y)) // FBD_GRID_CELL + 1
+    except (TypeError, ValueError):
+        return f"X {x} Y {y}"
+    letters = ""
+    col += 1
+    while col:
+        col, rem = divmod(col - 1, 26)
+        letters = chr(65 + rem) + letters
+    return f"{letters}{row}"
+
 
 @dataclass
 class _Node:
@@ -237,8 +259,7 @@ class UsageIndex:
                     _ST_STRING.sub(" ", _ST_COMMENT.sub(" ", el.text or ""))
             if tag != "Line" and el.get("Operand"):
                 if sheet is not None and el.get("X") is not None:
-                    # An FBD element: its sheet and its position on it, as the export gives it.
-                    yield (owner, r, f"Sheet {sheet}, X {el.get('X')} Y {el.get('Y')}"), el.get("Operand")
+                    yield (owner, r, f"Sheet {sheet}, {fbd_grid_cell(el.get('X'), el.get('Y'))}"), el.get("Operand")
                 else:
                     yield where, el.get("Operand")
 

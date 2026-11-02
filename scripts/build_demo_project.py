@@ -19,8 +19,10 @@ built (so each station reads about half used), half of a conveyor maintenance re
 starts and run hours; the service fields were never wired up), a retired
 routine nothing calls, and the bus supply's converter axis.
 
-It must open with ZERO unpriced items, so every block in it is one the engine
-prices and one with a zero-error capture behind it:
+It must open with ONE unpriced item and no other: its function block routine, which the engine
+lists rather than prices (FBD logic is not sized yet) but which is there so the Element Usage
+tab shows an FBD cross-reference beside the rungs and the ST line. Every other block in it is
+one the engine prices and one with a zero-error capture behind it:
 
   - the Kinetix bus is gen_module_kinetix_bus's own supply, drives and axes --
     `modulerack_kinetix_full_bus_r3`, captured at 0 errors -- and every 2198
@@ -149,8 +151,8 @@ def _fbd_wire_routine(name: str, source: str, dest: str) -> str:
     """An FBD routine of one sheet: an input reference wired straight to an output reference."""
     return (f'<Routine Name="{name}" Type="FBD">\n<FBDContent SheetSize="Letter - 8.5 x 11 in" '
             f'SheetOrientation="Landscape">\n<Sheet Number="1">\n'
-            f'<IRef ID="0" X="180" Y="120" Operand="{source}" HideDesc="false"/>\n'
-            f'<ORef ID="1" X="420" Y="120" Operand="{dest}" HideDesc="false"/>\n'
+            f'<IRef ID="0" X="320" Y="300" Operand="{source}" HideDesc="false"/>\n'
+            f'<ORef ID="1" X="600" Y="320" Operand="{dest}" HideDesc="false"/>\n'
             f'<Wire FromID="0" ToID="1"/>\n</Sheet>\n</FBDContent>\n</Routine>')
 
 
@@ -161,7 +163,7 @@ def _program(name: str, tags: list[str], routines: list[str]) -> str:
 
 
 def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str],
-             with_fbd: bool = False) -> tuple[str, list[str]]:
+             with_fbd: bool = True) -> tuple[str, list[str]]:
     """One station program, and the controller tags it owns."""
     cyl = [f"{s}_{c}" for c in cyls]
     tags = [tag_xml(s, "Station_t", udt_members=STATION_T), tag_xml(f"{s}_PartPresent_PX", "BOOL")]
@@ -252,9 +254,8 @@ def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str],
         main.append("JSR(Motion,0);")
         routines.append(_routine("Motion", motion))
     if s == "ST040":
-        # The HMI step display in Structured Text, and with_fbd also in a function block sheet.
-        # FBD is off by default: the engine lists FBD logic as unpriced, and the demo must
-        # open with nothing unpriced.
+        # The HMI step display in Structured Text and in a function block sheet, so the
+        # project carries all three languages (with_fbd=False leaves the FBD routine out).
         main.append("JSR(StepDisplay_ST,0);")
         routines.append(_st_routine("StepDisplay_ST", ["(* step number for the HMI *)",
                                                        "ST040_HMI_Step := ST040.StepNo;"]))
@@ -275,7 +276,7 @@ def _station(k: int, s: str, prog: str, cyls: list[str], axes: list[str],
     return _program(prog, prog_tags, [_routine("MainRoutine", main)] + routines), tags
 
 
-def build(with_fbd: bool = False) -> str:
+def build(with_fbd: bool = True) -> str:
     aoi_def, cyl_storage = _cylinder_aoi()
     supply, converter = bus_supply_with_converter(
         name="Kinetix_BusSupply", address="192.168.1.10", axis_name="Bus_Converter_Axis")
@@ -341,6 +342,8 @@ def main(argv: list[str]) -> int:
     from sample_gen.lint import lint_l5x
     findings = lint_l5x(text)
     _entries, errors = build_report(ET.fromstring(text), load_memory_model())
+    # The FBD routine is the one item allowed to go unpriced (see the module docstring).
+    errors = [e for e in errors if e.path != "coverage/routine_type/FBD"]
     if findings or errors:
         raise SystemExit(f"demo refused: {len(findings)} lint finding(s), {len(errors)} unpriced item(s): "
                          f"{[(f.kind, f.detail[:120]) for f in findings][:5]} {[e.path for e in errors][:5]}")

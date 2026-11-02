@@ -118,11 +118,12 @@ Click **Name**, **Type**, **Size** or **Refs** at the top of any column to sort 
 by it, and switch **All / Used / Unused** to filter. Sorted by Refs, a station's busiest
 members come first and the ones nothing names sink to the bottom. **Hover a Refs count** to
 see those references: up to ten, each as **Program** (or AOI), **Routine** and **Location**
-(a rung, a Structured Text line, or an FBD sheet with the element's X / Y position on it),
+(a rung, a Structured Text line, or an FBD sheet and grid cell, as Studio's cross-reference
+names them),
 with how many times that location uses it; alarms and axes are
 named as such, and a UDT lists its first ten instances:
 
-![Element Usage: the ST040 station tag opened and sorted by Refs, its planned OEE fields in red below the used members, hovering StepNo's 10 references: seven rungs of ST040_Dispense / Sequence, two of them using it twice, and line 2 of the StepDisplay_ST routine](docs/images/element_usage_refs.png)
+![Element Usage: the ST040 station tag opened and sorted by Refs, its planned OEE fields in red below the used members, hovering StepNo's 11 references: seven rungs of ST040_Dispense / Sequence, two of them using it twice, line 2 of the StepDisplay_ST routine and cell B2 of the StepDisplay_FBD sheet](docs/images/element_usage_refs.png)
 
 "Used" means the same thing as the **Uses** count above: referenced by logic, an alias, an
 alarm, an axis or a module somewhere in this L5X. An element is also used when its whole
@@ -273,9 +274,10 @@ to trust**.
 The **File confidence** card splits the prediction by evidence: **Exact** (calculated from
 known sizes), **Measured** (fitted and checked against real controller readings),
 **Approximate** and **Unverified**. Anything the model cannot price is listed by name and
-never silently counted as zero. This demo prices everything:
+never silently counted as zero. This demo prices everything except its one function block
+routine, which is listed by name rather than guessed at:
 
-![Errors tab: 0 errors, nothing went unpriced in this file](docs/images/errors.png)
+![Errors tab: 1 error, the demo's function block routine listed as unpriced](docs/images/errors.png)
 
 Source-protected routines and AOIs get the same honesty. The tool prices what it can see
 (the interface, the instances, the calls) and raises a red **MINIMUM** banner, because
@@ -396,8 +398,9 @@ sensors; a two-position cylinder AOI; a recipe library and shift production data
 nine tenths of what it declares is used by its logic, and the rest is the kind of thing real
 projects accumulate — an old recipe backup, a spare trend buffer, spare sensor inputs, legacy
 recipe fields, OEE fields nothing fills in, a half-wired maintenance record, a retired routine. Every module and axis in it is built from blocks that
-compiled with zero errors in Studio 5000, and it opens with **zero unpriced items** — the
-build script refuses to write it otherwise. Rebuild it and explore it yourself:
+compiled with zero errors in Studio 5000, and it opens with **one unpriced item**, its small
+function block routine (there so the Element Usage tab shows an FBD reference; FBD logic is
+not sized yet) — the build script refuses to write it with any other. Rebuild it and explore it yourself:
 
 ```bash
 python scripts/build_demo_project.py

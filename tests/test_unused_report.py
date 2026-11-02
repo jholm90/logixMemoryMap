@@ -132,4 +132,12 @@ def test_st_lines_count_from_one_and_fbd_elements_give_sheet_and_position():
     u = UsageIndex(ET.fromstring(l5x))
     places = u._tries["controller/Rec"].kids[".Id"].locs
     assert ["MainProgram", "Disp", "Line 2", 1] in places
-    assert ["MainProgram", "Wire", "Sheet 1, X 180 Y 120", 1] in places
+    assert ["MainProgram", "Wire", "Sheet 1, A1", 1] in places
+
+
+def test_fbd_grid_cell_matches_the_studio_reading():
+    """An output reference at X 600, Y 320 on a Letter landscape sheet is "Sheet 1, D2"
+    in Studio's cross-reference (2026-11-02)."""
+    from l5x_memory_analyzer.usage import fbd_grid_cell
+    assert fbd_grid_cell("600", "320") == "D2"
+    assert fbd_grid_cell("180", "120") == "A1"
