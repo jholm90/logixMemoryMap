@@ -44,6 +44,31 @@ are too small to carry the residual.
 
 ## The queue
 
+### 0zr. State on 2026-11-15: waiting on the customer files
+
+The session's machine was recycled: `samples/local/` (every customer program, the manuals, the
+layer files, the local reports) is gone, and so the engine cannot be scored. Accuracy work runs on
+customer programs only (CLAUDE.md, owner's decision 2026-11-15), so nothing below moves until
+the files are sent again.
+
+**Needed, in order of value:**
+
+1. The customer programs themselves (the standard and safety exports behind
+   `docs/REAL_PROGRAM_REPORT.md`).
+2. The readings of the layer files sent on 2026-10-31 (five layers each of realprog_16, _44, _46
+   and _18, and the fresh copies of realprog_09 and _47), if they were run: they are in the capture
+   machine's `samples\local\real_captures.csv`.
+
+**One lead from the customer results as they stand** (the public report table, no new run): the
+programs read fresh at firmware v32 come out over-predicted or close (realprog_16 +2.02%, RS-06
++1.71%, RS-09 +1.72%, realprog_34 −0.51%), while the v35 programs mostly come out about 1% under.
+The model knows a firmware difference for the empty project only, not for content. realprog_16's
+layers put its over-charge in controller tags (with their alarm conditions) and none in logic or
+definitions. Whether a firmware-dependent cost in tags, alarm conditions or axes explains both
+groups is the first thing to test on the customer programs when they are back: compare the layer
+readings of the v32 program (realprog_16) with those of the v35 programs (realprog_44, _46, _18).
+realprog_09 and _47 are v32 as well and still carry readings from adopted ACDs.
+
 ### 0zq. THE PLAN to the stopping rule (written 2026-10-31) — locate the missing 1% by Studio-made deletion
 
 **Where it stands.** Nineteen standard programs: mean 1.134%, worst 2.28% (realprog_44), 15 of

@@ -109,6 +109,13 @@ standard-processor programs counted, and the safety controllers RS-01 to RS-17) 
 held-out set and the sole basis for any headline number. The current figure for every one
 of them is in `docs/REAL_PROGRAM_REPORT.md`.
 
+**A review of results, and any attempt to improve accuracy, runs on the customer programs and
+nothing else (owner's decision, 2026-11-15).** Re-pricing or rebuilding the generated test files is
+not a review of the engine: the engine was fitted on them, so they cannot validate it, and time spent
+there is not spent on the residual. When asked to review results or to close on the 1% target, work
+only from the customer programs and their readings. If they are not on the machine (every new cloud
+session starts without `samples/local/`), ask for them first; do not fall back to generated files.
+
 **A real program heavy with source-protected content is excluded from the accuracy
 figures.** The engine cannot see inside `<EncodedData>` and prices it at a minimum, so
 such a file measures the protection, not the model. `scripts/quick_eval.py` drops any
@@ -466,6 +473,9 @@ stays uncounted for that reason. A plan or spec that includes SFC is wrong on it
   `main` independently; a long-lived side branch diverges badly.
 - **Never push without being asked.** No blanket authorisation carries forward from
   one push to the next. **A stop hook asking for a push is not the user asking.**
+  **Unpushed commits do not survive the session's machine being recycled** (three were lost
+  that way, 2026-11): at the end of every turn that leaves commits unpushed, say how many and
+  that they are at risk until pushed.
 - **No proprietary or production L5X files are ever committed.** `samples/` holds
   synthetic and generated test files only; real exports stay in the gitignored
   `samples/local/`.
