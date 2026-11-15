@@ -26,8 +26,8 @@
   /* Confidence bands. One definition, used by the bar fills below AND by the
      treemap when ?ConfidenceMode=true recolours it by band, so a tile and the
      bar describing it can never be two different greens. */
-  --band-EXACT: #4a9d5f;
-  --band-MEASURED: #5aa86b;
+  --band-EXACT: #2e7d45;
+  --band-MEASURED: #7dcf93;
   --band-CLOSE: #86b04a;
   --band-APPROX: #c9a227;
   --band-UNVERIFIED: #b3552f;
@@ -859,3 +859,10 @@ body:has(#errors-banner:not(.hidden)) #panel-usage.active { padding-bottom: 52px
 #usage-refs-card td:first-child { color: var(--text-dim); }
 #usage-refs-card td.refs-n { color: var(--text-dim); text-align: right; padding-right: 0; }
 #usage-refs-card .refs-more, #usage-refs-card .refs-none { margin-top: 6px; color: var(--text-dim); }
+
+/* The analyzer's Python process is gone: say so over everything, not a frozen page. */
+#server-down { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 12px 18px; font-size: 14px;
+  color: #fff; background: #b3261e; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35); }
+#server-down.hidden { display: none; }
+#server-down code { background: rgba(255, 255, 255, 0.18); padding: 1px 5px; border-radius: 3px; }
+body.server-down main, body.server-down #tabs, body.server-down #nav-row { opacity: 0.45; pointer-events: none; }

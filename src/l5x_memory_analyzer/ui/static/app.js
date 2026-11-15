@@ -2452,7 +2452,43 @@ function renderTypeSummaryInto(elId) {
 
 // While this page is open the local server stays up; started from the desktop
 // shortcut it exits a few minutes after the last tab closes.
-setInterval(() => fetch("/api/heartbeat", { method: "POST" }).catch(() => {}), 30000);
+//
+// The same ping tells the page whether the server is still there. Closing the
+// Python window used to leave a page that looked alive and answered nothing:
+// now a failed ping (checked every 5 s) puts up a banner saying the analyzer
+// stopped and how to restart it, and clears it when the server comes back.
+let HEARTBEAT_LAST = 0;
+let SERVER_DOWN = false;
+async function heartbeat() {
+  try {
+    const res = await fetch("/api/heartbeat", { method: "POST", cache: "no-store" });
+    if (!res.ok) throw new Error(res.status);
+    if (SERVER_DOWN) { SERVER_DOWN = false; setServerDown(false); }
+  } catch (e) {
+    if (!SERVER_DOWN) { SERVER_DOWN = true; setServerDown(true); }
+  }
+}
+function setServerDown(down) {
+  let el = document.getElementById("server-down");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "server-down";
+    el.setAttribute("role", "alert");
+    el.innerHTML = `<strong>The analyzer has stopped.</strong> Its Python window was closed or the program ` +
+      `exited, so nothing on this page will update. Start it again (the desktop shortcut, or ` +
+      `<code>l5x-memory-analyzer ui</code>) and this page reconnects by itself; reload to open a file again.`;
+    document.body.appendChild(el);
+  }
+  el.classList.toggle("hidden", !down);
+  document.body.classList.toggle("server-down", down);
+}
+setInterval(() => {
+  // Every 5 s while the server is down (to notice it coming back), every 30 s otherwise.
+  const now = Date.now();
+  if (SERVER_DOWN || now - HEARTBEAT_LAST >= 30000) { HEARTBEAT_LAST = now; heartbeat(); }
+}, 5000);
+// A failed request from any part of the page checks at once rather than waiting.
+window.addEventListener("unhandledrejection", () => heartbeat());
 main();
 
 
@@ -2565,7 +2601,9 @@ function usageRows(nodes) {
   const f = USAGE.filter, { key, dir } = USAGE.sort;
   const rows = nodes.map((n, i) => [n, i]).filter(([n]) =>
     f === "all" || (f === "used" ? n.u > 0 : n.u < n.k));
+  // Used sorts by share used (99/99 = 100% above 99/999 = 9.9%), then by element count.
   const val = n => key === "size" ? (n.s || 0) : key === "refs" ? (n.x || 0)
+    : key === "used" ? (n.k ? n.u / n.k : 0) + (n.k || 0) * 1e-9
     : String(key === "type" ? n.t : n.n).toLowerCase();
   return rows.sort((a, b) => {
     const x = val(a[0]), y = val(b[0]);
@@ -2590,7 +2628,7 @@ function sortHead() {
     `<button type="button" data-sort="type" class="uh-type">Type${arrow("type")}</button>` +
     `<button type="button" data-sort="size" class="uh-size">Size${arrow("size")}</button>` +
     `<button type="button" data-sort="refs" class="uh-refs" title="How many times the project's logic, aliases, alarms and axes name it (an AOI: its calls; a UDT: its instances)">Refs${arrow("refs")}</button>` +
-    `<span class="uh-used">Used</span></div>`;
+    `<button type="button" data-sort="used" class="uh-used" title="Share of elements used">Used${arrow("used")}</button></div>`;
 }
 
 // Colour by the share of elements used, on one ramp: red at none, orange at
@@ -2623,7 +2661,7 @@ function usageColumn(title, nodes, selected, onPick, extraClass = "") {
     (rows.length ? rows.map(([n, i]) => usageRowHtml(n, i, n === selected)).join("")
                  : `<div class="usage-empty">${nodes.length ? "Nothing to show." : "None."}</div>`) + `</div>`;
   col.querySelectorAll(".usage-head button").forEach(b => b.addEventListener("click", () => {
-    USAGE.sort = { key: b.dataset.sort, dir: USAGE.sort.key === b.dataset.sort ? -USAGE.sort.dir : (["size", "refs"].includes(b.dataset.sort) ? -1 : 1) };
+    USAGE.sort = { key: b.dataset.sort, dir: USAGE.sort.key === b.dataset.sort ? -USAGE.sort.dir : (["size", "refs", "used"].includes(b.dataset.sort) ? -1 : 1) };
     drawUsage();
   }));
   col.querySelectorAll(".usage-row").forEach(b => b.addEventListener("click", () => onPick(nodes[+b.dataset.i])));

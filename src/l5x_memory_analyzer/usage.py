@@ -45,6 +45,8 @@ _FILE_INSTRUCTIONS = frozenset({
 })
 
 _MODULE_REF = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*):(?:\d+:)?[IOCS]\b")
+# A tag of another program, named across programs: \Program.Tag (then any members).
+_PROGRAM_REF = re.compile(r"\\([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)")
 _HEX_LITERAL = re.compile(r"\b\d+#[0-9A-Fa-f_]+")
 _ST_COMMENT = re.compile(r"\(\*.*?\*\)|//[^\n]*|/\*.*?\*/", re.S)
 _ST_STRING = re.compile(r"'[^']*'|\"[^\"]*\"")
@@ -175,6 +177,9 @@ class UsageIndex:
         self._type_member_locs: dict[tuple[str, str], list] = {}
         self._aoi_internal_locs: dict[tuple[str, str], list] = {}
         self._aoi_call_locs: dict[str, list] = {}
+        # AOIs whose logic the export does not show (source-protected): their parameters
+        # and local tags are taken as used by that logic.
+        self.protected_aois: set[str] = set()
         self._declare()
         self._scan()
 
@@ -194,6 +199,8 @@ class UsageIndex:
             own.update({t.get("Name"): (t.get("DataType"), t.get("Dimensions") or "0")
                         for t in aoi.iter("LocalTag")})
             self._members[name] = own
+            if aoi.find(".//Routine") is None:
+                self.protected_aois.add(name)
         for k, v in {"TIMER": ("PRE", "ACC", "EN", "TT", "DN"),
                      "COUNTER": ("PRE", "ACC", "CU", "CD", "DN", "OV", "UN"),
                      "CONTROL": ("LEN", "POS", "EN", "EU", "DN", "EM", "ER", "UL", "IN", "FD")}.items():
@@ -309,11 +316,31 @@ class UsageIndex:
             self._modules[m.group(1)] = self._modules.get(m.group(1), 0) + 1
         text = _MODULE_REF.sub(" ", text)
         text = _HEX_LITERAL.sub(" ", text)
+        if "\\" in text:
+            text = self._record_program_refs(text, depth)
         for m in _PATH.finditer(text):
             segs, inner = _segments(m.group(2))
             self._record(scope, m.group(1), segs, depth)
             for body in inner:
                 self._record_text(scope, body, depth)
+
+    def _record_program_refs(self, text: str, depth: int) -> str:
+        """Record every \\Program.Tag reference in that program's scope, and return the text
+        with them blanked so the plain-path pass does not read them again."""
+        out, pos = [], 0
+        for m in _PROGRAM_REF.finditer(text):
+            scope = f"program:{m.group(1)}"
+            tail = _PATH.match(m.group(2) + text[m.end():])
+            segs, inner = _segments(tail.group(2)) if tail else ([], [])
+            if m.group(2) in self._types.get(scope, {}):
+                self._record(scope, m.group(2), segs, depth)
+            for body in inner:
+                self._record_text(scope, body, depth)
+            end = m.end() + (len(tail.group(0)) - len(m.group(2)) if tail else 0)
+            out += [text[pos:m.start()], " " * (end - m.start())]
+            pos = end
+        out.append(text[pos:])
+        return "".join(out)
 
     def _record_file_instructions(self, scope: str, text: str) -> None:
         """COP(Arr[0],...) touches the elements after [0] too: a whole-array use."""
@@ -374,6 +401,16 @@ class UsageIndex:
                             self._loc(self._aoi_internal_locs.setdefault(k, []))
                             self._loc(self._type_member_locs.setdefault(k, []))
         self._where = None
+        for name in self.protected_aois:
+            for member in self._members.get(name, {}):
+                if member in SYSTEM_MEMBERS:
+                    continue
+                k = (name, member)
+                self._aoi_internal[k] = self._aoi_internal.get(k, 0) + 1
+                self._type_member[k] = self._type_member.get(k, 0) + 1
+                place = [name, "(source-protected logic)", "assumed used", 1]
+                self._aoi_internal_locs.setdefault(k, []).append(place)
+                self._type_member_locs.setdefault(k, []).append(list(place))
         # Non-logic references: alias targets, alarms, motion.
         for scope, container in [(CONTROLLER_SCOPE, self._controller)] + [
                 (f"program:{p.get('Name')}", p) for p in self._controller.iter("Program")]:

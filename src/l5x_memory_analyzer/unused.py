@@ -113,6 +113,13 @@ class UnusedReport:
                 if not c.segment.startswith(".") or not _visible(c.segment[1:]):
                     continue
                 out.append((c.name, c.segment, c.data_type, tuple(c.dimensions), c.bytes))
+            if not out and self.u._members.get(dtype):
+                # A type the sizer does not expand (a source-protected AOI): its declared
+                # members, from the usage index, each sized on its own.
+                for name, (mtype, mdims) in self.u._members[dtype].items():
+                    if _visible(name):
+                        dims = _dims(mdims)
+                        out.append((name, f".{name}", mtype, dims, self._size(mtype, dims)))
             self._kid_cache[dtype] = out
         return self._kid_cache[dtype]
 

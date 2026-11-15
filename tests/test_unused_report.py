@@ -141,3 +141,33 @@ def test_fbd_grid_cell_matches_the_studio_reading():
     from l5x_memory_analyzer.usage import fbd_grid_cell
     assert fbd_grid_cell("600", "320") == "D2"
     assert fbd_grid_cell("180", "120") == "A1"
+
+
+def test_a_tag_named_across_programs_is_used():
+    """\\Program.Tag reaches a program-scope tag from another program."""
+    other = ('<Program Name="Other" TestEdits="false" MainRoutineName="Main" Disabled="false" UseAsFolder="false">'
+             '<Tags><Tag Name="Shared" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" '
+             'ExternalAccess="Read/Write"/></Tags><Routines><Routine Name="Main" Type="RLL"><RLLContent>'
+             + rung_xml(0, "NOP();") + '</RLLContent></Routine></Routines></Program>')
+    l5x = build_l5x(target_name="Cross", tags_xml=tag_xml("Dst", "DINT"), extra_programs_xml=other,
+                    extra_rungs_xml=rung_xml(0, "MOV(\\Other.Shared,Dst);"))
+    u = UsageIndex(ET.fromstring(l5x))
+    assert u.tag("program:Other/Shared").count == 1
+
+
+def test_a_source_protected_aoi_lists_its_parameters_as_used_when_called():
+    from l5x_memory_analyzer.parser.aoi import parse_aoi_definitions
+    from l5x_memory_analyzer.parser.datatypes import parse_data_types
+    from l5x_memory_analyzer.sizing.constants import load_memory_model
+    aoi = ('<AddOnInstructionDefinition Name="Locked" Revision="1.0"><Parameters>'
+           '<Parameter Name="EnableIn" TagType="Base" DataType="BOOL" Usage="Input" Required="false" Visible="false"/>'
+           '<Parameter Name="Go" TagType="Base" DataType="BOOL" Usage="Input" Required="false" Visible="true"/>'
+           '</Parameters></AddOnInstructionDefinition>')
+    root = ET.fromstring(build_l5x(target_name="Locked", extra_aoi_xml=aoi,
+                                   tags_xml='<Tag Name="L1" TagType="Base" DataType="Locked"/>',
+                                   extra_rungs_xml=rung_xml(0, "Locked(L1);")))
+    u = UsageIndex(root)
+    assert "Locked" in u.protected_aois
+    types = {**parse_data_types(root), **parse_aoi_definitions(root)}
+    item = [i for i in unused_report(u, types, load_memory_model())["kinds"][2]["items"] if i["n"] == "Locked"][0]
+    assert (item["u"], item["k"]) == (1, 1) and item["c"][0]["r"][0][1] == "(source-protected logic)"
