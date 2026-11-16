@@ -69,6 +69,33 @@ groups is the first thing to test on the customer programs when they are back: c
 readings of the v32 program (realprog_16) with those of the v35 programs (realprog_44, _46, _18).
 realprog_09 and _47 are v32 as well and still carry readings from adopted ACDs.
 
+### 0zs — Customer-program review, 2026-11-16 (17 counted programs on disk, engine unchanged)
+
+Score on the programs on disk: mean 1.06%, worst 2.02% (realprog_16), NOT MET. No engine change came
+out of this review; nothing below is wired.
+
+- **Totals cannot locate the gap.** Residual regressed on 30 content features, leave-one-out: the best
+  two-feature model reads 0.68% / 2.30% and the best three-feature one 0.61% / 1.75%, each picked from
+  thousands of candidates on 17 points. Not evidence, and not to be wired.
+- **What the residual tracks.** The five over-predicted programs (16, 18, 10, 14, 28) are the five with
+  the highest alarm-condition share of memory (9% to 24%); a Position Loop axis count also enters with a
+  negative sign (about 2,300 to 3,800 an axis). Counter-example: realprog_27 (10% alarms, 11 position
+  axes) is the most under-predicted. The engine charges every CIP axis one price whatever its
+  configuration; only Position Loop and converter axes were ever measured, never Frequency Control.
+- **Firmware, from readings already on file.** The same plant content reads 840,680 at v34 and 851,936
+  at v32 on a 1756-L81ES (`safe_base_l81es_v34` / `_v32`): 11,256 apart, the empty-project step (11,240)
+  and nothing else. So ordinary tags, ladder and 1734 I/O cost the same at v32. If realprog_16's tag layer
+  (113,812 over-priced, fresh ladder) is a firmware effect, it is in axes or alarm conditions, the
+  content that plant does not hold.
+- **Nothing sizeable is unread.** Every element type in the 18 exports was counted against what the
+  engine reads; descriptions and comments are measured free, and what is left unread (event-task
+  info, rack-connection alias tags, feedback-device blocks) is a few hundred elements in total.
+- **Rejected by the owner, 2026-11-16:** finer layer files (alarms / Frequency Control axes / all axes
+  cut from the no-programs layer). It repeats the deletion ladder; do not rebuild it.
+- **Cheapest remaining evidence:** fresh readings of realprog_09 and realprog_47 (both v32, both still on
+  adopted ACDs). realprog_47 has 55 CIP axes and no alarm conditions, so its fresh reading separates the
+  axis explanation (about 9.10 MB) from the alarm one (about 9.25 MB).
+
 ### 0zq. THE PLAN to the stopping rule (written 2026-10-31) — locate the missing 1% by Studio-made deletion
 
 **Where it stands.** Nineteen standard programs: mean 1.134%, worst 2.28% (realprog_44), 15 of
